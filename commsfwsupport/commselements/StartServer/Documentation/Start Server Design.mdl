@@ -1,0 +1,2283 @@
+
+(object Petal
+    version    	43
+    _written   	"Rose 6.5.9232.10"
+    charSet    	0)
+
+(object Design "Logical View"
+    is_unit    	TRUE
+    is_loaded  	TRUE
+    quid       	"3EE5BF170032"
+    defaults   	(object defaults
+	rightMargin 	0.250000
+	leftMargin 	0.250000
+	topMargin  	0.250000
+	bottomMargin 	0.500000
+	pageOverlap 	0.250000
+	clipIconLabels 	TRUE
+	autoResize 	TRUE
+	snapToGrid 	TRUE
+	gridX      	16
+	gridY      	16
+	defaultFont 	(object Font
+	    size       	10
+	    face       	"Arial"
+	    bold       	FALSE
+	    italics    	FALSE
+	    underline  	FALSE
+	    strike     	FALSE
+	    color      	0
+	    default_color 	TRUE)
+	showMessageNum 	1
+	showClassOfObject 	TRUE
+	notation   	"Unified")
+    root_usecase_package 	(object Class_Category "Use Case View"
+	quid       	"3EE5BF170034"
+	exportControl 	"Public"
+	global     	TRUE
+	logical_models 	(list unit_reference_list
+	    (object Class "CActiveScheduler"
+		quid       	"3EE9EB5500DE"
+		stereotype 	"Actor")
+	    (object Class "Client"
+		quid       	"3EF8434A00DE"
+		stereotype 	"Actor")
+	    (object UseCase "Process startup"
+		quid       	"3F31333F013C"
+		logical_models 	(list unit_reference_list
+		    (object Mechanism @1
+			logical_models 	(list unit_reference_list
+			    (object Object "$UNNAMED$0"
+				quid       	"3F31339B0071"
+				collaborators 	(list link_list
+				    (object Link
+					quid       	"3F3135450350"
+					supplier   	"$UNNAMED$0"
+					quidu      	"3F31339B0071")
+				    (object Link
+					quid       	"3F604B620177"
+					supplier   	"$UNNAMED$0"
+					quidu      	"3F31339B0071"
+					messages   	(list Messages
+					    (object Message "new"
+						quid       	"3F604B620178"
+						frequency  	"Aperiodic"
+						synchronization 	"Simple"
+						dir        	"FromClientToSupplier"
+						sequence   	"2"
+						ordinal    	1)
+					    (object Message "Connect( )"
+						quid       	"3F604BBC01C5"
+						frequency  	"Aperiodic"
+						synchronization 	"Asynchronous"
+						dir        	"FromClientToSupplier"
+						sequence   	"3"
+						ordinal    	2
+						quidu      	"3F5DB7F90000")
+					    (object Message "RunL"
+						quid       	"3F604EC701E4"
+						frequency  	"Aperiodic"
+						synchronization 	"Asynchronous"
+						dir        	"ToClientFromSupplier"
+						sequence   	"3.1.1.6.2"
+						ordinal    	13)))
+				    (object Link
+					quid       	"3F604B9C0271"
+					supplier   	"$UNNAMED$0"
+					quidu      	"3F31339B0071"
+					messages   	(list Messages
+					    (object Message "CreateSession( )"
+						quid       	"3F604B9C0272"
+						frequency  	"Aperiodic"
+						synchronization 	"Simple"
+						dir        	"FromClientToSupplier"
+						sequence   	"1"
+						ordinal    	0
+						quidu      	"3F5F54950148")))
+				    (object Link
+					quid       	"3F60532A01A5"
+					supplier   	"$UNNAMED$0"
+					quidu      	"3F31339B0071"
+					messages   	(list Messages
+					    (object Message "delete"
+						quid       	"3F60532A01A6"
+						frequency  	"Aperiodic"
+						synchronization 	"Simple"
+						dir        	"FromClientToSupplier"
+						sequence   	"3.1.1.6.2.1"
+						ordinal    	14))))
+				class      	"Use Case View::Client"
+				quidu      	"3EF8434A00DE"
+				persistence 	"Transient"
+				multi      	FALSE)
+			    (object Object "$UNNAMED$1"
+				quid       	"3F3134250285"
+				collaborators 	(list link_list
+				    (object Link
+					quid       	"3F31377F0081"
+					supplier   	"$UNNAMED$1"
+					quidu      	"3F3134250285")
+				    (object Link
+					quid       	"3F31383000CF"
+					supplier   	"$UNNAMED$0"
+					quidu      	"3F31339B0071"))
+				class      	"Logical View::RProcess"
+				quidu      	"3F31349E0033"
+				persistence 	"Transient"
+				multi      	FALSE)
+			    (object Object "NETSTSRV"
+				quid       	"3F3134590275"
+				collaborators 	(list link_list
+				    (object Link
+					quid       	"3F604BE503A9"
+					supplier   	"$UNNAMED$0"
+					quidu      	"3F31339B0071"
+					messages   	(list Messages
+					    (object Message "Start( )"
+						quid       	"3F604BE503AA"
+						frequency  	"Aperiodic"
+						synchronization 	"Asynchronous"
+						dir        	"FromClientToSupplier"
+						sequence   	"3.1"
+						ordinal    	3)
+					    (object Message "RunL( )"
+						quid       	"3F604DAA01B5"
+						frequency  	"Aperiodic"
+						synchronization 	"Asynchronous"
+						dir        	"ToClientFromSupplier"
+						sequence   	"3.1.1.6"
+						ordinal    	11
+						quidu      	"3F5DB8E802FD")))
+				    (object Link
+					quid       	"3F604E9F0242"
+					supplier   	"$UNNAMED$0"
+					quidu      	"3F31339B0071"
+					messages   	(list Messages
+					    (object Message "CreateSession( )"
+						quid       	"3F604E9F0243"
+						frequency  	"Aperiodic"
+						synchronization 	"Simple"
+						dir        	"FromClientToSupplier"
+						sequence   	"3.1.1.6.1"
+						ordinal    	12
+						quidu      	"3F5F54950148"))))
+				class      	"Logical View::Asynchronous Server Startup::CStartServer"
+				quidu      	"3F5DB71600EA"
+				persistence 	"Transient"
+				multi      	FALSE)
+			    (object Object "NETSTSRV"
+				quid       	"3F31349203DC"
+				collaborators 	(list link_list
+				    (object Link
+					quid       	"3F3137650321"
+					supplier   	"$UNNAMED$1"
+					quidu      	"3F3134250285"))
+				class      	"Logical View::Asynchronous Server Startup::RAsynchConnectBase"
+				quidu      	"3F5F548A003E"
+				persistence 	"Transient"
+				multi      	FALSE)
+			    (object Object "NETSTSRV"
+				quid       	"3F604A7C038A"
+				collaborators 	(list link_list
+				    (object Link
+					quid       	"3F604BFA031C"
+					supplier   	"$UNNAMED$0"
+					quidu      	"3F31339B0071"
+					messages   	(list Messages
+					    (object Message "Start a thread & logon to it"
+						quid       	"3F604BFA031D"
+						frequency  	"Aperiodic"
+						synchronization 	"Simple"
+						dir        	"FromClientToSupplier"
+						sequence   	"3.1.1"
+						ordinal    	4)
+					    (object Message "Exit the thread (logon complete)"
+						quid       	"3F604D3B008C"
+						frequency  	"Aperiodic"
+						synchronization 	"Simple"
+						dir        	"FromClientToSupplier"
+						sequence   	"3.1.1.5"
+						ordinal    	10
+						Operation  	"Exit the thread")))
+				    (object Link
+					quid       	"3F604C4E003E"
+					supplier   	"$UNNAMED$1"
+					quidu      	"3F3134250285"
+					messages   	(list Messages
+					    (object Message "Create"
+						quid       	"3F604C4E003F"
+						frequency  	"Aperiodic"
+						synchronization 	"Simple"
+						dir        	"FromClientToSupplier"
+						sequence   	"3.1.1.1"
+						ordinal    	5)
+					    (object Message "Randezvous"
+						quid       	"3F604CD20242"
+						frequency  	"Aperiodic"
+						synchronization 	"Asynchronous"
+						dir        	"FromClientToSupplier"
+						sequence   	"3.1.1.2"
+						ordinal    	6)
+					    (object Message "Resume"
+						quid       	"3F604CE5002E"
+						frequency  	"Aperiodic"
+						synchronization 	"Simple"
+						dir        	"FromClientToSupplier"
+						sequence   	"3.1.1.4"
+						ordinal    	8)
+					    (object Message "Randezvous"
+						quid       	"3F604D22005D"
+						frequency  	"Aperiodic"
+						synchronization 	"Asynchronous"
+						dir        	"ToClientFromSupplier"
+						sequence   	"3.1.1.4.1"
+						ordinal    	9)
+					    (object Message "Logon"
+						quid       	"3F604E0F0203"
+						frequency  	"Aperiodic"
+						synchronization 	"Asynchronous"
+						dir        	"FromClientToSupplier"
+						sequence   	"3.1.1.3"
+						ordinal    	7))))
+				class      	"Logical View::Process Startup::RStartProcess"
+				quidu      	"3F5DB74503D8"
+				persistence 	"Transient"
+				multi      	FALSE)))
+		    (object Mechanism @2
+			logical_models 	(list unit_reference_list
+			    (object Object "NETSTSRV"
+				quid       	"3FD8783600FA"
+				collaborators 	(list link_list
+				    (object Link
+					quid       	"3FD8783600FB"
+					supplier   	"NETSTSRV"
+					quidu      	"3FD8783600FA")
+				    (object Link
+					quid       	"3FD8783600FE"
+					supplier   	"$UNNAMED$2"
+					quidu      	"3FD878360104"
+					messages   	(list Messages
+					    (object Message "Create"
+						quid       	"3FD878D80213"
+						frequency  	"Aperiodic"
+						synchronization 	"Simple"
+						dir        	"FromClientToSupplier"
+						sequence   	"1.1"
+						ordinal    	1)
+					    (object Message "Logon"
+						quid       	"3FD878E100BB"
+						frequency  	"Aperiodic"
+						synchronization 	"Simple"
+						dir        	"FromClientToSupplier"
+						sequence   	"1.2"
+						ordinal    	2)
+					    (object Message "Randezvous"
+						quid       	"3FD878EA038A"
+						frequency  	"Aperiodic"
+						synchronization 	"Simple"
+						dir        	"FromClientToSupplier"
+						sequence   	"1.3"
+						ordinal    	3)
+					    (object Message "Resume"
+						quid       	"3FD878F4034B"
+						frequency  	"Aperiodic"
+						synchronization 	"Simple"
+						dir        	"FromClientToSupplier"
+						sequence   	"1.4"
+						ordinal    	4)
+					    (object Message "Randezvous"
+						quid       	"3FD8794001D4"
+						frequency  	"Aperiodic"
+						synchronization 	"Simple"
+						dir        	"ToClientFromSupplier"
+						sequence   	"1.4.1"
+						ordinal    	5))))
+				class      	"Logical View::Process Startup::RStartProcess"
+				quidu      	"3F5DB74503D8"
+				persistence 	"Transient"
+				multi      	FALSE)
+			    (object Object "$UNNAMED$2"
+				quid       	"3FD878360104"
+				class      	"Logical View::RProcess"
+				quidu      	"3F31349E0033"
+				persistence 	"Transient"
+				multi      	FALSE)
+			    (object Object "$UNNAMED$3"
+				quid       	"3FD87896009C"
+				collaborators 	(list link_list
+				    (object Link
+					quid       	"3FD878A503C8"
+					supplier   	"NETSTSRV"
+					quidu      	"3FD8783600FA"
+					messages   	(list Messages
+					    (object Message "Start"
+						quid       	"3FD878D0000F"
+						frequency  	"Aperiodic"
+						synchronization 	"Simple"
+						dir        	"FromClientToSupplier"
+						sequence   	"1"
+						ordinal    	0
+						Operation  	"Start( )"
+						quidu      	"3F5DB8190222")
+					    (object Message "return KErrNone"
+						quid       	"3FD8798F03C8"
+						frequency  	"Aperiodic"
+						synchronization 	"Simple"
+						dir        	"ToClientFromSupplier"
+						sequence   	"1.5"
+						ordinal    	6))))
+				class      	"Use Case View::Client"
+				quidu      	"3EF8434A00DE"
+				persistence 	"Transient"
+				multi      	FALSE))))
+		logical_presentations 	(list unit_reference_list
+		    (object InteractionDiagram "Asynchronous Start"
+			mechanism_ref 	@1
+			quid       	"3F3133670227"
+			title      	"Asynchronous Start"
+			zoom       	100
+			max_height 	28350
+			max_width  	21600
+			origin_x   	0
+			origin_y   	0
+			items      	(list diagram_item_list
+			    (object InterObjView "$UNNAMED$0" @3
+				location   	(224, 224)
+				font       	(object Font
+				    underline  	TRUE)
+				label      	(object ItemLabel
+				    Parent_View 	@3
+				    location   	(224, 265)
+				    anchor_loc 	1
+				    nlines     	2
+				    max_width  	360
+				    justify    	0
+				    label      	"")
+				icon       	"Actor"
+				icon_style 	"Icon"
+				line_color 	3342489
+				fill_color 	65535
+				quidu      	"3F31339B0071"
+				width      	336
+				height     	2109
+				icon_height 	162
+				icon_width 	120
+				icon_y_offset 	-16
+				annotation 	1
+				Focus_Of_Control 	(object Focus_Of_Control "" @4
+				    location   	(224, 352)
+				    line_color 	3342489
+				    InterObjView 	@3
+				    height     	1892
+				    y_coord    	1832
+				    Nested     	FALSE)
+				Focus_Of_Control 	(object Focus_Of_Control "" @5
+				    location   	(224, 1760)
+				    line_color 	3342489
+				    InterObjView 	@3
+				    height     	184
+				    y_coord    	124
+				    Nested     	TRUE))
+			    (object InterObjView "NETSTSRV" @6
+				location   	(624, 224)
+				font       	(object Font
+				    underline  	TRUE)
+				label      	(object ItemLabel
+				    Parent_View 	@6
+				    location   	(624, 224)
+				    fill_color 	13434879
+				    anchor_loc 	1
+				    nlines     	2
+				    max_width  	420
+				    justify    	0
+				    label      	"NETSTSRV")
+				icon_style 	"Icon"
+				line_color 	3342489
+				fill_color 	65535
+				quidu      	"3F31349203DC"
+				width      	438
+				height     	2109
+				icon_height 	0
+				icon_width 	0
+				icon_y_offset 	0
+				annotation 	1
+				Focus_Of_Control 	(object Focus_Of_Control "" @7
+				    location   	(624, 368)
+				    line_color 	3342489
+				    InterObjView 	@6
+				    height     	60
+				    y_coord    	0
+				    Nested     	FALSE)
+				Focus_Of_Control 	(object Focus_Of_Control "" @8
+				    location   	(624, 1632)
+				    line_color 	3342489
+				    InterObjView 	@6
+				    height     	60
+				    y_coord    	0
+				    Nested     	FALSE))
+			    (object InterObjView "$UNNAMED$1" @9
+				location   	(1712, 224)
+				font       	(object Font
+				    underline  	TRUE)
+				label      	(object ItemLabel
+				    Parent_View 	@9
+				    location   	(1712, 224)
+				    fill_color 	13434879
+				    anchor_loc 	1
+				    nlines     	2
+				    max_width  	330
+				    justify    	0
+				    label      	"")
+				icon_style 	"Icon"
+				line_color 	3342489
+				fill_color 	13434879
+				quidu      	"3F3134250285"
+				width      	348
+				height     	2109
+				icon_height 	0
+				icon_width 	0
+				icon_y_offset 	0
+				annotation 	1
+				Focus_Of_Control 	(object Focus_Of_Control "" @10
+				    location   	(1712, 912)
+				    line_color 	3342489
+				    InterObjView 	@9
+				    height     	60
+				    y_coord    	0
+				    Nested     	FALSE)
+				Focus_Of_Control 	(object Focus_Of_Control "" @11
+				    location   	(1712, 992)
+				    line_color 	3342489
+				    InterObjView 	@9
+				    height     	60
+				    y_coord    	0
+				    Nested     	FALSE)
+				Focus_Of_Control 	(object Focus_Of_Control "" @12
+				    location   	(1712, 1088)
+				    line_color 	3342489
+				    InterObjView 	@9
+				    height     	60
+				    y_coord    	0
+				    Nested     	FALSE)
+				Focus_Of_Control 	(object Focus_Of_Control "" @13
+				    location   	(1712, 1200)
+				    line_color 	3342489
+				    InterObjView 	@9
+				    height     	200
+				    y_coord    	140
+				    Nested     	FALSE))
+			    (object InterObjView "NETSTSRV" @14
+				location   	(1360, 224)
+				font       	(object Font
+				    underline  	TRUE)
+				label      	(object ItemLabel
+				    Parent_View 	@14
+				    location   	(1360, 224)
+				    fill_color 	13434879
+				    anchor_loc 	1
+				    nlines     	2
+				    max_width  	296
+				    justify    	0
+				    label      	"NETSTSRV")
+				icon_style 	"Icon"
+				line_color 	3342489
+				fill_color 	65535
+				quidu      	"3F604A7C038A"
+				width      	314
+				height     	2109
+				icon_height 	0
+				icon_width 	0
+				icon_y_offset 	0
+				annotation 	1
+				Focus_Of_Control 	(object Focus_Of_Control "" @15
+				    location   	(1360, 624)
+				    line_color 	3342489
+				    InterObjView 	@14
+				    height     	1500
+				    y_coord    	1440
+				    Nested     	FALSE)
+				Focus_Of_Control 	(object Focus_Of_Control "" @16
+				    location   	(1360, 688)
+				    line_color 	3342489
+				    InterObjView 	@14
+				    height     	1376
+				    y_coord    	1316
+				    Nested     	TRUE)
+				Focus_Of_Control 	(object Focus_Of_Control "" @17
+				    location   	(1360, 1280)
+				    line_color 	3342489
+				    InterObjView 	@14
+				    height     	60
+				    y_coord    	0
+				    Nested     	TRUE)
+				Focus_Of_Control 	(object Focus_Of_Control "" @18
+				    location   	(1360, 1488)
+				    line_color 	3342489
+				    InterObjView 	@14
+				    height     	60
+				    y_coord    	0
+				    Nested     	TRUE))
+			    (object InterObjView "NETSTSRV" @19
+				location   	(1024, 224)
+				font       	(object Font
+				    underline  	TRUE)
+				label      	(object ItemLabel
+				    Parent_View 	@19
+				    location   	(1024, 224)
+				    fill_color 	13434879
+				    anchor_loc 	1
+				    nlines     	2
+				    max_width  	294
+				    justify    	0
+				    label      	"NETSTSRV")
+				icon_style 	"Icon"
+				line_color 	3342489
+				fill_color 	65535
+				quidu      	"3F3134590275"
+				width      	312
+				height     	2109
+				icon_height 	0
+				icon_width 	0
+				icon_y_offset 	0
+				annotation 	1
+				Focus_Of_Control 	(object Focus_Of_Control "" @20
+				    location   	(1024, 496)
+				    line_color 	3342489
+				    InterObjView 	@19
+				    height     	60
+				    y_coord    	0
+				    Nested     	FALSE)
+				Focus_Of_Control 	(object Focus_Of_Control "" @21
+				    location   	(1024, 608)
+				    line_color 	3342489
+				    InterObjView 	@19
+				    height     	1576
+				    y_coord    	1516
+				    Nested     	FALSE)
+				Focus_Of_Control 	(object Focus_Of_Control "" @22
+				    location   	(1024, 1600)
+				    line_color 	3342489
+				    InterObjView 	@19
+				    height     	404
+				    y_coord    	344
+				    Nested     	TRUE)
+				Focus_Of_Control 	(object Focus_Of_Control "" @23
+				    location   	(1024, 1824)
+				    line_color 	3342489
+				    InterObjView 	@19
+				    height     	60
+				    y_coord    	0
+				    Nested     	TRUE))
+			    (object NoteView @24
+				location   	(1344, 416)
+				label      	(object ItemLabel
+				    Parent_View 	@24
+				    location   	(1203, 357)
+				    fill_color 	13434879
+				    nlines     	2
+				    max_width  	246
+				    label      	"returns with an error")
+				line_color 	3342489
+				fill_color 	13434879
+				width      	306
+				height     	131)
+			    (object InterMessView "" @25
+				location   	(16, 496)
+				label      	(object SegLabel @26
+				    Parent_View 	@25
+				    location   	(622, 467)
+				    quidu      	"3F604B620178"
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	72
+				    justify    	0
+				    label      	"new"
+				    pctDist    	0.498751
+				    height     	30
+				    orientation 	0)
+				line_color 	3342489
+				client     	@3
+				supplier   	@19
+				Focus_Src  	@4
+				Focus_Entry 	@20
+				origin     	(239, 496)
+				terminus   	(1008, 496)
+				ordinal    	1)
+			    (object InterMessView "" @27
+				location   	(16, 608)
+				label      	(object SegLabel @28
+				    Parent_View 	@27
+				    location   	(623, 564)
+				    quidu      	"3F604BBC01C5"
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	188
+				    justify    	0
+				    label      	"Connect( )"
+				    pctDist    	0.500000
+				    height     	45
+				    orientation 	0)
+				line_color 	3342489
+				client     	@3
+				supplier   	@19
+				Focus_Src  	@4
+				Focus_Entry 	@21
+				origin     	(239, 608)
+				terminus   	(1008, 608)
+				ordinal    	2)
+			    (object InterMessView "" @29
+				location   	(16, 624)
+				label      	(object SegLabel @30
+				    Parent_View 	@29
+				    location   	(1206, 597)
+				    quidu      	"3F604BE503AA"
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	125
+				    justify    	0
+				    label      	"Start( )"
+				    pctDist    	0.547541
+				    height     	28
+				    orientation 	0)
+				line_color 	3342489
+				client     	@19
+				supplier   	@14
+				Focus_Src  	@21
+				Focus_Entry 	@15
+				origin     	(1039, 624)
+				terminus   	(1344, 624)
+				ordinal    	3)
+			    (object SelfMessView "" @31
+				location   	(16, 688)
+				label      	(object SegLabel @32
+				    Parent_View 	@31
+				    location   	(1449, 661)
+				    quidu      	"3F604BFA031D"
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	438
+				    justify    	0
+				    label      	"Start a thread & logon to it"
+				    pctDist    	0.493333
+				    height     	28
+				    orientation 	0)
+				line_color 	3342489
+				client     	@14
+				supplier   	@14
+				Focus_Src  	@15
+				Focus_Entry 	@16
+				origin     	(1376, 688)
+				terminus   	(1526, 688)
+				ordinal    	4)
+			    (object NoteView @33
+				location   	(1744, 448)
+				label      	(object ItemLabel
+				    Parent_View 	@33
+				    location   	(1553, 351)
+				    fill_color 	13434879
+				    nlines     	3
+				    max_width  	346
+				    label      	"Starts the thread to start a process within")
+				line_color 	3342489
+				fill_color 	13434879
+				width      	406
+				height     	206)
+			    (object InterMessView "" @34
+				location   	(16, 912)
+				label      	(object SegLabel @35
+				    Parent_View 	@34
+				    location   	(1537, 888)
+				    quidu      	"3F604C4E003F"
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	119
+				    justify    	0
+				    label      	"Create"
+				    pctDist    	0.504673
+				    height     	25
+				    orientation 	0)
+				line_color 	3342489
+				client     	@14
+				supplier   	@9
+				Focus_Src  	@16
+				Focus_Entry 	@10
+				origin     	(1375, 912)
+				terminus   	(1696, 912)
+				ordinal    	5)
+			    (object Label @36
+				location   	(1264, 784)
+				font       	(object Font
+				    bold       	TRUE)
+				nlines     	1
+				max_width  	1125
+				label      	"______V happening from the just created thread V______")
+			    (object InterMessView "" @37
+				location   	(16, 992)
+				label      	(object SegLabel @38
+				    Parent_View 	@37
+				    location   	(1537, 965)
+				    quidu      	"3F604CD20242"
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	219
+				    justify    	0
+				    label      	"Randezvous"
+				    pctDist    	0.504673
+				    height     	28
+				    orientation 	0)
+				line_color 	3342489
+				client     	@14
+				supplier   	@9
+				Focus_Src  	@16
+				Focus_Entry 	@11
+				origin     	(1375, 992)
+				terminus   	(1696, 992)
+				ordinal    	6)
+			    (object InterMessView "" @39
+				location   	(16, 1200)
+				label      	(object SegLabel @40
+				    Parent_View 	@39
+				    location   	(1535, 1156)
+				    quidu      	"3F604CE5002E"
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	150
+				    justify    	0
+				    label      	"Resume"
+				    pctDist    	0.500000
+				    height     	45
+				    orientation 	0)
+				line_color 	3342489
+				client     	@14
+				supplier   	@9
+				Focus_Src  	@16
+				Focus_Entry 	@13
+				origin     	(1375, 1200)
+				terminus   	(1696, 1200)
+				ordinal    	8)
+			    (object InterMessView "" @41
+				location   	(16, 1280)
+				label      	(object SegLabel @42
+				    Parent_View 	@41
+				    location   	(1553, 1244)
+				    quidu      	"3F604D22005D"
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	219
+				    justify    	0
+				    label      	"Randezvous"
+				    pctDist    	0.446875
+				    height     	37
+				    orientation 	1)
+				line_color 	3342489
+				client     	@9
+				supplier   	@14
+				Focus_Src  	@13
+				Focus_Entry 	@17
+				origin     	(1696, 1280)
+				terminus   	(1376, 1280)
+				ordinal    	9)
+			    (object SelfMessView "" @43
+				location   	(16, 1488)
+				label      	(object SegLabel @44
+				    Parent_View 	@43
+				    location   	(1451, 1444)
+				    quidu      	"3F604D3B008C"
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	541
+				    justify    	0
+				    label      	"Exit the thread (logon complete)"
+				    pctDist    	0.500000
+				    height     	45
+				    orientation 	0)
+				line_color 	3342489
+				client     	@14
+				supplier   	@14
+				Focus_Src  	@16
+				Focus_Entry 	@18
+				origin     	(1376, 1488)
+				terminus   	(1526, 1488)
+				ordinal    	10)
+			    (object Label @45
+				location   	(1280, 1328)
+				font       	(object Font
+				    bold       	TRUE)
+				nlines     	1
+				max_width  	1069
+				label      	"_____^ happening from the just created thread ^_____")
+			    (object InterMessView "" @46
+				location   	(16, 1600)
+				label      	(object SegLabel @47
+				    Parent_View 	@46
+				    location   	(1192, 1556)
+				    quidu      	"3F604DAA01B5"
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	131
+				    justify    	0
+				    label      	"RunL( )"
+				    pctDist    	0.500000
+				    height     	45
+				    orientation 	1)
+				line_color 	3342489
+				client     	@14
+				supplier   	@19
+				Focus_Src  	@16
+				Focus_Entry 	@22
+				origin     	(1344, 1600)
+				terminus   	(1040, 1600)
+				ordinal    	11)
+			    (object NoteView @48
+				location   	(720, 1040)
+				label      	(object ItemLabel
+				    Parent_View 	@48
+				    location   	(510, 924)
+				    fill_color 	13434879
+				    nlines     	4
+				    max_width  	384
+				    label      	"The logon has completed the request passed to RStartServer::Start")
+				line_color 	3342489
+				fill_color 	13434879
+				width      	444
+				height     	244)
+			    (object InterMessView "" @49
+				location   	(16, 1088)
+				label      	(object SegLabel @50
+				    Parent_View 	@49
+				    location   	(1533, 1045)
+				    quidu      	"3F604E0F0203"
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	110
+				    justify    	0
+				    label      	"Logon"
+				    pctDist    	0.495327
+				    height     	44
+				    orientation 	0)
+				line_color 	3342489
+				client     	@14
+				supplier   	@9
+				Focus_Src  	@16
+				Focus_Entry 	@12
+				origin     	(1375, 1088)
+				terminus   	(1696, 1088)
+				ordinal    	7)
+			    (object NoteView @51
+				location   	(1136, 1040)
+				label      	(object ItemLabel
+				    Parent_View 	@51
+				    location   	(973, 981)
+				    fill_color 	13434879
+				    nlines     	2
+				    max_width  	290
+				    label      	"synchronisation")
+				line_color 	3342489
+				fill_color 	13434879
+				width      	350
+				height     	131)
+			    (object InterMessView "" @52
+				location   	(16, 1632)
+				label      	(object SegLabel @53
+				    Parent_View 	@52
+				    location   	(824, 1588)
+				    quidu      	"3F604E9F0243"
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	303
+				    justify    	0
+				    label      	"CreateSession( )"
+				    pctDist    	0.500000
+				    height     	45
+				    orientation 	1)
+				line_color 	3342489
+				client     	@19
+				supplier   	@6
+				Focus_Src  	@22
+				Focus_Entry 	@8
+				origin     	(1008, 1632)
+				terminus   	(640, 1632)
+				ordinal    	12)
+			    (object InterMessView "" @54
+				location   	(16, 1760)
+				label      	(object SegLabel @55
+				    Parent_View 	@54
+				    location   	(624, 1716)
+				    quidu      	"3F604EC701E4"
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	94
+				    justify    	0
+				    label      	"RunL"
+				    pctDist    	0.500000
+				    height     	45
+				    orientation 	1)
+				line_color 	3342489
+				client     	@19
+				supplier   	@3
+				Focus_Src  	@22
+				Focus_Entry 	@5
+				origin     	(1008, 1760)
+				terminus   	(240, 1760)
+				ordinal    	13)
+			    (object NoteView @56
+				location   	(256, 1040)
+				label      	(object ItemLabel
+				    Parent_View 	@56
+				    location   	(43, 840)
+				    fill_color 	13434879
+				    nlines     	8
+				    max_width  	390
+				    label      	"The session has been successfully created. If not CStartServer::RunL calls RStartServer::Start and the startup repeats")
+				line_color 	3342489
+				fill_color 	13434879
+				width      	450
+				height     	413)
+			    (object AttachView "" @57
+				stereotype 	TRUE
+				line_color 	3342489
+				client     	@56
+				supplier   	@52
+				line_style 	0)
+			    (object AttachView "" @58
+				stereotype 	TRUE
+				line_color 	3342489
+				client     	@56
+				supplier   	@54
+				line_style 	0)
+			    (object AttachView "" @59
+				stereotype 	TRUE
+				line_color 	3342489
+				client     	@56
+				supplier   	@30
+				vertices   	(list Points
+				    (481, 907)
+				    (944, 638)
+				    (1137, 607))
+				line_style 	0)
+			    (object InterMessView "" @60
+				location   	(16, 1824)
+				label      	(object SegLabel @61
+				    Parent_View 	@60
+				    location   	(623, 1799)
+				    quidu      	"3F60532A01A6"
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	109
+				    justify    	0
+				    label      	"delete"
+				    pctDist    	0.499584
+				    height     	26
+				    orientation 	0)
+				line_color 	3342489
+				client     	@3
+				supplier   	@19
+				Focus_Src  	@5
+				Focus_Entry 	@23
+				origin     	(239, 1824)
+				terminus   	(1008, 1824)
+				ordinal    	14)
+			    (object InterMessView "" @62
+				location   	(16, 368)
+				label      	(object SegLabel @63
+				    Parent_View 	@62
+				    location   	(423, 324)
+				    quidu      	"3F604B9C0272"
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	303
+				    justify    	0
+				    label      	"CreateSession( )"
+				    pctDist    	0.500000
+				    height     	45
+				    orientation 	0)
+				line_color 	3342489
+				client     	@3
+				supplier   	@6
+				Focus_Src  	@4
+				Focus_Entry 	@7
+				origin     	(239, 368)
+				terminus   	(608, 368)
+				ordinal    	0)
+			    (object AttachView "" @64
+				stereotype 	TRUE
+				line_color 	3342489
+				client     	@24
+				supplier   	@62
+				line_style 	0)
+			    (object AttachView "" @65
+				stereotype 	TRUE
+				line_color 	3342489
+				client     	@33
+				supplier   	@31
+				line_style 	0)
+			    (object AttachView "" @66
+				stereotype 	TRUE
+				line_color 	3342489
+				client     	@48
+				supplier   	@43
+				line_style 	0)
+			    (object AttachView "" @67
+				stereotype 	TRUE
+				line_color 	3342489
+				client     	@48
+				supplier   	@31
+				line_style 	0)
+			    (object AttachView "" @68
+				stereotype 	TRUE
+				line_color 	3342489
+				client     	@51
+				supplier   	@38
+				line_style 	0)
+			    (object AttachView "" @69
+				stereotype 	TRUE
+				line_color 	3342489
+				client     	@51
+				supplier   	@41
+				line_style 	0)
+			    (object NoteView @70
+				location   	(1952, 1120)
+				label      	(object ItemLabel
+				    Parent_View 	@70
+				    location   	(1805, 992)
+				    fill_color 	13434879
+				    nlines     	5
+				    max_width  	258
+				    label      	"to check for the process death before reaching randezvous")
+				line_color 	3342489
+				fill_color 	13434879
+				width      	318
+				height     	269)
+			    (object AttachView "" @71
+				stereotype 	TRUE
+				line_color 	3342489
+				client     	@70
+				supplier   	@49
+				line_style 	0)))
+		    (object InteractionDiagram "Synchronous Start"
+			mechanism_ref 	@2
+			quid       	"3FD86E23000F"
+			title      	"Synchronous Start"
+			zoom       	100
+			max_height 	28350
+			max_width  	21600
+			origin_x   	0
+			origin_y   	0
+			items      	(list diagram_item_list
+			    (object InterObjView "NETSTSRV" @72
+				location   	(672, 224)
+				font       	(object Font
+				    underline  	TRUE)
+				label      	(object ItemLabel
+				    Parent_View 	@72
+				    location   	(672, 224)
+				    fill_color 	13434879
+				    anchor_loc 	1
+				    nlines     	2
+				    max_width  	296
+				    justify    	0
+				    label      	"NETSTSRV")
+				icon_style 	"Icon"
+				line_color 	3342489
+				fill_color 	65535
+				quidu      	"3FD8783600FA"
+				width      	314
+				height     	909
+				icon_height 	0
+				icon_width 	0
+				icon_y_offset 	0
+				annotation 	1
+				Focus_Of_Control 	(object Focus_Of_Control "" @73
+				    location   	(1728, 368)
+				    line_color 	3342489
+				    InterObjView 	@72
+				    height     	616
+				    y_coord    	556
+				    Nested     	FALSE)
+				Focus_Of_Control 	(object Focus_Of_Control "" @74
+				    location   	(544, 800)
+				    line_color 	3342489
+				    InterObjView 	@72
+				    height     	60
+				    y_coord    	0
+				    Nested     	TRUE))
+			    (object NoteView @75
+				location   	(1360, 544)
+				label      	(object ItemLabel
+				    Parent_View 	@75
+				    location   	(1213, 416)
+				    fill_color 	13434879
+				    nlines     	5
+				    max_width  	258
+				    label      	"to check for the process death before reaching randezvous")
+				line_color 	3342489
+				fill_color 	13434879
+				width      	318
+				height     	269)
+			    (object NoteView @76
+				location   	(432, 624)
+				label      	(object ItemLabel
+				    Parent_View 	@76
+				    location   	(269, 565)
+				    fill_color 	13434879
+				    nlines     	2
+				    max_width  	290
+				    label      	"synchronisation")
+				line_color 	3342489
+				fill_color 	13434879
+				width      	350
+				height     	131)
+			    (object InterObjView "$UNNAMED$2" @77
+				location   	(1056, 224)
+				font       	(object Font
+				    underline  	TRUE)
+				label      	(object ItemLabel
+				    Parent_View 	@77
+				    location   	(1056, 224)
+				    fill_color 	13434879
+				    anchor_loc 	1
+				    nlines     	2
+				    max_width  	330
+				    justify    	0
+				    label      	"")
+				icon_style 	"Icon"
+				line_color 	3342489
+				fill_color 	13434879
+				quidu      	"3FD878360104"
+				width      	348
+				height     	909
+				icon_height 	0
+				icon_width 	0
+				icon_y_offset 	0
+				annotation 	1
+				Focus_Of_Control 	(object Focus_Of_Control "" @78
+				    location   	(2080, 400)
+				    line_color 	3342489
+				    InterObjView 	@77
+				    height     	60
+				    y_coord    	0
+				    Nested     	FALSE)
+				Focus_Of_Control 	(object Focus_Of_Control "" @79
+				    location   	(2080, 480)
+				    line_color 	3342489
+				    InterObjView 	@77
+				    height     	60
+				    y_coord    	0
+				    Nested     	FALSE)
+				Focus_Of_Control 	(object Focus_Of_Control "" @80
+				    location   	(2080, 560)
+				    line_color 	3342489
+				    InterObjView 	@77
+				    height     	60
+				    y_coord    	0
+				    Nested     	FALSE)
+				Focus_Of_Control 	(object Focus_Of_Control "" @81
+				    location   	(2080, 704)
+				    line_color 	3342489
+				    InterObjView 	@77
+				    height     	216
+				    y_coord    	156
+				    Nested     	FALSE))
+			    (object InterObjView "$UNNAMED$3" @82
+				location   	(176, 224)
+				font       	(object Font
+				    underline  	TRUE)
+				label      	(object ItemLabel
+				    Parent_View 	@82
+				    location   	(176, 281)
+				    anchor_loc 	1
+				    nlines     	2
+				    max_width  	324
+				    justify    	0
+				    label      	"")
+				icon       	"Actor"
+				icon_style 	"Icon"
+				line_color 	3342489
+				fill_color 	13434879
+				quidu      	"3FD87896009C"
+				width      	336
+				height     	909
+				icon_height 	162
+				icon_width 	120
+				icon_y_offset 	-32
+				annotation 	1
+				Focus_Of_Control 	(object Focus_Of_Control "" @83
+				    location   	(1360, 368)
+				    line_color 	3342489
+				    InterObjView 	@82
+				    height     	676
+				    y_coord    	616
+				    Nested     	FALSE)
+				Focus_Of_Control 	(object Focus_Of_Control "" @84
+				    location   	(176, 864)
+				    line_color 	3342489
+				    InterObjView 	@82
+				    height     	60
+				    y_coord    	0
+				    Nested     	TRUE))
+			    (object InterMessView "" @85
+				location   	(16, 368)
+				label      	(object SegLabel @86
+				    Parent_View 	@85
+				    location   	(423, 324)
+				    quidu      	"3FD878D0000F"
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	88
+				    justify    	0
+				    label      	"Start"
+				    pctDist    	0.500000
+				    height     	45
+				    orientation 	0)
+				line_color 	3342489
+				client     	@82
+				supplier   	@72
+				Focus_Src  	@83
+				Focus_Entry 	@73
+				origin     	(191, 368)
+				terminus   	(656, 368)
+				ordinal    	0)
+			    (object InterMessView "" @87
+				location   	(16, 400)
+				label      	(object SegLabel @88
+				    Parent_View 	@87
+				    location   	(863, 356)
+				    quidu      	"3FD878D80213"
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	119
+				    justify    	0
+				    label      	"Create"
+				    pctDist    	0.500000
+				    height     	45
+				    orientation 	0)
+				line_color 	3342489
+				client     	@72
+				supplier   	@77
+				Focus_Src  	@73
+				Focus_Entry 	@78
+				origin     	(687, 400)
+				terminus   	(1040, 400)
+				ordinal    	1)
+			    (object InterMessView "" @89
+				location   	(16, 480)
+				label      	(object SegLabel @90
+				    Parent_View 	@89
+				    location   	(863, 436)
+				    quidu      	"3FD878E100BB"
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	109
+				    justify    	0
+				    label      	"Logon"
+				    pctDist    	0.500000
+				    height     	45
+				    orientation 	0)
+				line_color 	3342489
+				client     	@72
+				supplier   	@77
+				Focus_Src  	@73
+				Focus_Entry 	@79
+				origin     	(687, 480)
+				terminus   	(1040, 480)
+				ordinal    	2)
+			    (object InterMessView "" @91
+				location   	(16, 560)
+				label      	(object SegLabel @92
+				    Parent_View 	@91
+				    location   	(863, 516)
+				    quidu      	"3FD878EA038A"
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	219
+				    justify    	0
+				    label      	"Randezvous"
+				    pctDist    	0.500000
+				    height     	45
+				    orientation 	0)
+				line_color 	3342489
+				client     	@72
+				supplier   	@77
+				Focus_Src  	@73
+				Focus_Entry 	@80
+				origin     	(687, 560)
+				terminus   	(1040, 560)
+				ordinal    	3)
+			    (object InterMessView "" @93
+				location   	(16, 704)
+				label      	(object SegLabel @94
+				    Parent_View 	@93
+				    location   	(863, 660)
+				    quidu      	"3FD878F4034B"
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	219
+				    justify    	0
+				    label      	"Resume"
+				    pctDist    	0.500000
+				    height     	45
+				    orientation 	0)
+				line_color 	3342489
+				client     	@72
+				supplier   	@77
+				Focus_Src  	@73
+				Focus_Entry 	@81
+				origin     	(687, 704)
+				terminus   	(1040, 704)
+				ordinal    	4)
+			    (object InterMessView "" @95
+				location   	(16, 800)
+				label      	(object SegLabel @96
+				    Parent_View 	@95
+				    location   	(864, 756)
+				    quidu      	"3FD8794001D4"
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	219
+				    justify    	0
+				    label      	"Randezvous"
+				    pctDist    	0.500000
+				    height     	45
+				    orientation 	1)
+				line_color 	3342489
+				client     	@77
+				supplier   	@72
+				Focus_Src  	@81
+				Focus_Entry 	@74
+				origin     	(1040, 800)
+				terminus   	(688, 800)
+				ordinal    	5)
+			    (object AttachView "" @97
+				stereotype 	TRUE
+				line_color 	3342489
+				client     	@76
+				supplier   	@95
+				line_style 	0)
+			    (object AttachView "" @98
+				stereotype 	TRUE
+				line_color 	3342489
+				client     	@76
+				supplier   	@91
+				line_style 	0)
+			    (object AttachView "" @99
+				stereotype 	TRUE
+				line_color 	3342489
+				client     	@75
+				supplier   	@89
+				line_style 	0)
+			    (object InterMessView "" @100
+				location   	(16, 864)
+				label      	(object SegLabel @101
+				    Parent_View 	@100
+				    location   	(424, 820)
+				    quidu      	"3FD8798F03C8"
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	291
+				    justify    	0
+				    label      	"return KErrNone"
+				    pctDist    	0.500000
+				    height     	45
+				    orientation 	1)
+				line_color 	3342489
+				client     	@72
+				supplier   	@82
+				Focus_Src  	@73
+				Focus_Entry 	@84
+				origin     	(656, 864)
+				terminus   	(192, 864)
+				ordinal    	6))))))
+	logical_presentations 	(list unit_reference_list
+	    (object UseCaseDiagram "Main"
+		quid       	"3EE5BF1703BD"
+		title      	"Main"
+		zoom       	100
+		max_height 	28350
+		max_width  	21600
+		origin_x   	0
+		origin_y   	0
+		items      	(list diagram_item_list))))
+    root_category 	(object Class_Category "Logical View"
+	quid       	"3EE5BF170033"
+	exportControl 	"Public"
+	global     	TRUE
+	subsystem  	"Component View"
+	quidu      	"3EE5BF170035"
+	logical_models 	(list unit_reference_list
+	    (object Class "CBase"
+		quid       	"3EE5E1AF035F")
+	    (object Class "CActive"
+		quid       	"3EF2F2380255"
+		module     	"Component View::BASE"
+		quidu      	"3FD736000186")
+	    (object Class "RProcess"
+		quid       	"3F31349E0033")
+	    (object Class "RThread"
+		quid       	"3F5DB86D035B"
+		module     	"Component View::BASE"
+		quidu      	"3FD736000186")
+	    (object Class "RSessionBase"
+		quid       	"3F5F53F9000F"
+		module     	"Component View::BASE"
+		quidu      	"3FD736000186")
+	    (object Class_Category "Asynchronous Server Startup"
+		quid       	"3F5DB3A703D8"
+		visible_categories 	(list visibility_relationship_list
+		    (object Visibility_Relationship
+			quid       	"3FD750E5004E"
+			supplier   	"Logical View::Process Startup"
+			quidu      	"3FD750D50232"))
+		exportControl 	"Public"
+		logical_models 	(list unit_reference_list
+		    (object Class "CStartServer"
+			quid       	"3F5DB71600EA"
+			superclasses 	(list inheritance_relationship_list
+			    (object Inheritance_Relationship
+				quid       	"3F5DB913029F"
+				supplier   	"Logical View::CActive"
+				quidu      	"3EF2F2380255"))
+			operations 	(list Operations
+			    (object Operation "Connect"
+				quid       	"3F5DB7F90000"
+				concurrency 	"Sequential"
+				opExportControl 	"Public"
+				uid        	0)
+			    (object Operation "RunL"
+				quid       	"3F5DB8E802FD"
+				stereotype 	"virtual"
+				concurrency 	"Sequential"
+				opExportControl 	"Protected"
+				uid        	0)
+			    (object Operation "DoCancel"
+				quid       	"3F5DB8F50232"
+				stereotype 	"virtual"
+				concurrency 	"Sequential"
+				opExportControl 	"Protected"
+				uid        	0))
+			module     	"Component View::NETSTSRV"
+			quidu      	"3FA67017013E")
+		    (object Class "RAsynchConnectBase"
+			quid       	"3F5F548A003E"
+			superclasses 	(list inheritance_relationship_list
+			    (object Inheritance_Relationship
+				quid       	"3F5F54B9007D"
+				supplier   	"Logical View::RSessionBase"
+				quidu      	"3F5F53F9000F"))
+			operations 	(list Operations
+			    (object Operation "CreateSession"
+				quid       	"3F5F54950148"
+				result     	"TInt"
+				concurrency 	"Sequential"
+				opExportControl 	"Public"
+				uid        	0))
+			module     	"Component View::NETSTSRV"
+			quidu      	"3FA67017013E")
+		    (object Association "$UNNAMED$4"
+			quid       	"3F5DB9220148"
+			roles      	(list role_list
+			    (object Role "$UNNAMED$5"
+				quid       	"3F5DB923007D"
+				supplier   	"Logical View::Process Startup::RStartProcess"
+				quidu      	"3F5DB74503D8"
+				client_cardinality 	(value cardinality "1")
+				Containment 	"By Value"
+				is_navigable 	TRUE)
+			    (object Role "$UNNAMED$6"
+				quid       	"3F5DB923007E"
+				supplier   	"Logical View::Asynchronous Server Startup::CStartServer"
+				quidu      	"3F5DB71600EA"
+				client_cardinality 	(value cardinality "1")
+				is_aggregate 	TRUE)))
+		    (object Association "$UNNAMED$7"
+			quid       	"3F5F554102CE"
+			roles      	(list role_list
+			    (object Role "$UNNAMED$8"
+				quid       	"3F5F554300BB"
+				supplier   	"Logical View::Asynchronous Server Startup::RAsynchConnectBase"
+				quidu      	"3F5F548A003E"
+				client_cardinality 	(value cardinality "1")
+				Containment 	"By Reference"
+				exportControl 	"Protected"
+				is_navigable 	TRUE)
+			    (object Role "$UNNAMED$9"
+				quid       	"3F5F554300CB"
+				supplier   	"Logical View::Asynchronous Server Startup::CStartServer"
+				quidu      	"3F5DB71600EA"
+				client_cardinality 	(value cardinality "1")))))
+		logical_presentations 	(list unit_reference_list
+		    (object ClassDiagram "Main"
+			quid       	"3F5DB4DF02BF"
+			title      	"Main"
+			zoom       	100
+			max_height 	28350
+			max_width  	21600
+			origin_x   	0
+			origin_y   	0
+			items      	(list diagram_item_list
+			    (object ClassView "Class" "Logical View::CActive" @102
+				ShowCompartmentStereotypes 	TRUE
+				SuppressAttribute 	TRUE
+				IncludeAttribute 	TRUE
+				IncludeOperation 	TRUE
+				location   	(944, 352)
+				label      	(object ItemLabel
+				    Parent_View 	@102
+				    location   	(801, 278)
+				    fill_color 	13434879
+				    nlines     	1
+				    max_width  	286
+				    justify    	0
+				    label      	"CActive")
+				icon_style 	"Icon"
+				line_color 	3342489
+				fill_color 	13434879
+				quidu      	"3EF2F2380255"
+				width      	304
+				height     	172
+				annotation 	8
+				autoResize 	TRUE)
+			    (object ClassView "Class" "Logical View::RThread" @103
+				ShowCompartmentStereotypes 	TRUE
+				SuppressAttribute 	TRUE
+				IncludeAttribute 	TRUE
+				IncludeOperation 	TRUE
+				location   	(1552, 352)
+				label      	(object ItemLabel
+				    Parent_View 	@103
+				    location   	(1409, 278)
+				    fill_color 	13434879
+				    nlines     	1
+				    max_width  	286
+				    justify    	0
+				    label      	"RThread")
+				icon_style 	"Icon"
+				line_color 	3342489
+				fill_color 	13434879
+				quidu      	"3F5DB86D035B"
+				width      	304
+				height     	172
+				annotation 	8
+				autoResize 	TRUE)
+			    (object NoteView @104
+				location   	(1920, 544)
+				label      	(object ItemLabel
+				    Parent_View 	@104
+				    location   	(1763, 463)
+				    fill_color 	13434879
+				    nlines     	3
+				    max_width  	278
+				    label      	"uses a thread to start a process")
+				line_color 	3342489
+				fill_color 	65408
+				width      	338
+				height     	175)
+			    (object NoteView @105
+				location   	(1552, 1200)
+				label      	(object ItemLabel
+				    Parent_View 	@105
+				    location   	(1246, 1116)
+				    fill_color 	13434879
+				    nlines     	3
+				    max_width  	577
+				    label      	"the emulator exeption when a process is started as a thread is not mentioned here")
+				line_color 	3342489
+				fill_color 	65408
+				width      	637
+				height     	181)
+			    (object ClassView "Class" "Logical View::Process Startup::RStartProcess" @106
+				ShowCompartmentStereotypes 	TRUE
+				IncludeAttribute 	TRUE
+				IncludeOperation 	TRUE
+				location   	(1552, 784)
+				label      	(object ItemLabel
+				    Parent_View 	@106
+				    location   	(1391, 630)
+				    fill_color 	13434879
+				    nlines     	1
+				    max_width  	322
+				    justify    	0
+				    label      	"RStartProcess")
+				icon_style 	"Icon"
+				line_color 	3342489
+				fill_color 	65535
+				quidu      	"3F5DB74503D8"
+				compartment 	(object Compartment
+				    Parent_View 	@106
+				    location   	(1391, 735)
+				    icon_style 	"Icon"
+				    fill_color 	16777215
+				    anchor     	2
+				    nlines     	4
+				    max_width  	228)
+				width      	340
+				height     	332
+				annotation 	8
+				autoResize 	TRUE)
+			    (object UsesView "" @107
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"3F5DB8770186"
+				client     	@106
+				supplier   	@103
+				line_style 	0)
+			    (object AttachView "" @108
+				stereotype 	TRUE
+				line_color 	3342489
+				client     	@104
+				supplier   	@107
+				line_style 	0)
+			    (object AttachView "" @109
+				stereotype 	TRUE
+				line_color 	3342489
+				client     	@105
+				supplier   	@106
+				line_style 	0)
+			    (object ClassView "Class" "Logical View::Asynchronous Server Startup::RAsynchConnectBase" @110
+				ShowCompartmentStereotypes 	TRUE
+				SuppressAttribute 	TRUE
+				IncludeAttribute 	TRUE
+				IncludeOperation 	TRUE
+				location   	(256, 784)
+				label      	(object ItemLabel
+				    Parent_View 	@110
+				    location   	(36, 728)
+				    fill_color 	13434879
+				    nlines     	1
+				    max_width  	440
+				    justify    	0
+				    label      	"RAsynchConnectBase")
+				icon_style 	"Icon"
+				line_color 	3342489
+				fill_color 	65535
+				quidu      	"3F5F548A003E"
+				compartment 	(object Compartment
+				    Parent_View 	@110
+				    location   	(36, 789)
+				    icon_style 	"Icon"
+				    fill_color 	16777215
+				    anchor     	2
+				    nlines     	1
+				    max_width  	341)
+				width      	458
+				height     	136
+				annotation 	8
+				autoResize 	TRUE)
+			    (object ClassView "Class" "Logical View::Asynchronous Server Startup::CStartServer" @111
+				ShowCompartmentStereotypes 	TRUE
+				SuppressAttribute 	TRUE
+				IncludeAttribute 	TRUE
+				IncludeOperation 	TRUE
+				location   	(944, 784)
+				label      	(object ItemLabel
+				    Parent_View 	@111
+				    location   	(710, 678)
+				    fill_color 	13434879
+				    nlines     	1
+				    max_width  	468
+				    justify    	0
+				    label      	"CStartServer")
+				icon_style 	"Icon"
+				line_color 	3342489
+				fill_color 	65535
+				quidu      	"3F5DB71600EA"
+				compartment 	(object Compartment
+				    Parent_View 	@111
+				    location   	(710, 739)
+				    icon_style 	"Icon"
+				    fill_color 	16777215
+				    anchor     	2
+				    nlines     	3
+				    max_width  	466)
+				width      	486
+				height     	236
+				annotation 	8
+				autoResize 	TRUE)
+			    (object InheritView "" @112
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"3F5DB913029F"
+				client     	@111
+				supplier   	@102
+				line_style 	0)
+			    (object AssociationViewNew "$UNNAMED$4" @113
+				location   	(1284, 784)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"3F5DB9220148"
+				roleview_list 	(list RoleViews
+				    (object RoleView "$UNNAMED$5" @114
+					Parent_View 	@113
+					location   	(436, 240)
+					stereotype 	TRUE
+					line_color 	3342489
+					quidu      	"3F5DB923007D"
+					client     	@113
+					supplier   	@106
+					line_style 	0
+					label      	(object SegLabel @115
+					    Parent_View 	@114
+					    location   	(1370, 838)
+					    anchor     	2
+					    anchor_loc 	1
+					    nlines     	1
+					    max_width  	15
+					    justify    	0
+					    label      	"1"
+					    pctDist    	0.900000
+					    height     	54
+					    orientation 	1))
+				    (object RoleView "$UNNAMED$6" @116
+					Parent_View 	@113
+					location   	(436, 240)
+					stereotype 	TRUE
+					line_color 	3342489
+					quidu      	"3F5DB923007E"
+					client     	@113
+					supplier   	@111
+					line_style 	0
+					label      	(object SegLabel @117
+					    Parent_View 	@116
+					    location   	(1198, 838)
+					    anchor     	2
+					    anchor_loc 	1
+					    nlines     	1
+					    max_width  	15
+					    justify    	0
+					    label      	"1"
+					    pctDist    	0.900000
+					    height     	54
+					    orientation 	0))))
+			    (object AssociationViewNew "$UNNAMED$7" @118
+				location   	(592, 784)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"3F5F554102CE"
+				roleview_list 	(list RoleViews
+				    (object RoleView "$UNNAMED$8" @119
+					Parent_View 	@118
+					location   	(-352, 0)
+					stereotype 	TRUE
+					line_color 	3342489
+					quidu      	"3F5F554300BB"
+					client     	@118
+					supplier   	@110
+					line_style 	0
+					label      	(object SegLabel @120
+					    Parent_View 	@119
+					    location   	(497, 838)
+					    anchor     	2
+					    anchor_loc 	1
+					    nlines     	1
+					    max_width  	15
+					    justify    	0
+					    label      	"1"
+					    pctDist    	0.900000
+					    height     	54
+					    orientation 	0))
+				    (object RoleView "$UNNAMED$9" @121
+					Parent_View 	@118
+					location   	(-352, 0)
+					stereotype 	TRUE
+					line_color 	3342489
+					quidu      	"3F5F554300CB"
+					client     	@118
+					supplier   	@111
+					line_style 	0
+					label      	(object SegLabel @122
+					    Parent_View 	@121
+					    location   	(688, 838)
+					    anchor     	2
+					    anchor_loc 	1
+					    nlines     	1
+					    max_width  	15
+					    justify    	0
+					    label      	"1"
+					    pctDist    	0.900000
+					    height     	54
+					    orientation 	1))))
+			    (object NoteView @123
+				location   	(592, 1120)
+				label      	(object ItemLabel
+				    Parent_View 	@123
+				    location   	(335, 1061)
+				    fill_color 	13434879
+				    nlines     	2
+				    max_width  	478
+				    label      	"to be able to try several times to create a session")
+				line_color 	3342489
+				fill_color 	65408
+				width      	538
+				height     	131)
+			    (object AttachView "" @124
+				stereotype 	TRUE
+				line_color 	3342489
+				client     	@123
+				supplier   	@118
+				line_style 	0)
+			    (object ClassView "Class" "Logical View::RSessionBase" @125
+				ShowCompartmentStereotypes 	TRUE
+				SuppressAttribute 	TRUE
+				IncludeAttribute 	TRUE
+				IncludeOperation 	TRUE
+				location   	(256, 368)
+				label      	(object ItemLabel
+				    Parent_View 	@125
+				    location   	(107, 294)
+				    fill_color 	13434879
+				    nlines     	1
+				    max_width  	298
+				    justify    	0
+				    label      	"RSessionBase")
+				icon_style 	"Icon"
+				line_color 	3342489
+				fill_color 	13434879
+				quidu      	"3F5F53F9000F"
+				width      	316
+				height     	172
+				annotation 	8
+				autoResize 	TRUE)
+			    (object InheritView "" @126
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"3F5F54B9007D"
+				client     	@110
+				supplier   	@125
+				line_style 	0)
+			    (object NoteView @127
+				location   	(608, 549)
+				label      	(object ItemLabel
+				    Parent_View 	@127
+				    location   	(470, 489)
+				    fill_color 	13434879
+				    nlines     	2
+				    max_width  	240
+				    label      	"waits for a process to start")
+				line_color 	3342489
+				fill_color 	65408
+				width      	300
+				height     	132)
+			    (object AttachView "" @128
+				stereotype 	TRUE
+				line_color 	3342489
+				client     	@127
+				supplier   	@112
+				line_style 	0)))))
+	    (object Class_Category "Process Startup"
+		quid       	"3FD750D50232"
+		exportControl 	"Public"
+		logical_models 	(list unit_reference_list
+		    (object Class "RStartProcess"
+			quid       	"3F5DB74503D8"
+			used_nodes 	(list uses_relationship_list
+			    (object Uses_Relationship
+				quid       	"3F5DB8770186"
+				supplier   	"Logical View::RThread"
+				quidu      	"3F5DB86D035B"))
+			operations 	(list Operations
+			    (object Operation "Start"
+				quid       	"3F5DB8190222"
+				result     	"TInt"
+				concurrency 	"Sequential"
+				opExportControl 	"Public"
+				uid        	0)
+			    (object Operation "Cancel"
+				quid       	"3F5DB8300251"
+				concurrency 	"Sequential"
+				opExportControl 	"Public"
+				uid        	0))
+			class_attributes 	(list class_attribute_list
+			    (object ClassAttribute "RProcess"
+				quid       	"3F5DB8440196"))
+			module     	"Component View::NETSTSRV"
+			quidu      	"3FA67017013E"))
+		logical_presentations 	(list unit_reference_list
+		    (object ClassDiagram "Main"
+			quid       	"3FD7512C034B"
+			title      	"Main"
+			zoom       	100
+			max_height 	28350
+			max_width  	21600
+			origin_x   	575
+			origin_y   	0
+			items      	(list diagram_item_list
+			    (object ClassView "Class" "Logical View::RThread" @129
+				ShowCompartmentStereotypes 	TRUE
+				SuppressAttribute 	TRUE
+				IncludeAttribute 	TRUE
+				IncludeOperation 	TRUE
+				location   	(1664, 368)
+				label      	(object ItemLabel
+				    Parent_View 	@129
+				    location   	(1521, 294)
+				    fill_color 	13434879
+				    nlines     	1
+				    max_width  	286
+				    justify    	0
+				    label      	"RThread")
+				icon_style 	"Icon"
+				line_color 	3342489
+				fill_color 	13434879
+				quidu      	"3F5DB86D035B"
+				width      	304
+				height     	172
+				annotation 	8
+				autoResize 	TRUE)
+			    (object NoteView @130
+				location   	(2160, 544)
+				label      	(object ItemLabel
+				    Parent_View 	@130
+				    location   	(2003, 463)
+				    fill_color 	13434879
+				    nlines     	3
+				    max_width  	278
+				    label      	"uses a thread to start a process")
+				line_color 	3342489
+				fill_color 	65408
+				width      	338
+				height     	175)
+			    (object NoteView @131
+				location   	(976, 800)
+				label      	(object ItemLabel
+				    Parent_View 	@131
+				    location   	(670, 716)
+				    fill_color 	13434879
+				    nlines     	3
+				    max_width  	577
+				    label      	"the EKA1 emulator exeption when a process is started as a thread is not mentioned here")
+				line_color 	3342489
+				fill_color 	65408
+				width      	637
+				height     	181)
+			    (object ClassView "Class" "Logical View::Process Startup::RStartProcess" @132
+				ShowCompartmentStereotypes 	TRUE
+				IncludeAttribute 	TRUE
+				IncludeOperation 	TRUE
+				location   	(1664, 800)
+				label      	(object ItemLabel
+				    Parent_View 	@132
+				    location   	(1508, 669)
+				    fill_color 	13434879
+				    nlines     	1
+				    max_width  	312
+				    justify    	0
+				    label      	"RStartProcess")
+				icon_style 	"Icon"
+				line_color 	3342489
+				fill_color 	65535
+				quidu      	"3F5DB74503D8"
+				compartment 	(object Compartment
+				    Parent_View 	@132
+				    location   	(1508, 730)
+				    icon_style 	"Icon"
+				    fill_color 	16777215
+				    anchor     	2
+				    nlines     	4
+				    max_width  	228)
+				width      	330
+				height     	286
+				annotation 	8
+				autoResize 	TRUE)
+			    (object UsesView "" @133
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"3F5DB8770186"
+				client     	@132
+				supplier   	@129
+				line_style 	0)
+			    (object AttachView "" @134
+				stereotype 	TRUE
+				line_color 	3342489
+				client     	@130
+				supplier   	@133
+				line_style 	0)
+			    (object AttachView "" @135
+				stereotype 	TRUE
+				line_color 	3342489
+				client     	@131
+				supplier   	@132
+				line_style 	0))))))
+	logical_presentations 	(list unit_reference_list
+	    (object ClassDiagram "Main"
+		quid       	"3EE5BF1703CC"
+		title      	"Main"
+		zoom       	100
+		max_height 	28350
+		max_width  	21600
+		origin_x   	0
+		origin_y   	0
+		items      	(list diagram_item_list
+		    (object CategoryView "Logical View::Asynchronous Server Startup" @136
+			location   	(608, 768)
+			label      	(object ItemLabel
+			    Parent_View 	@136
+			    location   	(464, 684)
+			    fill_color 	13434879
+			    nlines     	2
+			    max_width  	288
+			    justify    	0
+			    label      	"Asynchronous Server Startup")
+			icon_style 	"Icon"
+			line_color 	3342489
+			fill_color 	13434879
+			quidu      	"3F5DB3A703D8"
+			width      	300
+			height     	180)
+		    (object CategoryView "Logical View::Process Startup" @137
+			location   	(1184, 768)
+			label      	(object ItemLabel
+			    Parent_View 	@137
+			    location   	(1040, 684)
+			    fill_color 	13434879
+			    nlines     	2
+			    max_width  	288
+			    justify    	0
+			    label      	"Process Startup")
+			icon_style 	"Icon"
+			line_color 	3342489
+			fill_color 	13434879
+			quidu      	"3FD750D50232"
+			width      	300
+			height     	180)
+		    (object ImportView "" @138
+			stereotype 	TRUE
+			line_color 	3342489
+			quidu      	"3FD750E5004E"
+			client     	@136
+			supplier   	@137
+			line_style 	0)))))
+    root_subsystem 	(object SubSystem "Component View"
+	quid       	"3EE5BF170035"
+	physical_models 	(list unit_reference_list
+	    (object module "NETSTSRV" "NotAModuleType" "NotAModulePart"
+		quid       	"3FA67017013E"
+		stereotype 	""
+		visible_modules 	(list dependency_list
+		    (object Dependency_Relationship
+			quid       	"3FD7360A030D"
+			supplier   	"Component View::BASE"
+			quidu      	"3FD736000186"
+			supplier_is_spec 	TRUE)))
+	    (object module "Client" "SubType" "Specification"
+		quid       	"3FD735E1036B"
+		stereotype 	"Subprogram Specification"
+		visible_modules 	(list dependency_list
+		    (object Dependency_Relationship
+			quid       	"3FD736070242"
+			supplier   	"Component View::NETSTSRV"
+			quidu      	"3FA67017013E"
+			supplier_is_spec 	TRUE)))
+	    (object module "BASE" "NotAModuleType" "NotAModulePart"
+		quid       	"3FD736000186"
+		stereotype 	""))
+	physical_presentations 	(list unit_reference_list
+	    (object Module_Diagram "Main"
+		quid       	"3EE5BF1703BC"
+		title      	"Main"
+		zoom       	100
+		max_height 	28350
+		max_width  	21600
+		origin_x   	0
+		origin_y   	0
+		items      	(list diagram_item_list
+		    (object ModView "Component View::NETSTSRV" "NotAModuleType" "NotAModulePart" @139
+			location   	(864, 784)
+			label      	(object ItemLabel
+			    Parent_View 	@139
+			    location   	(829, 759)
+			    fill_color 	13434879
+			    anchor_loc 	3
+			    nlines     	2
+			    max_width  	127
+			    label      	"NETSTSRV")
+			icon_style 	"Icon"
+			line_color 	3342489
+			fill_color 	10285037
+			quidu      	"3FA67017013E"
+			width      	228
+			autoResize 	TRUE
+			width      	228
+			height     	162)
+		    (object ModView "Component View::Client" "SubType" "Specification" @140
+			location   	(864, 352)
+			label      	(object ItemLabel
+			    Parent_View 	@140
+			    location   	(761, 156)
+			    anchor_loc 	3
+			    nlines     	1
+			    max_width  	399
+			    label      	"Client")
+			icon       	"Subprogram Specification"
+			icon_style 	"Icon"
+			line_color 	3342489
+			fill_color 	13434879
+			quidu      	"3FD735E1036B"
+			autoResize 	TRUE
+			width      	210
+			height     	312)
+		    (object ModView "Component View::BASE" "NotAModuleType" "NotAModulePart" @141
+			location   	(864, 1136)
+			label      	(object ItemLabel
+			    Parent_View 	@141
+			    location   	(829, 1111)
+			    fill_color 	13434879
+			    anchor_loc 	3
+			    nlines     	2
+			    max_width  	127
+			    label      	"BASE")
+			icon_style 	"Icon"
+			line_color 	3342489
+			fill_color 	13434879
+			quidu      	"3FD736000186"
+			width      	228
+			autoResize 	TRUE
+			width      	228
+			height     	162)
+		    (object ModVisView "" @142
+			stereotype 	TRUE
+			line_color 	3342489
+			quidu      	"3FD736070242"
+			client     	@140
+			supplier   	@139
+			line_style 	0)
+		    (object ModVisView "" @143
+			stereotype 	TRUE
+			line_color 	3342489
+			quidu      	"3FD7360A030D"
+			client     	@139
+			supplier   	@141
+			line_style 	0)))))
+    process_structure 	(object Processes
+	quid       	"3EE5BF170036"
+	ProcsNDevs 	(list
+	    (object Process_Diagram "Deployment View"
+		quid       	"3EE5BF170038"
+		title      	"Deployment View"
+		zoom       	100
+		max_height 	28350
+		max_width  	21600
+		origin_x   	0
+		origin_y   	0
+		items      	(list diagram_item_list))))
+    properties 	(object Properties
+	attributes 	(list Attribute_Set
+	    (object Attribute
+		tool       	"DDL"
+		name       	"propertyId"
+		value      	"809135966")
+	    (object Attribute
+		tool       	"DDL"
+		name       	"default__Project"
+		value      	(list Attribute_Set
+		    (object Attribute
+			tool       	"DDL"
+			name       	"Directory"
+			value      	"AUTO GENERATE")
+		    (object Attribute
+			tool       	"DDL"
+			name       	"DataBase"
+			value      	("DataBaseSet" 800))
+		    (object Attribute
+			tool       	"DDL"
+			name       	"DataBaseSet"
+			value      	(list Attribute_Set
+			    (object Attribute
+				tool       	"DDL"
+				name       	"ANSI"
+				value      	800)
+			    (object Attribute
+				tool       	"DDL"
+				name       	"Oracle"
+				value      	801)
+			    (object Attribute
+				tool       	"DDL"
+				name       	"SQLServer"
+				value      	802)
+			    (object Attribute
+				tool       	"DDL"
+				name       	"Sybase"
+				value      	803)
+			    (object Attribute
+				tool       	"DDL"
+				name       	"Watcom"
+				value      	804)))
+		    (object Attribute
+			tool       	"DDL"
+			name       	"PrimaryKeyColumnName"
+			value      	"Id")
+		    (object Attribute
+			tool       	"DDL"
+			name       	"PrimaryKeyColumnType"
+			value      	"NUMBER(5)")
+		    (object Attribute
+			tool       	"DDL"
+			name       	"ViewName"
+			value      	"V_")
+		    (object Attribute
+			tool       	"DDL"
+			name       	"TableName"
+			value      	"T_")
+		    (object Attribute
+			tool       	"DDL"
+			name       	"InheritSuffix"
+			value      	"_V")
+		    (object Attribute
+			tool       	"DDL"
+			name       	"DropClause"
+			value      	FALSE)
+		    (object Attribute
+			tool       	"DDL"
+			name       	"BaseViews"
+			value      	FALSE)
+		    (object Attribute
+			tool       	"DDL"
+			name       	"DDLScriptFilename"
+			value      	"DDL1.SQL")))
+	    (object Attribute
+		tool       	"DDL"
+		name       	"default__Attribute"
+		value      	(list Attribute_Set
+		    (object Attribute
+			tool       	"DDL"
+			name       	"ColumnType"
+			value      	"VARCHAR")
+		    (object Attribute
+			tool       	"DDL"
+			name       	"Length"
+			value      	"")
+		    (object Attribute
+			tool       	"DDL"
+			name       	"NullsOK"
+			value      	TRUE)
+		    (object Attribute
+			tool       	"DDL"
+			name       	"PrimaryKey"
+			value      	FALSE)
+		    (object Attribute
+			tool       	"DDL"
+			name       	"Unique"
+			value      	FALSE)
+		    (object Attribute
+			tool       	"DDL"
+			name       	"CompositeUnique"
+			value      	FALSE)
+		    (object Attribute
+			tool       	"DDL"
+			name       	"CheckConstraint"
+			value      	"")))
+	    (object Attribute
+		tool       	"DDL"
+		name       	"HiddenTool"
+		value      	FALSE)
+	    (object Attribute
+		tool       	"Rose Model Integrator"
+		name       	"HiddenTool"
+		value      	FALSE)
+	    (object Attribute
+		tool       	"Rose Web Publisher"
+		name       	"HiddenTool"
+		value      	FALSE)
+	    (object Attribute
+		tool       	"Version Control"
+		name       	"HiddenTool"
+		value      	FALSE))
+	quid       	"3EE5BF170037"))

@@ -1,0 +1,35 @@
+// Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
+// All rights reserved.
+// This component and the accompanying materials are made available
+// under the terms of "Eclipse Public License v1.0"
+// which accompanies this distribution, and is available
+// at the URL "http://www.eclipse.org/legal/epl-v10.html".
+//
+// Initial Contributors:
+// Nokia Corporation - initial contribution.
+//
+// Contributors:
+//
+// Description:
+//
+
+/**
+ @file
+*/
+
+PRJ_TESTEXPORTS
+
+../group/TE_DummyProvider.iby	/epoc32/rom/include/te_dummyprovider.iby
+
+../scripts/te_dummyprovider.script	z:/testdata/scripts/te_dummyprovider.script
+../scripts/te_dummyprovider_001.script	z:/testdata/scripts/te_dummyprovider_001.script
+../scripts/te_dummyprovider_002.script	z:/testdata/scripts/te_dummyprovider_002.script
+../scripts/te_dummyprovider_003.script	z:/testdata/scripts/te_dummyprovider_003.script
+
+../scripts/te_dummyprovider_incomingSCPR.script	z:/testdata/scripts/te_dummyprovider_incomingSCPR.script
+../configs/te_dummyproviders.cfg	z:/testdata/configs/te_dummyproviders.cfg
+../configs/te_dummyprovider_001.ini	z:/testdata/configs/te_dummyprovider_001.ini
+../configs/te_dummyprovider_002.ini	z:/testdata/configs/te_dummyprovider_002.ini
+../configs/te_dummyprovider_003.ini	z:/testdata/configs/te_dummyprovider_003.ini
+
+

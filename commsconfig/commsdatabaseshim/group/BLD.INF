@@ -1,0 +1,205 @@
+// Copyright (c) 2006-2009 Nokia Corporation and/or its subsidiary(-ies).
+// All rights reserved.
+// This component and the accompanying materials are made available
+// under the terms of "Eclipse Public License v1.0"
+// which accompanies this distribution, and is available
+// at the URL "http://www.eclipse.org/legal/epl-v10.html".
+//
+// Initial Contributors:
+// Nokia Corporation - initial contribution.
+//
+// Contributors:
+//
+// Description:
+// Comms configuration database
+// 
+//
+
+/**
+ @file
+*/
+
+#include "../commdbshim/group/BLD.INF"
+
+PRJ_PLATFORMS
+
+DEFAULT
+
+PRJ_EXPORTS
+
+PRJ_TESTEXPORTS
+
+../ts_commdb/scripts/default5.dat		/epoc32/release/winscw/udeb/z/private/100012a5/dbs_10004e1d_corrupt.dat
+../ts_commdb/scripts/default5.dat		/epoc32/release/winscw/urel/z/private/100012a5/dbs_10004e1d_corrupt.dat
+../ts_commdb/scripts/default5.dat		/epoc32/data/z/private/100012a5/dbs_10004e1d_corrupt.dat
+
+../group/tcommdb.iby     		/epoc32/rom/include/tcommdb.iby
+
+// As these test scripts, cdb_urel.script, are used 2 times during our ONB, in order to ensure the uniqueness of the scripts names
+// we need to export them with 2 different names.
+
+../ts_commdb/scripts/cdb_urel.script	/epoc32/release/wins/udeb/z/testdata/scripts/cdb_urel.script
+../ts_commdb/scripts/cdb_urel.script	/epoc32/release/wins/udeb/z/testdata/scripts/cdb_urel1.script
+../ts_commdb/scripts/Default1.xml	/epoc32/release/wins/udeb/z/testdata/configs/default1.xml
+../ts_commdb/scripts/default3.xml	/epoc32/release/wins/udeb/z/testdata/configs/default3.xml
+../ts_commdb/scripts/default5.dat	/epoc32/release/wins/udeb/z/testdata/configs/default5.dat
+../ts_commdb/scripts/Default7.xml	/epoc32/release/wins/udeb/z/testdata/configs/default7.xml
+../ts_commdb/scripts/Default.xml	/epoc32/release/wins/udeb/z/testdata/configs/default.xml
+../ts_commdb/scripts/Corrupt.xml	/epoc32/release/wins/udeb/z/testdata/configs/corrupt.xml
+../ts_commdb/scripts/020.xml 		/epoc32/release/wins/udeb/z/testdata/configs/020.xml
+../ts_commdb/scripts/021.xml 		/epoc32/release/wins/udeb/z/testdata/configs/021.xml
+../ts_commdb/scripts/022.xml 		/epoc32/release/wins/udeb/z/testdata/configs/022.xml
+../ts_commdb/scripts/022_30.xml 		/epoc32/release/wins/udeb/z/testdata/configs/022_30.xml
+../ts_commdb/scripts/023.xml 		/epoc32/release/wins/udeb/z/testdata/configs/023.xml
+../ts_commdb/scripts/024.xml 		/epoc32/release/wins/udeb/z/testdata/configs/024.xml
+../ts_commdb/scripts/061_01.xml 		/epoc32/release/wins/udeb/z/testdata/configs/061_01.xml
+../ts_commdb/scripts/061_02.xml 		/epoc32/release/wins/udeb/z/testdata/configs/061_02.xml
+../ts_commdb/scripts/061_03.xml 		/epoc32/release/wins/udeb/z/testdata/configs/061_03.xml
+../ts_commdb/scripts/061_04.xml 		/epoc32/release/wins/udeb/z/testdata/configs/061_04.xml
+../ts_commdb/scripts/064_01.cfg 		/epoc32/release/wins/udeb/z/testdata/configs/064_01.cfg
+
+../ts_commdb/scripts/cdb_urel.script	/epoc32/release/wins/urel/z/testdata/scripts/cdb_urel.script
+../ts_commdb/scripts/cdb_urel.script	/epoc32/release/wins/urel/z/testdata/scripts/cdb_urel1.script
+../ts_commdb/scripts/Default1.xml	/epoc32/release/wins/urel/z/testdata/configs/default1.xml
+../ts_commdb/scripts/default3.xml	/epoc32/release/wins/urel/z/testdata/configs/default3.xml
+../ts_commdb/scripts/default5.dat	/epoc32/release/wins/urel/z/testdata/configs/default5.dat
+../ts_commdb/scripts/Default7.xml	/epoc32/release/wins/urel/z/testdata/configs/default7.xml
+../ts_commdb/scripts/Default.xml	/epoc32/release/wins/urel/z/testdata/configs/default.xml
+../ts_commdb/scripts/Corrupt.xml	/epoc32/release/wins/urel/z/testdata/configs/corrupt.xml
+../ts_commdb/scripts/020.xml 		/epoc32/release/wins/urel/z/testdata/configs/020.xml
+../ts_commdb/scripts/021.xml 		/epoc32/release/wins/urel/z/testdata/configs/021.xml
+../ts_commdb/scripts/022.xml 		/epoc32/release/wins/urel/z/testdata/configs/022.xml
+../ts_commdb/scripts/022_30.xml 		/epoc32/release/wins/urel/z/testdata/configs/022_30.xml
+../ts_commdb/scripts/023.xml 		/epoc32/release/wins/urel/z/testdata/configs/023.xml
+../ts_commdb/scripts/024.xml 		/epoc32/release/wins/urel/z/testdata/configs/024.xml
+../ts_commdb/scripts/061_01.xml 		/epoc32/release/wins/urel/z/testdata/configs/061_01.xml
+../ts_commdb/scripts/061_02.xml 		/epoc32/release/wins/urel/z/testdata/configs/061_02.xml
+../ts_commdb/scripts/061_03.xml 		/epoc32/release/wins/urel/z/testdata/configs/061_03.xml
+../ts_commdb/scripts/061_04.xml 		/epoc32/release/wins/urel/z/testdata/configs/061_04.xml
+../ts_commdb/scripts/064_01.cfg 		/epoc32/release/wins/urel/z/testdata/configs/064_01.cfg
+
+../ts_commdb/scripts/cdb_urel.script	/epoc32/release/winscw/udeb/z/testdata/scripts/cdb_urel.script
+../ts_commdb/scripts/cdb_urel.script	/epoc32/release/winscw/udeb/z/testdata/scripts/cdb_urel1.script
+../ts_commdb/scripts/Default1.xml	/epoc32/release/winscw/udeb/z/testdata/configs/default1.xml
+../ts_commdb/scripts/default3.xml	/epoc32/release/winscw/udeb/z/testdata/configs/default3.xml
+../ts_commdb/scripts/default5.dat	/epoc32/release/winscw/udeb/z/testdata/configs/default5.dat
+../ts_commdb/scripts/Default7.xml	/epoc32/release/winscw/udeb/z/testdata/configs/default7.xml
+../ts_commdb/scripts/Default.xml	/epoc32/release/winscw/udeb/z/testdata/configs/default.xml
+../ts_commdb/scripts/Corrupt.xml	/epoc32/release/winscw/udeb/z/testdata/configs/corrupt.xml
+../ts_commdb/scripts/020.xml 		/epoc32/release/winscw/udeb/z/testdata/configs/020.xml
+../ts_commdb/scripts/021.xml 		/epoc32/release/winscw/udeb/z/testdata/configs/021.xml
+../ts_commdb/scripts/022.xml 		/epoc32/release/winscw/udeb/z/testdata/configs/022.xml
+../ts_commdb/scripts/022_30.xml 		/epoc32/release/winscw/udeb/z/testdata/configs/022_30.xml
+../ts_commdb/scripts/023.xml 		/epoc32/release/winscw/udeb/z/testdata/configs/023.xml
+../ts_commdb/scripts/024.xml 		/epoc32/release/winscw/udeb/z/testdata/configs/024.xml
+../ts_commdb/scripts/061_01.xml 		/epoc32/release/winscw/udeb/z/testdata/configs/061_01.xml
+../ts_commdb/scripts/061_02.xml 		/epoc32/release/winscw/udeb/z/testdata/configs/061_02.xml
+../ts_commdb/scripts/061_03.xml 		/epoc32/release/winscw/udeb/z/testdata/configs/061_03.xml
+../ts_commdb/scripts/061_04.xml 		/epoc32/release/winscw/udeb/z/testdata/configs/061_04.xml
+../ts_commdb/scripts/064_01.cfg 		/epoc32/release/winscw/udeb/z/testdata/configs/064_01.cfg
+
+../ts_commdb/scripts/cdb_urel.script	/epoc32/release/winscw/urel/z/testdata/scripts/cdb_urel.script
+../ts_commdb/scripts/cdb_urel.script	/epoc32/release/winscw/urel/z/testdata/scripts/cdb_urel1.script
+../ts_commdb/scripts/Default1.xml	/epoc32/release/winscw/urel/z/testdata/configs/default1.xml
+../ts_commdb/scripts/default3.xml	/epoc32/release/winscw/urel/z/testdata/configs/default3.xml
+../ts_commdb/scripts/default5.dat	/epoc32/release/winscw/urel/z/testdata/configs/default5.dat
+../ts_commdb/scripts/Default7.xml	/epoc32/release/winscw/urel/z/testdata/configs/default7.xml
+../ts_commdb/scripts/Default.xml	/epoc32/release/winscw/urel/z/testdata/configs/default.xml
+../ts_commdb/scripts/Corrupt.xml	/epoc32/release/winscw/urel/z/testdata/configs/corrupt.xml
+../ts_commdb/scripts/020.xml 		/epoc32/release/winscw/urel/z/testdata/configs/020.xml
+../ts_commdb/scripts/021.xml 		/epoc32/release/winscw/urel/z/testdata/configs/021.xml
+../ts_commdb/scripts/022.xml 		/epoc32/release/winscw/urel/z/testdata/configs/022.xml
+../ts_commdb/scripts/022_30.xml 		/epoc32/release/winscw/urel/z/testdata/configs/022_30.xml
+../ts_commdb/scripts/023.xml 		/epoc32/release/winscw/urel/z/testdata/configs/023.xml
+../ts_commdb/scripts/024.xml 		/epoc32/release/winscw/urel/z/testdata/configs/024.xml
+../ts_commdb/scripts/061_01.xml 		/epoc32/release/winscw/urel/z/testdata/configs/061_01.xml
+../ts_commdb/scripts/061_02.xml 		/epoc32/release/winscw/urel/z/testdata/configs/061_02.xml
+../ts_commdb/scripts/061_03.xml 		/epoc32/release/winscw/urel/z/testdata/configs/061_03.xml
+../ts_commdb/scripts/061_04.xml 		/epoc32/release/winscw/urel/z/testdata/configs/061_04.xml
+../ts_commdb/scripts/064_01.cfg 		/epoc32/release/winscw/urel/z/testdata/configs/064_01.cfg
+
+
+//Protection tests
+../ts_commdb/scripts/ProtectTable-Normal.script 		/epoc32/release/wins/urel/z/testdata/scripts/protecttable-normal.script
+../ts_commdb/scripts/ProtectRecord-Normal.script 		/epoc32/release/wins/urel/z/testdata/scripts/protectrecord-normal.script
+../ts_commdb/scripts/ProtectTable-ConnPref.script 		/epoc32/release/wins/urel/z/testdata/scripts/protecttable-connpref.script
+../ts_commdb/scripts/ProtectRecord-ConnPref.script 		/epoc32/release/wins/urel/z/testdata/scripts/protectrecord-connpref.script
+../ts_commdb/scripts/TestProtectTable-Normal.script 		/epoc32/release/wins/urel/z/testdata/scripts/testprotecttable-normal.script
+../ts_commdb/scripts/TestProtectRecord-Normal.script 		/epoc32/release/wins/urel/z/testdata/scripts/testprotectrecord-normal.script
+../ts_commdb/scripts/TestProtectTable-ConnPref.script 		/epoc32/release/wins/urel/z/testdata/scripts/testprotecttable-connpref.script
+../ts_commdb/scripts/TestProtectRecord-ConnPref.script 		/epoc32/release/wins/urel/z/testdata/scripts/testprotectrecord-connpref.script
+../ts_commdb/scripts/Test_Both_Types.script 			/epoc32/release/wins/urel/z/testdata/scripts/test_both_types.script
+../ts_commdb/scripts/CombinationalTest.script 			/epoc32/release/wins/urel/z/testdata/scripts/combinationaltest.script
+../ts_commdb/scripts/PanicTest.script 				/epoc32/release/wins/urel/z/testdata/scripts/panictest.script
+../ts_commdb/scripts/protect.xml 				/epoc32/release/wins/urel/z/testdata/configs/protect.xml
+
+../ts_commdb/scripts/ProtectTable-Normal.script 		/epoc32/release/wins/udeb/z/testdata/scripts/protecttable-normal.script
+../ts_commdb/scripts/ProtectRecord-Normal.script 		/epoc32/release/wins/udeb/z/testdata/scripts/protectrecord-normal.script
+../ts_commdb/scripts/ProtectTable-ConnPref.script 		/epoc32/release/wins/udeb/z/testdata/scripts/protecttable-connpref.script
+../ts_commdb/scripts/ProtectRecord-ConnPref.script 		/epoc32/release/wins/udeb/z/testdata/scripts/protectrecord-connpref.script
+../ts_commdb/scripts/TestProtectTable-Normal.script 		/epoc32/release/wins/udeb/z/testdata/scripts/testprotecttable-normal.script
+../ts_commdb/scripts/TestProtectRecord-Normal.script 		/epoc32/release/wins/udeb/z/testdata/scripts/testprotectrecord-normal.script
+../ts_commdb/scripts/TestProtectTable-ConnPref.script 		/epoc32/release/wins/udeb/z/testdata/scripts/testprotecttable-connpref.script
+../ts_commdb/scripts/TestProtectRecord-ConnPref.script 		/epoc32/release/wins/udeb/z/testdata/scripts/testprotectrecord-connpref.script
+../ts_commdb/scripts/Test_Both_Types.script 			/epoc32/release/wins/udeb/z/testdata/scripts/test_both_types.script
+../ts_commdb/scripts/CombinationalTest.script 			/epoc32/release/wins/udeb/z/testdata/scripts/combinationaltest.script
+../ts_commdb/scripts/PanicTest.script 				/epoc32/release/wins/udeb/z/testdata/scripts/panictest.script
+../ts_commdb/scripts/protect.xml 				/epoc32/release/wins/udeb/z/testdata/configs/protect.xml
+
+../ts_commdb/scripts/ProtectTable-Normal.script 		/epoc32/release/winscw/urel/z/testdata/scripts/protecttable-normal.script
+../ts_commdb/scripts/ProtectRecord-Normal.script 		/epoc32/release/winscw/urel/z/testdata/scripts/protectrecord-normal.script
+../ts_commdb/scripts/ProtectTable-ConnPref.script 		/epoc32/release/winscw/urel/z/testdata/scripts/protecttable-connpref.script
+../ts_commdb/scripts/ProtectRecord-ConnPref.script 		/epoc32/release/winscw/urel/z/testdata/scripts/protectrecord-connpref.script
+../ts_commdb/scripts/TestProtectTable-Normal.script 		/epoc32/release/winscw/urel/z/testdata/scripts/testprotecttable-normal.script
+../ts_commdb/scripts/TestProtectRecord-Normal.script 		/epoc32/release/winscw/urel/z/testdata/scripts/testprotectrecord-normal.script
+../ts_commdb/scripts/TestProtectTable-ConnPref.script 		/epoc32/release/winscw/urel/z/testdata/scripts/testprotecttable-connpref.script
+../ts_commdb/scripts/TestProtectRecord-ConnPref.script 		/epoc32/release/winscw/urel/z/testdata/scripts/testprotectrecord-connpref.script
+../ts_commdb/scripts/Test_Both_Types.script 			/epoc32/release/winscw/urel/z/testdata/scripts/test_both_types.script
+../ts_commdb/scripts/CombinationalTest.script 			/epoc32/release/winscw/urel/z/testdata/scripts/combinationaltest.script
+../ts_commdb/scripts/PanicTest.script 				/epoc32/release/winscw/urel/z/testdata/scripts/panictest.script
+../ts_commdb/scripts/protect.xml 				/epoc32/release/winscw/urel/z/testdata/configs/protect.xml
+
+../ts_commdb/scripts/ProtectTable-Normal.script 		/epoc32/release/winscw/udeb/z/testdata/scripts/protecttable-normal.script
+../ts_commdb/scripts/ProtectRecord-Normal.script 		/epoc32/release/winscw/udeb/z/testdata/scripts/protectrecord-normal.script
+../ts_commdb/scripts/ProtectTable-ConnPref.script 		/epoc32/release/winscw/udeb/z/testdata/scripts/protecttable-connpref.script
+../ts_commdb/scripts/ProtectRecord-ConnPref.script 		/epoc32/release/winscw/udeb/z/testdata/scripts/protectrecord-connpref.script
+../ts_commdb/scripts/TestProtectTable-Normal.script 		/epoc32/release/winscw/udeb/z/testdata/scripts/testprotecttable-normal.script
+../ts_commdb/scripts/TestProtectRecord-Normal.script 		/epoc32/release/winscw/udeb/z/testdata/scripts/testprotectrecord-normal.script
+../ts_commdb/scripts/TestProtectTable-ConnPref.script 		/epoc32/release/winscw/udeb/z/testdata/scripts/testprotecttable-connpref.script
+../ts_commdb/scripts/TestProtectRecord-ConnPref.script 		/epoc32/release/winscw/udeb/z/testdata/scripts/testprotectrecord-connpref.script
+../ts_commdb/scripts/Test_Both_Types.script 			/epoc32/release/winscw/udeb/z/testdata/scripts/test_both_types.script
+../ts_commdb/scripts/CombinationalTest.script 			/epoc32/release/winscw/udeb/z/testdata/scripts/combinationaltest.script
+../ts_commdb/scripts/PanicTest.script 				/epoc32/release/winscw/udeb/z/testdata/scripts/panictest.script
+../ts_commdb/scripts/protect.xml 				/epoc32/release/winscw/udeb/z/testdata/configs/protect.xml
+
+// Different test script files for CommsDat and non-CommsDat tests
+../ts_commdb/scripts/Cdb_udeb.script	/epoc32/release/wins/udeb/z/testdata/scripts/cdb_udeb.script
+../ts_commdb/scripts/Cdb_udeb.script	/epoc32/release/wins/urel/z/testdata/scripts/cdb_udeb.script
+../ts_commdb/scripts/Cdb_udeb.script	/epoc32/release/winscw/udeb/z/testdata/scripts/cdb_udeb.script
+../ts_commdb/scripts/Cdb_udeb.script	/epoc32/release/winscw/urel/z/testdata/scripts/cdb_udeb.script
+
+// As these test scripts, cdb_udeb.script, are used 2 times during our ONB, in order to ensure the uniqueness of the scripts names
+// we need to export them with 2 different names.
+
+../ts_commdb/scripts/Cdb_udeb.script	/epoc32/release/wins/udeb/z/testdata/scripts/cdb_udeb1.script
+../ts_commdb/scripts/Cdb_udeb.script	/epoc32/release/wins/urel/z/testdata/scripts/cdb_udeb1.script
+../ts_commdb/scripts/Cdb_udeb.script	/epoc32/release/winscw/udeb/z/testdata/scripts/cdb_udeb1.script
+../ts_commdb/scripts/Cdb_udeb.script	/epoc32/release/winscw/urel/z/testdata/scripts/cdb_udeb1.script
+
+../ts_commdb/scripts/Test_All_Protection.script 		/epoc32/release/wins/urel/z/testdata/scripts/test_all_protection.script
+../ts_commdb/scripts/Test_All_Protection.script 		/epoc32/release/wins/udeb/z/testdata/scripts/test_all_protection.script
+../ts_commdb/scripts/Test_All_Protection.script 		/epoc32/release/winscw/urel/z/testdata/scripts/test_all_protection.script
+../ts_commdb/scripts/Test_All_Protection.script 		/epoc32/release/winscw/udeb/z/testdata/scripts/test_all_protection.script
+
+PRJ_MMPFILES
+
+
+PRJ_TESTMMPFILES
+
+
+../ts_commdb/Ts_commdb.mmp
+../ts_commdb/ts_connpref.mmp
+../ts_commdb/ts_encrpt.mmp
+../ts_commdb/ts_usecases.mmp
+
+

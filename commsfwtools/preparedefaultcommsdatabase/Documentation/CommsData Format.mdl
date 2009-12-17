@@ -1,0 +1,4602 @@
+
+(object Petal
+    version    	43
+    _written   	"Rose 6.5.9232.10"
+    charSet    	0)
+
+(object Design "Logical View"
+    is_unit    	TRUE
+    is_loaded  	TRUE
+    quid       	"4135D7D80290"
+    defaults   	(object defaults
+	rightMargin 	0.250000
+	leftMargin 	0.250000
+	topMargin  	0.250000
+	bottomMargin 	0.500000
+	pageOverlap 	0.250000
+	clipIconLabels 	TRUE
+	autoResize 	TRUE
+	snapToGrid 	TRUE
+	gridX      	16
+	gridY      	16
+	defaultFont 	(object Font
+	    size       	10
+	    face       	"Arial"
+	    bold       	FALSE
+	    italics    	FALSE
+	    underline  	FALSE
+	    strike     	FALSE
+	    color      	0
+	    default_color 	TRUE)
+	showMessageNum 	1
+	showClassOfObject 	TRUE
+	notation   	"Unified")
+    root_usecase_package 	(object Class_Category "Use Case View"
+	quid       	"4135D7D80292"
+	exportControl 	"Public"
+	global     	TRUE
+	logical_models 	(list unit_reference_list)
+	logical_presentations 	(list unit_reference_list
+	    (object UseCaseDiagram "Main"
+		quid       	"4135D7DB033D"
+		title      	"Main"
+		zoom       	100
+		max_height 	28350
+		max_width  	21600
+		origin_x   	0
+		origin_y   	0
+		items      	(list diagram_item_list))))
+    root_category 	(object Class_Category "Logical View"
+	quid       	"4135D7D80291"
+	exportControl 	"Public"
+	global     	TRUE
+	subsystem  	"Component View"
+	quidu      	"4135D7D8029F"
+	logical_models 	(list unit_reference_list
+	    (object Class "CommTypes"
+		quid       	"4135D977002E"
+		class_attributes 	(list class_attribute_list
+		    (object ClassAttribute "OperationType"
+			quid       	"4135E3DF003E")
+		    (object ClassAttribute "DataBitsType"
+			quid       	"4135E428003E")
+		    (object ClassAttribute "StopBitsType"
+			quid       	"4135E4280148")
+		    (object ClassAttribute "ParityType"
+			quid       	"4135E4280232")
+		    (object ClassAttribute "RateType"
+			quid       	"4135E428031C")
+		    (object ClassAttribute "FaxClassType"
+			quid       	"4135E429001F")
+		    (object ClassAttribute "SpeakerType"
+			quid       	"4135E4290109")
+		    (object ClassAttribute "SpeakerVolType"
+			quid       	"4135E42901E4")
+		    (object ClassAttribute "GPRSClassCBearerType"
+			quid       	"4135E42902CE")
+		    (object ClassAttribute "ISPType"
+			quid       	"4135E42903B9")
+		    (object ClassAttribute "BearerNameType"
+			quid       	"4135E42A00CB")
+		    (object ClassAttribute "BearerSpeedType"
+			quid       	"4135E42A01B5")
+		    (object ClassAttribute "BearerProtocolType"
+			quid       	"4135E42A02AF")
+		    (object ClassAttribute "BearerCEType"
+			quid       	"4135E42A03C8")
+		    (object ClassAttribute "DialBearerType"
+			quid       	"4135E42B00F9")
+		    (object ClassAttribute "ChannelCodingType"
+			quid       	"4135E42B01E4")
+		    (object ClassAttribute "AIURType"
+			quid       	"4135E42B02DE")
+		    (object ClassAttribute "RlpModeType"
+			quid       	"4135E42B03D8")
+		    (object ClassAttribute "DialIfCallbackType"
+			quid       	"4135E42C00EA")
+		    (object ClassAttribute "PDPServiceType"
+			quid       	"4135E42C01E4")
+		    (object ClassAttribute "CDMAPriorityType"
+			quid       	"4135E42C02CE")
+		    (object ClassAttribute "CDMABitrateType"
+			quid       	"4135E42C03C8")
+		    (object ClassAttribute "CDMAServiceOptionType"
+			quid       	"4135E42D00DA")
+		    (object ClassAttribute "CDMALossType"
+			quid       	"4135E42D01C5")
+		    (object ClassAttribute "CDMAMaxDelayType"
+			quid       	"4135E42D02BF")
+		    (object ClassAttribute "DirectionType"
+			quid       	"4135E42D03A9")
+		    (object ClassAttribute "RankingType"
+			quid       	"4135E42E009C")
+		    (object ClassAttribute "DialogPrefType"
+			quid       	"4135E42E0186")
+		    (object ClassAttribute "BearerSetType"
+			quid       	"4135E42E0270")
+		    (object ClassAttribute "WSPOptionType"
+			quid       	"4135E42E035B")
+		    (object ClassAttribute "WAPBearerType"
+			quid       	"4135E42F005D")
+		    (object ClassAttribute "TableEntryNameType"
+			quid       	"4135E42F0157")
+		    (object ClassAttribute "IAPBearerType"
+			quid       	"4135E42F0232")
+		    (object ClassAttribute "IAPServiceType"
+			quid       	"4135E42F032C")
+		    (object ClassAttribute "LocationForDataAndFaxType"
+			quid       	"4135E430003E")
+		    (object ClassAttribute "LocationForPhoneServicesAndSMSType"
+			quid       	"4135E4300138")
+		    (object ClassAttribute "ChargecardRefType"
+			quid       	"4135E4300222")
+		    (object ClassAttribute "LocationRefType"
+			quid       	"4135E430031C")
+		    (object ClassAttribute "IAPNetworkType"
+			quid       	"4135E431001F")
+		    (object ClassAttribute "SMSBearerType"
+			quid       	"4135E4310138")
+		    (object ClassAttribute "DefaultNetworkType"
+			quid       	"4135E4310232")
+		    (object ClassAttribute "IAPRefType"
+			quid       	"4135E431032C")
+		    (object ClassAttribute "ISPRefType"
+			quid       	"4135E432003E")
+		    (object ClassAttribute "AccessPointType"
+			quid       	"4135E4320138")
+		    (object ClassAttribute "WAPAccessType"
+			quid       	"4135E4320213")
+		    (object ClassAttribute "HomeIAPType"
+			quid       	"4135E432030D")
+		    (object ClassAttribute "HomeNetworkType"
+			quid       	"4135E433001F")
+		    (object ClassAttribute "CDMAOpCapability"
+			quid       	"4135E4330119")
+		    (object ClassAttribute "CDMASimpIpAuthCapability"
+			quid       	"4135E4330213")
+		    (object ClassAttribute "CDMAMIpAuthCapability"
+			quid       	"4135E433030D")
+		    (object ClassAttribute "CDMAOpMode"
+			quid       	"4135E434002E")
+		    (object ClassAttribute "CDMANaiType"
+			quid       	"4135E4340128")
+		    (object ClassAttribute "CDMASimpIpAuthAlgorithm"
+			quid       	"4135E4340232")
+		    (object ClassAttribute "CDMAMIpAuthAlgorithm"
+			quid       	"4135E434032C")))
+	    (object Class "AgentLookupTable"
+		quid       	"4135E73201C5"
+		class_attributes 	(list class_attribute_list
+		    (object ClassAttribute "Id"
+			quid       	"413C6A950065"
+			type       	"TUint32")
+		    (object ClassAttribute "Name"
+			quid       	"41372ECE01A1"
+			type       	"Text")
+		    (object ClassAttribute "AgentFriendlyName"
+			quid       	"41372ED50097"
+			type       	"Text")
+		    (object ClassAttribute "AgentFilename"
+			quid       	"41372EDC001B"
+			type       	"Text")))
+	    (object Class "CDMA2000PacketServiceTable"
+		quid       	"4135E7C10203"
+		class_attributes 	(list class_attribute_list
+		    (object ClassAttribute "Id"
+			quid       	"413C6AFB00AA"
+			type       	"TUint32")
+		    (object ClassAttribute "Name"
+			quid       	"413731E20356"
+			type       	"Text")
+		    (object ClassAttribute "IwfName"
+			quid       	"413731E70114"
+			type       	"Text")
+		    (object ClassAttribute "ServiceOption"
+			quid       	"413731EB02D9"
+			type       	"CDMAServiceOptionType")
+		    (object ClassAttribute "PdpType"
+			quid       	"413731F000B6"
+			type       	"PDPServiceType")
+		    (object ClassAttribute "PdpAddress"
+			quid       	"413731F402BA"
+			type       	"Text")
+		    (object ClassAttribute "ReqFwdPriority"
+			quid       	"413731F900D6"
+			type       	"CDMAPriorityType")
+		    (object ClassAttribute "ReqRevPriority"
+			quid       	"413731FD02CA"
+			type       	"CDMAPriorityType")
+		    (object ClassAttribute "ReqFwdBitrate"
+			quid       	"4137320200D6"
+			type       	"CDMABitrateType")
+		    (object ClassAttribute "ReqRevBitrate"
+			quid       	"4137320602BA"
+			type       	"CDMABitrateType")
+		    (object ClassAttribute "ReqFwdLoss"
+			quid       	"4137320B00E6"
+			type       	"CDMALossType")
+		    (object ClassAttribute "ReqRevLoss"
+			quid       	"4137320F02F9"
+			type       	"CDMALossType")
+		    (object ClassAttribute "CDMASchMux"
+			quid       	"41373315037B"
+			type       	"TUint32")
+		    (object ClassAttribute "CDMAFchMux"
+			quid       	"41373310038B"
+			type       	"TUint32")
+		    (object ClassAttribute "EnableLLMNR"
+			quid       	"4137330B03B9"
+			type       	"TBool")
+		    (object ClassAttribute "CDMAMobileIpMnHaSsData"
+			quid       	"413733070000"
+			type       	"Text")
+		    (object ClassAttribute "CDMAMobileIpMnHaSpi"
+			quid       	"41373302003F"
+			type       	"TUint32")
+		    (object ClassAttribute "CDMAMobileIpMnHaSpiIndicator"
+			quid       	"413732FD005E"
+			type       	"TBool")
+		    (object ClassAttribute "CDMAMobileIpMnHaAuthAlgorithm"
+			quid       	"413732F8009C"
+			type       	"CDMAMIpAuthAlgorithm")
+		    (object ClassAttribute "CDMAMobileIpMnAaaSsData"
+			quid       	"413732F300FA"
+			type       	"Text")
+		    (object ClassAttribute "CDMAMobileIpMnAaaSpi"
+			quid       	"413732EE0148"
+			type       	"TUint32")
+		    (object ClassAttribute "CDMAMobileIpMnAaaSpiIndicator"
+			quid       	"413732E901A5"
+			type       	"TBool")
+		    (object ClassAttribute "CDMAMobileIpMnAaaAuthAlgorithm"
+			quid       	"413732E401F3"
+			type       	"CDMAMIpAuthAlgorithm")
+		    (object ClassAttribute "CDMAMobileIpSecondaryHomeAgent"
+			quid       	"413732DF0251"
+			type       	"Text")
+		    (object ClassAttribute "CDMAMobileIpPrimaryHomeAgent"
+			quid       	"413732DA02BE"
+			type       	"Text")
+		    (object ClassAttribute "CDMAMobileIpHomeAddress"
+			quid       	"413732D5032C"
+			type       	"Text")
+		    (object ClassAttribute "CDMAMobileIpTBit"
+			quid       	"413732D003B8"
+			type       	"TUint32")
+		    (object ClassAttribute "CDMASimpleIpChapSsHandle"
+			quid       	"413732CC005D"
+			type       	"TUint32")
+		    (object ClassAttribute "CDMASimpleIpPapSsHandle"
+			quid       	"413732C700E9"
+			type       	"TUint32")
+		    (object ClassAttribute "CDMASimpleIpAuthAlgorithm"
+			quid       	"413732C20166"
+			type       	"CDMASimpIpAuthAlgorithm")
+		    (object ClassAttribute "CDMANaiType"
+			quid       	"413732BD0222"
+			type       	"CDMANaiType")
+		    (object ClassAttribute "RlpMode"
+			quid       	"413732B802BE"
+			type       	"RlpModeType")
+		    (object ClassAttribute "IpAddrLeaseValidTo"
+			quid       	"413732B3036A"
+			type       	"Text")
+		    (object ClassAttribute "IpAddrLeaseValidFrom"
+			quid       	"413732AF003D"
+			type       	"Text")
+		    (object ClassAttribute "ConfigDaemonName"
+			quid       	"413732AA00E9"
+			type       	"Text")
+		    (object ClassAttribute "ConfigDaemonManagerName"
+			quid       	"413732A50194"
+			type       	"Text")
+		    (object ClassAttribute "Ip6NameServer2"
+			quid       	"413732A000AA"
+			type       	"Text")
+		    (object ClassAttribute "Ip6NameServer1"
+			quid       	"4137329B01A4"
+			type       	"Text")
+		    (object ClassAttribute "Ip6DNSAddrFromServer"
+			quid       	"4137329602AD"
+			type       	"TBool")
+		    (object ClassAttribute "QosWarningTimeout"
+			quid       	"4137329103B7"
+			type       	"TUint32")
+		    (object ClassAttribute "ApType"
+			quid       	"4137328D00AA"
+			type       	"CDMAApType")
+		    (object ClassAttribute "DisablePlainTextAuth"
+			quid       	"413732880194"
+			type       	"TBool")
+		    (object ClassAttribute "EnableLCPExtension"
+			quid       	"41373283029D"
+			type       	"TBool")
+		    (object ClassAttribute "IpNameServer2"
+			quid       	"4137327E03B7"
+			type       	"Text")
+		    (object ClassAttribute "IpNameServer1"
+			quid       	"4137327A00E8"
+			type       	"Text")
+		    (object ClassAttribute "IpDNSAddrFromServer"
+			quid       	"413732750201"
+			type       	"TBool")
+		    (object ClassAttribute "IpAddrFromServer"
+			quid       	"41373270032A"
+			type       	"TBool")
+		    (object ClassAttribute "IpAddr"
+			quid       	"4137326C006B"
+			type       	"Text")
+		    (object ClassAttribute "IpGateway"
+			quid       	"4137326701C2"
+			type       	"Text")
+		    (object ClassAttribute "IpNetMask"
+			quid       	"41373262030A"
+			type       	"Text")
+		    (object ClassAttribute "AuthRetries"
+			quid       	"4137325E007A"
+			type       	"TUint32")
+		    (object ClassAttribute "IfPromptForAuth"
+			quid       	"4137325901B2"
+			type       	"TBool")
+		    (object ClassAttribute "IfAuthPass"
+			quid       	"4137325402EB"
+			type       	"Text")
+		    (object ClassAttribute "IfAuthName"
+			quid       	"41373250004B"
+			type       	"Text")
+		    (object ClassAttribute "IfNetworks"
+			quid       	"4137324B0193"
+			type       	"Text")
+		    (object ClassAttribute "IfParams"
+			quid       	"4137324602FA"
+			type       	"Text")
+		    (object ClassAttribute "AnonymousAccess"
+			quid       	"4137324200F6"
+			type       	"TBool")
+		    (object ClassAttribute "HeaderCompression"
+			quid       	"4137323D026D"
+			type       	"TBool")
+		    (object ClassAttribute "DataCompression"
+			quid       	"41373239000C"
+			type       	"TBool")
+		    (object ClassAttribute "AccptRevMaxdelay"
+			quid       	"413732340192"
+			type       	"CDMAMaxDelayType")
+		    (object ClassAttribute "AccptFwdMaxdelay"
+			quid       	"4137322F0319"
+			type       	"CDMAMaxDelayType")
+		    (object ClassAttribute "AccptRevLoss"
+			quid       	"4137322B00B7"
+			type       	"CDMALossType")
+		    (object ClassAttribute "AccptFwdLoss"
+			quid       	"41373226022E"
+			type       	"CDMALossType")
+		    (object ClassAttribute "MinRevBitrate"
+			quid       	"4137322103C4"
+			type       	"CDMABitrateType")
+		    (object ClassAttribute "MinFwdBitrate"
+			quid       	"4137321D0192"
+			type       	"CDMABitrateType")
+		    (object ClassAttribute "ReqRevMaxdelay"
+			quid       	"413732180347"
+			type       	"CDMAMaxDelayType")
+		    (object ClassAttribute "ReqFwdMaxdelay"
+			quid       	"413732140105"
+			type       	"CDMAMaxDelayType")
+		    (object ClassAttribute "EnableLLMNR"
+			quid       	"4140665B0354"
+			type       	"TBool")))
+	    (object Class "ChargecardTable"
+		quid       	"4135E7D101E4"
+		class_attributes 	(list class_attribute_list
+		    (object ClassAttribute "Id"
+			quid       	"413C6B040137"
+			type       	"TUint32")
+		    (object ClassAttribute "Name"
+			quid       	"4137391E0176"
+			type       	"Text")
+		    (object ClassAttribute "AccountNumber"
+			quid       	"41373922028F"
+			type       	"Text")
+		    (object ClassAttribute "Pin"
+			quid       	"4137392603C8"
+			type       	"Text")
+		    (object ClassAttribute "LocalRule"
+			quid       	"4137392B0118"
+			type       	"Text")
+		    (object ClassAttribute "NatRule"
+			quid       	"4137392F0232"
+			type       	"Text")
+		    (object ClassAttribute "IntlRule"
+			quid       	"41373933036A"
+			type       	"Text")))
+	    (object Class "CommDB"
+		quid       	"4135E7DD02CE")
+	    (object Class "ConnectionPreferencesTable"
+		quid       	"4135E8B80222"
+		class_attributes 	(list class_attribute_list
+		    (object ClassAttribute "Id"
+			quid       	"413C69380168"
+			type       	"TUint32")
+		    (object ClassAttribute "Name"
+			quid       	"413736090241"
+			type       	"Text")
+		    (object ClassAttribute "Ranking"
+			quid       	"4137360E0186"
+			type       	"RankingType")
+		    (object ClassAttribute "Direction"
+			quid       	"4137361300BB"
+			type       	"DirectionType")
+		    (object ClassAttribute "DialogPref"
+			quid       	"41373618000F"
+			type       	"DialogPrefType")
+		    (object ClassAttribute "BearerSet"
+			quid       	"4137361C033C"
+			type       	"BearerSetType")
+		    (object ClassAttribute "IAPRef"
+			quid       	"413736210290"
+			type       	"TableEntryNameType")))
+	    (object Class "Contents"
+		quid       	"4135E8C102CE")
+	    (object Class "DefaultCDMA2000Table"
+		quid       	"4135E8DD03B9"
+		class_attributes 	(list class_attribute_list
+		    (object ClassAttribute "Id"
+			quid       	"413C6B6D00FF"
+			type       	"TUint32")
+		    (object ClassAttribute "Name"
+			quid       	"413734F40096"
+			type       	"Text")
+		    (object ClassAttribute "Usage"
+			quid       	"413734F8022D"
+			type       	"TUint32")
+		    (object ClassAttribute "IwfName"
+			quid       	"413734FC03A4"
+			type       	"Text")
+		    (object ClassAttribute "ServiceOption"
+			quid       	"413735010152"
+			type       	"CDMAServiceOptionType")
+		    (object ClassAttribute "PdpType"
+			quid       	"413735050317"
+			type       	"PDPServiceType")
+		    (object ClassAttribute "PdpAddress"
+			quid       	"4137350A0171"
+			type       	"Text")
+		    (object ClassAttribute "ReqFwdPriority"
+			quid       	"4137350E03D3"
+			type       	"CDMAPriorityType")
+		    (object ClassAttribute "ReqRevPriority"
+			quid       	"41373513023D"
+			type       	"CDMAPriorityType")
+		    (object ClassAttribute "ReqFwdBitrate"
+			quid       	"4137351800B6"
+			type       	"CDMABitrateType")
+		    (object ClassAttribute "ReqRevBitrate"
+			quid       	"4137351C0337"
+			type       	"CDMABitrateType")
+		    (object ClassAttribute "ReqFwdLoss"
+			quid       	"4137352101A1"
+			type       	"CDMALossType")
+		    (object ClassAttribute "CDMASchMux"
+			quid       	"4137357C021F"
+			type       	"TUint32")
+		    (object ClassAttribute "CDMAFchMux"
+			quid       	"41373577027D"
+			type       	"TUint32")
+		    (object ClassAttribute "EnableLLMNR"
+			quid       	"4137357202FA"
+			type       	"TBool")
+		    (object ClassAttribute "CDMAMobileIpReregThreshold"
+			quid       	"4137356D0367"
+			type       	"TUint32")
+		    (object ClassAttribute "CDMAMobileIpFirstRetryTimeout"
+			quid       	"41373569000C"
+			type       	"TUint32")
+		    (object ClassAttribute "CDMAMobileIpMaxNumRetry"
+			quid       	"413735640098"
+			type       	"TUint32")
+		    (object ClassAttribute "CDMAOperationMode"
+			quid       	"4137355F0154"
+			type       	"CDMAOpMode")
+		    (object ClassAttribute "AnonymousAccess"
+			quid       	"4137355A020F"
+			type       	"TBool")
+		    (object ClassAttribute "HeaderCompression"
+			quid       	"4137355502DA"
+			type       	"TBool")
+		    (object ClassAttribute "DataCompression"
+			quid       	"4137355003A5"
+			type       	"TBool")
+		    (object ClassAttribute "AccptRevMaxdelay"
+			quid       	"4137354C0098"
+			type       	"CDMAMaxDelayType")
+		    (object ClassAttribute "AccptFwdMaxdelay"
+			quid       	"413735470192"
+			type       	"CDMAMaxDelayType")
+		    (object ClassAttribute "AccptRevLoss"
+			quid       	"41373542026C"
+			type       	"CDMALossType")
+		    (object ClassAttribute "AccptFwdLoss"
+			quid       	"4137353D0347"
+			type       	"CDMALossType")
+		    (object ClassAttribute "MinRevBitrate"
+			quid       	"41373539002A"
+			type       	"CDMABitrateType")
+		    (object ClassAttribute "MinFwdBitrate"
+			quid       	"413735340105"
+			type       	"CDMABitrateType")
+		    (object ClassAttribute "ReqRevMaxdelay"
+			quid       	"4137352F01FF"
+			type       	"CDMAMaxDelayType")
+		    (object ClassAttribute "ReqFwdMaxdelay"
+			quid       	"4137352A0337"
+			type       	"CDMAMaxDelayType")
+		    (object ClassAttribute "ReqRevLoss"
+			quid       	"413735260078"
+			type       	"CDMALossType")
+		    (object ClassAttribute "EnableLLMNR"
+			quid       	"414072410204"
+			type       	"TBool")))
+	    (object Class "DefaultGPRSTable"
+		quid       	"41373B22024B"
+		class_attributes 	(list class_attribute_list
+		    (object ClassAttribute "Name"
+			quid       	"41373F5B00E9"
+			type       	"Text")
+		    (object ClassAttribute "APN"
+			quid       	"41373F5F00E9"
+			type       	"Text")
+		    (object ClassAttribute "PDPType"
+			quid       	"41373F6300E9"
+			type       	"Text")
+		    (object ClassAttribute "PDPAddress"
+			quid       	"41373F670118"
+			type       	"Text")
+		    (object ClassAttribute "Usage"
+			quid       	"41373F6B0166"
+			type       	"TUint32")
+		    (object ClassAttribute "Precedence"
+			quid       	"41373F6F0195"
+			type       	"TUint32")
+		    (object ClassAttribute "Delay"
+			quid       	"41373F7301D3"
+			type       	"TUint32")
+		    (object ClassAttribute "Reliability"
+			quid       	"41373F770202"
+			type       	"TUint32")
+		    (object ClassAttribute "PeakThroughput"
+			quid       	"41373F7B0222"
+			type       	"TUint32")
+		    (object ClassAttribute "MeanThroughput"
+			quid       	"41373F7F0270"
+			type       	"TUint32")
+		    (object ClassAttribute "MinPrecedence"
+			quid       	"41373F8302BE"
+			type       	"TUint32")
+		    (object ClassAttribute "MinDelay"
+			quid       	"41373F87032C"
+			type       	"TUint32")
+		    (object ClassAttribute "MinReliability"
+			quid       	"41373F8B0399"
+			type       	"TUint32")
+		    (object ClassAttribute "MinPeakThroughput"
+			quid       	"41373F90001E"
+			type       	"TUint32")
+		    (object ClassAttribute "MinMeanThroughput"
+			quid       	"41373F9400AB"
+			type       	"TUint32")
+		    (object ClassAttribute "DataCompression"
+			quid       	"41373F980167"
+			type       	"TBool")
+		    (object ClassAttribute "HeaderCompression"
+			quid       	"41373F9C0213"
+			type       	"TBool")
+		    (object ClassAttribute "GprsUseEdge"
+			quid       	"41373FA002AF"
+			type       	"TBool")
+		    (object ClassAttribute "AnonymousAccess"
+			quid       	"41373FA4035B"
+			type       	"TBool")
+		    (object ClassAttribute "Id"
+			quid       	"413C6B71016D"
+			type       	"TUint32")))
+	    (object Class "DialInISPTable"
+		quid       	"41373B3C02E8"
+		class_attributes 	(list class_attribute_list
+		    (object ClassAttribute "Id"
+			quid       	"413C6B7300C1"
+			type       	"TUint32")
+		    (object ClassAttribute "Name"
+			quid       	"41383E2B00B6"
+			type       	"Text")
+		    (object ClassAttribute "UseLoginScript"
+			quid       	"41383E2F024C"
+			type       	"TBool")
+		    (object ClassAttribute "IpAddrFromServer"
+			quid       	"41383E3303E3"
+			type       	"TBool")
+		    (object ClassAttribute "IpDNSAddrFromServer"
+			quid       	"41383E3801EF"
+			type       	"TBool")
+		    (object ClassAttribute "Ip6DNSAddrFromServer"
+			quid       	"41383E3D000A"
+			type       	"TBool")
+		    (object ClassAttribute "Description"
+			quid       	"41383E41020E"
+			type       	"Text")
+		    (object ClassAttribute "Type"
+			quid       	"41383E460039"
+			type       	"ISPType")
+		    (object ClassAttribute "LoginScript"
+			quid       	"41383E4A024C"
+			type       	"Text")
+		    (object ClassAttribute "Authentication"
+			quid       	"41383E4F00A6"
+			type       	"TUint32")
+		    (object ClassAttribute "UseEdge"
+			quid       	"41383EBC0049"
+			type       	"TBool")
+		    (object ClassAttribute "InitString"
+			quid       	"41383EB700D5"
+			type       	"Text")
+		    (object ClassAttribute "BearerType"
+			quid       	"41383EB20152"
+			type       	"DialBearerType")
+		    (object ClassAttribute "BearerCE"
+			quid       	"41383EAD020E"
+			type       	"BearerCEType")
+		    (object ClassAttribute "BearerSpeed"
+			quid       	"41383EA802D9"
+			type       	"BearerSpeedType")
+		    (object ClassAttribute "BearerName"
+			quid       	"41383EA30394"
+			type       	"BearerNameType")
+		    (object ClassAttribute "EnableSWComp"
+			quid       	"41383E9F0068"
+			type       	"TBool")
+		    (object ClassAttribute "DisablePlainTextAuth"
+			quid       	"41383E9A0114"
+			type       	"TBool")
+		    (object ClassAttribute "EnableLCPExtension"
+			quid       	"41383E9501EF"
+			type       	"TBool")
+		    (object ClassAttribute "EnableIPHeaderComp"
+			quid       	"41383E9002BA"
+			type       	"TBool")
+		    (object ClassAttribute "Ip6NameServer2"
+			quid       	"41383E790029"
+			type       	"Text")
+		    (object ClassAttribute "Ip6NameServer1"
+			quid       	"41383E740181"
+			type       	"Text")
+		    (object ClassAttribute "IpNameServer2"
+			quid       	"41383E6F02D9"
+			type       	"Text")
+		    (object ClassAttribute "IpNameServer1"
+			quid       	"41383E6B001A"
+			type       	"Text")
+		    (object ClassAttribute "IpGateway"
+			quid       	"41383E6601A0"
+			type       	"Text")
+		    (object ClassAttribute "IpNetMask"
+			quid       	"41383E610317"
+			type       	"Text")
+		    (object ClassAttribute "IpAddr"
+			quid       	"41383E5D00A6"
+			type       	"Text")
+		    (object ClassAttribute "IfNetworks"
+			quid       	"41383E580133"
+			type       	"Text")
+		    (object ClassAttribute "IfParams"
+			quid       	"41383E5302E9"
+			type       	"Text")))
+	    (object Class "DialOutISPTable"
+		quid       	"41373B450057"
+		class_attributes 	(list class_attribute_list
+		    (object ClassAttribute "Id"
+			quid       	"413C6B7402F4"
+			type       	"TUint32")
+		    (object ClassAttribute "Name"
+			quid       	"41383949029A"
+			type       	"Text")
+		    (object ClassAttribute "DialResolution"
+			quid       	"4138394E0049"
+			type       	"TBool")
+		    (object ClassAttribute "UseLoginScript"
+			quid       	"4138395201FE"
+			type       	"TBool")
+		    (object ClassAttribute "PromptForLogin"
+			quid       	"41383957000A"
+			type       	"TBool")
+		    (object ClassAttribute "IfPromptForAuth"
+			quid       	"4138395B01CF"
+			type       	"TBool")
+		    (object ClassAttribute "IpAddrFromServer"
+			quid       	"4138395F03A4"
+			type       	"TBool")
+		    (object ClassAttribute "IpDNSAddrFromServer"
+			quid       	"4138396401A0"
+			type       	"TBool")
+		    (object ClassAttribute "Ip6DNSAddrFromServer"
+			quid       	"4138396803A4"
+			type       	"TBool")
+		    (object ClassAttribute "Description"
+			quid       	"4138396D01C0"
+			type       	"Text")
+		    (object ClassAttribute "Type"
+			quid       	"4138397103B4"
+			type       	"ISPType")
+		    (object ClassAttribute "DefaultTelNum"
+			quid       	"4138397601DF"
+			type       	"Text")
+		    (object ClassAttribute "EnableLLMNR"
+			quid       	"41383A770143"
+			type       	"TBool")
+		    (object ClassAttribute "UseEdge"
+			quid       	"41383A720143"
+			type       	"TBool")
+		    (object ClassAttribute "UserInitUpgrade"
+			quid       	"41383A6D0104"
+			type       	"TBool")
+		    (object ClassAttribute "Asymmetry"
+			quid       	"41383A6800D5"
+			type       	"TUint32")
+		    (object ClassAttribute "V42MaxLength"
+			quid       	"41383A6300B6"
+			type       	"TUint32")
+		    (object ClassAttribute "V42Codewords"
+			quid       	"41383A5E00C6"
+			type       	"TUint32")
+		    (object ClassAttribute "V42Compression"
+			quid       	"41383A5900D5"
+			type       	"TUint32")
+		    (object ClassAttribute "ResequencePeriod"
+			quid       	"41383A5400F5"
+			type       	"TUint32")
+		    (object ClassAttribute "RetransmissionAttempts"
+			quid       	"41383A4F0123"
+			type       	"TUint32")
+		    (object ClassAttribute "AckTimer"
+			quid       	"41383A4A0152"
+			type       	"TUint32")
+		    (object ClassAttribute "MsToIwf"
+			quid       	"41383A450181"
+			type       	"TUint32")
+		    (object ClassAttribute "IwfToMs"
+			quid       	"41383A400191"
+			type       	"TUint32")
+		    (object ClassAttribute "RlpVersion"
+			quid       	"41383A3B01C0"
+			type       	"TUint32")
+		    (object ClassAttribute "BearerProtocol"
+			quid       	"41383A3601EF"
+			type       	"BearerProtocolType")
+		    (object ClassAttribute "MaximumTimeSlots"
+			quid       	"41383A31022D"
+			type       	"TUint32")
+		    (object ClassAttribute "RequestedTimeSlots"
+			quid       	"41383A2C028B"
+			type       	"TUint32")
+		    (object ClassAttribute "AIUR"
+			quid       	"41383A2702F8"
+			type       	"AIURType")
+		    (object ClassAttribute "ChannelCoding"
+			quid       	"41383A220366"
+			type       	"ChannelCodingType")
+		    (object ClassAttribute "BearerType"
+			quid       	"41383A1E000A"
+			type       	"DialBearerType")
+		    (object ClassAttribute "InitString"
+			quid       	"41383A190097"
+			type       	"Text")
+		    (object ClassAttribute "BearerCE"
+			quid       	"41383A140152"
+			type       	"BearerCEType")
+		    (object ClassAttribute "BearerSpeed"
+			quid       	"41383A0F01FE"
+			type       	"BearerSpeedType")
+		    (object ClassAttribute "BearerName"
+			quid       	"41383A0A0308"
+			type       	"BearerNameType")
+		    (object ClassAttribute "BearerService"
+			quid       	"41383A06001A"
+			type       	"TUint32")
+		    (object ClassAttribute "EnableSWComp"
+			quid       	"41383A010114"
+			type       	"TBool")
+		    (object ClassAttribute "DisablePlainTextAuth"
+			quid       	"413839FC022D"
+			type       	"TBool")
+		    (object ClassAttribute "EnableLCPExtension"
+			quid       	"413839F70337"
+			type       	"TBool")
+		    (object ClassAttribute "EnableIPHeaderComp"
+			quid       	"413839F30068"
+			type       	"TBool")
+		    (object ClassAttribute "IpAddrLeaseValidTo"
+			quid       	"413839EE0172"
+			type       	"Text")
+		    (object ClassAttribute "IpAddrLeaseValidFrom"
+			quid       	"413839E902BA"
+			type       	"Text")
+		    (object ClassAttribute "ConfigDaemonName"
+			quid       	"413839E5000A"
+			type       	"Text")
+		    (object ClassAttribute "ConfigDaemonManagerName"
+			quid       	"413839E00143"
+			type       	"Text")
+		    (object ClassAttribute "Ip6NameServer2"
+			quid       	"413839DB028B"
+			type       	"Text")
+		    (object ClassAttribute "Ip6NameServer1"
+			quid       	"413839D603C3"
+			type       	"Text")
+		    (object ClassAttribute "IpNameServer2"
+			quid       	"413839D20123"
+			type       	"Text")
+		    (object ClassAttribute "IpNameServer1"
+			quid       	"413839CD027B"
+			type       	"Text")
+		    (object ClassAttribute "IpGateway"
+			quid       	"413839C803C3"
+			type       	"Text")
+		    (object ClassAttribute "IpNetMask"
+			quid       	"413839C40133"
+			type       	"Text")
+		    (object ClassAttribute "IpAddr"
+			quid       	"413839BF028B"
+			type       	"Text")
+		    (object ClassAttribute "CallbackTimeout"
+			quid       	"413839BB001A"
+			type       	"TUint32")
+		    (object ClassAttribute "IfCallbackInfo"
+			quid       	"413839B601A0"
+			type       	"Text")
+		    (object ClassAttribute "IfCallbackType"
+			quid       	"413839B10327"
+			type       	"DialIfCallbackType")
+		    (object ClassAttribute "IfCallbackEnabled"
+			quid       	"413839AD00C6"
+			type       	"TBool")
+		    (object ClassAttribute "AuthRetries"
+			quid       	"413839A8024C"
+			type       	"TUint32")
+		    (object ClassAttribute "IfAuthPass"
+			quid       	"413839A40039"
+			type       	"Text")
+		    (object ClassAttribute "IfAuthName"
+			quid       	"4138399F01CF"
+			type       	"Text")
+		    (object ClassAttribute "IfNetworks"
+			quid       	"4138399A0385"
+			type       	"Text")
+		    (object ClassAttribute "IfParams"
+			quid       	"413839960123"
+			type       	"Text")
+		    (object ClassAttribute "IfServerMode"
+			quid       	"4138399102C9"
+			type       	"TBool")
+		    (object ClassAttribute "DisplayPCT"
+			quid       	"4138398D00C6"
+			type       	"TBool")
+		    (object ClassAttribute "ChargecardRef"
+			quid       	"41383988025C"
+			type       	"TableEntryNameType")
+		    (object ClassAttribute "LoginPass"
+			quid       	"413839840049"
+			type       	"Text")
+		    (object ClassAttribute "LoginName"
+			quid       	"4138397F020E"
+			type       	"Text")
+		    (object ClassAttribute "LoginScript"
+			quid       	"4138397A03E3"
+			type       	"Text")))
+	    (object Class "GlobalSettingsTable"
+		quid       	"41373B4D01A0"
+		class_attributes 	(list class_attribute_list
+		    (object ClassAttribute "Id"
+			quid       	"413C6B820101"
+			type       	"TUint32")
+		    (object ClassAttribute "Name"
+			quid       	"413837B202E9"
+			type       	"Text")
+		    (object ClassAttribute "WAPAccess"
+			quid       	"413837B70068"
+			type       	"TableEntryNameType")
+		    (object ClassAttribute "RedialAttempts"
+			quid       	"413837BB01DF"
+			type       	"Text")
+		    (object ClassAttribute "SmsBearer"
+			quid       	"413837BF0356"
+			type       	"TableEntryNameType")
+		    (object ClassAttribute "SmsReceiveMode"
+			quid       	"413837C400E5"
+			type       	"Text")
+		    (object ClassAttribute "GPRSAttachMode"
+			quid       	"413837C8027B"
+			type       	"Text")
+		    (object ClassAttribute "AcceptIncomingGprs"
+			quid       	"413837CD0058"
+			type       	"Text")
+		    (object ClassAttribute "ConnectionAttempts"
+			quid       	"413837D101FE"
+			type       	"Text")
+		    (object ClassAttribute "ModemForDataAndFax"
+			quid       	"413837D503B4"
+			type       	"Text")
+		    (object ClassAttribute "ModemForPhoneServicesAndSMS"
+			quid       	"413837DA0181"
+			type       	"Text")
+		    (object ClassAttribute "LocationForDataAndFax"
+			quid       	"413837DE0356"
+			type       	"TableEntryNameType")
+		    (object ClassAttribute "CDMAMobileIpMnHaAuthAlgorithm"
+			quid       	"4138382202D9"
+			type       	"CDMAMIpAuthCapability")
+		    (object ClassAttribute "CDMAMobileIpMaxMnHaSsLength"
+			quid       	"4138381E00A6"
+			type       	"TUint32")
+		    (object ClassAttribute "CDMAMobileIpMnAaaAuthAlgorithm"
+			quid       	"41383819025C"
+			type       	"CDMAMIpAuthCapability")
+		    (object ClassAttribute "CDMAMobileIpMaxMnAaaSsLength"
+			quid       	"413838150029"
+			type       	"TUint32")
+		    (object ClassAttribute "CDMAMobileIpMaxNAILength"
+			quid       	"4138381001DF"
+			type       	"TUint32")
+		    (object ClassAttribute "CDMAMobileIpMaxNumNai"
+			quid       	"4138380B03A4"
+			type       	"TUint32")
+		    (object ClassAttribute "CDMASimpleIpAuthSupported"
+			quid       	"413838070172"
+			type       	"CDMASimpIpAuthCapability")
+		    (object ClassAttribute "CDMASimpleIpMaxSsLength"
+			quid       	"413838020346"
+			type       	"TUint32")
+		    (object ClassAttribute "CDMASimpleIpMaxNaiLength"
+			quid       	"413837FE0133"
+			type       	"TUint32")
+		    (object ClassAttribute "CDMASimpleIpMaxNumNai"
+			quid       	"413837F902E9"
+			type       	"TUint32")
+		    (object ClassAttribute "CDMAOperationCapability"
+			quid       	"413837F500E5"
+			type       	"CDMAOpCapability")
+		    (object ClassAttribute "BearerAvailabilityCheckTSY"
+			quid       	"413837F002C9"
+			type       	"Text")
+		    (object ClassAttribute "DefaultNetwork"
+			quid       	"413837EC00C6"
+			type       	"TableEntryNameType")
+		    (object ClassAttribute "GPRSClassCBearer"
+			quid       	"413837E702BA"
+			type       	"GPRSClassCBearerType")
+		    (object ClassAttribute "LocationForPhoneServicesAndSMS"
+			quid       	"413837E30114"
+			type       	"TableEntryNameType")))
+	    (object Class "IAPTable"
+		quid       	"41373B5502E8"
+		class_attributes 	(list class_attribute_list
+		    (object ClassAttribute "Id"
+			quid       	"413C694D0273"
+			type       	"TUint32")
+		    (object ClassAttribute "Name"
+			quid       	"41373FEE0291"
+			type       	"Text")
+		    (object ClassAttribute "IAPService"
+			quid       	"41373FF20291"
+			type       	"TableEntryNameType")
+		    (object ClassAttribute "IAPBearer"
+			quid       	"41373FF602D0"
+			type       	"TableEntryNameType")
+		    (object ClassAttribute "IAPNetwork"
+			quid       	"41373FFA02E0"
+			type       	"TableEntryNameType")
+		    (object ClassAttribute "IAPNetworkWeighting"
+			quid       	"41373FFE031E"
+			type       	"TUint32")
+		    (object ClassAttribute "LocationRef"
+			quid       	"41374002035D"
+			type       	"TableEntryNameType")
+		    (object ClassAttribute "IAPServiceType"
+			quid       	"413F2144034A")
+		    (object ClassAttribute "IAPBearerType"
+			quid       	"413F215102BD")))
+	    (object Class "IncomingGPRSTable"
+		quid       	"41373B5E0039"
+		class_attributes 	(list class_attribute_list
+		    (object ClassAttribute "Id"
+			quid       	"413C6B9E021C"
+			type       	"TUint32")
+		    (object ClassAttribute "Name"
+			quid       	"413835A10068"
+			type       	"Text")
+		    (object ClassAttribute "APN"
+			quid       	"413835A50181"
+			type       	"Text")
+		    (object ClassAttribute "PDPType"
+			quid       	"413835A9028B"
+			type       	"PDPServiceType")
+		    (object ClassAttribute "PDPAddress"
+			quid       	"413835AD03A4"
+			type       	"Text")
+		    (object ClassAttribute "IfPromptForAuth"
+			quid       	"413835B200C6"
+			type       	"TBool")
+		    (object ClassAttribute "IpAddrFromServer"
+			quid       	"413835B601CF"
+			type       	"TBool")
+		    (object ClassAttribute "IpDNSAddrFromServer"
+			quid       	"413835BA02C9"
+			type       	"TBool")
+		    (object ClassAttribute "Ip6DNSAddrFromServer"
+			quid       	"413835BE03D3"
+			type       	"TBool")
+		    (object ClassAttribute "IpAddr"
+			quid       	"413835C300E5"
+			type       	"Text")
+		    (object ClassAttribute "ReqPrecedence"
+			quid       	"413835C7022D"
+			type       	"TUint32")
+		    (object ClassAttribute "ReqDelay"
+			quid       	"413835CB0375"
+			type       	"TUint32")
+		    (object ClassAttribute "EnableLLMNR"
+			quid       	"4138365A0356"
+			type       	"TBool")
+		    (object ClassAttribute "QosWarningTimeout"
+			quid       	"413836560123"
+			type       	"TUint32")
+		    (object ClassAttribute "GprsAccessPointType"
+			quid       	"4138365102C9"
+			type       	"TUint32")
+		    (object ClassAttribute "GprsUseEdge"
+			quid       	"4138364D0097"
+			type       	"TBool")
+		    (object ClassAttribute "DisablePlainTextAuth"
+			quid       	"41383648024C"
+			type       	"TBool")
+		    (object ClassAttribute "EnableLCPExtension"
+			quid       	"41383644001A"
+			type       	"TBool")
+		    (object ClassAttribute "IpAddrLeaseValidTo"
+			quid       	"4138363F01DF"
+			type       	"Text")
+		    (object ClassAttribute "IpAddrLeaseValidFrom"
+			quid       	"4138363A03A4"
+			type       	"Text")
+		    (object ClassAttribute "ConfigDaemonName"
+			quid       	"413836360191"
+			type       	"Text")
+		    (object ClassAttribute "ConfigDaemonManagerName"
+			quid       	"413836310385"
+			type       	"Text")
+		    (object ClassAttribute "Ip6NameServer2"
+			quid       	"4138362D0191"
+			type       	"Text")
+		    (object ClassAttribute "Ip6NameServer1"
+			quid       	"413836280385"
+			type       	"Text")
+		    (object ClassAttribute "IpNameServer2"
+			quid       	"4138362401B0"
+			type       	"Text")
+		    (object ClassAttribute "IpNameServer1"
+			quid       	"4138361F03A4"
+			type       	"Text")
+		    (object ClassAttribute "IpGateway"
+			quid       	"4138361B01A0"
+			type       	"Text")
+		    (object ClassAttribute "IpNetMask"
+			quid       	"4138361603B4"
+			type       	"Text")
+		    (object ClassAttribute "AuthRetries"
+			quid       	"4138361201CF"
+			type       	"TUint32")
+		    (object ClassAttribute "IfAuthPass"
+			quid       	"4138360D03E3"
+			type       	"Text")
+		    (object ClassAttribute "IfAuthName"
+			quid       	"41383609021D"
+			type       	"Text")
+		    (object ClassAttribute "IfNetworks"
+			quid       	"413836050068"
+			type       	"Text")
+		    (object ClassAttribute "IfParams"
+			quid       	"41383600028B"
+			type       	"Text")
+		    (object ClassAttribute "AnonymousAccess"
+			quid       	"413835FC00E5"
+			type       	"TBool")
+		    (object ClassAttribute "HeaderCompression"
+			quid       	"413835F70337"
+			type       	"TBool")
+		    (object ClassAttribute "DataCompression"
+			quid       	"413835F30191"
+			type       	"TBool")
+		    (object ClassAttribute "MinMeanThroughput"
+			quid       	"413835EE03C3"
+			type       	"TUint32")
+		    (object ClassAttribute "MinPeakThroughput"
+			quid       	"413835EA022D"
+			type       	"TUint32")
+		    (object ClassAttribute "MinReliability"
+			quid       	"413835E60097"
+			type       	"TUint32")
+		    (object ClassAttribute "MinDelay"
+			quid       	"413835E102D9"
+			type       	"TUint32")
+		    (object ClassAttribute "MinPrecedence"
+			quid       	"413835DD0172"
+			type       	"TUint32")
+		    (object ClassAttribute "ReqMeanThroughput"
+			quid       	"413835D803B4"
+			type       	"TUint32")
+		    (object ClassAttribute "ReqPeakThroughput"
+			quid       	"413835D4025C"
+			type       	"TUint32")
+		    (object ClassAttribute "ReqReliability"
+			quid       	"413835D000F5"
+			type       	"TUint32")
+		    (object ClassAttribute "EnableLLMNR"
+			quid       	"41405DB9023E"
+			type       	"TBool")))
+	    (object Class "InformationTable"
+		quid       	"41373B660181"
+		class_attributes 	(list class_attribute_list
+		    (object ClassAttribute "Name"
+			quid       	"4137405700CE"
+			type       	"Text")
+		    (object ClassAttribute "SymbianOS"
+			quid       	"4137405B00DE"
+			type       	"Text")
+		    (object ClassAttribute "CommDB"
+			quid       	"4137405F010D"
+			type       	"Text")
+		    (object ClassAttribute "Author"
+			quid       	"41374063013C"
+			type       	"Text")
+		    (object ClassAttribute "Date"
+			quid       	"41374067016B"
+			type       	"xsd:date")
+		    (object ClassAttribute "Id"
+			quid       	"413C6BA40103"
+			type       	"TUint32")))
+	    (object Class "LANBearerTable"
+		quid       	"41373B6E02D9"
+		class_attributes 	(list class_attribute_list
+		    (object ClassAttribute "Id"
+			quid       	"413C6BA802C8"
+			type       	"TUint32")
+		    (object ClassAttribute "Name"
+			quid       	"4138386C0308"
+			type       	"Text")
+		    (object ClassAttribute "Agent"
+			quid       	"4138387100C6"
+			type       	"Text")
+		    (object ClassAttribute "IfName"
+			quid       	"41383875028B"
+			type       	"Text")
+		    (object ClassAttribute "LDDName"
+			quid       	"4138387A0068"
+			type       	"Text")
+		    (object ClassAttribute "PDDName"
+			quid       	"4138387E021D"
+			type       	"Text")
+		    (object ClassAttribute "LDDFilename"
+			quid       	"4138388203E3"
+			type       	"Text")
+		    (object ClassAttribute "PDDFilename"
+			quid       	"4138388701EF"
+			type       	"Text")
+		    (object ClassAttribute "PacketDriverName"
+			quid       	"4138388B03D3"
+			type       	"Text")
+		    (object ClassAttribute "LastSocketActivityTimeout"
+			quid       	"4138389001CF"
+			type       	"TUint32")
+		    (object ClassAttribute "LastSessionClosedTimeout"
+			quid       	"4138389403B4"
+			type       	"TUint32")
+		    (object ClassAttribute "LastSocketClosedTimeout"
+			quid       	"4138389901B0"
+			type       	"TUint32")))
+	    (object Class "LANServiceTable"
+		quid       	"41373B770049"
+		class_attributes 	(list class_attribute_list
+		    (object ClassAttribute "Id"
+			quid       	"413C6BAB03D2"
+			type       	"TUint32")
+		    (object ClassAttribute "Name"
+			quid       	"413740D10303"
+			type       	"Text")
+		    (object ClassAttribute "IfNetworks"
+			quid       	"413740D50313"
+			type       	"Text")
+		    (object ClassAttribute "IpNetMask"
+			quid       	"413740D90322"
+			type       	"Text")
+		    (object ClassAttribute "IpGateway"
+			quid       	"413740DD0351"
+			type       	"Text")
+		    (object ClassAttribute "IpAddr"
+			quid       	"413740E10380"
+			type       	"Text")
+		    (object ClassAttribute "IpAddrFromServer"
+			quid       	"413740E503A0"
+			type       	"TBool")
+		    (object ClassAttribute "IpDNSAddrFromServer"
+			quid       	"413740E903DE"
+			type       	"TBool")
+		    (object ClassAttribute "Ip6DNSAddrFromServer"
+			quid       	"413740EE0006"
+			type       	"TBool")
+		    (object ClassAttribute "IpNameServer1"
+			quid       	"413740F20045"
+			type       	"Text")
+		    (object ClassAttribute "IpNameServer2"
+			quid       	"413740F60064"
+			type       	"Text")
+		    (object ClassAttribute "Ip6NameServer1"
+			quid       	"413740FA00A2"
+			type       	"Text")
+		    (object ClassAttribute "EnableLLMNR"
+			quid       	"4137411201BC"
+			type       	"TBool")
+		    (object ClassAttribute "IpAddrLeaseValidTo"
+			quid       	"4137410E018D"
+			type       	"Text")
+		    (object ClassAttribute "IpAddrLeaseValidFrom"
+			quid       	"4137410A012F"
+			type       	"Text")
+		    (object ClassAttribute "ConfigDaemonName"
+			quid       	"4137410600F1"
+			type       	"Text")
+		    (object ClassAttribute "ConfigDaemonManagerName"
+			quid       	"4137410200D1"
+			type       	"Text")
+		    (object ClassAttribute "Ip6NameServer2"
+			quid       	"413740FE00A3"
+			type       	"Text")
+		    (object ClassAttribute "ServiceExtensionTableName"
+			quid       	"413F2AF200E9")
+		    (object ClassAttribute "ServiceExtensionRecordId"
+			quid       	"413F2B4B0177"
+			type       	"TableEntryNameType")))
+	    (object Class "ModemBearerTable"
+		quid       	"41373B8702F9"
+		class_attributes 	(list class_attribute_list
+		    (object ClassAttribute "Id"
+			quid       	"413C6918030C"
+			type       	"TUint32")
+		    (object ClassAttribute "Agent"
+			quid       	"4138411301B0"
+			type       	"AgentType")
+		    (object ClassAttribute "IfName"
+			quid       	"4138411703B4"
+			type       	"Text")
+		    (object ClassAttribute "PortName"
+			quid       	"4138411C01EF"
+			type       	"Text")
+		    (object ClassAttribute "TSYName"
+			quid       	"41384121000A"
+			type       	"Text")
+		    (object ClassAttribute "CSYName"
+			quid       	"41384125026C"
+			type       	"Text")
+		    (object ClassAttribute "DataBits"
+			quid       	"4138412A00D5"
+			type       	"DataBitsType")
+		    (object ClassAttribute "StopBits"
+			quid       	"4138412E0308"
+			type       	"StopBitsType")
+		    (object ClassAttribute "Parity"
+			quid       	"413841330191"
+			type       	"ParityType")
+		    (object ClassAttribute "Rate"
+			quid       	"41384138000A"
+			type       	"RateType")
+		    (object ClassAttribute "Handshaking"
+			quid       	"4138413C027B"
+			type       	"TUint32")
+		    (object ClassAttribute "SpecialRate"
+			quid       	"413841410104"
+			type       	"TUint32")
+		    (object ClassAttribute "XonChar"
+			quid       	"4138414503A4"
+			type       	"TUint8")
+		    (object ClassAttribute "XoffChar"
+			quid       	"4138414A024C"
+			type       	"TUint8")
+		    (object ClassAttribute "FaxClassPref"
+			quid       	"4138414F0114"
+			type       	"FaxClassType")
+		    (object ClassAttribute "SpeakerPref"
+			quid       	"4138415303E3"
+			type       	"SpeakerType")
+		    (object ClassAttribute "SpeakerVolPref"
+			quid       	"4138415802C9"
+			type       	"SpeakerVolType")
+		    (object ClassAttribute "ModemInitString"
+			quid       	"4138415D0181"
+			type       	"Text")
+		    (object ClassAttribute "DataInitString"
+			quid       	"413841620078"
+			type       	"Text")
+		    (object ClassAttribute "FaxInitString"
+			quid       	"413841660356"
+			type       	"Text")
+		    (object ClassAttribute "IspInitString"
+			quid       	"4138416B026C"
+			type       	"Text")
+		    (object ClassAttribute "DialPauseLength"
+			quid       	"413841700172"
+			type       	"Text")
+		    (object ClassAttribute "CarrierTimeout"
+			quid       	"413841750087"
+			type       	"Text")
+		    (object ClassAttribute "AutoAnswerRingCount"
+			quid       	"413841790375"
+			type       	"Text")
+		    (object ClassAttribute "SpeakerVolContorlLow"
+			quid       	"4138417E02BA"
+			type       	"Text")
+		    (object ClassAttribute "SpeakerVolControlMedium"
+			quid       	"41384183020E"
+			type       	"Text")
+		    (object ClassAttribute "SpeakerVolControlHigh"
+			quid       	"413841880143"
+			type       	"Text")
+		    (object ClassAttribute "SpeakerAlwaysOff"
+			quid       	"4138418D00B6"
+			type       	"Text")
+		    (object ClassAttribute "SpeakerOnUntilCarrier"
+			quid       	"413841920049"
+			type       	"Text")
+		    (object ClassAttribute "SpeakerAlwaysOn"
+			quid       	"4138419603C3"
+			type       	"Text")
+		    (object ClassAttribute "SpeakerOnAfterUntilCarrier"
+			quid       	"4138419B0366"
+			type       	"Text")
+		    (object ClassAttribute "DialToneWaitModifier"
+			quid       	"413841A00327"
+			type       	"Text")
+		    (object ClassAttribute "CallProgress1"
+			quid       	"413841A502C9"
+			type       	"Text")
+		    (object ClassAttribute "CallProgress2"
+			quid       	"413841AA027B"
+			type       	"Text")
+		    (object ClassAttribute "CallProgress3"
+			quid       	"413841AF022D"
+			type       	"Text")
+		    (object ClassAttribute "CallProgress4"
+			quid       	"413841B401FE"
+			type       	"Text")
+		    (object ClassAttribute "EchoOff"
+			quid       	"413841B901B0"
+			type       	"Text")
+		    (object ClassAttribute "VerboseText"
+			quid       	"413841BE0172"
+			type       	"Text")
+		    (object ClassAttribute "QuietOff"
+			quid       	"413841C30143"
+			type       	"Text")
+		    (object ClassAttribute "QuietOn"
+			quid       	"413841C80114"
+			type       	"Text")
+		    (object ClassAttribute "DialCommandStateModifier"
+			quid       	"413841CD0114"
+			type       	"Text")
+		    (object ClassAttribute "OnLine"
+			quid       	"413841D20114"
+			type       	"Text")
+		    (object ClassAttribute "ResetConfiguration"
+			quid       	"413841D70114"
+			type       	"Text")
+		    (object ClassAttribute "ReturnToFactoryDefs"
+			quid       	"413841DC0104"
+			type       	"Text")
+		    (object ClassAttribute "DCDOnDuringLink"
+			quid       	"413841E100F5"
+			type       	"Text")
+		    (object ClassAttribute "DTRHangUp"
+			quid       	"413841E600F5"
+			type       	"Text")
+		    (object ClassAttribute "DSRAlwaysOn"
+			quid       	"413841EB0114"
+			type       	"Text")
+		    (object ClassAttribute "RTSCTSHandshake"
+			quid       	"413841F00162"
+			type       	"Text")
+		    (object ClassAttribute "XonXoffHandshake"
+			quid       	"413841F50181"
+			type       	"Text")
+		    (object ClassAttribute "EscapeCharacter"
+			quid       	"413841FA0191"
+			type       	"Text")
+		    (object ClassAttribute "EscapeGuardPeriod"
+			quid       	"413841FF01EF"
+			type       	"Text")
+		    (object ClassAttribute "FaxClassInterrogate"
+			quid       	"41384204026C"
+			type       	"Text")
+		    (object ClassAttribute "FaxClass"
+			quid       	"4138420902C9"
+			type       	"Text")
+		    (object ClassAttribute "NoDialTone"
+			quid       	"4138420E0337"
+			type       	"Text")
+		    (object ClassAttribute "Busy"
+			quid       	"4138421303D3"
+			type       	"Text")
+		    (object ClassAttribute "NoAnswer"
+			quid       	"413842190078"
+			type       	"Text")
+		    (object ClassAttribute "Carrier"
+			quid       	"4138421E0133"
+			type       	"Text")
+		    (object ClassAttribute "Connect"
+			quid       	"4138422301EF"
+			type       	"Text")
+		    (object ClassAttribute "CompressionClass5"
+			quid       	"4138422802BA"
+			type       	"Text")
+		    (object ClassAttribute "CompressionV42bis"
+			quid       	"4138422D0385"
+			type       	"Text")
+		    (object ClassAttribute "CompressionNone"
+			quid       	"413842330058"
+			type       	"Text")
+		    (object ClassAttribute "ProtocolLAPD"
+			quid       	"413842380123"
+			type       	"Text")
+		    (object ClassAttribute "ProtocolALT"
+			quid       	"4138423D01DF"
+			type       	"Text")
+		    (object ClassAttribute "ProtocolALTCELLULAR"
+			quid       	"4138424202C9"
+			type       	"Text")
+		    (object ClassAttribute "ProtocolNone"
+			quid       	"4138424703A4"
+			type       	"Text")
+		    (object ClassAttribute "MessageCentreNumber"
+			quid       	"4138424D0058"
+			type       	"Text")
+		    (object ClassAttribute "MessageValidityPeriod"
+			quid       	"413842520143"
+			type       	"Text")
+		    (object ClassAttribute "MessageDeliveryReport"
+			quid       	"41384257024C"
+			type       	"TBool")
+		    (object ClassAttribute "MinimumSignalLevel"
+			quid       	"4138425C0327"
+			type       	"Text")
+		    (object ClassAttribute "LastSocketActivityTimeout"
+			quid       	"413842620049"
+			type       	"TUint32")
+		    (object ClassAttribute "LastSessionClosedTimeout"
+			quid       	"413842670152"
+			type       	"TUint32")
+		    (object ClassAttribute "LastSocketClosedTimeout"
+			quid       	"4138426C021D"
+			type       	"TUint32")
+		    (object ClassAttribute "SIRSettings"
+			quid       	"413842710317"
+			type       	"TUint32")
+		    (object ClassAttribute "CommRole"
+			quid       	"413842770049"
+			type       	"TUint32")
+		    (object ClassAttribute "Name"
+			quid       	"4138427C0133"
+			type       	"Text")
+		    (object ClassAttribute "ModemSirSettings"
+			quid       	"4140763401B3"
+			type       	"TUint32")
+		    (object ClassAttribute "ModemCommRole"
+			quid       	"414076710108"
+			type       	"TUint32")))
+	    (object Class "NetworkTable"
+		quid       	"41373B90003A"
+		class_attributes 	(list class_attribute_list
+		    (object ClassAttribute "Id"
+			quid       	"413C68ED03B5"
+			type       	"TUint32")
+		    (object ClassAttribute "Name"
+			quid       	"413840710191"
+			type       	"Text")
+		    (object ClassAttribute "HostName"
+			quid       	"413840750366"
+			type       	"Text")))
+	    (object Class "OutgoingGPRSTable"
+		quid       	"41373B980172"
+		class_attributes 	(list class_attribute_list
+		    (object ClassAttribute "Id"
+			quid       	"413C6BBE01A1"
+			type       	"TUint32")
+		    (object ClassAttribute "Name"
+			quid       	"413834240058"
+			type       	"Text")
+		    (object ClassAttribute "APN"
+			quid       	"413834280104"
+			type       	"Text")
+		    (object ClassAttribute "PDPType"
+			quid       	"4138342C01CF"
+			type       	"PDPServiceType")
+		    (object ClassAttribute "PDPAddress"
+			quid       	"41383430028B"
+			type       	"Text")
+		    (object ClassAttribute "IfPromptForAuth"
+			quid       	"413834340366"
+			type       	"TBool")
+		    (object ClassAttribute "IpAddrFromServer"
+			quid       	"413834390049"
+			type       	"TBool")
+		    (object ClassAttribute "IpDNSAddrFromServer"
+			quid       	"4138343D0133"
+			type       	"TBool")
+		    (object ClassAttribute "Ip6DNSAddrFromServer"
+			quid       	"41383441021D"
+			type       	"TBool")
+		    (object ClassAttribute "IpAddr"
+			quid       	"413834450308"
+			type       	"Text")
+		    (object ClassAttribute "ReqPrecedence"
+			quid       	"4138344A001A"
+			type       	"TUint32")
+		    (object ClassAttribute "ReqDelay"
+			quid       	"4138344E0114"
+			type       	"TUint32")
+		    (object ClassAttribute "EnableLLMNR"
+			quid       	"413834DA0058"
+			type       	"TBool")
+		    (object ClassAttribute "QosWarningTimeout"
+			quid       	"413834D5026C"
+			type       	"TUint32")
+		    (object ClassAttribute "GprsAccessPointType"
+			quid       	"413834D10097"
+			type       	"TUint32")
+		    (object ClassAttribute "GprsUseEdge"
+			quid       	"413834CC02BA"
+			type       	"TBool")
+		    (object ClassAttribute "DisablePlainTextAuth"
+			quid       	"413834C800F5"
+			type       	"TBool")
+		    (object ClassAttribute "EnableLCPExtension"
+			quid       	"413834C30327"
+			type       	"TBool")
+		    (object ClassAttribute "IpAddrLeaseValidTo"
+			quid       	"413834BF0172"
+			type       	"Text")
+		    (object ClassAttribute "IpAddrLeaseValidFrom"
+			quid       	"413834BA03B4"
+			type       	"Text")
+		    (object ClassAttribute "ConfigDaemonName"
+			quid       	"413834B6021D"
+			type       	"Text")
+		    (object ClassAttribute "ConfigDaemonManagerName"
+			quid       	"413834B20087"
+			type       	"Text")
+		    (object ClassAttribute "Ip6NameServer2"
+			quid       	"413834AD02F8"
+			type       	"Text")
+		    (object ClassAttribute "Ip6NameServer1"
+			quid       	"413834A90172"
+			type       	"Text")
+		    (object ClassAttribute "IpNameServer2"
+			quid       	"413834A403C3"
+			type       	"Text")
+		    (object ClassAttribute "IpNameServer1"
+			quid       	"413834A0022D"
+			type       	"Text")
+		    (object ClassAttribute "IpGateway"
+			quid       	"4138349C00C6"
+			type       	"Text")
+		    (object ClassAttribute "IpNetMask"
+			quid       	"413834970317"
+			type       	"Text")
+		    (object ClassAttribute "AuthRetries"
+			quid       	"4138349301A0"
+			type       	"TUint32")
+		    (object ClassAttribute "IfAuthPass"
+			quid       	"4138348F0039"
+			type       	"Text")
+		    (object ClassAttribute "IfAuthName"
+			quid       	"4138348A02BA"
+			type       	"Text")
+		    (object ClassAttribute "IfNetworks"
+			quid       	"413834860162"
+			type       	"Text")
+		    (object ClassAttribute "IfParams"
+			quid       	"41383482000A"
+			type       	"Text")
+		    (object ClassAttribute "AnonymousAccess"
+			quid       	"4138347D02AA"
+			type       	"TBool")
+		    (object ClassAttribute "HeaderCompression"
+			quid       	"413834790152"
+			type       	"TBool")
+		    (object ClassAttribute "DataCompression"
+			quid       	"41383475000A"
+			type       	"TBool")
+		    (object ClassAttribute "MinMeanThroughput"
+			quid       	"4138347002AA"
+			type       	"TUint32")
+		    (object ClassAttribute "MinPeakThroughput"
+			quid       	"4138346C0162"
+			type       	"TUint32")
+		    (object ClassAttribute "MinReliability"
+			quid       	"4138346703E3"
+			type       	"TUint32")
+		    (object ClassAttribute "MinDelay"
+			quid       	"4138346302AA"
+			type       	"TUint32")
+		    (object ClassAttribute "MinPrecedence"
+			quid       	"4138345F0162"
+			type       	"TUint32")
+		    (object ClassAttribute "ReqMeanThroughput"
+			quid       	"4138345B001A"
+			type       	"TUint32")
+		    (object ClassAttribute "ReqPeakThroughput"
+			quid       	"4138345602E9"
+			type       	"TUint32")
+		    (object ClassAttribute "ReqReliability"
+			quid       	"41383452020E"
+			type       	"TUint32")
+		    (object ClassAttribute "EnableLLMNR"
+			quid       	"41405D730058"
+			type       	"TBool")))
+	    (object Class "PrimitiveTypes"
+		quid       	"41373BA002BB"
+		class_attributes 	(list class_attribute_list
+		    (object ClassAttribute "Id"
+			quid       	"413C6BAE03A3"
+			type       	"TUint32")))
+	    (object Class "ProxyTable"
+		quid       	"41373BA9001B"
+		class_attributes 	(list class_attribute_list
+		    (object ClassAttribute "Id"
+			quid       	"413C6BD10115"
+			type       	"TUint32")
+		    (object ClassAttribute "Name"
+			quid       	"4138458D0058"
+			type       	"Text")
+		    (object ClassAttribute "ISPRef"
+			quid       	"413845910317"
+			type       	"TableEntryNameType")
+		    (object ClassAttribute "UseProxyServer"
+			quid       	"41384596023D"
+			type       	"TBool")
+		    (object ClassAttribute "ProtocolName"
+			quid       	"4138459B0172"
+			type       	"Text")
+		    (object ClassAttribute "ProxyServerName"
+			quid       	"413845A000B6"
+			type       	"Text")
+		    (object ClassAttribute "PortNumber"
+			quid       	"413845A403C3"
+			type       	"TUint32")
+		    (object ClassAttribute "Exceptions"
+			quid       	"413845A902D9"
+			type       	"Text")))
+	    (object Class "SecureSocketProtoTable"
+		quid       	"41373BB10173"
+		class_attributes 	(list class_attribute_list
+		    (object ClassAttribute "Id"
+			quid       	"413C6BD703B6"
+			type       	"TUint32")
+		    (object ClassAttribute "Name"
+			quid       	"4138436302AA"
+			type       	"Text")
+		    (object ClassAttribute "ProtocolName"
+			quid       	"4138436800F5"
+			type       	"Text")
+		    (object ClassAttribute "ProtoLibrary"
+			quid       	"4138436C0346"
+			type       	"Text")))
+	    (object Class "VirtualBearerTable"
+		quid       	"41373BB902DA"
+		class_attributes 	(list class_attribute_list
+		    (object ClassAttribute "Id"
+			quid       	"413C6BDA0099"
+			type       	"TUint32")
+		    (object ClassAttribute "Name"
+			quid       	"413843190327"
+			type       	"Text")
+		    (object ClassAttribute "Agent"
+			quid       	"4138431E021D"
+			type       	"AgentType")
+		    (object ClassAttribute "IfName"
+			quid       	"413843230133"
+			type       	"Text")
+		    (object ClassAttribute "LastSocketActivityTimeout"
+			quid       	"41384328000A"
+			type       	"TUint32")
+		    (object ClassAttribute "LastSessionClosedTimeout"
+			quid       	"4138432C0308"
+			type       	"TUint32")
+		    (object ClassAttribute "LastSocketClosedTimeout"
+			quid       	"41384331024C"
+			type       	"TUint32")))
+	    (object Class "VpnServiceTable"
+		quid       	"41373BC2004A"
+		class_attributes 	(list class_attribute_list
+		    (object ClassAttribute "Id"
+			quid       	"413C6BDE006A"
+			type       	"TUint32")
+		    (object ClassAttribute "Name"
+			quid       	"4138466101FE"
+			type       	"Text")
+		    (object ClassAttribute "Policy"
+			quid       	"413846660191"
+			type       	"Text")
+		    (object ClassAttribute "HomeIAP"
+			quid       	"4138466B0114"
+			type       	"TableEntryNameType")
+		    (object ClassAttribute "HomeNetwork"
+			quid       	"413846700058"
+			type       	"TableEntryNameType")
+		    (object ClassAttribute "EnableLLMNR"
+			quid       	"4138467403D3"
+			type       	"TBool")))
+	    (object Class "WAPAccessPointTable"
+		quid       	"41373BCA01A2"
+		used_nodes 	(list uses_relationship_list
+		    (object Uses_Relationship
+			quid       	"413D929A00F6"
+			supplier   	"Logical View::WAPSMSBearerTable"
+			quidu      	"41373BDB0099"))
+		class_attributes 	(list class_attribute_list
+		    (object ClassAttribute "Id"
+			quid       	"413C6BE003D5"
+			type       	"TUint32")
+		    (object ClassAttribute "Name"
+			quid       	"41373ED7023E"
+			type       	"Text")
+		    (object ClassAttribute "CurrentBearer"
+			quid       	"41373EDB021F"
+			type       	"WAPBearerType")
+		    (object ClassAttribute "StartPage"
+			quid       	"41373EDF020F"
+			type       	"Text")))
+	    (object Class "WAPIPBearerTable"
+		quid       	"41373BD2030A"
+		class_attributes 	(list class_attribute_list
+		    (object ClassAttribute "Id"
+			quid       	"413C6BE3023F"
+			type       	"TUint32")
+		    (object ClassAttribute "Name"
+			quid       	"41373E58021C"
+			type       	"Text")
+		    (object ClassAttribute "AccessPoint"
+			quid       	"41373E5C01FD"
+			type       	"TableEntryNameType")
+		    (object ClassAttribute "GatewayAddress"
+			quid       	"41373E6001BF"
+			type       	"Text")
+		    (object ClassAttribute "IAPRef"
+			quid       	"41373E6C01AF"
+			type       	"TableEntryNameType")
+		    (object ClassAttribute "ProxyPortNumber"
+			quid       	"41373E7001BF"
+			type       	"TUint32")
+		    (object ClassAttribute "ProxyLogin"
+			quid       	"41373E7401AF"
+			type       	"Text")
+		    (object ClassAttribute "ProxyPassword"
+			quid       	"41373E7801CF"
+			type       	"Text")))
+	    (object Class "WAPSMSBearerTable"
+		quid       	"41373BDB0099"
+		class_attributes 	(list class_attribute_list
+		    (object ClassAttribute "Id"
+			quid       	"413C6BE601B3"
+			type       	"TUint32")
+		    (object ClassAttribute "Name"
+			quid       	"41373E040288"
+			type       	"Text")
+		    (object ClassAttribute "AccessPoint"
+			quid       	"41373E08022A"
+			type       	"TableEntryNameType")
+		    (object ClassAttribute "GatewayAddress"
+			quid       	"41373E0C01EC"
+			type       	"Text")
+		    (object ClassAttribute "WSPOption"
+			quid       	"41373E1001BD"
+			type       	"WSPOptionType")
+		    (object ClassAttribute "Security"
+			quid       	"41373E1401AD"
+			type       	"TBool")
+		    (object ClassAttribute "ServiceCentreAddress"
+			quid       	"41373E1801AE"
+			type       	"Text")))
+	    (object Class "WLANServiceExtensionTable"
+		quid       	"41373BE301E1"
+		class_attributes 	(list class_attribute_list
+		    (object ClassAttribute "Id"
+			quid       	"413C6BEB00E8"
+			type       	"TUint32")
+		    (object ClassAttribute "Name"
+			quid       	"41373D850331"
+			type       	"Text")
+		    (object ClassAttribute "Wlan_Connection_Mode"
+			quid       	"41373D8902A5"
+			type       	"TUint32")
+		    (object ClassAttribute "Wlan_SSID"
+			quid       	"41373D8D0247"
+			type       	"Text")
+		    (object ClassAttribute "Wlan_Channel_ID"
+			quid       	"41373D9101E9"
+			type       	"TUint32")
+		    (object ClassAttribute "Wlan_Security_Mode"
+			quid       	"41373D9501BB"
+			type       	"TUint32")
+		    (object ClassAttribute "Wlan_Wep_Key1"
+			quid       	"41373D99017C"
+			type       	"Text")
+		    (object ClassAttribute "Wlan_Wep_Key2"
+			quid       	"41373D9D013E"
+			type       	"Text")
+		    (object ClassAttribute "Wlan_Wep_Key3"
+			quid       	"41373DA100F0"
+			type       	"Text")
+		    (object ClassAttribute "Wlan_Wep_Key4"
+			quid       	"41373DA500D1"
+			type       	"Text")
+		    (object ClassAttribute "Wlan_Wep_Default_Key"
+			quid       	"41373DA900A2"
+			type       	"TUint32")
+		    (object ClassAttribute "Wlan_Authentication_Mode"
+			quid       	"41373DAD00A2"
+			type       	"TUint32")
+		    (object ClassAttribute "Wlan_Wpa_PreShared_Key"
+			quid       	"41373DB100A2"
+			type       	"Text")
+		    (object ClassAttribute "Wlan_Wpa_Key_Length"
+			quid       	"41373DB500A2"
+			type       	"TUint32")
+		    (object ClassAttribute "Wlan_Use_Wpa_PreShared_Key"
+			quid       	"41373DBD00E1"
+			type       	"TUint32")
+		    (object ClassAttribute "Wlan_Eap_List"
+			quid       	"41373DB900C1"
+			type       	"Text")))
+	    (object Class "OR"
+		quid       	"413DC8040272"
+		stereotype 	"Interface")
+	    (object Class "NewInterface"
+		quid       	"413DCC85038B"
+		stereotype 	"Interface")
+	    (object Class "LocationTable"
+		quid       	"41373B7F0191"
+		class_attributes 	(list class_attribute_list
+		    (object ClassAttribute "Id"
+			quid       	"413C6BB20087"
+			type       	"TUint32")
+		    (object ClassAttribute "Name"
+			quid       	"413843B00039"
+			type       	"Text")
+		    (object ClassAttribute "Mobile"
+			quid       	"413843B4029A"
+			type       	"TBool")
+		    (object ClassAttribute "UsePulseDial"
+			quid       	"413843B900F5"
+			type       	"TBool")
+		    (object ClassAttribute "WaitForDialTone"
+			quid       	"413843BD0394"
+			type       	"TBool")
+		    (object ClassAttribute "PauseAfterDialout"
+			quid       	"413843C2022D"
+			type       	"TUint32")
+		    (object ClassAttribute "IntlPrefixCode"
+			quid       	"413843C700D5"
+			type       	"Text")
+		    (object ClassAttribute "NatPrefixCode"
+			quid       	"413843CB0375"
+			type       	"Text")
+		    (object ClassAttribute "NatCode"
+			quid       	"413843D001DF"
+			type       	"Text")
+		    (object ClassAttribute "AreaCode"
+			quid       	"413843D500B6"
+			type       	"Text")
+		    (object ClassAttribute "DialOutCode"
+			quid       	"413843D90366"
+			type       	"Text")
+		    (object ClassAttribute "DisableCallWaitingCode"
+			quid       	"413843DE01FE"
+			type       	"Text")))
+	    (object Association "$UNNAMED$0"
+		quid       	"413C5EAA007C"
+		roles      	(list role_list
+		    (object Role "IAPRef"
+			quid       	"413C5EB00000"
+			label      	"IAPRef"
+			supplier   	"Logical View::ConnectionPreferencesTable"
+			quidu      	"4135E8B80222"
+			is_navigable 	TRUE)
+		    (object Role "Id"
+			quid       	"413C5EB00001"
+			label      	"Id"
+			supplier   	"Logical View::IAPTable"
+			quidu      	"41373B5502E8")))
+	    (object Association "$UNNAMED$1"
+		quid       	"413C5F1E01FB"
+		roles      	(list role_list
+		    (object Role "Id"
+			quid       	"413C5F1F0391"
+			label      	"Id"
+			supplier   	"Logical View::NetworkTable"
+			quidu      	"41373B90003A"
+			is_navigable 	TRUE)
+		    (object Role "IAPNetwork"
+			quid       	"413C5F1F0392"
+			label      	"IAPNetwork"
+			supplier   	"Logical View::IAPTable"
+			quidu      	"41373B5502E8")))
+	    (object Association "$UNNAMED$2"
+		quid       	"413C681F0240"
+		roles      	(list role_list
+		    (object Role "Id"
+			quid       	"413C68200156"
+			label      	"Id"
+			supplier   	"Logical View::ModemBearerTable"
+			quidu      	"41373B8702F9"
+			is_navigable 	TRUE)
+		    (object Role "IAPBearer"
+			quid       	"413C68200157"
+			label      	"IAPBearer"
+			supplier   	"Logical View::IAPTable"
+			quidu      	"41373B5502E8")))
+	    (object Association "$UNNAMED$3"
+		quid       	"413C6D4A03BE"
+		roles      	(list role_list
+		    (object Role "Id"
+			quid       	"413C6D4B02F3"
+			label      	"Id"
+			supplier   	"Logical View::IAPTable"
+			quidu      	"41373B5502E8"
+			is_navigable 	TRUE)
+		    (object Role "IAPRef"
+			quid       	"413C6D4B0302"
+			label      	"IAPRef"
+			supplier   	"Logical View::ConnectionPreferencesTable"
+			quidu      	"4135E8B80222")))
+	    (object Association "$UNNAMED$4"
+		quid       	"413C70B301C3"
+		roles      	(list role_list
+		    (object Role "Id"
+			quid       	"413C70B501D3"
+			label      	"Id"
+			supplier   	"Logical View::LocationTable"
+			quidu      	"41373B7F0191"
+			is_navigable 	TRUE)
+		    (object Role "LocationRef"
+			quid       	"413C70B501E2"
+			label      	"LocationRef"
+			supplier   	"Logical View::IAPTable"
+			quidu      	"41373B5502E8")))
+	    (object Association "$UNNAMED$5"
+		quid       	"413C72850396"
+		roles      	(list role_list
+		    (object Role "Id"
+			quid       	"413C72880116"
+			label      	"Id"
+			supplier   	"Logical View::DialOutISPTable"
+			quidu      	"41373B450057"
+			is_navigable 	TRUE)
+		    (object Role "IAPService"
+			quid       	"413C72880126"
+			label      	"IAPService"
+			supplier   	"Logical View::IAPTable"
+			quidu      	"41373B5502E8")))
+	    (object Association "$UNNAMED$6"
+		quid       	"413C79830307"
+		roles      	(list role_list
+		    (object Role "Id"
+			quid       	"413C79850096"
+			label      	"Id"
+			supplier   	"Logical View::ChargecardTable"
+			quidu      	"4135E7D101E4"
+			is_navigable 	TRUE)
+		    (object Role "ChargecardRef"
+			quid       	"413C79850097"
+			label      	"ChargecardRef"
+			supplier   	"Logical View::DialOutISPTable"
+			quidu      	"41373B450057")))
+	    (object Association "$UNNAMED$7"
+		quid       	"413C860203C6"
+		roles      	(list role_list
+		    (object Role "Id"
+			quid       	"413C8605002C"
+			label      	"Id"
+			supplier   	"Logical View::DialOutISPTable"
+			quidu      	"41373B450057"
+			is_navigable 	TRUE)
+		    (object Role "ISPRef"
+			quid       	"413C8605002D"
+			label      	"ISPRef"
+			supplier   	"Logical View::ProxyTable"
+			quidu      	"41373BA9001B")))
+	    (object Association "$UNNAMED$8"
+		quid       	"413D7C6203D4"
+		roles      	(list role_list
+		    (object Role "Id"
+			quid       	"413D7C6400A7"
+			label      	"Id"
+			supplier   	"Logical View::IAPTable"
+			quidu      	"41373B5502E8"
+			is_navigable 	TRUE)
+		    (object Role "HomeIAP"
+			quid       	"413D7C6400A8"
+			label      	"HomeIAP"
+			supplier   	"Logical View::VpnServiceTable"
+			quidu      	"41373BC2004A")))
+	    (object Association "$UNNAMED$9"
+		quid       	"413D7CB00173"
+		roles      	(list role_list
+		    (object Role "Id"
+			quid       	"413D7CB10357"
+			label      	"Id"
+			supplier   	"Logical View::NetworkTable"
+			quidu      	"41373B90003A"
+			is_navigable 	TRUE)
+		    (object Role "HomeNetwork"
+			quid       	"413D7CB10358"
+			label      	"HomeNetwork"
+			supplier   	"Logical View::VpnServiceTable"
+			quidu      	"41373BC2004A")))
+	    (object Association "$UNNAMED$10"
+		quid       	"413D81A702DA"
+		roles      	(list role_list
+		    (object Role "Id"
+			quid       	"413D81A9028C"
+			label      	"Id"
+			supplier   	"Logical View::WAPAccessPointTable"
+			quidu      	"41373BCA01A2"
+			is_navigable 	TRUE)
+		    (object Role "AccessPoint"
+			quid       	"413D81A9028D"
+			label      	"AccessPoint"
+			supplier   	"Logical View::WAPIPBearerTable"
+			quidu      	"41373BD2030A")))
+	    (object Association "$UNNAMED$11"
+		quid       	"413D81B303B5"
+		roles      	(list role_list
+		    (object Role "Id"
+			quid       	"413D81B70088"
+			label      	"Id"
+			supplier   	"Logical View::WAPAccessPointTable"
+			quidu      	"41373BCA01A2"
+			is_navigable 	TRUE)
+		    (object Role "AccessPoint"
+			quid       	"413D81B70089"
+			label      	"AccessPoint"
+			supplier   	"Logical View::WAPSMSBearerTable"
+			quidu      	"41373BDB0099")))
+	    (object Association "$UNNAMED$12"
+		quid       	"413D933302BB"
+		roles      	(list role_list
+		    (object Role "Id"
+			quid       	"413D933402DA"
+			label      	"Id"
+			supplier   	"Logical View::IAPTable"
+			quidu      	"41373B5502E8"
+			is_navigable 	TRUE)
+		    (object Role "IAPRef"
+			quid       	"413D933402DB"
+			label      	"IAPRef"
+			supplier   	"Logical View::WAPIPBearerTable"
+			quidu      	"41373BD2030A")))
+	    (object Association "$UNNAMED$13"
+		quid       	"413D96150124"
+		roles      	(list role_list
+		    (object Role "Id"
+			quid       	"413D9618003A"
+			label      	"Id"
+			supplier   	"Logical View::WAPAccessPointTable"
+			quidu      	"41373BCA01A2"
+			is_navigable 	TRUE)
+		    (object Role "WAPAccess"
+			quid       	"413D9618004A"
+			label      	"WAPAccess"
+			supplier   	"Logical View::GlobalSettingsTable"
+			quidu      	"41373B4D01A0")))
+	    (object Association "$UNNAMED$14"
+		quid       	"413D96E2035C"
+		roles      	(list role_list
+		    (object Role "AccessPoint"
+			quid       	"413D96E3038B"
+			label      	"AccessPoint"
+			supplier   	"Logical View::WAPSMSBearerTable"
+			quidu      	"41373BDB0099"
+			is_navigable 	TRUE)
+		    (object Role "SMSBearer"
+			quid       	"413D96E3038C"
+			label      	"SMSBearer"
+			supplier   	"Logical View::GlobalSettingsTable"
+			quidu      	"41373B4D01A0")))
+	    (object Association "$UNNAMED$15"
+		quid       	"413D971A013A"
+		roles      	(list role_list
+		    (object Role "Id"
+			quid       	"413D971C011A"
+			label      	"Id"
+			supplier   	"Logical View::LocationTable"
+			quidu      	"41373B7F0191"
+			is_navigable 	TRUE)
+		    (object Role "LocationForDataAndFax"
+			quid       	"413D971C012A"
+			label      	"LocationForDataAndFax"
+			supplier   	"Logical View::GlobalSettingsTable"
+			quidu      	"41373B4D01A0")))
+	    (object Association "$UNNAMED$16"
+		quid       	"413D97A903D9"
+		roles      	(list role_list
+		    (object Role "Id"
+			quid       	"413D97AB0001"
+			label      	"Id"
+			supplier   	"Logical View::NetworkTable"
+			quidu      	"41373B90003A"
+			is_navigable 	TRUE)
+		    (object Role "DefaultNetwork"
+			quid       	"413D97AB0002"
+			label      	"DefaultNetwork"
+			supplier   	"Logical View::GlobalSettingsTable"
+			quidu      	"41373B4D01A0")))
+	    (object Association "$UNNAMED$17"
+		quid       	"413DC818009D"
+		roles      	(list role_list
+		    (object Role "$UNNAMED$18"
+			quid       	"413DC81903D9"
+			supplier   	"Logical View::OR"
+			quidu      	"413DC8040272"
+			is_navigable 	TRUE)
+		    (object Role "IAPBearer"
+			quid       	"413DC81903DA"
+			label      	"IAPBearer"
+			supplier   	"Logical View::IAPTable"
+			quidu      	"41373B5502E8")))
+	    (object Association "$UNNAMED$19"
+		quid       	"413DC8230178"
+		roles      	(list role_list
+		    (object Role "Id"
+			quid       	"413DC8240253"
+			label      	"Id"
+			supplier   	"Logical View::ModemBearerTable"
+			quidu      	"41373B8702F9"
+			is_navigable 	TRUE)
+		    (object Role "$UNNAMED$20"
+			quid       	"413DC8240254"
+			supplier   	"Logical View::OR"
+			quidu      	"413DC8040272")))
+	    (object Association "$UNNAMED$21"
+		quid       	"413DC82A01A7"
+		roles      	(list role_list
+		    (object Role "Id"
+			quid       	"413DC82B02D0"
+			label      	"Id"
+			supplier   	"Logical View::LANBearerTable"
+			quidu      	"41373B6E02D9"
+			is_navigable 	TRUE)
+		    (object Role "$UNNAMED$22"
+			quid       	"413DC82B02D1"
+			supplier   	"Logical View::OR"
+			quidu      	"413DC8040272")))
+	    (object Association "$UNNAMED$23"
+		quid       	"413DC82E039B"
+		roles      	(list role_list
+		    (object Role "Id"
+			quid       	"413DC83000EB"
+			label      	"Id"
+			supplier   	"Logical View::VirtualBearerTable"
+			quidu      	"41373BB902DA"
+			is_navigable 	TRUE)
+		    (object Role "$UNNAMED$24"
+			quid       	"413DC83000EC"
+			supplier   	"Logical View::OR"
+			quidu      	"413DC8040272")))
+	    (object Association "$UNNAMED$25"
+		quid       	"413DCC6E03D9"
+		roles      	(list role_list
+		    (object Role "$UNNAMED$26"
+			quid       	"413DCC70009D"
+			supplier   	"Logical View::OR"
+			quidu      	"413DC8040272"
+			is_navigable 	TRUE)
+		    (object Role "IAPService"
+			quid       	"413DCC7000AD"
+			label      	"IAPService"
+			supplier   	"Logical View::IAPTable"
+			quidu      	"41373B5502E8")))
+	    (object Association "$UNNAMED$27"
+		quid       	"413DCC7601C6"
+		roles      	(list role_list
+		    (object Role "Id"
+			quid       	"413DCC77012A"
+			label      	"Id"
+			supplier   	"Logical View::IncomingGPRSTable"
+			quidu      	"41373B5E0039"
+			is_navigable 	TRUE)
+		    (object Role "$UNNAMED$28"
+			quid       	"413DCC77012B"
+			supplier   	"Logical View::OR"
+			quidu      	"413DC8040272")))
+	    (object Association "$UNNAMED$29"
+		quid       	"413DCC7C031E"
+		roles      	(list role_list
+		    (object Role "Id"
+			quid       	"413DCC7D01A7"
+			label      	"Id"
+			supplier   	"Logical View::OutgoingGPRSTable"
+			quidu      	"41373B980172"
+			is_navigable 	TRUE)
+		    (object Role "$UNNAMED$30"
+			quid       	"413DCC7D01A8"
+			supplier   	"Logical View::OR"
+			quidu      	"413DC8040272")))
+	    (object Association "$UNNAMED$31"
+		quid       	"413DCC7F036C"
+		roles      	(list role_list
+		    (object Role "Id"
+			quid       	"413DCC8001F5"
+			label      	"Id"
+			supplier   	"Logical View::DialInISPTable"
+			quidu      	"41373B3C02E8"
+			is_navigable 	TRUE)
+		    (object Role "$UNNAMED$32"
+			quid       	"413DCC8001F6"
+			supplier   	"Logical View::OR"
+			quidu      	"413DC8040272")))
+	    (object Association "$UNNAMED$33"
+		quid       	"413DCC820224"
+		roles      	(list role_list
+		    (object Role "Id"
+			quid       	"413DCC8301A7"
+			label      	"Id"
+			supplier   	"Logical View::CDMA2000PacketServiceTable"
+			quidu      	"4135E7C10203"
+			is_navigable 	TRUE)
+		    (object Role "$UNNAMED$34"
+			quid       	"413DCC8301B7"
+			supplier   	"Logical View::OR"
+			quidu      	"413DC8040272")))
+	    (object Association "$UNNAMED$35"
+		quid       	"413DCC8E0178"
+		roles      	(list role_list
+		    (object Role "Id"
+			quid       	"413DCC90036C"
+			label      	"Id"
+			supplier   	"Logical View::LANServiceTable"
+			quidu      	"41373B770049"
+			is_navigable 	TRUE)
+		    (object Role "$UNNAMED$36"
+			quid       	"413DCC90037C"
+			supplier   	"Logical View::OR"
+			quidu      	"413DC8040272")))
+	    (object Association "$UNNAMED$37"
+		quid       	"413DCC940020"
+		roles      	(list role_list
+		    (object Role "$UNNAMED$38"
+			quid       	"413DCC97010B"
+			supplier   	"Logical View::DialOutISPTable"
+			quidu      	"41373B450057"
+			is_navigable 	TRUE)
+		    (object Role "$UNNAMED$39"
+			quid       	"413DCC97011A"
+			supplier   	"Logical View::OR"
+			quidu      	"413DC8040272")))
+	    (object Association "$UNNAMED$40"
+		quid       	"413DCC9B03AB"
+		roles      	(list role_list
+		    (object Role "Id"
+			quid       	"413DCC9D009D"
+			label      	"Id"
+			supplier   	"Logical View::VpnServiceTable"
+			quidu      	"41373BC2004A"
+			is_navigable 	TRUE)
+		    (object Role "$UNNAMED$41"
+			quid       	"413DCC9D009E"
+			supplier   	"Logical View::OR"
+			quidu      	"413DC8040272")))
+	    (object Association "$UNNAMED$42"
+		quid       	"413F09DD0085"
+		roles      	(list role_list
+		    (object Role "$UNNAMED$43"
+			quid       	"413F09DD0392"
+			supplier   	"Logical View::LocationTable"
+			quidu      	"41373B7F0191"
+			is_navigable 	TRUE)
+		    (object Role "$UNNAMED$44"
+			quid       	"413F09DD03A2"
+			supplier   	"Logical View::GlobalSettingsTable"
+			quidu      	"41373B4D01A0")))
+	    (object Association "$UNNAMED$45"
+		quid       	"413F0A130132"
+		roles      	(list role_list
+		    (object Role "Id"
+			quid       	"413F0A14023B"
+			label      	"Id"
+			supplier   	"Logical View::LocationTable"
+			quidu      	"41373B7F0191"
+			is_navigable 	TRUE)
+		    (object Role "LocationForPhoneServicesAndSMS"
+			quid       	"413F0A14023C"
+			label      	"LocationForPhoneServicesAndSMS"
+			supplier   	"Logical View::GlobalSettingsTable"
+			quidu      	"41373B4D01A0")))
+	    (object Association "$UNNAMED$46"
+		quid       	"413F0AEA0165"
+		roles      	(list role_list
+		    (object Role "Id"
+			quid       	"413F0AEB0349"
+			label      	"Id"
+			supplier   	"Logical View::ModemBearerTable"
+			quidu      	"41373B8702F9"
+			is_navigable 	TRUE)
+		    (object Role "ModemForDataAndFax"
+			quid       	"413F0AEB034A"
+			label      	"ModemForDataAndFax"
+			supplier   	"Logical View::GlobalSettingsTable"
+			quidu      	"41373B4D01A0")))
+	    (object Association "$UNNAMED$47"
+		quid       	"413F0AEE03D6"
+		roles      	(list role_list
+		    (object Role "Id"
+			quid       	"413F0AF0005B"
+			label      	"Id"
+			supplier   	"Logical View::ModemBearerTable"
+			quidu      	"41373B8702F9"
+			is_navigable 	TRUE)
+		    (object Role "ModemForPhoneServicesAndSMS"
+			quid       	"413F0AF0006B"
+			label      	"ModemForPhoneServicesAndSMS"
+			supplier   	"Logical View::GlobalSettingsTable"
+			quidu      	"41373B4D01A0")))
+	    (object Association "$UNNAMED$48"
+		quid       	"413F2BF80080"
+		roles      	(list role_list
+		    (object Role "Id"
+			quid       	"413F2BF803CC"
+			label      	"Id"
+			supplier   	"Logical View::WLANServiceExtensionTable"
+			quidu      	"41373BE301E1"
+			is_navigable 	TRUE)
+		    (object Role "ServiceExtensionRecordId"
+			quid       	"413F2BF803CD"
+			label      	"ServiceExtensionRecordId"
+			supplier   	"Logical View::LANServiceTable"
+			quidu      	"41373B770049"))))
+	logical_presentations 	(list unit_reference_list
+	    (object ClassDiagram "Main"
+		quid       	"4135D7DB036A"
+		title      	"Main"
+		zoom       	90
+		max_height 	28350
+		max_width  	21600
+		origin_x   	862
+		origin_y   	0
+		items      	(list diagram_item_list
+		    (object ClassView "Class" "Logical View::AgentLookupTable" @1
+			ShowCompartmentStereotypes 	TRUE
+			IncludeOperation 	TRUE
+			location   	(464, 2528)
+			label      	(object ItemLabel
+			    Parent_View 	@1
+			    location   	(276, 2478)
+			    fill_color 	13434879
+			    nlines     	1
+			    max_width  	376
+			    justify    	0
+			    label      	"AgentLookupTable")
+			icon_style 	"Icon"
+			line_color 	3342489
+			fill_color 	13434879
+			quidu      	"4135E73201C5"
+			width      	394
+			height     	122
+			annotation 	8
+			autoResize 	TRUE)
+		    (object ClassView "Class" "Logical View::DefaultCDMA2000Table" @2
+			ShowCompartmentStereotypes 	TRUE
+			IncludeOperation 	TRUE
+			location   	(1216, 2528)
+			label      	(object ItemLabel
+			    Parent_View 	@2
+			    location   	(987, 2482)
+			    fill_color 	13434879
+			    nlines     	1
+			    max_width  	458
+			    justify    	0
+			    label      	"DefaultCDMA2000Table")
+			icon_style 	"Icon"
+			line_color 	3342489
+			fill_color 	13434879
+			quidu      	"4135E8DD03B9"
+			width      	476
+			height     	114
+			annotation 	8
+			autoResize 	TRUE)
+		    (object ClassView "Class" "Logical View::DefaultGPRSTable" @3
+			ShowCompartmentStereotypes 	TRUE
+			IncludeOperation 	TRUE
+			location   	(2032, 2512)
+			label      	(object ItemLabel
+			    Parent_View 	@3
+			    location   	(1842, 2462)
+			    fill_color 	13434879
+			    nlines     	1
+			    max_width  	380
+			    justify    	0
+			    label      	"DefaultGPRSTable")
+			icon_style 	"Icon"
+			line_color 	3342489
+			fill_color 	13434879
+			quidu      	"41373B22024B"
+			width      	398
+			height     	122
+			annotation 	8
+			autoResize 	TRUE)
+		    (object ClassView "Class" "Logical View::SecureSocketProtoTable" @4
+			ShowCompartmentStereotypes 	TRUE
+			IncludeOperation 	TRUE
+			location   	(2832, 2512)
+			label      	(object ItemLabel
+			    Parent_View 	@4
+			    location   	(2593, 2462)
+			    fill_color 	13434879
+			    nlines     	1
+			    max_width  	478
+			    justify    	0
+			    label      	"SecureSocketProtoTable")
+			icon_style 	"Icon"
+			line_color 	3342489
+			fill_color 	13434879
+			quidu      	"41373BB10173"
+			width      	496
+			height     	122
+			annotation 	8
+			autoResize 	TRUE)
+		    (object ClassView "Class" "Logical View::LANBearerTable" @5
+			ShowCompartmentStereotypes 	TRUE
+			IncludeOperation 	TRUE
+			location   	(2672, 2208)
+			label      	(object ItemLabel
+			    Parent_View 	@5
+			    location   	(2511, 2135)
+			    fill_color 	13434879
+			    nlines     	1
+			    max_width  	322
+			    justify    	0
+			    label      	"LANBearerTable")
+			icon_style 	"Icon"
+			line_color 	3342489
+			fill_color 	13434879
+			quidu      	"41373B6E02D9"
+			compartment 	(object Compartment
+			    Parent_View 	@5
+			    location   	(2511, 2191)
+			    icon_style 	"Icon"
+			    fill_color 	13434879
+			    anchor     	2
+			    nlines     	2
+			    max_width  	251
+			    compartmentItems 	(list Compartment
+				"- Id : TUint32"))
+			width      	340
+			height     	168
+			annotation 	8
+			autoResize 	TRUE)
+		    (object ClassView "Class" "Logical View::VirtualBearerTable" @6
+			ShowCompartmentStereotypes 	TRUE
+			IncludeOperation 	TRUE
+			location   	(3088, 2208)
+			label      	(object ItemLabel
+			    Parent_View 	@6
+			    location   	(2899, 2131)
+			    fill_color 	13434879
+			    nlines     	1
+			    max_width  	378
+			    justify    	0
+			    label      	"VirtualBearerTable")
+			icon_style 	"Icon"
+			line_color 	3342489
+			fill_color 	13434879
+			quidu      	"41373BB902DA"
+			compartment 	(object Compartment
+			    Parent_View 	@6
+			    location   	(2899, 2184)
+			    icon_style 	"Icon"
+			    fill_color 	13434879
+			    anchor     	2
+			    nlines     	2
+			    max_width  	265
+			    compartmentItems 	(list Compartment
+				"- Id : TUint32"))
+			width      	396
+			height     	178
+			annotation 	8
+			autoResize 	TRUE)
+		    (object ClassView "Class" "Logical View::ConnectionPreferencesTable" @7
+			IncludeOperation 	TRUE
+			location   	(2496, 1232)
+			label      	(object ItemLabel
+			    Parent_View 	@7
+			    location   	(2197, 1154)
+			    fill_color 	13434879
+			    nlines     	1
+			    max_width  	598
+			    justify    	0
+			    label      	"ConnectionPreferencesTable")
+			icon_style 	"Icon"
+			line_color 	3342489
+			fill_color 	13434879
+			quidu      	"4135E8B80222"
+			compartment 	(object Compartment
+			    Parent_View 	@7
+			    location   	(2197, 1207)
+			    icon_style 	"Icon"
+			    fill_color 	13434879
+			    anchor     	2
+			    nlines     	2
+			    max_width  	609
+			    compartmentItems 	(list Compartment
+				"- IAPRef : TableEntryNameType"))
+			width      	616
+			height     	180
+			annotation 	8
+			autoResize 	TRUE)
+		    (object ClassView "Class" "Logical View::WAPIPBearerTable" @8
+			ShowCompartmentStereotypes 	TRUE
+			IncludeOperation 	TRUE
+			location   	(1536, 1360)
+			label      	(object ItemLabel
+			    Parent_View 	@8
+			    location   	(1213, 1264)
+			    fill_color 	13434879
+			    nlines     	1
+			    max_width  	646
+			    justify    	0
+			    label      	"WAPIPBearerTable")
+			icon_style 	"Icon"
+			line_color 	3342489
+			fill_color 	13434879
+			quidu      	"41373BD2030A"
+			compartment 	(object Compartment
+			    Parent_View 	@8
+			    location   	(1213, 1320)
+			    icon_style 	"Icon"
+			    fill_color 	13434879
+			    anchor     	2
+			    nlines     	3
+			    max_width  	643
+			    compartmentItems 	(list Compartment
+				"- AccessPoint : TableEntryNameType"
+				"- IAPRef : TableEntryNameType"))
+			width      	664
+			height     	214
+			annotation 	8
+			autoResize 	TRUE)
+		    (object ClassView "Class" "Logical View::ChargecardTable" @9
+			ShowCompartmentStereotypes 	TRUE
+			IncludeOperation 	TRUE
+			location   	(3168, 1248)
+			label      	(object ItemLabel
+			    Parent_View 	@9
+			    location   	(2993, 1170)
+			    fill_color 	13434879
+			    nlines     	1
+			    max_width  	350
+			    justify    	0
+			    label      	"ChargecardTable")
+			icon_style 	"Icon"
+			line_color 	3342489
+			fill_color 	13434879
+			quidu      	"4135E7D101E4"
+			compartment 	(object Compartment
+			    Parent_View 	@9
+			    location   	(2993, 1223)
+			    icon_style 	"Icon"
+			    fill_color 	13434879
+			    anchor     	2
+			    nlines     	2
+			    max_width  	265
+			    compartmentItems 	(list Compartment
+				"- Id : TUint32"))
+			width      	368
+			height     	180
+			annotation 	8
+			autoResize 	TRUE)
+		    (object ClassView "Class" "Logical View::ProxyTable" @10
+			ShowCompartmentStereotypes 	TRUE
+			IncludeOperation 	TRUE
+			location   	(2864, 1632)
+			label      	(object ItemLabel
+			    Parent_View 	@10
+			    location   	(2565, 1554)
+			    fill_color 	13434879
+			    nlines     	1
+			    max_width  	598
+			    justify    	0
+			    label      	"ProxyTable")
+			icon_style 	"Icon"
+			line_color 	3342489
+			fill_color 	13434879
+			quidu      	"41373BA9001B"
+			compartment 	(object Compartment
+			    Parent_View 	@10
+			    location   	(2565, 1610)
+			    icon_style 	"Icon"
+			    fill_color 	13434879
+			    anchor     	2
+			    nlines     	2
+			    max_width  	609
+			    compartmentItems 	(list Compartment
+				"- ISPRef : TableEntryNameType"))
+			width      	616
+			height     	180
+			annotation 	8
+			autoResize 	TRUE)
+		    (object ClassView "Class" "Logical View::IncomingGPRSTable" @11
+			ShowCompartmentStereotypes 	TRUE
+			IncludeOperation 	TRUE
+			location   	(816, 144)
+			label      	(object ItemLabel
+			    Parent_View 	@11
+			    location   	(611, 71)
+			    fill_color 	13434879
+			    nlines     	1
+			    max_width  	410
+			    justify    	0
+			    label      	"IncomingGPRSTable")
+			icon_style 	"Icon"
+			line_color 	3342489
+			fill_color 	13434879
+			quidu      	"41373B5E0039"
+			compartment 	(object Compartment
+			    Parent_View 	@11
+			    location   	(611, 127)
+			    icon_style 	"Icon"
+			    fill_color 	13434879
+			    anchor     	2
+			    nlines     	2
+			    max_width  	251
+			    compartmentItems 	(list Compartment
+				"- Id : TUint32"))
+			width      	428
+			height     	168
+			annotation 	8
+			autoResize 	TRUE)
+		    (object ClassView "Class" "Logical View::OutgoingGPRSTable" @12
+			ShowCompartmentStereotypes 	TRUE
+			IncludeOperation 	TRUE
+			location   	(1328, 144)
+			label      	(object ItemLabel
+			    Parent_View 	@12
+			    location   	(1124, 71)
+			    fill_color 	13434879
+			    nlines     	1
+			    max_width  	408
+			    justify    	0
+			    label      	"OutgoingGPRSTable")
+			icon_style 	"Icon"
+			line_color 	3342489
+			fill_color 	13434879
+			quidu      	"41373B980172"
+			compartment 	(object Compartment
+			    Parent_View 	@12
+			    location   	(1124, 127)
+			    icon_style 	"Icon"
+			    fill_color 	13434879
+			    anchor     	2
+			    nlines     	2
+			    max_width  	251
+			    compartmentItems 	(list Compartment
+				"- Id : TUint32"))
+			width      	426
+			height     	168
+			annotation 	8
+			autoResize 	TRUE)
+		    (object ClassView "Class" "Logical View::DialInISPTable" @13
+			ShowCompartmentStereotypes 	TRUE
+			IncludeOperation 	TRUE
+			location   	(1776, 144)
+			label      	(object ItemLabel
+			    Parent_View 	@13
+			    location   	(1630, 71)
+			    fill_color 	13434879
+			    nlines     	1
+			    max_width  	292
+			    justify    	0
+			    label      	"DialInISPTable")
+			icon_style 	"Icon"
+			line_color 	3342489
+			fill_color 	13434879
+			quidu      	"41373B3C02E8"
+			compartment 	(object Compartment
+			    Parent_View 	@13
+			    location   	(1630, 127)
+			    icon_style 	"Icon"
+			    fill_color 	13434879
+			    anchor     	2
+			    nlines     	2
+			    max_width  	251
+			    compartmentItems 	(list Compartment
+				"- Id : TUint32"))
+			width      	310
+			height     	168
+			annotation 	8
+			autoResize 	TRUE)
+		    (object ClassView "Class" "Logical View::CDMA2000PacketServiceTable" @14
+			ShowCompartmentStereotypes 	TRUE
+			IncludeOperation 	TRUE
+			location   	(2336, 144)
+			label      	(object ItemLabel
+			    Parent_View 	@14
+			    location   	(2031, 71)
+			    fill_color 	13434879
+			    nlines     	1
+			    max_width  	610
+			    justify    	0
+			    label      	"CDMA2000PacketServiceTable")
+			icon_style 	"Icon"
+			line_color 	3342489
+			fill_color 	13434879
+			quidu      	"4135E7C10203"
+			compartment 	(object Compartment
+			    Parent_View 	@14
+			    location   	(2031, 127)
+			    icon_style 	"Icon"
+			    fill_color 	13434879
+			    anchor     	2
+			    nlines     	2
+			    max_width  	251
+			    compartmentItems 	(list Compartment
+				"- Id : TUint32"))
+			width      	628
+			height     	168
+			annotation 	8
+			autoResize 	TRUE)
+		    (object ClassView "Class" "Logical View::DialOutISPTable" @15
+			ShowCompartmentStereotypes 	TRUE
+			location   	(2864, 832)
+			label      	(object ItemLabel
+			    Parent_View 	@15
+			    location   	(2497, 730)
+			    fill_color 	13434879
+			    nlines     	1
+			    max_width  	734
+			    justify    	0
+			    label      	"DialOutISPTable")
+			icon_style 	"Icon"
+			line_color 	3342489
+			fill_color 	13434879
+			quidu      	"41373B450057"
+			compartment 	(object Compartment
+			    Parent_View 	@15
+			    location   	(2497, 786)
+			    icon_style 	"Icon"
+			    fill_color 	13434879
+			    anchor     	2
+			    nlines     	3
+			    max_width  	750
+			    compartmentItems 	(list Compartment
+				"- Id : TUint32"
+				"- ChargecardRef : TableEntryNameType"))
+			width      	752
+			height     	228
+			annotation 	8
+			autoResize 	TRUE)
+		    (object AssociationViewNew "$UNNAMED$6" @16
+			location   	(3023, 1051)
+			stereotype 	TRUE
+			line_color 	3342489
+			quidu      	"413C79830307"
+			roleview_list 	(list RoleViews
+			    (object RoleView "Id" @17
+				Parent_View 	@16
+				location   	(1631, -613)
+				label      	(object SegLabel @18
+				    Parent_View 	@17
+				    location   	(3019, 1111)
+				    anchor     	1
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	60
+				    justify    	0
+				    label      	"+Id"
+				    pctDist    	0.421572
+				    height     	40
+				    orientation 	1)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"413C79850096"
+				client     	@16
+				supplier   	@9
+				line_style 	0)
+			    (object RoleView "ChargecardRef" @19
+				Parent_View 	@16
+				location   	(1631, -613)
+				label      	(object SegLabel @20
+				    Parent_View 	@19
+				    location   	(3136, 1005)
+				    anchor     	1
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	297
+				    justify    	0
+				    label      	"+ChargecardRef"
+				    pctDist    	-0.217557
+				    height     	119
+				    orientation 	1)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"413C79850097"
+				client     	@16
+				supplier   	@15
+				line_style 	0)))
+		    (object AssociationViewNew "$UNNAMED$7" @21
+			location   	(2864, 1243)
+			stereotype 	TRUE
+			line_color 	3342489
+			quidu      	"413C860203C6"
+			roleview_list 	(list RoleViews
+			    (object RoleView "Id" @22
+				Parent_View 	@21
+				location   	(1472, -677)
+				label      	(object SegLabel @23
+				    Parent_View 	@22
+				    location   	(2824, 989)
+				    anchor     	1
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	60
+				    justify    	0
+				    label      	"+Id"
+				    pctDist    	0.859016
+				    height     	41
+				    orientation 	0)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"413C8605002C"
+				client     	@21
+				supplier   	@15
+				line_style 	0)
+			    (object RoleView "ISPRef" @24
+				Parent_View 	@21
+				location   	(1472, -677)
+				label      	(object SegLabel @25
+				    Parent_View 	@24
+				    location   	(2939, 1504)
+				    anchor     	1
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	149
+				    justify    	0
+				    label      	"+ISPRef"
+				    pctDist    	0.875817
+				    height     	75
+				    orientation 	0)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"413C8605002D"
+				client     	@21
+				supplier   	@10
+				line_style 	0)))
+		    (object ClassView "Class" "Logical View::VpnServiceTable" @26
+			ShowCompartmentStereotypes 	TRUE
+			IncludeOperation 	TRUE
+			location   	(480, 464)
+			label      	(object ItemLabel
+			    Parent_View 	@26
+			    location   	(124, 362)
+			    fill_color 	13434879
+			    nlines     	1
+			    max_width  	712
+			    justify    	0
+			    label      	"VpnServiceTable")
+			icon_style 	"Icon"
+			line_color 	3342489
+			fill_color 	13434879
+			quidu      	"41373BC2004A"
+			compartment 	(object Compartment
+			    Parent_View 	@26
+			    location   	(124, 418)
+			    icon_style 	"Icon"
+			    fill_color 	13434879
+			    anchor     	2
+			    nlines     	3
+			    max_width  	737
+			    compartmentItems 	(list Compartment
+				"- HomeIAP : TableEntryNameType"
+				"- HomeNetwork : TableEntryNameType"))
+			width      	730
+			height     	228
+			annotation 	8
+			autoResize 	TRUE)
+		    (object ClassView "Class" "Logical View::IAPTable" @27
+			ShowCompartmentStereotypes 	TRUE
+			IncludeOperation 	TRUE
+			location   	(1536, 912)
+			label      	(object ItemLabel
+			    Parent_View 	@27
+			    location   	(1193, 739)
+			    fill_color 	13434879
+			    nlines     	1
+			    max_width  	686
+			    justify    	0
+			    label      	"IAPTable")
+			icon_style 	"Icon"
+			line_color 	3342489
+			fill_color 	13434879
+			quidu      	"41373B5502E8"
+			compartment 	(object Compartment
+			    Parent_View 	@27
+			    location   	(1193, 795)
+			    icon_style 	"Icon"
+			    fill_color 	13434879
+			    anchor     	2
+			    nlines     	6
+			    max_width  	696
+			    compartmentItems 	(list Compartment
+				"- Id : TUint32"
+				"- IAPService : TableEntryNameType"
+				"- IAPBearer : TableEntryNameType"
+				"- IAPNetwork : TableEntryNameType"
+				"- LocationRef : TableEntryNameType"))
+			width      	704
+			height     	370
+			annotation 	8
+			autoResize 	TRUE)
+		    (object AssociationViewNew "$UNNAMED$3" @28
+			location   	(2056, 1085)
+			stereotype 	TRUE
+			line_color 	3342489
+			quidu      	"413C6D4A03BE"
+			roleview_list 	(list RoleViews
+			    (object RoleView "Id" @29
+				Parent_View 	@28
+				location   	(1544, 877)
+				label      	(object SegLabel @30
+				    Parent_View 	@29
+				    location   	(1970, 1000)
+				    anchor     	1
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	149
+				    justify    	0
+				    label      	"+Id"
+				    pctDist    	0.676083
+				    height     	55
+				    orientation 	1)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"413C6D4B02F3"
+				client     	@28
+				supplier   	@27
+				line_style 	0)
+			    (object RoleView "IAPRef" @31
+				Parent_View 	@28
+				location   	(1544, 877)
+				label      	(object SegLabel @32
+				    Parent_View 	@31
+				    location   	(2126, 1160)
+				    anchor     	1
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	149
+				    justify    	0
+				    label      	"+IAPRef"
+				    pctDist    	0.501133
+				    height     	49
+				    orientation 	1)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"413C6D4B0302"
+				client     	@28
+				supplier   	@7
+				line_style 	0)))
+		    (object AssociationViewNew "$UNNAMED$12" @33
+			location   	(1536, 1174)
+			stereotype 	TRUE
+			line_color 	3342489
+			quidu      	"413D933302BB"
+			roleview_list 	(list RoleViews
+			    (object RoleView "Id" @34
+				Parent_View 	@33
+				location   	(1008, -506)
+				label      	(object SegLabel @35
+				    Parent_View 	@34
+				    location   	(1495, 1113)
+				    anchor     	1
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	60
+				    justify    	0
+				    label      	"+Id"
+				    pctDist    	0.800000
+				    height     	42
+				    orientation 	0)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"413D933402DA"
+				client     	@33
+				supplier   	@27
+				line_style 	0)
+			    (object RoleView "IAPRef" @36
+				Parent_View 	@33
+				location   	(1008, -506)
+				label      	(object SegLabel @37
+				    Parent_View 	@36
+				    location   	(1609, 1210)
+				    anchor     	1
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	149
+				    justify    	0
+				    label      	"+IAPRef"
+				    pctDist    	0.458706
+				    height     	73
+				    orientation 	0)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"413D933402DB"
+				client     	@33
+				supplier   	@8
+				line_style 	0)))
+		    (object AssociationViewNew "$UNNAMED$8" @38
+			location   	(966, 670)
+			stereotype 	TRUE
+			line_color 	3342489
+			quidu      	"413D7C6203D4"
+			roleview_list 	(list RoleViews
+			    (object RoleView "Id" @39
+				Parent_View 	@38
+				location   	(550, 350)
+				label      	(object SegLabel @40
+				    Parent_View 	@39
+				    location   	(1110, 702)
+				    anchor     	1
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	60
+				    justify    	0
+				    label      	"+Id"
+				    pctDist    	0.810238
+				    height     	28
+				    orientation 	0)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"413D7C6400A7"
+				client     	@38
+				supplier   	@27
+				line_style 	0)
+			    (object RoleView "HomeIAP" @41
+				Parent_View 	@38
+				location   	(550, 350)
+				label      	(object SegLabel @42
+				    Parent_View 	@41
+				    location   	(731, 625)
+				    anchor     	1
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	211
+				    justify    	0
+				    label      	"+HomeIAP"
+				    pctDist    	1.007493
+				    height     	51
+				    orientation 	0)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"413D7C6400A8"
+				client     	@38
+				supplier   	@26
+				line_style 	0)))
+		    (object ClassView "Class" "Logical View::WAPAccessPointTable" @43
+			ShowCompartmentStereotypes 	TRUE
+			IncludeOperation 	TRUE
+			location   	(1952, 1952)
+			label      	(object ItemLabel
+			    Parent_View 	@43
+			    location   	(1725, 1875)
+			    fill_color 	13434879
+			    nlines     	1
+			    max_width  	454
+			    justify    	0
+			    label      	"WAPAccessPointTable")
+			icon_style 	"Icon"
+			line_color 	3342489
+			fill_color 	13434879
+			quidu      	"41373BCA01A2"
+			compartment 	(object Compartment
+			    Parent_View 	@43
+			    location   	(1725, 1928)
+			    icon_style 	"Icon"
+			    fill_color 	13434879
+			    anchor     	2
+			    nlines     	2
+			    max_width  	265
+			    compartmentItems 	(list Compartment
+				"- Id : TUint32"))
+			width      	472
+			height     	178
+			annotation 	8
+			autoResize 	TRUE)
+		    (object AssociationViewNew "$UNNAMED$10" @44
+			location   	(1949, 1623)
+			stereotype 	TRUE
+			line_color 	3342489
+			quidu      	"413D81A702DA"
+			roleview_list 	(list RoleViews
+			    (object RoleView "Id" @45
+				Parent_View 	@44
+				location   	(1421, -57)
+				label      	(object SegLabel @46
+				    Parent_View 	@45
+				    location   	(1910, 1813)
+				    anchor     	1
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	60
+				    justify    	0
+				    label      	"+Id"
+				    pctDist    	0.800000
+				    height     	42
+				    orientation 	1)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"413D81A9028C"
+				client     	@44
+				supplier   	@43
+				line_style 	0)
+			    (object RoleView "AccessPoint" @47
+				Parent_View 	@44
+				location   	(1421, -57)
+				label      	(object SegLabel @48
+				    Parent_View 	@47
+				    location   	(1950, 1499)
+				    anchor     	1
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	255
+				    justify    	0
+				    label      	"+AccessPoint"
+				    pctDist    	0.316264
+				    height     	59
+				    orientation 	1)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"413D81A9028D"
+				client     	@44
+				supplier   	@8
+				vertices   	(list Points
+				    (1949, 1623)
+				    (1948, 1563)
+				    (1754, 1467))
+				line_style 	0)))
+		    (object ClassView "Class" "Logical View::WAPSMSBearerTable" @49
+			ShowCompartmentStereotypes 	TRUE
+			IncludeOperation 	TRUE
+			location   	(1264, 1648)
+			label      	(object ItemLabel
+			    Parent_View 	@49
+			    location   	(923, 1570)
+			    fill_color 	13434879
+			    nlines     	1
+			    max_width  	682
+			    justify    	0
+			    label      	"WAPSMSBearerTable")
+			icon_style 	"Icon"
+			line_color 	3342489
+			fill_color 	13434879
+			quidu      	"41373BDB0099"
+			compartment 	(object Compartment
+			    Parent_View 	@49
+			    location   	(923, 1623)
+			    icon_style 	"Icon"
+			    fill_color 	13434879
+			    anchor     	2
+			    nlines     	2
+			    max_width  	715
+			    compartmentItems 	(list Compartment
+				"- AccessPoint : TableEntryNameType"))
+			width      	700
+			height     	180
+			annotation 	8
+			autoResize 	TRUE)
+		    (object AssociationViewNew "$UNNAMED$11" @50
+			location   	(1609, 1800)
+			stereotype 	TRUE
+			line_color 	3342489
+			quidu      	"413D81B303B5"
+			roleview_list 	(list RoleViews
+			    (object RoleView "Id" @51
+				Parent_View 	@50
+				location   	(105, -552)
+				label      	(object SegLabel @52
+				    Parent_View 	@51
+				    location   	(1740, 1815)
+				    anchor     	1
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	60
+				    justify    	0
+				    label      	"+Id"
+				    pctDist    	0.788732
+				    height     	39
+				    orientation 	0)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"413D81B70088"
+				client     	@50
+				supplier   	@43
+				line_style 	0)
+			    (object RoleView "AccessPoint" @53
+				Parent_View 	@50
+				location   	(105, -552)
+				label      	(object SegLabel @54
+				    Parent_View 	@53
+				    location   	(1625, 1769)
+				    anchor     	1
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	255
+				    justify    	0
+				    label      	"+AccessPoint"
+				    pctDist    	-0.023588
+				    height     	36
+				    orientation 	1)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"413D81B70089"
+				client     	@50
+				supplier   	@49
+				line_style 	0)))
+		    (object ClassView "Class" "Logical View::NetworkTable" @55
+			ShowCompartmentStereotypes 	TRUE
+			IncludeOperation 	TRUE
+			location   	(272, 912)
+			label      	(object ItemLabel
+			    Parent_View 	@55
+			    location   	(133, 834)
+			    fill_color 	13434879
+			    nlines     	1
+			    max_width  	278
+			    justify    	0
+			    label      	"NetworkTable")
+			icon_style 	"Icon"
+			line_color 	3342489
+			fill_color 	13434879
+			quidu      	"41373B90003A"
+			compartment 	(object Compartment
+			    Parent_View 	@55
+			    location   	(133, 887)
+			    icon_style 	"Icon"
+			    fill_color 	13434879
+			    anchor     	2
+			    nlines     	2
+			    max_width  	265
+			    compartmentItems 	(list Compartment
+				"- Id : TUint32"))
+			width      	296
+			height     	180
+			annotation 	8
+			autoResize 	TRUE)
+		    (object AssociationViewNew "$UNNAMED$1" @56
+			location   	(801, 912)
+			stereotype 	TRUE
+			line_color 	3342489
+			quidu      	"413C5F1E01FB"
+			roleview_list 	(list RoleViews
+			    (object RoleView "Id" @57
+				Parent_View 	@56
+				location   	(-639, 16)
+				label      	(object SegLabel @58
+				    Parent_View 	@57
+				    location   	(464, 966)
+				    anchor     	1
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	60
+				    justify    	0
+				    label      	"+Id"
+				    pctDist    	0.733333
+				    height     	54
+				    orientation 	0)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"413C5F1F0391"
+				client     	@56
+				supplier   	@55
+				line_style 	0)
+			    (object RoleView "IAPNetwork" @59
+				Parent_View 	@56
+				location   	(-639, 16)
+				label      	(object SegLabel @60
+				    Parent_View 	@59
+				    location   	(1057, 874)
+				    anchor     	1
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	240
+				    justify    	0
+				    label      	"+IAPNetwork"
+				    pctDist    	0.734043
+				    height     	39
+				    orientation 	0)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"413C5F1F0392"
+				client     	@56
+				supplier   	@27
+				line_style 	0)))
+		    (object AssociationViewNew "$UNNAMED$9" @61
+			location   	(370, 699)
+			stereotype 	TRUE
+			line_color 	3342489
+			quidu      	"413D7CB00173"
+			roleview_list 	(list RoleViews
+			    (object RoleView "Id" @62
+				Parent_View 	@61
+				location   	(-46, 379)
+				label      	(object SegLabel @63
+				    Parent_View 	@62
+				    location   	(298, 757)
+				    anchor     	1
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	60
+				    justify    	0
+				    label      	"+Id"
+				    pctDist    	0.800000
+				    height     	42
+				    orientation 	1)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"413D7CB10357"
+				client     	@61
+				supplier   	@55
+				line_style 	0)
+			    (object RoleView "HomeNetwork" @64
+				Parent_View 	@61
+				location   	(-46, 379)
+				label      	(object SegLabel @65
+				    Parent_View 	@64
+				    location   	(299, 545)
+				    anchor     	1
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	284
+				    justify    	0
+				    label      	"+HomeNetwork"
+				    pctDist    	0.829457
+				    height     	130
+				    orientation 	0)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"413D7CB10358"
+				client     	@61
+				supplier   	@26
+				line_style 	0)))
+		    (object ClassView "Class" "Logical View::LocationTable" @66
+			ShowCompartmentStereotypes 	TRUE
+			IncludeOperation 	TRUE
+			location   	(784, 1264)
+			label      	(object ItemLabel
+			    Parent_View 	@66
+			    location   	(643, 1191)
+			    fill_color 	13434879
+			    nlines     	1
+			    max_width  	282
+			    justify    	0
+			    label      	"LocationTable")
+			icon_style 	"Icon"
+			line_color 	3342489
+			fill_color 	13434879
+			quidu      	"41373B7F0191"
+			compartment 	(object Compartment
+			    Parent_View 	@66
+			    location   	(643, 1244)
+			    icon_style 	"Icon"
+			    fill_color 	13434879
+			    anchor     	2
+			    nlines     	2
+			    max_width  	265
+			    compartmentItems 	(list Compartment
+				"- Id : TUint32"))
+			width      	300
+			height     	168
+			annotation 	8
+			autoResize 	TRUE)
+		    (object AssociationViewNew "$UNNAMED$4" @67
+			location   	(1058, 1134)
+			stereotype 	TRUE
+			line_color 	3342489
+			quidu      	"413C70B301C3"
+			roleview_list 	(list RoleViews
+			    (object RoleView "Id" @68
+				Parent_View 	@67
+				location   	(-14, 238)
+				label      	(object SegLabel @69
+				    Parent_View 	@68
+				    location   	(981, 1232)
+				    anchor     	1
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	60
+				    justify    	0
+				    label      	"+Id"
+				    pctDist    	0.788852
+				    height     	56
+				    orientation 	0)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"413C70B501D3"
+				client     	@67
+				supplier   	@66
+				line_style 	0)
+			    (object RoleView "LocationRef" @70
+				Parent_View 	@67
+				location   	(-14, 238)
+				label      	(object SegLabel @71
+				    Parent_View 	@70
+				    location   	(1055, 1070)
+				    anchor     	1
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	242
+				    justify    	0
+				    label      	"+LocationRef"
+				    pctDist    	0.193585
+				    height     	60
+				    orientation 	0)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"413C70B501E2"
+				client     	@67
+				supplier   	@27
+				line_style 	0)))
+		    (object ClassView "Class" "Logical View::OR" @72
+			ShowCompartmentStereotypes 	TRUE
+			IncludeAttribute 	TRUE
+			IncludeOperation 	TRUE
+			location   	(2224, 1488)
+			label      	(object ItemLabel
+			    Parent_View 	@72
+			    location   	(2223, 1596)
+			    anchor_loc 	1
+			    nlines     	2
+			    max_width  	232
+			    justify    	0
+			    label      	"OR")
+			icon       	"Interface"
+			icon_style 	"Icon"
+			line_color 	3342489
+			fill_color 	13434879
+			quidu      	"413DC8040272"
+			width      	58
+			height     	58
+			annotation 	8
+			autoResize 	TRUE)
+		    (object AssociationViewNew "$UNNAMED$21" @73
+			location   	(2429, 1818)
+			stereotype 	TRUE
+			line_color 	3342489
+			quidu      	"413DC82A01A7"
+			roleview_list 	(list RoleViews
+			    (object RoleView "Id" @74
+				Parent_View 	@73
+				location   	(237, 1258)
+				label      	(object SegLabel @75
+				    Parent_View 	@74
+				    location   	(2597, 1996)
+				    anchor     	1
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	60
+				    justify    	0
+				    label      	"+Id"
+				    pctDist    	0.665298
+				    height     	49
+				    orientation 	0)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"413DC82B02D0"
+				client     	@73
+				supplier   	@5
+				line_style 	0)
+			    (object RoleView "$UNNAMED$22" @76
+				Parent_View 	@73
+				location   	(237, 1258)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"413DC82B02D1"
+				client     	@73
+				supplier   	@72
+				line_style 	0)))
+		    (object AssociationViewNew "$UNNAMED$23" @77
+			location   	(2615, 1813)
+			stereotype 	TRUE
+			line_color 	3342489
+			quidu      	"413DC82E039B"
+			roleview_list 	(list RoleViews
+			    (object RoleView "Id" @78
+				Parent_View 	@77
+				location   	(423, 1253)
+				label      	(object SegLabel @79
+				    Parent_View 	@78
+				    location   	(2928, 2031)
+				    anchor     	1
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	60
+				    justify    	0
+				    label      	"+Id"
+				    pctDist    	0.637591
+				    height     	34
+				    orientation 	0)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"413DC83000EB"
+				client     	@77
+				supplier   	@6
+				line_style 	0)
+			    (object RoleView "$UNNAMED$24" @80
+				Parent_View 	@77
+				location   	(423, 1253)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"413DC83000EC"
+				client     	@77
+				supplier   	@72
+				line_style 	0)))
+		    (object AssociationViewNew "$UNNAMED$17" @81
+			location   	(1976, 1280)
+			stereotype 	TRUE
+			line_color 	3342489
+			quidu      	"413DC818009D"
+			roleview_list 	(list RoleViews
+			    (object RoleView "$UNNAMED$18" @82
+				Parent_View 	@81
+				location   	(392, 320)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"413DC81903D9"
+				client     	@81
+				supplier   	@72
+				line_style 	0)
+			    (object RoleView "IAPBearer" @83
+				Parent_View 	@81
+				location   	(392, 320)
+				label      	(object SegLabel @84
+				    Parent_View 	@83
+				    location   	(1927, 1142)
+				    anchor     	1
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	222
+				    justify    	0
+				    label      	"+IAPBearer"
+				    pctDist    	0.444052
+				    height     	75
+				    orientation 	1)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"413DC81903DA"
+				client     	@81
+				supplier   	@27
+				line_style 	0)))
+		    (object ClassView "Class" "Logical View::ModemBearerTable" @85
+			ShowCompartmentStereotypes 	TRUE
+			IncludeOperation 	TRUE
+			location   	(2224, 2208)
+			label      	(object ItemLabel
+			    Parent_View 	@85
+			    location   	(2028, 2135)
+			    fill_color 	13434879
+			    nlines     	1
+			    max_width  	392
+			    justify    	0
+			    label      	"ModemBearerTable")
+			icon_style 	"Icon"
+			line_color 	3342489
+			fill_color 	13434879
+			quidu      	"41373B8702F9"
+			compartment 	(object Compartment
+			    Parent_View 	@85
+			    location   	(2028, 2191)
+			    icon_style 	"Icon"
+			    fill_color 	13434879
+			    anchor     	2
+			    nlines     	2
+			    max_width  	251
+			    compartmentItems 	(list Compartment
+				"- Id : TUint32"))
+			width      	410
+			height     	168
+			annotation 	8
+			autoResize 	TRUE)
+		    (object AssociationViewNew "$UNNAMED$19" @86
+			location   	(2224, 1818)
+			stereotype 	TRUE
+			line_color 	3342489
+			quidu      	"413DC8230178"
+			roleview_list 	(list RoleViews
+			    (object RoleView "Id" @87
+				Parent_View 	@86
+				location   	(64, 1290)
+				label      	(object SegLabel @88
+				    Parent_View 	@87
+				    location   	(2281, 2078)
+				    anchor     	1
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	60
+				    justify    	0
+				    label      	"+Id"
+				    pctDist    	0.857342
+				    height     	57
+				    orientation 	0)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"413DC8240253"
+				client     	@86
+				supplier   	@85
+				line_style 	0)
+			    (object RoleView "$UNNAMED$20" @89
+				Parent_View 	@86
+				location   	(64, 1290)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"413DC8240254"
+				client     	@86
+				supplier   	@72
+				line_style 	0)))
+		    (object ClassView "Class" "Logical View::GlobalSettingsTable" @90
+			ShowCompartmentStereotypes 	TRUE
+			IncludeOperation 	TRUE
+			location   	(576, 2144)
+			label      	(object ItemLabel
+			    Parent_View 	@90
+			    location   	(29, 1923)
+			    fill_color 	13434879
+			    nlines     	1
+			    max_width  	1094
+			    justify    	0
+			    label      	"GlobalSettingsTable")
+			icon_style 	"Icon"
+			line_color 	3342489
+			fill_color 	13434879
+			quidu      	"41373B4D01A0"
+			compartment 	(object Compartment
+			    Parent_View 	@90
+			    location   	(29, 1979)
+			    icon_style 	"Icon"
+			    fill_color 	13434879
+			    anchor     	2
+			    nlines     	8
+			    max_width  	1128
+			    compartmentItems 	(list Compartment
+				"- WAPAccess : TableEntryNameType"
+				"- SmsBearer : TableEntryNameType"
+				"- LocationForDataAndFax : TableEntryNameType"
+				"- LocationForPhoneServicesAndSMS : TableEntryNameType"
+				"- DefaultNetwork : TableEntryNameType"
+				"- ModemForDataAndFax : Text"
+				"- ModemForPhoneServicesAndSMS : Text"))
+			width      	1112
+			height     	466
+			annotation 	8
+			autoResize 	TRUE)
+		    (object AssociationViewNew "$UNNAMED$13" @91
+			location   	(1423, 2025)
+			stereotype 	TRUE
+			line_color 	3342489
+			quidu      	"413D96150124"
+			roleview_list 	(list RoleViews
+			    (object RoleView "Id" @92
+				Parent_View 	@91
+				location   	(-337, 169)
+				label      	(object SegLabel @93
+				    Parent_View 	@92
+				    location   	(1684, 2031)
+				    anchor     	1
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	60
+				    justify    	0
+				    label      	"+Id"
+				    pctDist    	0.790055
+				    height     	41
+				    orientation 	1)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"413D9618003A"
+				client     	@91
+				supplier   	@43
+				line_style 	0)
+			    (object RoleView "WAPAccess" @94
+				Parent_View 	@91
+				location   	(-337, 169)
+				label      	(object SegLabel @95
+				    Parent_View 	@94
+				    location   	(1251, 2022)
+				    anchor     	1
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	264
+				    justify    	0
+				    label      	"+WAPAccess"
+				    pctDist    	0.585807
+				    height     	28
+				    orientation 	1)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"413D9618004A"
+				client     	@91
+				supplier   	@90
+				line_style 	0)))
+		    (object AssociationViewNew "$UNNAMED$14" @96
+			location   	(1018, 1824)
+			stereotype 	TRUE
+			line_color 	3342489
+			quidu      	"413D96E2035C"
+			roleview_list 	(list RoleViews
+			    (object RoleView "AccessPoint" @97
+				Parent_View 	@96
+				location   	(-758, -96)
+				label      	(object SegLabel @98
+				    Parent_View 	@97
+				    location   	(1226, 1768)
+				    anchor     	1
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	255
+				    justify    	0
+				    label      	"+AccessPoint"
+				    pctDist    	1.376020
+				    height     	76
+				    orientation 	1)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"413D96E3038B"
+				client     	@96
+				supplier   	@49
+				line_style 	0)
+			    (object RoleView "SMSBearer" @99
+				Parent_View 	@96
+				location   	(-758, -96)
+				label      	(object SegLabel @100
+				    Parent_View 	@99
+				    location   	(1058, 1883)
+				    anchor     	1
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	264
+				    justify    	0
+				    label      	"+SMSBearer"
+				    pctDist    	0.025677
+				    height     	72
+				    orientation 	0)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"413D96E3038C"
+				client     	@96
+				supplier   	@90
+				line_style 	0)))
+		    (object AssociationViewNew "$UNNAMED$15" @101
+			location   	(602, 1591)
+			stereotype 	TRUE
+			line_color 	3342489
+			quidu      	"413D971A013A"
+			roleview_list 	(list RoleViews
+			    (object RoleView "Id" @102
+				Parent_View 	@101
+				location   	(-1174, -329)
+				label      	(object SegLabel @103
+				    Parent_View 	@102
+				    location   	(678, 1381)
+				    anchor     	1
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	60
+				    justify    	0
+				    label      	"+Id"
+				    pctDist    	0.672008
+				    height     	36
+				    orientation 	0)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"413D971C011A"
+				client     	@101
+				supplier   	@66
+				line_style 	0)
+			    (object RoleView "LocationForDataAndFax" @104
+				Parent_View 	@101
+				location   	(-1174, -329)
+				label      	(object SegLabel @105
+				    Parent_View 	@104
+				    location   	(731, 1868)
+				    anchor     	1
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	460
+				    justify    	0
+				    label      	"+LocationForDataAndFax"
+				    pctDist    	0.872978
+				    height     	157
+				    orientation 	0)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"413D971C012A"
+				client     	@101
+				supplier   	@90
+				vertices   	(list Points
+				    (602, 1591)
+				    (573, 1644)
+				    (574, 1910))
+				line_style 	0)))
+		    (object AssociationViewNew "$UNNAMED$16" @106
+			location   	(309, 1472)
+			stereotype 	TRUE
+			line_color 	3342489
+			quidu      	"413D97A903D9"
+			roleview_list 	(list RoleViews
+			    (object RoleView "Id" @107
+				Parent_View 	@106
+				location   	(-235, -224)
+				label      	(object SegLabel @108
+				    Parent_View 	@107
+				    location   	(239, 1054)
+				    anchor     	1
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	60
+				    justify    	0
+				    label      	"+Id"
+				    pctDist    	0.800000
+				    height     	42
+				    orientation 	0)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"413D97AB0001"
+				client     	@106
+				supplier   	@55
+				line_style 	0)
+			    (object RoleView "DefaultNetwork" @109
+				Parent_View 	@106
+				location   	(-235, -224)
+				label      	(object SegLabel @110
+				    Parent_View 	@109
+				    location   	(298, 1879)
+				    anchor     	1
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	296
+				    justify    	0
+				    label      	"+DefaultNetwork"
+				    pctDist    	0.786577
+				    height     	128
+				    orientation 	1)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"413D97AB0002"
+				client     	@106
+				supplier   	@90
+				vertices   	(list Points
+				    (309, 1472)
+				    (320, 1644)
+				    (456, 1910))
+				line_style 	0)))
+		    (object AssociationViewNew "$UNNAMED$45" @111
+			location   	(783, 1640)
+			stereotype 	TRUE
+			line_color 	3342489
+			quidu      	"413F0A130132"
+			roleview_list 	(list RoleViews
+			    (object RoleView "Id" @112
+				Parent_View 	@111
+				location   	(207, -504)
+				label      	(object SegLabel @113
+				    Parent_View 	@112
+				    location   	(823, 1399)
+				    anchor     	1
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	60
+				    justify    	0
+				    label      	"+Id"
+				    pctDist    	0.826990
+				    height     	40
+				    orientation 	1)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"413F0A14023B"
+				client     	@111
+				supplier   	@66
+				line_style 	0)
+			    (object RoleView "LocationForPhoneServicesAndSMS" @114
+				Parent_View 	@111
+				location   	(207, -504)
+				label      	(object SegLabel @115
+				    Parent_View 	@114
+				    location   	(967, 1830)
+				    anchor     	1
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	681
+				    justify    	0
+				    label      	"+LocationForPhoneServicesAndSMS"
+				    pctDist    	2.261905
+				    height     	184
+				    orientation 	0)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"413F0A14023C"
+				client     	@111
+				supplier   	@90
+				vertices   	(list Points
+				    (783, 1640)
+				    (783, 1724)
+				    (690, 1910))
+				line_style 	0)))
+		    (object AssociationViewNew "$UNNAMED$46" @116
+			location   	(1553, 2109)
+			stereotype 	TRUE
+			line_color 	3342489
+			quidu      	"413F0AEA0165"
+			roleview_list 	(list RoleViews
+			    (object RoleView "Id" @117
+				Parent_View 	@116
+				location   	(977, -35)
+				label      	(object SegLabel @118
+				    Parent_View 	@117
+				    location   	(1931, 2117)
+				    anchor     	1
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	60
+				    justify    	0
+				    label      	"+Id"
+				    pctDist    	0.800000
+				    height     	42
+				    orientation 	0)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"413F0AEB0349"
+				client     	@116
+				supplier   	@85
+				vertices   	(list Points
+				    (1553, 2109)
+				    (1613, 2107)
+				    (2018, 2172))
+				line_style 	0)
+			    (object RoleView "ModemForDataAndFax" @119
+				Parent_View 	@116
+				location   	(977, -35)
+				label      	(object SegLabel @120
+				    Parent_View 	@119
+				    location   	(1353, 2093)
+				    anchor     	1
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	442
+				    justify    	0
+				    label      	"+ModemForDataAndFax"
+				    pctDist    	0.474803
+				    height     	23
+				    orientation 	1)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"413F0AEB034A"
+				client     	@116
+				supplier   	@90
+				line_style 	0)))
+		    (object AssociationViewNew "$UNNAMED$47" @121
+			location   	(1521, 2292)
+			stereotype 	TRUE
+			line_color 	3342489
+			quidu      	"413F0AEE03D6"
+			roleview_list 	(list RoleViews
+			    (object RoleView "Id" @122
+				Parent_View 	@121
+				location   	(945, 148)
+				label      	(object SegLabel @123
+				    Parent_View 	@122
+				    location   	(1912, 2211)
+				    anchor     	1
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	60
+				    justify    	0
+				    label      	"+Id"
+				    pctDist    	0.800000
+				    height     	42
+				    orientation 	0)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"413F0AF0005B"
+				client     	@121
+				supplier   	@85
+				vertices   	(list Points
+				    (1521, 2292)
+				    (1580, 2302)
+				    (2018, 2237))
+				line_style 	0)
+			    (object RoleView "ModemForPhoneServicesAndSMS" @124
+				Parent_View 	@121
+				location   	(945, 148)
+				label      	(object SegLabel @125
+				    Parent_View 	@124
+				    location   	(1426, 2211)
+				    anchor     	1
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	659
+				    justify    	0
+				    label      	"+ModemForPhoneServicesAndSMS"
+				    pctDist    	0.270931
+				    height     	66
+				    orientation 	1)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"413F0AF0006B"
+				client     	@121
+				supplier   	@90
+				line_style 	0)))
+		    (object ClassView "Class" "Logical View::OR" @126
+			ShowCompartmentStereotypes 	TRUE
+			IncludeAttribute 	TRUE
+			IncludeOperation 	TRUE
+			location   	(1536, 544)
+			label      	(object ItemLabel
+			    Parent_View 	@126
+			    location   	(1535, 652)
+			    anchor_loc 	1
+			    nlines     	2
+			    max_width  	232
+			    justify    	0
+			    label      	"OR")
+			icon       	"Interface"
+			icon_style 	"Icon"
+			line_color 	3342489
+			fill_color 	13434879
+			quidu      	"413DC8040272"
+			width      	58
+			height     	58
+			annotation 	8
+			autoResize 	TRUE)
+		    (object AssociationViewNew "$UNNAMED$25" @127
+			location   	(1536, 648)
+			stereotype 	TRUE
+			line_color 	3342489
+			quidu      	"413DCC6E03D9"
+			roleview_list 	(list RoleViews
+			    (object RoleView "$UNNAMED$26" @128
+				Parent_View 	@127
+				location   	(-48, -312)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"413DCC70009D"
+				client     	@127
+				supplier   	@126
+				line_style 	0)
+			    (object RoleView "IAPService" @129
+				Parent_View 	@127
+				location   	(-48, -312)
+				label      	(object SegLabel @130
+				    Parent_View 	@129
+				    location   	(1529, 694)
+				    anchor     	1
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	235
+				    justify    	0
+				    label      	"+IAPService"
+				    pctDist    	0.593023
+				    height     	8
+				    orientation 	1)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"413DCC7000AD"
+				client     	@127
+				supplier   	@27
+				line_style 	0)))
+		    (object AssociationViewNew "$UNNAMED$27" @131
+			location   	(1237, 377)
+			stereotype 	TRUE
+			line_color 	3342489
+			quidu      	"413DCC7601C6"
+			roleview_list 	(list RoleViews
+			    (object RoleView "Id" @132
+				Parent_View 	@131
+				location   	(-395, -103)
+				label      	(object SegLabel @133
+				    Parent_View 	@132
+				    location   	(1003, 296)
+				    anchor     	1
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	60
+				    justify    	0
+				    label      	"+Id"
+				    pctDist    	0.800000
+				    height     	42
+				    orientation 	0)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"413DCC77012A"
+				client     	@131
+				supplier   	@11
+				line_style 	0)
+			    (object RoleView "$UNNAMED$28" @134
+				Parent_View 	@131
+				location   	(-395, -103)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"413DCC77012B"
+				client     	@131
+				supplier   	@126
+				line_style 	0)))
+		    (object AssociationViewNew "$UNNAMED$29" @135
+			location   	(1445, 372)
+			stereotype 	TRUE
+			line_color 	3342489
+			quidu      	"413DCC7C031E"
+			roleview_list 	(list RoleViews
+			    (object RoleView "Id" @136
+				Parent_View 	@135
+				location   	(-187, -124)
+				label      	(object SegLabel @137
+				    Parent_View 	@136
+				    location   	(1350, 276)
+				    anchor     	1
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	60
+				    justify    	0
+				    label      	"+Id"
+				    pctDist    	0.800000
+				    height     	42
+				    orientation 	0)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"413DCC7D01A7"
+				client     	@135
+				supplier   	@12
+				line_style 	0)
+			    (object RoleView "$UNNAMED$30" @138
+				Parent_View 	@135
+				location   	(-187, -124)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"413DCC7D01A8"
+				client     	@135
+				supplier   	@126
+				line_style 	0)))
+		    (object AssociationViewNew "$UNNAMED$31" @139
+			location   	(1637, 372)
+			stereotype 	TRUE
+			line_color 	3342489
+			quidu      	"413DCC7F036C"
+			roleview_list 	(list RoleViews
+			    (object RoleView "Id" @140
+				Parent_View 	@139
+				location   	(5, -124)
+				label      	(object SegLabel @141
+				    Parent_View 	@140
+				    location   	(1665, 250)
+				    anchor     	1
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	60
+				    justify    	0
+				    label      	"+Id"
+				    pctDist    	0.702774
+				    height     	41
+				    orientation 	0)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"413DCC8001F5"
+				client     	@139
+				supplier   	@13
+				line_style 	0)
+			    (object RoleView "$UNNAMED$32" @142
+				Parent_View 	@139
+				location   	(5, -124)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"413DCC8001F6"
+				client     	@139
+				supplier   	@126
+				line_style 	0)))
+		    (object AssociationViewNew "$UNNAMED$33" @143
+			location   	(1864, 377)
+			stereotype 	TRUE
+			line_color 	3342489
+			quidu      	"413DCC820224"
+			roleview_list 	(list RoleViews
+			    (object RoleView "Id" @144
+				Parent_View 	@143
+				location   	(232, -119)
+				label      	(object SegLabel @145
+				    Parent_View 	@144
+				    location   	(2065, 235)
+				    anchor     	1
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	60
+				    justify    	0
+				    label      	"+Id"
+				    pctDist    	0.720764
+				    height     	40
+				    orientation 	0)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"413DCC8301A7"
+				client     	@143
+				supplier   	@14
+				line_style 	0)
+			    (object RoleView "$UNNAMED$34" @146
+				Parent_View 	@143
+				location   	(232, -119)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"413DCC8301B7"
+				client     	@143
+				supplier   	@126
+				line_style 	0)))
+		    (object AssociationViewNew "$UNNAMED$37" @147
+			location   	(2024, 648)
+			stereotype 	TRUE
+			line_color 	3342489
+			quidu      	"413DCC940020"
+			roleview_list 	(list RoleViews
+			    (object RoleView "$UNNAMED$38" @148
+				Parent_View 	@147
+				location   	(392, 152)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"413DCC97010B"
+				client     	@147
+				supplier   	@15
+				line_style 	0)
+			    (object RoleView "$UNNAMED$39" @149
+				Parent_View 	@147
+				location   	(392, 152)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"413DCC97011A"
+				client     	@147
+				supplier   	@126
+				line_style 	0)))
+		    (object AssociationViewNew "$UNNAMED$40" @150
+			location   	(1176, 515)
+			stereotype 	TRUE
+			line_color 	3342489
+			quidu      	"413DCC9B03AB"
+			roleview_list 	(list RoleViews
+			    (object RoleView "Id" @151
+				Parent_View 	@150
+				location   	(-456, 19)
+				label      	(object SegLabel @152
+				    Parent_View 	@151
+				    location   	(912, 455)
+				    anchor     	1
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	60
+				    justify    	0
+				    label      	"+Id"
+				    pctDist    	0.800000
+				    height     	42
+				    orientation 	1)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"413DCC9D009D"
+				client     	@150
+				supplier   	@26
+				line_style 	0)
+			    (object RoleView "$UNNAMED$41" @153
+				Parent_View 	@150
+				location   	(-456, 19)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"413DCC9D009E"
+				client     	@150
+				supplier   	@126
+				line_style 	0)))
+		    (object ClassView "Class" "Logical View::WLANServiceExtensionTable" @154
+			ShowCompartmentStereotypes 	TRUE
+			IncludeOperation 	TRUE
+			location   	(3056, 112)
+			label      	(object ItemLabel
+			    Parent_View 	@154
+			    location   	(2770, 35)
+			    fill_color 	13434879
+			    nlines     	1
+			    max_width  	572
+			    justify    	0
+			    label      	"WLANServiceExtensionTable")
+			icon_style 	"Icon"
+			line_color 	3342489
+			fill_color 	13434879
+			quidu      	"41373BE301E1"
+			compartment 	(object Compartment
+			    Parent_View 	@154
+			    location   	(2770, 88)
+			    icon_style 	"Icon"
+			    fill_color 	13434879
+			    anchor     	2
+			    nlines     	2
+			    max_width  	265
+			    compartmentItems 	(list Compartment
+				"- Id : TUint32"))
+			width      	590
+			height     	178
+			annotation 	8
+			autoResize 	TRUE)
+		    (object ClassView "Class" "Logical View::LANServiceTable" @155
+			ShowCompartmentStereotypes 	TRUE
+			IncludeOperation 	TRUE
+			location   	(2864, 544)
+			label      	(object ItemLabel
+			    Parent_View 	@155
+			    location   	(2400, 443)
+			    fill_color 	13434879
+			    nlines     	1
+			    max_width  	928
+			    justify    	0
+			    label      	"LANServiceTable")
+			icon_style 	"Icon"
+			line_color 	3342489
+			fill_color 	13434879
+			quidu      	"41373B770049"
+			compartment 	(object Compartment
+			    Parent_View 	@155
+			    location   	(2400, 499)
+			    icon_style 	"Icon"
+			    fill_color 	13434879
+			    anchor     	2
+			    nlines     	3
+			    max_width  	956
+			    compartmentItems 	(list Compartment
+				"- Id : TUint32"
+				"- ServiceExtensionRecordId : TableEntryNameType"))
+			width      	946
+			height     	226
+			annotation 	8
+			autoResize 	TRUE)
+		    (object AssociationViewNew "$UNNAMED$35" @156
+			location   	(1976, 544)
+			stereotype 	TRUE
+			line_color 	3342489
+			quidu      	"413DCC8E0178"
+			roleview_list 	(list RoleViews
+			    (object RoleView "Id" @157
+				Parent_View 	@156
+				location   	(344, 48)
+				label      	(object SegLabel @158
+				    Parent_View 	@157
+				    location   	(2311, 503)
+				    anchor     	1
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	60
+				    justify    	0
+				    label      	"+Id"
+				    pctDist    	0.844372
+				    height     	42
+				    orientation 	0)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"413DCC90036C"
+				client     	@156
+				supplier   	@155
+				line_style 	0)
+			    (object RoleView "$UNNAMED$36" @159
+				Parent_View 	@156
+				location   	(344, 48)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"413DCC90037C"
+				client     	@156
+				supplier   	@126
+				line_style 	0)))
+		    (object AssociationViewNew "$UNNAMED$48" @160
+			location   	(2964, 315)
+			stereotype 	TRUE
+			line_color 	3342489
+			quidu      	"413F2BF80080"
+			roleview_list 	(list RoleViews
+			    (object RoleView "Id" @161
+				Parent_View 	@160
+				location   	(100, -245)
+				label      	(object SegLabel @162
+				    Parent_View 	@161
+				    location   	(2952, 222)
+				    anchor     	1
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	60
+				    justify    	0
+				    label      	"+Id"
+				    pctDist    	0.640508
+				    height     	49
+				    orientation 	0)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"413F2BF803CC"
+				client     	@160
+				supplier   	@154
+				line_style 	0)
+			    (object RoleView "ServiceExtensionRecordId" @163
+				Parent_View 	@160
+				location   	(100, -245)
+				label      	(object SegLabel @164
+				    Parent_View 	@163
+				    location   	(3140, 393)
+				    anchor     	1
+				    anchor_loc 	1
+				    nlines     	1
+				    max_width  	495
+				    justify    	0
+				    label      	"+ServiceExtensionRecordId"
+				    pctDist    	0.010811
+				    height     	193
+				    orientation 	0)
+				stereotype 	TRUE
+				line_color 	3342489
+				quidu      	"413F2BF803CD"
+				client     	@160
+				supplier   	@155
+				line_style 	0)))))))
+    root_subsystem 	(object SubSystem "Component View"
+	quid       	"4135D7D8029F"
+	physical_models 	(list unit_reference_list)
+	physical_presentations 	(list unit_reference_list
+	    (object Module_Diagram "Main"
+		quid       	"4135D7DB033C"
+		title      	"Main"
+		zoom       	100
+		max_height 	28350
+		max_width  	21600
+		origin_x   	0
+		origin_y   	0
+		items      	(list diagram_item_list))))
+    process_structure 	(object Processes
+	quid       	"4135D7D802A0"
+	ProcsNDevs 	(list
+	    (object Process_Diagram "Deployment View"
+		quid       	"4135D7D802A2"
+		title      	"Deployment View"
+		zoom       	100
+		max_height 	28350
+		max_width  	21600
+		origin_x   	0
+		origin_y   	0
+		items      	(list diagram_item_list))))
+    properties 	(object Properties
+	attributes 	(list Attribute_Set
+	    (object Attribute
+		tool       	"DDL"
+		name       	"propertyId"
+		value      	"809135966")
+	    (object Attribute
+		tool       	"DDL"
+		name       	"default__Project"
+		value      	(list Attribute_Set
+		    (object Attribute
+			tool       	"DDL"
+			name       	"Directory"
+			value      	"AUTO GENERATE")
+		    (object Attribute
+			tool       	"DDL"
+			name       	"DataBase"
+			value      	("DataBaseSet" 800))
+		    (object Attribute
+			tool       	"DDL"
+			name       	"DataBaseSet"
+			value      	(list Attribute_Set
+			    (object Attribute
+				tool       	"DDL"
+				name       	"ANSI"
+				value      	800)
+			    (object Attribute
+				tool       	"DDL"
+				name       	"Oracle"
+				value      	801)
+			    (object Attribute
+				tool       	"DDL"
+				name       	"SQLServer"
+				value      	802)
+			    (object Attribute
+				tool       	"DDL"
+				name       	"Sybase"
+				value      	803)
+			    (object Attribute
+				tool       	"DDL"
+				name       	"Watcom"
+				value      	804)))
+		    (object Attribute
+			tool       	"DDL"
+			name       	"PrimaryKeyColumnName"
+			value      	"Id")
+		    (object Attribute
+			tool       	"DDL"
+			name       	"PrimaryKeyColumnType"
+			value      	"NUMBER(5)")
+		    (object Attribute
+			tool       	"DDL"
+			name       	"ViewName"
+			value      	"V_")
+		    (object Attribute
+			tool       	"DDL"
+			name       	"TableName"
+			value      	"T_")
+		    (object Attribute
+			tool       	"DDL"
+			name       	"InheritSuffix"
+			value      	"_V")
+		    (object Attribute
+			tool       	"DDL"
+			name       	"DropClause"
+			value      	FALSE)
+		    (object Attribute
+			tool       	"DDL"
+			name       	"BaseViews"
+			value      	FALSE)
+		    (object Attribute
+			tool       	"DDL"
+			name       	"DDLScriptFilename"
+			value      	"DDL1.SQL")))
+	    (object Attribute
+		tool       	"DDL"
+		name       	"default__Attribute"
+		value      	(list Attribute_Set
+		    (object Attribute
+			tool       	"DDL"
+			name       	"ColumnType"
+			value      	"VARCHAR")
+		    (object Attribute
+			tool       	"DDL"
+			name       	"Length"
+			value      	"")
+		    (object Attribute
+			tool       	"DDL"
+			name       	"NullsOK"
+			value      	TRUE)
+		    (object Attribute
+			tool       	"DDL"
+			name       	"PrimaryKey"
+			value      	FALSE)
+		    (object Attribute
+			tool       	"DDL"
+			name       	"Unique"
+			value      	FALSE)
+		    (object Attribute
+			tool       	"DDL"
+			name       	"CompositeUnique"
+			value      	FALSE)
+		    (object Attribute
+			tool       	"DDL"
+			name       	"CheckConstraint"
+			value      	"")))
+	    (object Attribute
+		tool       	"DDL"
+		name       	"HiddenTool"
+		value      	FALSE)
+	    (object Attribute
+		tool       	"Rose Model Integrator"
+		name       	"HiddenTool"
+		value      	FALSE)
+	    (object Attribute
+		tool       	"Rose Web Publisher"
+		name       	"HiddenTool"
+		value      	FALSE)
+	    (object Attribute
+		tool       	"Version Control"
+		name       	"HiddenTool"
+		value      	FALSE))
+	quid       	"4135D7D802A1"))

@@ -1,0 +1,176 @@
+//
+// Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+// All rights reserved.
+// This component and the accompanying materials are made available
+// under the terms of "Eclipse Public License v1.0"
+// which accompanies this distribution, and is available
+// at the URL "http://www.eclipse.org/legal/epl-v10.html".
+//
+// Initial Contributors:
+// Nokia Corporation - initial contribution.
+//
+// Contributors:
+//
+// Description:
+//
+//MULTITHREAD
+//
+PRINT TS_RootServer: Section 1 tests
+//
+LOAD_SUITE TS_rootserver.dll
+
+// run test 1.1
+PRINT
+RUN_TEST_STEP 100, TS_rootserver, Test1.1 z:\testdata\configs\ts_rootserver.ini
+TEST_COMPLETE
+
+// run test 2.1
+PRINT
+RUN_TEST_STEP 10000, TS_rootserver, Test2.1 z:\testdata\configs\ts_rootserver.ini
+TEST_COMPLETE
+
+// run test 2.2
+PRINT
+RUN_TEST_STEP 10000, TS_rootserver, Test2.2 z:\testdata\configs\ts_rootserver.ini
+TEST_COMPLETE
+
+// run test 2.3
+PRINT
+RUN_TEST_STEP 10000, TS_rootserver, Test2.3 z:\testdata\configs\ts_rootserver.ini
+TEST_COMPLETE
+
+// run test 3.2
+PRINT
+RUN_TEST_STEP 500, TS_rootserver, Test3.2 z:\testdata\configs\ts_rootserver.ini
+TEST_COMPLETE
+
+// run test 3.3
+PRINT
+RUN_TEST_STEP 500, TS_rootserver, Test3.3 z:\testdata\configs\ts_rootserver.ini
+TEST_COMPLETE
+
+// run test 3.4
+PRINT
+RUN_TEST_STEP 500, TS_rootserver, Test3.4 z:\testdata\configs\ts_rootserver.ini
+TEST_COMPLETE
+
+// run test 3.5
+PRINT
+RUN_TEST_STEP 500, TS_rootserver, Test3.5 z:\testdata\configs\ts_rootserver.ini
+TEST_COMPLETE
+
+// run test 3.6
+PRINT
+RUN_TEST_STEP 500, TS_rootserver, Test3.6 z:\testdata\configs\ts_rootserver.ini
+TEST_COMPLETE
+
+// run test 3.7
+PRINT
+RUN_TEST_STEP 500, TS_rootserver, Test3.7 z:\testdata\configs\ts_rootserver.ini
+TEST_COMPLETE
+
+// run test 3.8
+PRINT
+RUN_TEST_STEP 500, TS_rootserver, Test3.8 z:\testdata\configs\ts_rootserver.ini
+TEST_COMPLETE
+
+// run test 3.9
+PRINT
+RUN_TEST_STEP 500, TS_rootserver, Test3.9 z:\testdata\configs\ts_rootserver.ini
+TEST_COMPLETE
+
+// run test 3.10
+PRINT
+RUN_TEST_STEP 500, TS_rootserver, Test3.10 z:\testdata\configs\ts_rootserver.ini
+TEST_COMPLETE
+
+// run test 3.11
+PRINT
+RUN_TEST_STEP 500, TS_rootserver, Test3.11 z:\testdata\configs\ts_rootserver.ini
+TEST_COMPLETE
+
+// run test 3.12
+PRINT
+RUN_TEST_STEP 500, TS_rootserver, Test3.12 z:\testdata\configs\ts_rootserver.ini
+TEST_COMPLETE
+
+// run test 3.13
+PRINT
+RUN_TEST_STEP 500, TS_rootserver, Test3.13 z:\testdata\configs\ts_rootserver.ini
+TEST_COMPLETE
+
+// run test 3.14
+PRINT
+RUN_TEST_STEP 500, TS_rootserver, Test3.14 z:\testdata\configs\ts_rootserver.ini
+TEST_COMPLETE
+
+// run test 3.15
+PRINT
+RUN_TEST_STEP 500, TS_rootserver, Test3.15 z:\testdata\configs\ts_rootserver.ini
+TEST_COMPLETE
+
+// run test 3.16
+PRINT
+RUN_TEST_STEP 500, TS_rootserver, Test3.16 z:\testdata\configs\ts_rootserver.ini
+TEST_COMPLETE
+
+// run test 3.17
+PRINT
+RUN_TEST_STEP 500, TS_rootserver, Test3.17 z:\testdata\configs\ts_rootserver.ini
+TEST_COMPLETE
+
+// run test 3.18
+PRINT
+RUN_TEST_STEP 500, TS_rootserver, Test3.18 z:\testdata\configs\ts_rootserver.ini
+TEST_COMPLETE
+
+// run test 4.1
+PRINT
+RUN_TEST_STEP 18000, TS_rootserver, Test4.1 z:\testdata\configs\ts_rootserver.ini
+TEST_COMPLETE
+
+// run test 5.1
+PRINT
+RUN_TEST_STEP 12500, TS_rootserver, Test5.1 z:\testdata\configs\ts_rootserver.ini
+TEST_COMPLETE
+
+// run test 5.2
+PRINT
+RUN_TEST_STEP 12500, TS_rootserver, Test5.2 z:\testdata\configs\ts_rootserver.ini
+TEST_COMPLETE
+
+// run test 5.3
+PRINT
+RUN_TEST_STEP 12500, TS_rootserver, Test5.3 z:\testdata\configs\ts_rootserver.ini
+TEST_COMPLETE
+
+// run test 5.4
+PRINT
+RUN_TEST_STEP 12500, TS_rootserver, Test5.4 z:\testdata\configs\ts_rootserver.ini
+TEST_COMPLETE
+
+// run test 5.5
+PRINT
+RUN_TEST_STEP 12500, TS_rootserver, Test5.5 z:\testdata\configs\ts_rootserver.ini
+TEST_COMPLETE
+
+// run test 5.6
+PRINT
+RUN_TEST_STEP 12500, TS_rootserver, Test5.6 z:\testdata\configs\ts_rootserver.ini
+TEST_COMPLETE
+
+// run test 5.7
+PRINT
+RUN_TEST_STEP 12500, TS_rootserver, Test5.7 z:\testdata\configs\ts_rootserver.ini
+TEST_COMPLETE
+
+// run test 5.8
+PRINT
+RUN_TEST_STEP 12500, TS_RootServer, Test5.8 z:\testdata\configs\ts_rootserver.ini
+TEST_COMPLETE
+
+// run test 1.2
+PRINT
+RUN_TEST_STEP 100, TS_rootserver, Test1.2 z:\testdata\configs\ts_rootserver.ini
+TEST_COMPLETE
+
