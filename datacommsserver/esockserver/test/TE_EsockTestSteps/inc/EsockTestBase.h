@@ -139,6 +139,19 @@ struct TRSocketGetOptParams
 	TBool iValueExpected;
     };
 
+struct TRSocketSetOptParams
+    {
+    void Reset();
+
+    TPtrC iSocketName;
+    TInt iOptionName;
+    TInt iOptionLevel;
+    TPtrC iOptionToSetText;
+    TInt iOptionToSetValue;
+    TBool iTextSet;
+    TBool iValueSet;
+    };
+
 struct TProtocolDescriptionParams
 	{
 	void Reset();
@@ -482,6 +495,8 @@ public:
 		TProtocolDesc& aProtocolDescriptionOutput);
 	TInt GetOptSocket(const TRSocketGetOptParams& aParams, TDes8& aGetOptOutput);
 	TInt GetOptSocket(const TRSocketGetOptParams& aParams, TInt& aGetOptOutput);
+	TInt SetOptSocket(const TRSocketSetOptParams& aParams, TDes8& aSetOptOutput);
+    TInt SetOptSocket(const TRSocketSetOptParams& aParams, TInt& aSetOptOutput);
 
     //connection functions library
     RConnection* FindConnection(const TDesC& aConnectionName);

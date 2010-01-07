@@ -543,15 +543,6 @@ EXPORT_C void CErrorActivity::TSendErrorRecoveryReq::DoL()
     	return;
         }
 
-    //Determine who TErrorRecoveryRequest should be sent to.
-    //If there is no ControlProvider we send a RecoveryRequest to ourselves to recover from the error,
-    //otherwise we sned the RecoveryRequest up to our ControlProvider.
-    //MCPrs typically put all of the error recovery function in a single error recovery activity therefore
-    //it makes sense even for MCPrs to send TErrorRecoveryRequest to their error recovery function. By
-    //posting a TErrorRecoveryRequest sub-classes of the MCPrs get a chance to override the default error
-    //recovery.
-    RNodeInterface*  errorRecoverer = iContext.Node().ControlProvider() ? iContext.Node().ControlProvider() : &iContext.Node().SelfInterface();
-
 	__ASSERT_DEBUG(iContext.iNodeActivity, User::Panic(KCorePrPanic, KPanicNoActivity));
     CoreActivities::CErrorActivity& activity = static_cast<CoreActivities::CErrorActivity&>(*iContext.iNodeActivity);
     __ASSERT_DEBUG(activity.iErroredActivityId==MeshMachine::KActivityNull, User::Panic(KSpecAssert_ESockCrStaCPRAC, 4));
@@ -566,7 +557,7 @@ EXPORT_C void CErrorActivity::TSendErrorRecoveryReq::DoL()
 	TEErrorRecovery::TErrorRecoveryRequest msg(ctx);
 
     activity.PostRequestTo(
-    	*errorRecoverer,//ControlProvider() verified above
+    	*iContext.Node().ControlProvider(),//ControlProvider() verified above
     	TCFSafeMessage::TRequestCarrierEast<TEErrorRecovery::TErrorRecoveryRequest>(msg).CRef()
     	);
 

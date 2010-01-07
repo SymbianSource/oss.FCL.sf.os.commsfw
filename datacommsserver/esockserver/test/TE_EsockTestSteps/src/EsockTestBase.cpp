@@ -195,6 +195,16 @@ void TRSocketGetOptParams::Reset()
 	iValueExpected = EFalse;
 	}
 
+void TRSocketSetOptParams::Reset()
+    {
+    iSocketName.Set(KNullDesC);
+    iOptionName = 0;
+    iOptionLevel = 0;
+    iOptionToSetText.Set(KNullDesC);
+    iTextSet = EFalse;
+    iValueSet = EFalse;
+    }
+
 void TRSocketIoctlParams::Reset()
 	{
     iSocketName.Set(KNullDesC);
@@ -1060,6 +1070,24 @@ TInt CCEsockTestBase::GetOptSocket(const TRSocketGetOptParams& aParams, TInt& aG
 
 	return s->GetOpt(aParams.iOptionName, aParams.iOptionLevel, aGetOptOutput);
 	}
+
+TInt CCEsockTestBase::SetOptSocket(const TRSocketSetOptParams& aParams, TDes8& aSetOptInput)
+    {
+    RSocket* s = iSocks.Find(aParams.iSocketName);
+    if (s == NULL)
+        return KErrNotFound;
+
+    return s->SetOpt(aParams.iOptionName, aParams.iOptionLevel, aSetOptInput);
+    }
+
+TInt CCEsockTestBase::SetOptSocket(const TRSocketSetOptParams& aParams, TInt& aSetOptInput)
+    {
+    RSocket* s = iSocks.Find(aParams.iSocketName);
+    if (s == NULL)
+        return KErrNotFound;
+
+    return s->SetOpt(aParams.iOptionName, aParams.iOptionLevel, aSetOptInput);
+    }
 
 TInt CCEsockTestBase::ProtocolDescription(
 	const TSocketProtocolDescriptionParams& aParams,

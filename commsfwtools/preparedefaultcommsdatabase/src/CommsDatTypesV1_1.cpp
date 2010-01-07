@@ -811,10 +811,14 @@ START_ATTRIBUTE_TABLE( CCDVPNServiceRecord,   KCDTIdVPNServiceRecord,   KCDTIdVP
 	X_REGISTER_ATTRIBUTE( CCDVPNServiceRecord,  iServicePolicy,       TMDBText )
 #ifdef SYMBIAN_COMMSDAT_USE_INT_RECORD_LINKS
 	X_REGISTER_ATTRIBUTE( CCDVPNServiceRecord,  iServiceIAP,          TMDBNum )
+    X_REGISTER_ATTRIBUTE( CCDVPNServiceRecord,  iServiceSNAP,         TMDBNum )
 	X_REGISTER_ATTRIBUTE( CCDVPNServiceRecord,  iServiceNetwork,      TMDBNum )
 #else
 	X_REGISTER_ATTRIBUTE( CCDVPNServiceRecord,  iServiceIAP,          TMDBLinkNum )
-	X_REGISTER_ATTRIBUTE( CCDVPNServiceRecord,  iServiceNetwork,      TMDBLinkNum )
+#endif 
+	X_REGISTER_ATTRIBUTE( CCDVPNServiceRecord,  iServiceSNAP,         TMDBLinkNum )
+#ifndef SYMBIAN_COMMSDAT_USE_INT_RECORD_LINKS
+    X_REGISTER_ATTRIBUTE( CCDVPNServiceRecord,  iServiceNetwork,      TMDBLinkNum )
 #endif // SYMBIAN_COMMSDAT_USE_INT_RECORD_LINKS
 END_ATTRIBUTE_TABLE_BASE( CCDServiceRecordBase,      KCDTIdServiceRecordBase)
 

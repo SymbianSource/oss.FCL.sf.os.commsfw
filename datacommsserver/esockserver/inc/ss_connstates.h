@@ -388,7 +388,8 @@ private:
 	TConnPrefList* iConnPrefList;
 	TConnCSRPref* iCSRPreferences;
 	TBool iIsAutoStartPresent;
-
+	TBool iStartReceived;  // Indicates that ECNStart has been received
+	
 protected:
     typedef MeshMachine::TNodeContext<ESock::CConnection, SubSessStates::TContext> TContext;
 

@@ -1019,6 +1019,8 @@ TVerdict CSendReceiveIoctlStep::doSingleTestStep()
 
 // Get options
 //------------
+_LIT(KOptionName, "OptionName");
+_LIT(KOptionLevel, "OptionLevel");
 
 CSocketGetOptionStep::CSocketGetOptionStep(CCEsockTestBase*& aEsockTest)
 :   CTe_EsockStepBase(aEsockTest)
@@ -1026,8 +1028,6 @@ CSocketGetOptionStep::CSocketGetOptionStep(CCEsockTestBase*& aEsockTest)
 	SetTestStepName(KSocketGetOptionStep);
 	}
 
-_LIT(KOptionName, "OptionName");
-_LIT(KOptionLevel, "OptionLevel");
 _LIT(KExpectedOptionText, "ExpectedOptionText");
 _LIT(KExpectedOptionValue, "ExpectedOptionValue");
 
@@ -1073,7 +1073,7 @@ TInt CSocketGetOptionStep::ConfigureFromIni()
     // Checks on config values
     if(iParams.iValueExpected && iParams.iTextExpected)
     	{
-		INFO_PRINTF1(_L("Can be only value of text expected. Not both"));
+		INFO_PRINTF1(_L("Can be only value or text expected. Not both"));
 		return KErrCorrupt;
 		}
 		
@@ -1140,7 +1140,127 @@ TVerdict CSocketGetOptionStep::doSingleTestStep()
 	return TestStepResult();
 	}
 
+// Set options
+//------------
 
+CSocketSetOptionStep::CSocketSetOptionStep(CCEsockTestBase*& aEsockTest)
+:   CTe_EsockStepBase(aEsockTest)
+    {
+    SetTestStepName(KSocketSetOptionStep);
+    }
+
+_LIT(KOptionToSetText, "OptionToSetText");
+_LIT(KOptionToSetValue, "OptionToSetValue");
+
+TInt CSocketSetOptionStep::ConfigureFromIni()
+    {
+    // Reset the parameters and read in necessary fields
+    iParams.Reset();
+
+    // Socket to apply it to
+    if((GetStringFromConfig(iSection, KTe_SocketName, iParams.iSocketName) != 1)
+        || (iParams.iSocketName.Length() == 0))
+        {
+        INFO_PRINTF3(KErrString_MissingConfigFileField, &iSection, &KTe_SocketName);
+        return KErrNotFound;
+        }
+
+    // Option "name"
+    if (GetIntFromConfig(iSection, KOptionName, iParams.iOptionName) != 1)
+        {
+        INFO_PRINTF3(KErrString_MissingConfigFileField, &iSection, &KOptionName);
+        return KErrNotFound;
+        }
+
+    // Option level
+    if (GetIntFromConfig(iSection, KOptionLevel, iParams.iOptionLevel) != 1)
+        {
+        INFO_PRINTF1(_L("Option level not specified: defaulting to KLevelUnspecified"));
+        iParams.iOptionLevel = KLevelUnspecified;
+        }
+
+    // Input text to be set
+    if(GetStringFromConfig(iSection, KOptionToSetText, iParams.iOptionToSetText) == 1)
+        {
+        iParams.iTextSet = ETrue;
+        }
+
+    // Input value to be set
+    if(GetIntFromConfig(iSection, KOptionToSetValue, iParams.iOptionToSetValue) == 1)
+        {
+        iParams.iValueSet = ETrue;
+        }
+    
+    // Checks on config values
+    if(iParams.iValueSet && iParams.iTextSet)
+           {
+           INFO_PRINTF1(_L("Can be only value or text expected. Not both"));
+           return KErrCorrupt;
+           }
+    
+    if(!iParams.iValueSet && !iParams.iTextSet)
+           {
+           INFO_PRINTF1(_L("Must have value or text expected."));
+           return KErrCorrupt;
+           }
+
+    // All ok if we got this far
+    return KErrNone;
+    }
+
+TVerdict CSocketSetOptionStep::doSingleTestStep()
+    {
+    TRequestStatus requestStatus;
+
+    TBuf8<256> inputBuffer;
+    inputBuffer.Copy(iParams.iOptionToSetText);       
+    TInt inputValue = iParams.iOptionToSetValue;
+    TInt error;
+    
+    if(iParams.iTextSet)
+        {
+        error = iEsockTest->SetOptSocket(iParams, inputBuffer);
+        }
+    else
+        {
+        error = iEsockTest->SetOptSocket(iParams, inputValue);
+        }
+
+    if (error != KErrNone)
+        {
+        INFO_PRINTF3(_L("Socket set option error. socket:%S, error:%d"), &iParams.iSocketName, error);
+        SetTestStepError(error);
+        return EFail;
+        }
+
+    if(iParams.iTextSet)
+        {
+        // Convert the output to wide chars
+        TBuf<256> inputConvertedToWideChars;
+        CnvUtfConverter::ConvertToUnicodeFromUtf8(inputConvertedToWideChars, inputBuffer);
+
+        // Log what was returned
+        INFO_PRINTF2(_L("Socket set with opt text. value:%S"), &inputConvertedToWideChars);
+        INFO_PRINTF2(_L("Text set by user.        value:%S"), &iParams.iOptionToSetText);
+
+        // Validate the output with that expected
+        TVerdict verdict = (inputConvertedToWideChars == iParams.iOptionToSetText) ? EPass : EFail;
+        SetTestStepResult(verdict);
+        }
+    else
+        {
+        // Log what was returned
+        INFO_PRINTF2(_L("Socket returned get opt value. value:%d"), inputValue);
+        INFO_PRINTF2(_L("Value set by user.        value:%d"), iParams.iOptionToSetValue);
+
+        // Validate the output with that expected
+        TVerdict verdict = (inputValue == iParams.iOptionToSetValue) ? EPass : EFail;
+        SetTestStepResult(verdict);
+        }
+
+    // Return the result
+    return TestStepResult();
+    }
 
 // Socket protocol description
 //----------------------------

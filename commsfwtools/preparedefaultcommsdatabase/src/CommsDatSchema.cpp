@@ -451,6 +451,7 @@ To express type information for all MetaDatabase fields
 		// This class
 		{ KCDTIdVPNPolicyName,	 	EText,              ENotNull,    KCDTypeNameVPNPolicyName },
 		{ KCDTIdVPNIAPRecord, 		ELinkIAPRecord,	    ENoAttrs,    KCDTypeNameVPNIAPRecord },
+		{ KCDTIdVPNSNAPRecord,      ELinkAPRecord,            ENoAttrs,    KCDTypeNameVPNSNAPRecord },
 		{ KCDTIdVPNNetwork,	  		ELinkNetworkRecord, ENoAttrs,    KCDTypeNameVPNNetwork },
 		/**** add new fields above this comment ****/
         // service base class

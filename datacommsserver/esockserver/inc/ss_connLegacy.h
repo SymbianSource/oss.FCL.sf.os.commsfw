@@ -46,6 +46,7 @@ class TCancelAllInterfaceNotificationWorker;
 namespace AllInterfaceNotificationActivity
 {
 class TEnqueueNotification;
+class TSendErrorToConnection;
 }
 
 namespace EnumerateConnectionsActivity
@@ -82,6 +83,7 @@ NONSHARABLE_CLASS(AConnectionLegacy)
 	friend class EnumerateConnectionsActivity::TCacheConnectionInfo;
 	friend class EnumerateConnectionsActivity::TCompleteClient;
 	friend class AllInterfaceNotificationActivity::TEnqueueNotification;
+	friend class AllInterfaceNotificationActivity::TSendErrorToConnection;
 	friend class ConnStates::TNoTagOrCancelAllInterfaceWorker;
 	friend class ConnStates::TCancelAllInterfaceNotificationWorker;
 

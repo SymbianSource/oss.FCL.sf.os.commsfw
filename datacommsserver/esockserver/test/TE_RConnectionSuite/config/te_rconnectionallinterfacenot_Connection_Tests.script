@@ -111,3 +111,11 @@ test_complete
 END_TESTCASE			COMINF-ESOCK-RConnectionSuite-AllInterfaceNot-0109
 
 
+START_TESTCASE			COMINF-ESOCK-RConnectionSuite-AllInterfaceNot-0111
+//! @SYMTestCaseID		COMINF-ESOCK-RConnectionSuite-AllInterfaceNot-0111
+
+heap_mark
+run_test_step 500, TE_RConnectionSuite Test319 c:\rconnectiontest.ini
+heap_markend
+test_complete
+END_TESTCASE			COMINF-ESOCK-RConnectionSuite-AllInterfaceNot-0111

@@ -61,10 +61,15 @@ public:
 	:	iProviderInfo(aProviderInfo)
 		{
 		}
+	explicit XConnectionProviderInfoQuery(const TUint32 aAPid)
+	    :   iAPid(aAPid)
+	        {
+	        }
 
 	IMPORT_C virtual TMatchResult Match(Factories::TFactoryObjectInfo& aProviderInfo);
 
 	TProviderInfo iProviderInfo;
+	TUint32 iAPid;
 
 protected:
 	explicit XConnectionProviderInfoQuery()

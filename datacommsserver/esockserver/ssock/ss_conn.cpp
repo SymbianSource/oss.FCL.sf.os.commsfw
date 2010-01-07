@@ -303,7 +303,6 @@ NODEACTIVITY_END()
 }
 
 
-
 namespace ConnectionGoingDownActivity
 {
 DECLARE_DEFINE_CUSTOM_NODEACTIVITY(ECFActivityGoneDown, ConnectionGoingDown, TCFControlClient::TGoneDown, PRActivities::CGoneDownActivity::NewL)
@@ -311,9 +310,10 @@ DECLARE_DEFINE_CUSTOM_NODEACTIVITY(ECFActivityGoneDown, ConnectionGoingDown, TCF
 	THROUGH_NODEACTIVITY_ENTRY(KNoTag, ConnectionGoingDownActivity::TStoreGoneDownError, MeshMachine::TNoTag)
 	THROUGH_NODEACTIVITY_ENTRY(KNoTag, CoreNetStates::TCancelAndCloseZone0ClientExtIfaces, MeshMachine::TNoTag)
     THROUGH_NODEACTIVITY_ENTRY(KNoTag, ConnStates::TCancelAllLegacyRMessage2Activities, ConnStates::TNoTagBlockedByLegacyRMessage2Activities)
+    THROUGH_NODEACTIVITY_ENTRY(KNoTag, ConnStates::TGenerateConnectionDownProgress, MeshMachine::TNoTag)
 	NODEACTIVITY_ENTRY(KNoTag, CoreNetStates::TSendClientLeavingRequestToServiceProviders, MeshMachine::TAwaitingLeaveComplete, MeshMachine::TNoTag)
 	NODEACTIVITY_ENTRY(KNoTag, CoreNetStates::TSetIdleIfNoServiceProviders, MeshMachine::TAwaitingLeaveComplete, ConnectionCleanupActivities::TNoTagOrNoTagBackwards)
-	LAST_NODEACTIVITY_ENTRY(KNoTag, ConnStates::TGenerateConnectionDownProgress)
+    LAST_NODEACTIVITY_ENTRY(KNoTag, MeshMachine::TDoNothing)
 NODEACTIVITY_END()
 }
 
@@ -402,6 +402,8 @@ CConnection::CConnection(CSockSession* aSession, CPlayer* aPlayer, TUid aTierId,
 :	CMMSockSubSession(ConnectionActivities::connectionActivities::Self(), aSession, aPlayer, aSubSessionUniqueId),
     ASubSessionPlatsecApiExt(UniqueId()),
     TIfStaticFetcherNearestInHierarchy(this),
+	iLastProgress(KConnectionUninitialised, KErrNone),
+	iLastProgressError(KConnectionUninitialised, KErrNone),
     iTierId(aTierId),
     iLegacyConnection(*this)
 	{
@@ -516,6 +518,18 @@ void CConnection::CloneL(const CConnection& aExistingConnection)
 Main body of CConnection::NewL(CSockSession* aSession, const CConnection& aExistingConnection)
 */
 	{
+	// will need to be brought over
+	iLastProgress = aExistingConnection.iLastProgress;
+	iLastProgressError = aExistingConnection.iLastProgressError;
+	iProgressQueue = aExistingConnection.iProgressQueue;
+
+	/**
+	   The first commented in section of code here is incorrect. It only clones one of the service providers and not them
+	   all. This means that certain calls, GetIntSetting being one, does not work on cloned connections. Unfortunately,
+	   some code now relies on this being broken (browser). This code needs to be fixed before the first section of code
+	   is removed and the proper code reinstated.
+	*/
+#if 1   // BAD CODE
 	RNodeInterface* sp = aExistingConnection.ServiceProvider();
 	if (sp)
 		{
@@ -529,6 +543,59 @@ Main body of CConnection::NewL(CSockSession* aSession, const CConnection& aExist
 		LOG( ESockLog::Printf(KESockConnectionTag, _L8("CConnection %08x CloneL KErrNotReady"), this) );
 		User::Leave(KErrNotReady);
 		}
+
+#else   // PROPER CODE
+	/*
+	  This function looks like it'd be better to do in one loop. dont do this though. All fallible parts need to be done before
+	  sending the messages to ourselves, otherwise the mesh machine will panic.
+	*/
+	TInt numSP = 0;
+	TClientIter<TDefaultClientMatchPolicy> iter = aExistingConnection.GetClientIter<TDefaultClientMatchPolicy>(TClientType(TCFClientType::EServProvider),
+		Messages::TClientType(TCFClientType::EServProvider, Messages::TClientType::ELeaving));
+
+	/**
+	   Add clients to client list. If this fails at any point, remove anything we've added.
+	   Makes assumption that we are the only thing adding service providers.
+	*/
+	RNodeInterface* sp = iter++;
+	while (sp)
+		{
+		TRAPD(err, AddClientL(sp->RecipientId(), sp->ClientType()));
+		if (err != KErrNone)
+			{
+			sp = GetFirstClient<TDefaultClientMatchPolicy>(TClientType(TCFClientType::EServProvider));
+			while (sp)
+				{
+				RemoveClient(sp->RecipientId());
+				sp = GetFirstClient<TDefaultClientMatchPolicy>(TClientType(TCFClientType::EServProvider));
+				}
+			User::Leave(err);
+			}
+
+		sp = iter++;
+		numSP++;
+        }
+
+	/**
+	   If we managed to add anything, post messages to them so that we get added as control clients
+	*/
+	if (numSP == 0)
+		{
+		LOG( ESockLog::Printf(KESockConnectionTag, _L8("CConnection %08x CloneL KErrNotReady"), this) );
+		User::Leave(KErrNotReady);
+		}
+	else
+		{
+		TClientIter<TDefaultClientMatchPolicy> iter = GetClientIter<TDefaultClientMatchPolicy>(TClientType(TCFClientType::EServProvider));
+		sp = iter++;
+		while (sp)
+			{
+			// TODO IK: This is the wrong message to be using here, should use JoinRequest/Complete handshake
+			sp->PostMessage(Id(), TCFFactory::TPeerFoundOrCreated(Id(), 0).CRef());
+			sp = iter++;
+			}
+		}
+#endif
 	}
 
 
@@ -791,7 +858,9 @@ void CConnection::ControlL()
 
 void CConnection::ProgressL()
     {
-	if (iLastProgress.iStage != KConnectionUp && iLastProgress.iStage != KConnectionDown)
+	if (iLastProgress.iStage != KConnectionUp
+		&& iLastProgress.iStage != KConnectionDown
+		&& iLastProgress.iStage != KConnectionUninitialised)
         {
 		RNodeInterface* sp = ServiceProvider();
 		User::LeaveIfError(sp? KErrNone : KErrNotReady);
@@ -812,7 +881,9 @@ void CConnection::ProgressL()
 
 void CConnection::LastProgressErrorL()
     {
-    if (iLastProgress.iStage != KConnectionUp && iLastProgress.iStage != KConnectionDown)
+    if (iLastProgress.iStage != KConnectionUp
+		&& iLastProgress.iStage != KConnectionDown
+		&& iLastProgress.iStage != KConnectionUninitialised)
         {
 		RNodeInterface* sp = ServiceProvider();
 		User::LeaveIfError(sp? KErrNone : KErrNotReady);
@@ -997,10 +1068,9 @@ DECLARE_DEFINE_CUSTOM_NODEACTIVITY(ECFActivityConnectionAllInterfaceNotification
 	// Enqueue the notification and wait for the next one - we loop here forever
 	NODEACTIVITY_ENTRY(KNoTag, TEnqueueNotification, TAwaitingLinkNotification, CoreStates::TCancelOrErrorOrTag<KNoTag|EBackward>)
 
-	THROUGH_TRIPLE_ENTRY(KErrorTag, MeshMachine::TStoreError, MeshMachine::TTag<KCancelTag>)
 	// If we received a TCancel from CConnection, reply with TError to complete shutdown handshake. 
-	THROUGH_NODEACTIVITY_ENTRY(KCancelTag, TSendErrorToConnection, MeshMachine::TTag<KCancelTag>)
-	NODEACTIVITY_ENTRY(KCancelTag, TCancelLinkNotification, TAwaitingLinkNotificationError, MeshMachine::TNoTag)
+    NODEACTIVITY_ENTRY(KCancelTag, TCancelLinkNotification, TAwaitingLinkNotificationError, MeshMachine::TTag<KErrorTag>)
+    THROUGH_TRIPLE_ENTRY(KErrorTag, TSendErrorToConnection, MeshMachine::TNoTag)
 	LAST_NODEACTIVITY_ENTRY(KNoTag, TLeaveTierManager) // no other sessions with tier so can safely fire & forget this
 NODEACTIVITY_END()
 }

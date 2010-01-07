@@ -636,13 +636,15 @@ namespace CommsDat
 
 
 	// FieldTIds
-	const TMDBElementId KCDTIdVPNPolicyName 		= 0x05830000; //< Commsdat field id for field: Policy. Policy name. Field is declared in the VPNService table.
-	const TMDBElementId KCDTIdVPNIAPRecord 			= 0x05840000; //< Commsdat field id for field: HomeIAP. Link to a IAP record. Field is declared in the VPNService table.
-	const TMDBElementId KCDTIdVPNNetwork 			= 0x05850000; //< Commsdat field id for field: HomeNetwork. Link to a Network record. Field is declared in the VPNService table.
+	const TMDBElementId KCDTIdVPNPolicyName 		= 0x05830000; ///< Commsdat field id for field: Policy. Policy name. Field is declared in the VPNService table.
+	const TMDBElementId KCDTIdVPNIAPRecord 			= 0x05840000; ///< Commsdat field id for field: HomeIAP. Link to a IAP record. Field is declared in the VPNService table.
+	const TMDBElementId KCDTIdVPNSNAPRecord      = 0x05860000; ///< Commsdat field id for field: SNAPIAP. Link to a snap iap record. Field is declared in the VPNService table.
+	const TMDBElementId KCDTIdVPNNetwork 			= 0x05850000; ///< Commsdat field id for field: HomeNetwork. Link to a Network record. Field is declared in the VPNService table.
 
 
 	#define	KCDTypeNameVPNPolicyName		       _S("Policy")
 	#define	KCDTypeNameVPNIAPRecord		           _S("HomeIAP")
+    #define KCDTypeNameVPNSNAPRecord                   _S("HomeSNAP")
 	#define	KCDTypeNameVPNNetwork		           _S("HomeNetwork")
 
 

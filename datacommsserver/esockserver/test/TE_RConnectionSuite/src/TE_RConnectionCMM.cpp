@@ -7202,5 +7202,72 @@ enum TVerdict TE_RConnectionTest480::doTestStepL(void)
 
 } // TE_RConnectionTest480
 
+/******************************************************************************
+ *
+ * Test 319
+ *
+ * To test progress
+ *
+ *****************************************************************************/
+
+// To test progress
+enum TVerdict TE_RConnectionTest319::doTestStepL(void)
+{
+	RSocketServ ss;
+	RConnection conn1;
+
+	TRequestStatus tStartConn;
+
+	TInt nErr = OpenSocketServer( ss );
+	TESTEL(KErrNone == nErr, nErr);
+	CleanupClosePushL(ss);
+    
+    nErr = conn1.Open( ss );
+    TESTEL( nErr == KErrNone, nErr );
+	CleanupClosePushL(conn1);
+
+    TNifProgress tProg;
+    conn1.Progress( tProg );
+    TESTEL( tProg.iError == KErrNone && tProg.iStage == 0, tProg.iError );
+    
+    TNifProgressBuf tNifProgressBuf;
+    conn1.ProgressNotification( tNifProgressBuf, tStartConn, KConnProgressDefault );
+
+	nErr = StartConnectionWithOverrides(conn1, iDummyNifIap);
+
+    TESTEL( nErr == KErrNone, nErr );
+	User::WaitForRequest( tStartConn );
+    TESTEL( tStartConn.Int() == KErrNone, tStartConn.Int() );
+    TESTEL( tNifProgressBuf().iStage == KStartingSelection, tNifProgressBuf().iStage );
+
+    //close conn1
+    conn1.Stop();
+	CleanupStack::PopAndDestroy();
+
+    nErr = conn1.Open( ss );
+    TESTEL( nErr == KErrNone, nErr );
+	CleanupClosePushL(conn1);
+
+    conn1.Progress( tProg );
+    TESTEL( tProg.iError == KErrNone && tProg.iStage == 0, tProg.iError );
+    //wait for particular guy
+    conn1.ProgressNotification( tNifProgressBuf, tStartConn, KFinishedSelection );
+	nErr = StartConnectionWithOverrides(conn1, iDummyNifIap);
+
+    TESTEL( nErr == KErrNone, nErr );
+	User::WaitForRequest( tStartConn );
+    TESTEL( tStartConn.Int() == KErrNone, tStartConn.Int() );
+    TESTEL( tNifProgressBuf().iStage == KFinishedSelection, tNifProgressBuf().iStage );
+
+    //close conn1
+    conn1.Stop();
+	CleanupStack::PopAndDestroy();
+
+    //close ss
+	CleanupStack::PopAndDestroy();
+    return TestStepResult();
+} // TE_RConnectionTest319
+
+
 // EOF TE_RConnectionCMM.cpp
 

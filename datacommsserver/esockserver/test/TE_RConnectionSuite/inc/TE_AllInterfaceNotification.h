@@ -153,11 +153,5 @@ public:
 
 };
 
-class TE_RConnectionTest319 : public TE_RConnectionStep
-{
-public:
-	virtual enum TVerdict doTestStepL();
-
-};
 #endif // TS_ALLINTERFACENOTIFICATION_H
 

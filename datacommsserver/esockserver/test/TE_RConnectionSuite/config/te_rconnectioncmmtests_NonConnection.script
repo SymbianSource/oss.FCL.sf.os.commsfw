@@ -241,6 +241,38 @@ END_TESTCASE			COMINF-ESOCK-RConnectionSuite-CMM-0620b
 #test_complete
 //END_TESTCASE			COMINF-ESOCK-RConnectionSuite-CMM-0621
 
+START_TESTCASE			COMINF-ESOCK-RConnectionSuite-CMM-0622
+//! @SYMTestCaseID		COMINF-ESOCK-RConnectionSuite-CMM-0622
+//!@SYMTestCaseDesc           	Test correct progresses arrive at the correct times
+//!@SYMPREQ                   	PREQ399
+//!@SYMAPI
+//RConnection::Progress()
+//RConnection::ProgressNotification()
+//!@SYMTestPriority           	Critical
+//!@SYMTestActions
+//	Open conn1
+// 	Request progress on conn1
+//      Check progress (Should be KConnectionUninitialised)
+//      Request progress notification on conn1
+//      Start conn1
+//      Check progress (Should be KStartingSelection)
+//      Stop conn1
+//      Open conn1
+//      Request progress on conn1
+//      Check progress (Should be KConnectionUninitialised)
+//      Request progress notification on conn1 for when conn1 gets KFinishedSelection progress
+//      Start conn1
+//      Check progress (Should be KFinishedSelection)
+//      Stop conn1
+//
+//!@SYMTestType               	CIT
+//!@SYMTestExpectedResults    	All progresses are as expected
+
+heap_mark
+run_test_step 100, TE_RConnectionSuite Test319 c:\rconnectiontest.ini
+heap_markend
+test_complete
+END_TESTCASE			COMINF-ESOCK-RConnectionSuite-CMM-0622
 
 run_script z:\TestData\scripts\te_esock_test_unloadesockForced.script
 

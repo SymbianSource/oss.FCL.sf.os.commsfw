@@ -401,11 +401,12 @@ void AMMNodeBase::SignalActivities()
 	TBool awoke = ETrue;
 	TInt c = iActivities.Count();
 	TNodeNullContext context(*this);
+
 	//Clean up..
-	while (awoke && c > 0)
+	while (awoke)
 		{
 		awoke = EFalse;
-		for (TInt i = c - 1 ; i>=0 ; --i)
+		for (TInt i = iActivities.Count() - 1 ; i>=0 ; --i)
 			{
 			//Signal to waiting activities if:
 			//1) an event was received (& the state has potentialy changed as a result)
@@ -414,25 +415,18 @@ void AMMNodeBase::SignalActivities()
 			//If any signalled activity reacted, the state could change and all other activities need to be signalled again.
 			context.iNodeActivity = iActivities[i];
 			awoke |= context.iNodeActivity->Signal(context);
-			if(context.iNodeActivity->IsIdle())
-				{
-				iActivities.Remove(i);
-				context.iNodeActivity->Destroy();
-				context.iNodeActivity = NULL;
-	            // NOTE: if "aContext.iNodeActivity" is the destroy activity, then deleting
-	            // it will destroy the node (i.e. "this") as well, so don't put anything after this line !
-	            if (c == 1)
-	                {
-	                // c == 1 means that we've just removed the last activity (also means i will be zero)
-	                // i == 0 means that this round of signalling parked activities has been completed
-	                // This is effectively safeguarding the access to iActivities which may or may not be
-	                // there (based on the note above). The destroy activity will always be placed at the
-	                // head of the list, and will therefore be the last to get processed.
-	                return;
-	                }
-				}
 			}
-		c = iActivities.Count();
+		}
+
+	for (TInt i = iActivities.Count() - 1 ; i>=0 ; --i)
+		{
+		context.iNodeActivity = iActivities[i];
+		if(context.iNodeActivity->IsIdle())
+			{
+			iActivities.Remove(i);
+			context.iNodeActivity->Destroy();
+			context.iNodeActivity = NULL;
+			}
 		}
 	}
 

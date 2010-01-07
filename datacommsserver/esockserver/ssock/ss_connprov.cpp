@@ -59,7 +59,9 @@ EXPORT_C MFactoryQuery::TMatchResult XConnectionProviderInfoQuery::Match(TFactor
 	CConnectionProviderBase* prov = static_cast<CConnectionProviderBase*>(aProviderInfo.iInfo.iFactoryObject);
 	const TProviderInfo& thePI = static_cast<const TProviderInfoExt&>(prov->AccessPointConfig().FindExtensionL(
 	        STypeId::CreateSTypeId(TProviderInfoExt::EUid, TProviderInfoExt::ETypeId))).iProviderInfo;
-	TBool isMatch = (thePI.TierId() == iProviderInfo.TierId()) && (thePI.APId() == iProviderInfo.APId());
+	TBool isMatch = (thePI.APId() == iAPid);
+	LOG(ESockLog::Printf(KESockCtrlFactTag, _L("XConnectionProviderInfoQuery::Match %08x:\tiAPid is = %08x THePI.APId = %08x"),
+	                         this, iAPid, thePI.APId()));
 	return (isMatch ? MFactoryQuery::EMatch : MFactoryQuery::EContinue);
 	}
 

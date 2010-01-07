@@ -152,6 +152,7 @@ NONSHARABLE_CLASS(CConnection) : public CMMSockSubSession,
 	friend class EnumerateConnectionsActivity::TCacheConnectionInfo;
 	friend class EnumerateConnectionsActivity::TCompleteClient;
 	friend class AllInterfaceNotificationActivity::TEnqueueNotification;
+	friend class AllInterfaceNotificationActivity::TSendErrorToConnection;
 	friend class ConnSubConnEventsActivity::TProcessSubConnEvent;
 
 	friend class ConnStates::TGenerateConnectionUpProgress;

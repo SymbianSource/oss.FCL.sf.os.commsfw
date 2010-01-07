@@ -21,6 +21,7 @@
  @file
  @internalComponent
 */
+
 #define SYMBIAN_NETWORKING_UPS
 
 #include <comms-infras/ss_log.h>
@@ -328,13 +329,15 @@ void CCprBindToActivity::TSendControlClientJoinRequestWithPriority::DoL()
 	const TCFDataClient::TBindTo& bindToMsg(message_cast<const TCFDataClient::TBindTo>(iContext.iMessage));
 
 	__ASSERT_DEBUG(!bindToMsg.iNodeId.IsNull(), User::Panic(KCoreCprPanic, KPanicNoServiceProvider));
-	activity.iNewServiceProvider = iContext.Node().AddClientL(bindToMsg.iNodeId,
-							TClientType(TCFClientType::EServProvider, TCFClientType::EActivating));
-	//Join the new service provider
-	iContext.iNodeActivity->PostRequestTo(*activity.iNewServiceProvider,
-							TCFControlClient::TJoinRequest(iContext.NodeId(), TClientType(TCFClientType::ECtrl), iContext.Node().Priority()).CRef());
-    }
 
+    RNodeInterface* newServiceProvider = iContext.Node().AddClientL(bindToMsg.iNodeId,
+                            TClientType(TCFClientType::EServProvider, TCFClientType::EActivating));
+    __ASSERT_DEBUG(newServiceProvider, User::Panic(KCoreCprPanic, KPanicNoServiceProvider));
+    activity.iNewServiceProvider = bindToMsg.iNodeId;
+    //Join the new service provider
+    activity.PostRequestTo(*newServiceProvider,
+                            TCFControlClient::TJoinRequest(iContext.NodeId(), TClientType(TCFClientType::ECtrl), iContext.Node().Priority()).CRef());
+    }
 }
 
 EXPORT_DEFINE_SMELEMENT(THandleDataClientIdle, NetStateMachine::MStateTransition, CprStates::TContext)

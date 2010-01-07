@@ -32,7 +32,7 @@
 #include <elements/cftransportmsg.h>
 #include <elements/nm_address_internal.h>
 #include <elements/sd_msgs.h>
-#include "sd_rootserverchannelhandler.h"
+#include <elements/sd_rootserverchannelhandler.h>
 #include "ss_connectionserver.h"
 #include <comms-infras/ss_common.h>
 #include <comms-infras/ss_tiermanager.h>

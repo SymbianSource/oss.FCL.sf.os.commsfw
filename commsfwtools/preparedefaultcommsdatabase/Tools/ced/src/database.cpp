@@ -1010,6 +1010,9 @@ TBool DBAccess::ConvertLinkRecords(CMDBElement* aPtrField, TPtrC& aColumn,TPtrC&
             err = SetLinkedRecord(ELRTier, aPtrField,aColumn,aSetting,aAttribute);
 			break;
 #endif //SYMBIAN_NON_SEAMLESS_NETWORK_BEARER_MOBILITY
+                case KCDTIdVPNServiceRecord:
+	            err = SetLinkedRecord(ELRVPNService, aPtrField,aColumn,aSetting,aAttribute);
+	        break;
 		default: ;
         }
 

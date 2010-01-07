@@ -14,7 +14,7 @@ DefaultContextparamGPRS= 3, SYMBIAN EMPLOYEE INTRANET, A WAP PORTAL, 2, 1, 1, 1,
 # ContextConfigGPRS = <TProtocolType>, <TGSNAddress>, <TProtocolAddress>, <PdpDataCompression>, <TAnonymousAccess>, <TUseEdge>
 # ProtocolConfigOption = <Authentication Protocol>, <Username>, <Password>, <Challenge>, 
 # <Response>, <PrimaryDNS>, <SecondaryDNS>, <TUint iId>
-SetContextConfigGPRS= 0,Test,,0, 2, 0, 0,RasUser,,,,,,0
+SetContextConfigGPRS= 0,Test,,0, 2, 0, 1,RasUser,,,,,,1
 
 # TRel99ContextConfig = <TName iContextName>,  <TUint iActivatePause>, <TUint iActivateErrorCode>, <TUint iDeactivatePause>, 
 # <TUint iDeactivateErrorCode>, <TUint iDeletionPause>, <TUint iDeletionErrorCode> <TBool iConnectToNtRas>

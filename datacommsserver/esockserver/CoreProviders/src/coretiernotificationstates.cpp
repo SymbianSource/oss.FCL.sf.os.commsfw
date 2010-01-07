@@ -110,7 +110,7 @@ EXPORT_C TBool TAwaitingDataCollectors::Accept()
 EXPORT_DEFINE_SMELEMENT(TAwaitingCancelOrErrorOrDestroy, NetStateMachine::MState, TierNotification::TContext)
 EXPORT_C TBool TAwaitingCancelOrErrorOrDestroy::Accept()
 	{
-	return(	iContext.iMessage.IsMessage<TEBase::TCancel>() ||
+	return(	( iContext.iMessage.IsMessage<TEBase::TCancel>() && iContext.Activity()->FindOriginator(iContext.iSender) != KErrNotFound ) ||
 			iContext.iMessage.IsMessage<TEBase::TError>() ||
 			iContext.iMessage.IsMessage<TEChild::TDestroy>() );
 	}

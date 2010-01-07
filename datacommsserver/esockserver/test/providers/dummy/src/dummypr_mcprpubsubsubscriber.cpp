@@ -1,9 +1,9 @@
 // Copyright (c) 2007-2009 Nokia Corporation and/or its subsidiary(-ies).
 // All rights reserved.
 // This component and the accompanying materials are made available
-// under the terms of the License "Symbian Foundation License v1.0"
+// under the terms of "Eclipse Public License v1.0"
 // which accompanies this distribution, and is available
-// at the URL "http://www.symbianfoundation.org/legal/sfl-v10.html".
+// at the URL "http://www.eclipse.org/legal/epl-v10.html".
 //
 // Initial Contributors:
 // Nokia Corporation - initial contribution.
@@ -70,7 +70,7 @@ void CMCPrPubSubSubscriber::DoCancel()
 	iProperty.Close();
 	}
 
-///////////////////////////////////////////////////////////////////////////////
+//
 
 CMCPrPubSubAvailability* CMCPrPubSubAvailability::NewL(const ESock::CMetaConnectionProviderBase& aProvBase, TUint aStopCode)
 	{
@@ -134,9 +134,11 @@ void CMCPrPubSubAvailability::RunL()
 	__CFLOG_VAR((KDummyMCprTag, KDummyMCprSubTag, _L8("CMCPrPubSubAvailability subscribed value now %d"),value));
 
     __ASSERT_DEBUG(!iAvailabilityActivity.IsNull(), User::Panic(KSpecAssert_DummyPrStopSubsc, 1)); //maybe a bit defensive, but this is test code after all. The test changes availability when nobody is listenning; Surely test is wrong?
+    RClientInterface::OpenPostMessageClose(Id(), iAvailabilityActivity,
+        TCFAvailabilityControlClient::TAvailabilityNotification(value).CRef());
 	}
 
-///////////////////////////////////////////////////////////////////////////////
+//
 
 CMCPrPubSubStopTrigger* CMCPrPubSubStopTrigger::NewL(const ESock::CMetaConnectionProviderBase& aProvBase, TUint aStopCode)
 	{

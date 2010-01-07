@@ -124,7 +124,6 @@ USERINCLUDE		../ssock
 USERINCLUDE		../inc
 
 USERINCLUDE		../eintsock
-USERINCLUDE             ../../../commsfwsupport/commselements/serverden/inc
 
 OS_LAYER_SYSTEMINCLUDE_SYMBIAN
 

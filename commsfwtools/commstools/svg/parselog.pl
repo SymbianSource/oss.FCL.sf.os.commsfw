@@ -428,17 +428,12 @@ while (<>) {
 			ClearActivity($actAddr);
 			}
 		elsif ($action eq "Abort") {
-			print "t ", objectName($activityNode{$actAddr}), " (Abort ", $activityName{$actAddr}, ")\n";
+			print "t ", objectName($activityNode{$actAddr}), " ($activityName{$actAddr}) Abort()\n";
 			}
-		elsif ($action eq "Next->cancel") {
-			my $tuple = "";
-			if (m/\[Triple=([^]]+)\]/) {
-				$tuple = $1;
-				print "t ", objectName($activityNode{$actAddr}), " (Cancel $activityName{$actAddr}, $tuple)\n";
-				}
-			else {
-				print "t ", objectName($activityNode{$actAddr}), " (Cancel ", $activityName{$actAddr}, ")\n";
-				}
+		elsif ($action =~ m/Cancel\(\)/) {
+			m/iPostedToId ([0-9a-f]{8})/;
+			my $postedToId = $1;
+			print "t ", objectName($activityNode{$actAddr}), " ($activityName{$actAddr}) Cancel().  Posted to ", objectName($postedToId), "\n";
 			}
 	}
 	elsif (($opt_X & 4) == 0 && /UnparkState->unparked\s+\[MNode=0x([0-9a-fA-F]{8})\].*\[Activity=(\w+)\].*\[Triple=(.*?)\]/)

@@ -375,6 +375,23 @@ private:
 
 _LIT(KSocketGetOptionStep, "SocketGetOptionStep");
 
+/**
+Class implementing control and confirmation of RSocket::SetOpt() calls
+
+@internalComponent
+*/
+class CSocketSetOptionStep : public CTe_EsockStepBase
+    {
+public:
+    CSocketSetOptionStep(CCEsockTestBase*& aEsockTest);
+    TVerdict doSingleTestStep();
+    TInt ConfigureFromIni();
+
+private:
+    TRSocketSetOptParams iParams;
+    };
+
+_LIT(KSocketSetOptionStep, "SocketSetOptionStep");
 
 /**
 Class implementing confirmation of protocol description retrieved from a socket with:

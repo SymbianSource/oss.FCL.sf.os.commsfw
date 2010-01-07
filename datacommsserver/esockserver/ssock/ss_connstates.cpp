@@ -168,6 +168,7 @@ void ConnStates::TParseECNStart::DoL()
 		}
     else
         {
+		ac.iStartReceived = ETrue;
         ac.SetSelectionScope(TSelectionPrefs::EExplicitConnection);
         }
 	}
@@ -845,9 +846,17 @@ TBool ConnActivities::CStartAttachActivity::Next(MeshMachine::TNodeContextBase& 
     // activity Id and so will never give a match. Here we ensure that our second IPC is matched and accepted.
     
     TCFInternalEsock::TSubSess* msg = message_cast<TCFInternalEsock::TSubSess>(&aContext.iMessage);
-    if (!msg || msg->iMessage.Function() != ECNStart)
+	if (!msg || (msg->iMessage.Function() != ECNStart && msg->iMessage.Function() != ECNSetStartPrefs))
         {
         return CNodeActivityBase::Next(aContext);
+        }
+    else if (iStartReceived)
+        {
+        // ECNSetStartPrefs should only ever be seen as the IPC in the TSubSess kick off message
+        // ECNStart should only be seen once after an ECNSetStartPrefs or as the kick off message
+        PanicClient(ETwice);
+        aContext.iReturn = KErrInUse;
+        return ETrue;
         }
     
     MESH_LOG((KESockConnectionTag, _L8("CStartAttachActivity::Next:\tAccepted ECNStart IPC after ECNSetStartPrefs")));
@@ -1440,8 +1449,12 @@ void AllInterfaceNotificationActivity::TLeaveTierManager::DoL()
 DEFINE_SMELEMENT(AllInterfaceNotificationActivity::TSendErrorToConnection, NetStateMachine::MStateTransition, TContext)
 void AllInterfaceNotificationActivity::TSendErrorToConnection::DoL()
 	{
-	// Send a TError to the CConnection to complete the shutdown handshake.
-	RNodeInterface::OpenPostMessageClose(TNodeCtxId(iContext.ActivityId(), iContext.NodeId()), iContext.Node().iConnection.Id(), TEBase::TError(iContext.Activity()->KickOffMessageId(), KErrCancel).CRef());
+	iContext.Node().iConnection.iLegacyConnection.CompleteAllInterfaceNotificationL(iContext.Activity()->Error());
+
+	TEBase::TError msg(iContext.Activity()->KickOffMessageId(), iContext.Activity()->Error());
+	iContext.Activity()->PostToOriginators(msg);
+
+	iContext.Activity()->SetError(KErrNone);
 	}
 
 DEFINE_SMELEMENT(TNoTagOrCancelAllInterfaceWorker, NetStateMachine::MStateFork, TContext)

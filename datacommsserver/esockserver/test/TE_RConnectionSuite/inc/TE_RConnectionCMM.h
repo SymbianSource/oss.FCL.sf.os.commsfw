@@ -861,5 +861,12 @@ public:
 	virtual enum TVerdict doTestStepL ();
 };
 
+class TE_RConnectionTest319 : public TE_RConnectionStep
+{
+public:
+	virtual enum TVerdict doTestStepL();
+
+};
+
 #endif // TE_RConnectionCMM_H
 

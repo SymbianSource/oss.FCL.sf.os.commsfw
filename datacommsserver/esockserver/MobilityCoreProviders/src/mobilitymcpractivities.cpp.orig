@@ -87,7 +87,7 @@ DECLARE_DEFINE_CUSTOM_NODEACTIVITY(ECFActivityMCprMobility, MCprMobility, TCFMob
 	//if it sees that the availability notification has influcenced what the currently preffered bearer should be.
 	THROUGH_NODEACTIVITY_ENTRY(KNoTag, CMobilityActivity::TSendAvailabilityRequest, MeshMachine::TTag<MobilityMCprStates::KStartMobilityHandshake>)
 
-	//<BEGIN> MAIN LOOP ****************	
+	//<BEGIN> MAIN LOOP ****************
 	//The main mobility handshake loop. The loop is executed when performing migration from one service provider to another.
 	//The entry condition for the loop is that:
 	//- upgrade: a better then current access point is now available (a better access point reported available)
@@ -97,21 +97,21 @@ DECLARE_DEFINE_CUSTOM_NODEACTIVITY(ECFActivityMCprMobility, MCprMobility, TCFMob
 	//      NOTE: if the current bearer ceases to be available completely (goes down), then this will be assisted by an error recovery request;
 	//      NOTE: This tuple doesn't actually do (b), i.e.: assumes the threshold of '1' (in 0..100 availability score range)
 	//Before awaitng for availability change or rejection by the client (TAwaitingCurrentCarrierRejectedOrAvailabilityChange), the activity
-	//first checks (TNoTagOrAwaitMobilityBlockedByErrorRecovery) if the availability has changed since it last checked 
-	//(availability could have been reported amidst the previous handshake loop) 
+	//first checks (TNoTagOrAwaitMobilityBlockedByErrorRecovery) if the availability has changed since it last checked
+	//(availability could have been reported amidst the previous handshake loop)
 	THROUGH_NODEACTIVITY_ENTRY(MobilityMCprStates::KStartMobilityHandshake, CMobilityActivity::TClearHandshakingFlag, CMobilityActivity::TNoTagOrAwaitMobilityBlockedByErrorRecovery)
 	NODEACTIVITY_ENTRY(MobilityMCprStates::KAwaitMobility, MeshMachine::TDoNothing, CMobilityActivity::TAwaitingCurrentCarrierRejectedOrAvailabilityChange, CMobilityActivity::TNoTagOrAwaitMobilityBackwardsOnMobilityTriggerBlockedByErrorRecovery)
 
-		//Mobility has been triggered ((a) or (b)). Start mobility handshake (set handshaking flag and inform the client about the preferred bearer) 
-		NODEACTIVITY_ENTRY(KNoTag, CMobilityActivity::TInformMigrationAvailableAndSetHandshakingFlag, MobilityMCprStates::TAwaitingMigrationRequestedOrRejected, CMobilityActivity::TNoTagOrStartMobilityHandshakeBackwards)
-		//The client accepts the new access point. 
+		//Mobility has been triggered ((a) or (b)). Start mobility handshake (set handshaking flag and inform the client about the preferred bearer)
+		NODEACTIVITY_ENTRY(KNoTag, CMobilityActivity::TInformMigrationAvailableAndSetHandshakingFlag, MobilityMCprStates::TAwaitingMigrationRequestedOrRejected, CMobilityActivity::TNoTagOrReConnectOrStartMobilityHandshakeBackwards)
+		//The client accepts the new access point.
 		//For the moment it is sufficient to use the re-connect activity, in the future we may want to
 		//customise the behavior, for example start the new layer before rebinding it, etc.
 		//Should rebinding fail, the mobility activity will be set to an error mode. The error mode will be cleared if
 		//there are other bearers this activity can offer. If there aren't the data client will be errored.
-		NODEACTIVITY_ENTRY(KNoTag, CMobilityActivity::TRequestReConnect, MCprStates::TAwaitingReConnectCompleteOrError, CMobilityActivity::TNoTagOrStartMobilityHandshakeBackwards)
+		NODEACTIVITY_ENTRY(MobilityMCprStates::KReConnect, CMobilityActivity::TRequestReConnect, MCprStates::TAwaitingReConnectCompleteOrError, CMobilityActivity::TNoTagOrStartMobilityHandshakeBackwards)
 		//Rebinding has been successful. As far as MCPR is concerned, the mobility is finished, but the MCPR must await
-		//for the handshake (accept|reject) before it can offer another bearer. 
+		//for the handshake (accept|reject) before it can offer another bearer.
 		NODEACTIVITY_ENTRY(KNoTag, CMobilityActivity::TInformMigrationCompleted, MobilityMCprStates::TAwaitingMigrationAcceptedOrRejected, MeshMachine::TTag<MobilityMCprStates::KStartMobilityHandshake|EBackward>)
 NODEACTIVITY_END()
 }
@@ -210,11 +210,12 @@ TBool CMobilityActivity::EvaluatePreference(CMobilityActivity::TContext& aContex
 	    //  - current bearer rejected;
 	    //  - proposed bearer rejected;
 	    //  - failure to migrate to the proposed bearer;
-        lastRejected = iPreferred ? iPreferred : 
-                                    static_cast<RMetaServiceProviderInterface*>(aContext.Node().ServiceProvider()); 
+        lastRejected = iAvailable ? iAvailable :
+                                    static_cast<RMetaServiceProviderInterface*>(aContext.Node().ServiceProvider());
 	    }
-	
-	iPreferred = NULL; //Do not remember rejected candidate any longer
+
+    iCandidate = iAvailable;
+	iAvailable = NULL; //Do not remember rejected candidate any longer
 	while ((candidate = static_cast<RMetaServiceProviderInterface*>(iter++)) != NULL)
 		{
 		const TAvailabilityStatus& status = candidate->AvailabilityStatus();
@@ -229,7 +230,8 @@ TBool CMobilityActivity::EvaluatePreference(CMobilityActivity::TContext& aContex
 		if (status.Score() > iAvailabilityScoreTreshold
 			&& candidate!=lastRejected)
 			{
-			if (candidate->Flags() & TCFClientType::EStarted)
+			if (candidate==aContext.Node().ServiceProvider()
+			    && Error() == KErrNone )
 				{
 				//The preferred one is the current one, is still available and was not just rejected.
 				//No need to do anything more.
@@ -237,7 +239,7 @@ TBool CMobilityActivity::EvaluatePreference(CMobilityActivity::TContext& aContex
 				}
 
 			//A new match found
-			iPreferred = candidate;
+			iAvailable = candidate;
 			return ETrue;
 			}
 		}
@@ -256,6 +258,22 @@ void CMobilityActivity::ClearHandshakingFlag()
 	static_cast<CMobilityMetaConnectionProvider&>(iNode).iIsHandshakingNow = EFalse;
 	}
 
+DEFINE_SMELEMENT(CMobilityActivity::TNoTagOrReConnectOrStartMobilityHandshakeBackwards, NetStateMachine::MStateFork, CMobilityActivity::TContext)
+TInt CMobilityActivity::TNoTagOrReConnectOrStartMobilityHandshakeBackwards::TransitionTag()
+	{
+	if (iContext.Activity()->Error() == KErrNone &&
+	    (message_cast<TCFMobilityProvider::TMigrationRequested>(&iContext.iMessage) ||
+	     message_cast<TCFMcpr::TReConnectComplete>(&iContext.iMessage)))
+		{
+	        CMobilityActivity& activity = static_cast<CMobilityActivity&>(*iContext.iNodeActivity);
+			if( activity.iCurrent!=activity.iAvailable )
+			    return MobilityMCprStates::KReConnect | NetStateMachine::EForward;
+			else
+		        return MeshMachine::KNoTag | NetStateMachine::EForward;
+		}
+	return MobilityMCprStates::KStartMobilityHandshake | NetStateMachine::EBackward;
+	}
+
 DEFINE_SMELEMENT(CMobilityActivity::TNoTagOrStartMobilityHandshakeBackwards, NetStateMachine::MStateFork, CMobilityActivity::TContext)
 TInt CMobilityActivity::TNoTagOrStartMobilityHandshakeBackwards::TransitionTag()
 	{
@@ -263,7 +281,7 @@ TInt CMobilityActivity::TNoTagOrStartMobilityHandshakeBackwards::TransitionTag()
 	    (message_cast<TCFMobilityProvider::TMigrationRequested>(&iContext.iMessage) ||
 	     message_cast<TCFMcpr::TReConnectComplete>(&iContext.iMessage)))
 		{
-		return MeshMachine::KNoTag | NetStateMachine::EForward;
+			return MeshMachine::KNoTag | NetStateMachine::EForward;
 		}
 	return MobilityMCprStates::KStartMobilityHandshake | NetStateMachine::EBackward;
 	}
@@ -272,13 +290,13 @@ DEFINE_SMELEMENT(CMobilityActivity::TNoTagOrAwaitMobilityBackwardsOnMobilityTrig
 TInt CMobilityActivity::TNoTagOrAwaitMobilityBackwardsOnMobilityTrigger::TransitionTag()
 	{
 	//This is where the judgement is made on whether to trigger mobility (offer the client another bearer)
-	//or ignore and come back waiting. 
+	//or ignore and come back waiting.
 	__ASSERT_DEBUG(iContext.iMessage.IsMessage<TCFMobilityProvider::TMigrationRejected>() ||
-			iContext.iMessage.IsMessage<TCFAvailabilityControlClient::TAvailabilityNotification>(), 
+			iContext.iMessage.IsMessage<TCFAvailabilityControlClient::TAvailabilityNotification>(),
 			User::Panic(KCoreMobileMCprPanic, KPanicIncorrectMessage));
-	__ASSERT_DEBUG(iContext.iNodeActivity, User::Panic(KCoreMobileMCprPanic, KPanicNoActivity));	
+	__ASSERT_DEBUG(iContext.iNodeActivity, User::Panic(KCoreMobileMCprPanic, KPanicNoActivity));
 	CMobilityActivity& activity = static_cast<CMobilityActivity&>(*iContext.iNodeActivity);
-	
+
 	if (activity.EvaluatePreference(iContext))
 		{
         activity.SetError(KErrNone);
@@ -295,9 +313,9 @@ TInt CMobilityActivity::TNoTagOrAwaitMobilityBackwardsOnMobilityTrigger::Transit
 DEFINE_SMELEMENT(CMobilityActivity::TNoTagOrAwaitMobility, NetStateMachine::MStateFork, CMobilityActivity::TContext)
 TInt CMobilityActivity::TNoTagOrAwaitMobility::TransitionTag()
 	{
-	__ASSERT_DEBUG(iContext.iNodeActivity, User::Panic(KCoreMobileMCprPanic, KPanicNoActivity));	
+	__ASSERT_DEBUG(iContext.iNodeActivity, User::Panic(KCoreMobileMCprPanic, KPanicNoActivity));
 	CMobilityActivity& activity = static_cast<CMobilityActivity&>(*iContext.iNodeActivity);
-	
+
 	if (activity.EvaluatePreference(iContext))
 		{
 		activity.SetError(KErrNone);
@@ -332,26 +350,41 @@ void CMobilityActivity::TInformMigrationAvailableAndSetHandshakingFlag::DoL()
 
 	//Inform the CPR that a potential migration is available. We only support a single data client
 	//in this implementation.
-	__ASSERT_DEBUG(activity.iPreferred, User::Panic(KCoreMobileMCprPanic, KPanicNoServiceProvider));
+	__ASSERT_DEBUG(activity.iAvailable, User::Panic(KCoreMobileMCprPanic, KPanicNoServiceProvider));
 
 	//Compute all this here to keep EvaluatePreference() as fast as possible
-	activity.iCurrent = static_cast<RMetaServiceProviderInterface*>(iContext.Node().GetFirstClient<TDefaultClientMatchPolicy>(TClientType(TCFClientType::EServProvider, TCFClientType::EStarted)));
+	activity.iCurrent = static_cast<RMetaServiceProviderInterface*>(iContext.Node().ServiceProvider());
 	__ASSERT_DEBUG(activity.iCurrent, User::Panic(KCoreMobileMCprPanic, KPanicNoServiceProvider));
 
 	//Perform a simple check if this is an upgrade or not
 	TClientIter<TDefaultClientMatchPolicy> iter = iContext.Node().GetClientIter<TDefaultClientMatchPolicy>(TClientType(TCFClientType::EServProvider));
 	RNodeInterface* sp = iter++;
-	while (sp && sp!=activity.iCurrent && sp!=activity.iPreferred)
+	while (sp && sp!=activity.iCurrent && sp!=activity.iAvailable)
 		{
 		sp = iter++;
 		}
 
 	TBool isUpgrade = (sp != activity.iCurrent); //If current was found first -> this is not an upgrade
-	TCFMobilityControlClient::TMigrationNotification msg(activity.iCurrent->ProviderInfo().APId(),
-	                                       activity.iPreferred->ProviderInfo().APId(),
-	                                       isUpgrade, EFalse);
+	if( activity.iCurrent == activity.iAvailable && activity.iCandidate )
+	    {
+		// The available client is the same as the current and a candidate exists, this indicates that
+		// an error has occured when trying to start the candidate bearer and the control as reverted to
+		// the current bearer. In this situation the notification needs to look as if the bearer has
+		// migrated from the failed candidate to the current bearer.
+		TCFMobilityControlClient::TMigrationNotification msg(activity.iCandidate->ProviderInfo().APId(),
+											   activity.iAvailable->ProviderInfo().APId(),
+											   isUpgrade, EFalse);
+		activity.PostToOriginators(msg);
+	    }
+	else
+	    {
+		// Standard case where migration is going from current to available.
+		TCFMobilityControlClient::TMigrationNotification msg(activity.iCurrent->ProviderInfo().APId(),
+											   activity.iAvailable->ProviderInfo().APId(),
+											   isUpgrade, EFalse);
+		activity.PostToOriginators(msg);
+	    }
 
-	activity.PostToOriginators(msg);
 	activity.ClearPostedTo();
 	activity.SetHandshakingFlag();
 	}
@@ -375,13 +408,13 @@ void CMobilityActivity::TRequestReConnect::DoL()
 	__ASSERT_DEBUG(iContext.iNodeActivity, User::Panic(KCoreMobileMCprPanic, KPanicNoActivity));
 	CMobilityActivity& activity = static_cast<CMobilityActivity&>(*iContext.iNodeActivity);
 
-	__ASSERT_DEBUG(activity.iPreferred, User::Panic(KCoreMobileMCprPanic, KPanicNoServiceProvider));
+	__ASSERT_DEBUG(activity.iAvailable, User::Panic(KCoreMobileMCprPanic, KPanicNoServiceProvider));
 	__ASSERT_DEBUG(activity.iCurrent, User::Panic(KCoreMobileMCprPanic, KPanicNoServiceProvider));
-	__ASSERT_DEBUG(activity.iCurrent!=activity.iPreferred, User::Panic(KSpecAssert_ESockMbCrMCPRAct, 1));
+	__ASSERT_DEBUG(activity.iCurrent!=activity.iAvailable, User::Panic(KSpecAssert_ESockMbCrMCPRAct, 1));
 
 	// For the moment it is sufficient to use the re-connect activity, in the future we may want to
 	// customise the behavior, for example start the new layer before rebinding it, etc.
-	TCFMcpr::TReConnect msg(activity.iCurrent->RecipientId(), activity.iPreferred->RecipientId());
+	TCFMcpr::TReConnect msg(activity.iCurrent->RecipientId(), activity.iAvailable->RecipientId());
 	activity.PostRequestTo(iContext.NodeId(), msg);
 	}
 
@@ -468,27 +501,26 @@ DEFINE_SMELEMENT(CConnectionRecoveryActivity::TProcessConnectionStartRecoveryReq
 void CConnectionRecoveryActivity::TProcessConnectionStartRecoveryRequest::DoL()
 	{
 	__ASSERT_DEBUG(iContext.iNodeActivity, User::Panic(KCoreMobileMCprPanic, KPanicNoActivity));
-	RNodeInterface* startingSP = NULL;
-	RNodeInterface* stoppingSP = NULL;
+	RNodeInterface* newSP = NULL;
+	RNodeInterface* curSP = iContext.Node().ServiceProvider(); //Our current started Service Provider.
 
 	//Choose Service Providers to work on
 	TClientIter<TDefaultClientMatchPolicy> iter = iContext.Node().GetClientIter<TDefaultClientMatchPolicy>(TClientType(TCFClientType::EServProvider));
 	RNodeInterface* itf = NULL;
-	for (itf = iter++; itf!=NULL && stoppingSP==NULL; itf = iter++)
+	for (itf = iter++; itf!=NULL && newSP==NULL; itf = iter++)
 		{
-		if (itf->Flags() & TCFClientType::EStarted)
+		if (itf==curSP)
 			{
-			stoppingSP = itf; //Our current started Service Provider.
-			startingSP = iter++; //And the new one to try next
+			newSP = iter++; //And the new one to try next
 			}
 		}
 
 	//Sanity check.
 	//The new provider must not be started, there can be only one started at a time.
-	__ASSERT_DEBUG(startingSP==NULL || (startingSP->Flags() & TCFClientType::EStarted)==0, User::Panic(KSpecAssert_ESockMbCrMCPRAct, 3));
+	__ASSERT_DEBUG(newSP==NULL || (newSP->Flags() & TCFClientType::EStarted)==0, User::Panic(KSpecAssert_ESockMbCrMCPRAct, 3));
 
 	//If there is no other Service Provider to try, return KErrNotFound
-	if (startingSP==NULL || stoppingSP == NULL)
+	if (newSP==NULL || curSP == NULL)
 		{
 #ifdef __CFLOG_ACTIVE
 		__CFLOG_VAR((KCoreMCprStatesTag, KCoreMCprStatesSubTag, _L8("WARNING: CConnectionRecoveryActivity::TProcessConnectionStartRecoveryRequest::DoL() - no more choices, abandoning recovery.")));
@@ -499,7 +531,7 @@ void CConnectionRecoveryActivity::TProcessConnectionStartRecoveryRequest::DoL()
 	//Diagnostinc - there must be a data client or we cannot be here
 	__ASSERT_DEBUG(iContext.Node().GetFirstClient<TDefaultClientMatchPolicy>(TClientType(TCFClientType::EData)), User::Panic(KCoreMobileMCprPanic, KPanicNoDataClient));
 	iContext.iNodeActivity->PostRequestTo(iContext.NodeId(),
-			TCFMcpr::TReConnect(stoppingSP->RecipientId(), startingSP->RecipientId()).CRef());
+			TCFMcpr::TReConnect(curSP->RecipientId(), newSP->RecipientId()).CRef());
 	}
 
 DEFINE_SMELEMENT(CConnectionRecoveryActivity::TProcessConnectionGoneDownRecoveryRequest, NetStateMachine::MStateTransition, CConnectionRecoveryActivity::TContext)
@@ -508,7 +540,7 @@ void CConnectionRecoveryActivity::TProcessConnectionGoneDownRecoveryRequest::DoL
 	__ASSERT_DEBUG(iContext.iNodeActivity, User::Panic(KCoreMobileMCprPanic, KPanicNoActivity));
 	CConnectionRecoveryActivity& activity = static_cast<CConnectionRecoveryActivity&>(*iContext.iNodeActivity);
 
-	RNodeInterface* started = iContext.Node().GetFirstClient<TDefaultClientMatchPolicy>(TClientType(TCFClientType::EServProvider, TCFClientType::EStarted));
+	RNodeInterface* started = iContext.Node().ServiceProvider();
 	TUint apId = (TUint)activity.iOriginalErrContext.iInfo;
 	RNodeInterface* gonedownsp = iContext.Node().FindServiceProvider(apId);
 	if (started && started != gonedownsp)

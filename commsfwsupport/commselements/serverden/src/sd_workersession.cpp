@@ -694,7 +694,8 @@ EXPORT_C void CWorkerSubSession::ConstructL()
 
 EXPORT_C CWorkerSubSession::~CWorkerSubSession()
 	{
-	COMMONLOG((Session()->WorkerId(),KECommonServerTag, _L8("CWorkerSubSession(%08x):\t~CWorkerSubSession() Session(%08x)"), this, iSession));
+	// Session may be disappeared by now, so DO NOT USE IT
+	COMMONLOG((CommsFW::KInvalidWorkerId, KECommonServerTag, _L8("CWorkerSubSession(%08x):\t~CWorkerSubSession() Session(%08x)"), this, iSession));
 
 	//All interfaces must be closed by now (by the derived subsession's destructor the latest)
 	__ASSERT_DEBUG(iApiExtRegister.InterfaceCount() == 0, User::Panic(KSpecAssert_ElemSvrDenWrkrSC, 15));

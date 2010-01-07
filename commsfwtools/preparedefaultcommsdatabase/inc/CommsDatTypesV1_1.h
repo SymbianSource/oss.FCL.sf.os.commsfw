@@ -833,9 +833,10 @@ class CCDVPNServiceRecord : public CCDServiceRecordBase
 	public:
 
 		// Member Data
-		CMDBField<TDesC>	                iServicePolicy;	//< Policy id of the policy file- this is a reference to the policy file.
-		CMDBRecordLink<CCDIAPRecord>	    iServiceIAP;	//< Record id of the real IAP used by the IPSEC software to communicate with the VPN gateway.
-		CMDBRecordLink<CCDNetworkRecord>	iServiceNetwork;//< Record id of the real Network to be connected to by the virtual tunnel.
+		CMDBField<TDesC>	                iServicePolicy;	///< Policy id of the policy file- this is a reference to the policy file.
+		CMDBRecordLink<CCDIAPRecord>	    iServiceIAP;	///< Record id of the real IAP used by the IPSEC software to communicate with the VPN gateway.
+		CMDBRecordLink<CCDAccessPointRecord>                  iServiceSNAP;       ///< Record id of the SNAP id used by the IPSEC software to communicate with the VPN gateway.
+		CMDBRecordLink<CCDNetworkRecord>	iServiceNetwork;///< Record id of the real Network to be connected to by the virtual tunnel.
 
     private:
     

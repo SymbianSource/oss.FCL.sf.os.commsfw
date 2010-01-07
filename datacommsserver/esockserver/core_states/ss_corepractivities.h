@@ -174,6 +174,7 @@ public:
 protected:
 	CDestroyActivity(const MeshMachine::TNodeActivity& aActivitySig, MeshMachine::AMMNodeBase& aNode);
 	virtual void Destroy();
+	virtual TBool Next(MeshMachine::TNodeContextBase& aContext);
 
 //States, StateForks & StateTransitions
 protected:
@@ -435,7 +436,9 @@ protected:
 	IMPORT_C CBindToActivity(const MeshMachine::TNodeActivity& aActivitySig,  MeshMachine::AMMNodeBase& aNode, TInt aNextActivityCount);
 
 protected:
-	Messages::RNodeInterface* iNewServiceProvider;
+	// We cannot store iNewServiceProvider as an RNodeInterface* in case an activity (like GoneDown) executes simultaneously and removes
+	// the client we hold a reference to.  Hence use the NodeId and lookup the corresponding RNodeInterface* as and when required.
+    Messages::TNodeId iNewServiceProvider;
 private:
 	Messages::RNodeInterface* iCurrentDataClient;
 	RPointerArray<Messages::RNodeInterface> iSuccessfulDataClients;

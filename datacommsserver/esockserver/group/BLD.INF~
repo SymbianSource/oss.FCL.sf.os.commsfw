@@ -234,5 +234,5 @@ PRJ_MMPFILES
 #endif
 
 PRJ_TESTMMPFILES
-//#include "../test/bld.inf"
+#include "../test/bld.inf"
 

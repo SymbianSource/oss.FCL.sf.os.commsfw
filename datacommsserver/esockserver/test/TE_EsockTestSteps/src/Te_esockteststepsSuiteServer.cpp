@@ -406,6 +406,7 @@ CTestStep* CTe_esockteststepsSuite::CreateTestStep(const TDesC& aStepName)
 	NEW_ESOCK_TESTSTEP(SendReceiveIoctlStep)
 	NEW_ESOCK_TESTSTEP(SocketProtocolDescriptionStep)
 	NEW_ESOCK_TESTSTEP(SocketGetOptionStep)
+	NEW_ESOCK_TESTSTEP(SocketSetOptionStep)
 
 	// Socket server
 	NEW_ESOCK_TESTSTEP(SocketServerNumProtocolsStep)

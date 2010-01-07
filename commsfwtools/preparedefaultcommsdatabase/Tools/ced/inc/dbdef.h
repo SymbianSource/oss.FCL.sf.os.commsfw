@@ -1335,7 +1335,7 @@ const TText* const VPN_SERVICEcolumnArray[] =
 #endif // __COMMDB_ROHID_SUPPORT__
     COMMDB_ID,
 	COMMDB_NAME,
-	VPN_SERVICE_POLICY,VPN_SERVICE_IAP,VPN_SERVICE_NETWORKID,
+	VPN_SERVICE_POLICY,VPN_SERVICE_IAP,KCDTypeNameVPNSNAPRecord,VPN_SERVICE_NETWORKID,
 	VPN_SERVICE_ENABLE_LLMNR,
 	NO_MORE_RECORDS
 	};
@@ -3022,6 +3022,12 @@ const TText* const LINK_REC_TIERcolumnArray [] =
     NO_MORE_RECORDS
     };
 #endif //SYMBIAN_NON_SEAMLESS_NETWORK_BEARER_MOBILITY
+
+const TText* const LINK_REC_VPNSERVICEcolumnArray [] = 
+    {
+    KCDTypeNameVPNSNAPRecord,
+    NO_MORE_RECORDS
+    };
 	
 /**
 This enum is used as index for LinkRecords Arrays
@@ -3041,6 +3047,7 @@ enum LinkedRecordsTables
     ELRAPPrioritySel,
     ELRTier,
 #endif //SYMBIAN_NON_SEAMLESS_NETWORK_BEARER_MOBILITY
+    ELRVPNService,
     ELRWAPIPBearer
 	};
 	
@@ -3062,6 +3069,7 @@ const TText* const TablesWithLinkRecords[] =
     AP_PRIORITY_SELECTION_POLICY_TABLE,
     TIER_TABLE,
 #endif //SYMBIAN_NON_SEAMLESS_NETWORK_BEARER_MOBILITY
+    VPN_SERVICE,
     WAP_IP_BEARER,
 	NO_MORE_RECORDS
 	};
@@ -3083,6 +3091,7 @@ const TText** const LinkRecordsArray[] =
     (const TText** const)LINK_REC_APPRIORITYSELECTIONPOLICYcolumnArray,
     (const TText** const)LINK_REC_TIERcolumnArray,
 #endif //SYMBIAN_NON_SEAMLESS_NETWORK_BEARER_MOBILITY
+    (const TText** const)LINK_REC_VPNSERVICEcolumnArray,
     (const TText** const)LINK_REC_WAPIPBEARER_Array
 	};
 
@@ -3100,10 +3109,11 @@ const TText* const LinkedRecordTableNames[] =
 	_S("AccessPointTable"),
 	_S("WLANServiceExtensionTable"),
     _S("EAPSecuritySettingsTable"),
-    _S("TunnelledEAPSettingsTable")
+    _S("TunnelledEAPSettingsTable"),
+     KCDTypeNameVPNSNAPRecord
 	};
 
-const TInt LinkedRecordTableNum = 7;
+const TInt LinkedRecordTableNum = 8;
 
 
 const TText* const LegacyLinkFields[] =
