@@ -136,6 +136,7 @@ Implementation of CTestServer pure virtual
 		ADD_TEST_STEP(CSocketTest1_7)
 		ADD_TEST_STEP(CSocketTest1_8)
 		ADD_TEST_STEP(CSocketTest1_9)
+		ADD_TEST_STEP(CSocketTest1_10)
 		
 		ADD_TEST_STEP(CSocketTest2_1)
 		

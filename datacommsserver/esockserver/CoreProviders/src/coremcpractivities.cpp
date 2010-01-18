@@ -144,7 +144,7 @@ namespace MCprNoBearerActivity
 DECLARE_DEFINE_CUSTOM_NODEACTIVITY(ECFActivityNoBearer, MCprNoBearer, TCFControlProvider::TNoBearer, PRActivities::CNoBearer::NewL)
 	FIRST_NODEACTIVITY_ENTRY(CoreNetStates::TAwaitingNoBearer, CNoBearer::TNoTagOrBearerPresentBlockedByNoBearer)
 	NODEACTIVITY_ENTRY(KNoTag, MCprStates::TSelectNextLayer, MCprStates::TAwaitingSelectNextLayerCompleted, CoreNetStates::TNoTagOrBearerPresent)
-	
+
 	//Special for the Meta Plane (don't just copy & paste)
 	NODEACTIVITY_ENTRY(CoreNetStates::KBearerPresent, CoreNetStates::TStartServiceProvider, CoreNetStates::TAwaitingStarted, TTag<CoreNetStates::KBearerPresent>)
 	NODEACTIVITY_ENTRY(CoreNetStates::KBearerPresent, CoreNetStates::TRequestCommsBinderRetry, CoreNetStates::TAwaitingBinderResponse, TTag<CoreNetStates::KBearerPresent>)
@@ -443,7 +443,7 @@ void CSelectNextLayerActivity::TProcessSimpleSelectionPolicy::DoL()
 	const TLayerSelectionInfo* selectInfo = static_cast<const TLayerSelectionInfo*>(iContext.Node().AccessPointConfig().FindExtension(
 			STypeId::CreateSTypeId(TLayerSelectionInfo::EUid, TLayerSelectionInfo::ETypeId)));
 	__ASSERT_ALWAYS(selectInfo, CoreMCprPanic(KPanicUnexpectedExecutionPath));
-	
+
 	TUint selectionPolicyId = selectInfo->CustomSelectionPolicy();
 
 	//Running this transition, we can't be at the bottom of the stack!
@@ -486,7 +486,7 @@ void CSelectNextLayerActivity::TProcessPrioritisedSelectionPolicy::DoL()
 	const TLayerSelectionInfo* selectInfo = static_cast<const TLayerSelectionInfo*>(iContext.Node().AccessPointConfig().FindExtension(
 			STypeId::CreateSTypeId(TLayerSelectionInfo::EUid, TLayerSelectionInfo::ETypeId)));
 	__ASSERT_ALWAYS(selectInfo, CoreMCprPanic(KPanicUnexpectedExecutionPath));
-	
+
 	TUint selectionPolicyId = selectInfo->SelectionPolicy();
 
 	//Running this transition, we can't be at the bottom of the stack!
@@ -580,7 +580,7 @@ void CSelectNextLayerActivity::TProcessSimpleSelectionPolicySuper::DoL()
 	const TLayerSelectionInfo* selectInfo = static_cast<const TLayerSelectionInfo*>(iContext.Node().AccessPointConfig().FindExtension(
 			STypeId::CreateSTypeId(TLayerSelectionInfo::EUid, TLayerSelectionInfo::ETypeId)));
 	__ASSERT_ALWAYS(selectInfo, CoreMCprPanic(KPanicUnexpectedExecutionPath));
-	
+
 	TUint selectionPolicyId = selectInfo->CustomSelectionPolicy();
 
 	//Running this transition, we can't be at the bottom of the stack!

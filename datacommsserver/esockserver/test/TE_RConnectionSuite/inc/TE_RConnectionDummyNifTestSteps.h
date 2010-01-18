@@ -730,6 +730,17 @@ public:
 	virtual enum TVerdict doTestStepL(void);
 };
 
+/**
+
+@internalTechnology
+*/
+class TE_RConnectionTest81 : public TE_RConnectionStep
+{
+public:
+	virtual ~TE_RConnectionTest81();
+
+	virtual enum TVerdict doTestStepL(void);
+};
 
 
 #endif

@@ -12,7 +12,7 @@
 //
 // Description:
 // Mobility Meta Connection Provider States
-// 
+//
 //
 
 /**
@@ -39,9 +39,8 @@ typedef MeshMachine::TNodeContext<CMobilityMetaConnectionProvider, MCprStates::T
 //
 //-=========================================================
 
-const TInt KStartMobilityHandshake  = 10000; 
+const TInt KStartMobilityHandshake	= 10000;
 const TInt KAwaitMobility        	= 10001;
-
 
 //-=========================================================
 //

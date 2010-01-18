@@ -284,6 +284,8 @@ CTestStep* TE_RConnectionSuiteTestServer::CreateTestStep(const TDesC& aStepName)
 		testStep=new TE_RConnectionTest79();
 	else if(aStepName.Compare(_L("Test80")) == 0)
 		testStep=new TE_RConnectionTest80();
+	else if(aStepName.Compare(_L("Test81")) == 0)
+		testStep=new TE_RConnectionTest81();
 	
 	//Splitting the testStep creation for ccover "out of memory" problem which is caused due to 
 	//large number of if..else loops

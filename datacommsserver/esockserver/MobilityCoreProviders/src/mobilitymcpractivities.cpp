@@ -43,7 +43,7 @@ using namespace MobilityMCprActivities;
 using namespace Messages;
 using namespace MeshMachine;
 
-//
+///////////////////////////////////////////////////////////////////////////////
 //Panics
 #ifdef _DEBUG
 _LIT (KCoreMobileMCprPanic,"CoreMobileMCprPanic");
@@ -164,7 +164,7 @@ DEFINE_EXPORT_ACTIVITY_MAP(mobilityMCprActivities)
 ACTIVITY_MAP_END_BASE(MCprActivities, coreMCprActivities)
 }
 
-//
+///////////////////////////////////////////////////////////////////////////////
 // CMobilityActivity
 MeshMachine::CNodeActivityBase* MobilityMCprActivities::CMobilityActivity::NewL(const MeshMachine::TNodeActivity& aActivitySig, MeshMachine::AMMNodeBase& aNode)
 	{
@@ -402,7 +402,7 @@ void CMobilityActivity::TClearHandshakingFlag::DoL()
 	}
 
 
-//
+///////////////////////////////////////////////////////////////////////////////
 //CConnectionRecoveryActivity
 MeshMachine::CNodeActivityBase* CConnectionRecoveryActivity::NewL(const MeshMachine::TNodeActivity& aActivitySig, MeshMachine::AMMNodeBase& aNode)
 	{
@@ -550,5 +550,3 @@ void CConnectionRecoveryActivity::TSendIgnoreRecoveryResponse::DoL()
 	TEErrorRecovery::TErrorRecoveryResponse err(TErrResponse(TErrResponse::EIgnore,KErrNone,activity.iOriginalErrContext.iMessageId));
 	activity.ReplyToOriginators(err);
 	}
-
-

@@ -214,6 +214,8 @@ private:
     inline void ClearNoBearerGuard();
 #endif
 	void NoBearerCompletion();
+	inline void SetFlowParams(const TFlowParams& aFlowParams);
+	inline TBool FlowParamsInitialised() const;
 
 private:
 	CServProviderBase* iProvider;
@@ -233,7 +235,7 @@ private:
 	TBool iNoBearerRunning:1;		// NoBearer message has been issued to SCPR
 	TBool iShuttingDown:1;
 #endif
-
+	TBool iFlowParamsInitialised:1; // whether iFlowParams has been initialised or not
 #ifdef SYMBIAN_ADAPTIVE_TCP_RECEIVE_WINDOW
     const CSAPSetOpt *iProtocolOptions;
 #endif //SYMBIAN_ADAPTIVE_TCP_RECEIVE_WINDOW
@@ -249,6 +251,17 @@ inline CServProviderBase* CTransportFlowShim::Provider()
 	{
 	return iProvider;
 	}
+
+inline void CTransportFlowShim::SetFlowParams(const TFlowParams& aFlowParams)
+    {
+    iFlowParams = aFlowParams;
+    iFlowParamsInitialised = ETrue;
+    }
+
+inline TBool CTransportFlowShim::FlowParamsInitialised() const
+    {
+    return iFlowParamsInitialised;
+    }
 
 #ifdef SYMBIAN_NETWORKING_UPS
 

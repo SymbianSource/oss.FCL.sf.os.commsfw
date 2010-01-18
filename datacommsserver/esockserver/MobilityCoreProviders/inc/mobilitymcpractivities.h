@@ -12,7 +12,7 @@
 //
 // Description:
 // Mobility Meta Connection Provider Activities
-// 
+//
 //
 
 /**
@@ -38,7 +38,7 @@ namespace MobilityMCprActivities
 DECLARE_EXPORT_ACTIVITY_MAP(mobilityMCprActivities)
 
 
-//
+///////////////////////////////////////////////////////////////////////////////
 //CMobilityActivity
 class CMobilityActivity : public MeshMachine::CNodeRetryActivity
 	{
@@ -100,23 +100,23 @@ public:
 	DECLARE_SMELEMENT_HEADER(TInformMigrationCompleted, MeshMachine::TStateTransition<TContext>, NetStateMachine::MStateTransition, CMobilityActivity::TContext)
 		virtual void DoL();
 	DECLARE_SMELEMENT_FOOTER(TInformMigrationCompleted)
-
-	typedef MeshMachine::TActivitiesIdMutex<ESock::ECFActivityConnectionStartRecovery,
+	
+	typedef MeshMachine::TActivitiesIdMutex<ESock::ECFActivityConnectionStartRecovery, 
 											ESock::ECFActivityConnectionGoneDownRecovery> TActivityErrorRecoveryMutex;
 	DECLARE_SERIALIZABLE_STATE(
 	    TNoTagOrAwaitMobilityBackwardsOnMobilityTriggerBlockedByErrorRecovery,
 		TActivityErrorRecoveryMutex,
 		TNoTagOrAwaitMobilityBackwardsOnMobilityTrigger
-		)
-
+		)	
+	
 	DECLARE_SERIALIZABLE_STATE(
 		TNoTagOrAwaitMobilityBlockedByErrorRecovery,
 		TActivityErrorRecoveryMutex,
 		TNoTagOrAwaitMobility
-		)
+		)		
 	};
 
-//
+///////////////////////////////////////////////////////////////////////////////
 //CConnectionRecoveryActivity
 class CConnectionRecoveryActivity : public MeshMachine::CNodeRetryActivity
 	{

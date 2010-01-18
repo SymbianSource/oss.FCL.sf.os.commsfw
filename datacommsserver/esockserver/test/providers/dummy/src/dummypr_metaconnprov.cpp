@@ -20,7 +20,6 @@
  @internalComponent
 */
 
-
 #include <comms-infras/ss_log.h>
 #include <comms-infras/coremcprstates.h>
 #include <comms-infras/coremcpractivities.h>
@@ -39,8 +38,6 @@ using namespace NetStateMachine;
 using namespace MCprActivities;
 using namespace Messages;
 using namespace MeshMachine;
-
-
 
 CDummyMetaConnectionProvider* CDummyMetaConnectionProvider::NewL(CMetaConnectionProviderFactoryBase& aFactory,
                                                                      const TProviderInfo& aProviderInfo)
@@ -62,16 +59,14 @@ CDummyMetaConnectionProvider::CDummyMetaConnectionProvider(CMetaConnectionProvid
 
 CDummyMetaConnectionProvider::~CDummyMetaConnectionProvider()
 	{
-	delete iPubSubAvailability;
-	delete iPubSubStopTrigger;
+	delete iPubSubSubscriber;
 	LOG_NODE_DESTROY(KDummyMCprTag, CDummyMetaConnectionProvider);
 	}
 
 void CDummyMetaConnectionProvider::ConstructL()
     {
     CMobilityMetaConnectionProvider::ConstructL();
-    iPubSubAvailability = CMCPrPubSubAvailability::NewL(*this, ProviderInfo().APId());
-    iPubSubStopTrigger  = CMCPrPubSubStopTrigger::NewL(*this, 0);
+    iPubSubSubscriber = CMCPrPubSubSubscriber::NewL(*this, ProviderInfo().APId());
     }
 
 void CDummyMetaConnectionProvider::ReceivedL(const TRuntimeCtxId& aSender, const TNodeId& aRecipient, TSignatureBase& aMessage)
@@ -89,19 +84,18 @@ void CDummyMetaConnectionProvider::StartAvailabilityMonitoringL(const Messages::
     {
     if (!GetFirstClient<TDefaultClientMatchPolicy>(TClientType(TCFClientType::EServProvider)))
         {
-        ASSERT(iPubSubAvailability!=NULL);
-        RNodeInterface* peer = AddClientL(iPubSubAvailability->Id(), TClientType(TClientType::ERegistrar, TCFClientType::EAvailabilityProvider));
-        iPubSubAvailability->StartAvailabilityMonitoringL(aAvailabilityActivity);
+        ASSERT(iPubSubSubscriber!=NULL);
+        RNodeInterface* peer = AddClientL(iPubSubSubscriber->Id(), TClientType(TClientType::ERegistrar, TCFClientType::EAvailabilityProvider));
+        iPubSubSubscriber->StartAvailabilityMonitoringL(aAvailabilityActivity);
         }
     }
 
 void CDummyMetaConnectionProvider::CancelAvailabilityMonitoring()
     {
     if (!GetFirstClient<TDefaultClientMatchPolicy>(TClientType(TCFClientType::EServProvider)))
-        {
-        ASSERT(iPubSubAvailability!=NULL);
-        RemoveClient(iPubSubAvailability->Id());
-        iPubSubAvailability->CancelAvailabilityMonitoring();
+        {    
+        ASSERT(iPubSubSubscriber!=NULL);    
+        RemoveClient(iPubSubSubscriber->Id());
+        iPubSubSubscriber->CancelAvailabilityMonitoring();
         }
     }
-

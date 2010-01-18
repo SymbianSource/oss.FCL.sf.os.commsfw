@@ -90,6 +90,13 @@ class CSocketTest1_9 : public CSocketTestStep_OOMCapable
 		virtual enum TVerdict InternalDoTestStepL( void );
 	};
 
+class CSocketTest1_10 : public CSocketTestStep_OOMCapable
+    {
+    public:
+        static const TDesC &GetTestName();
+        virtual enum TVerdict InternalDoTestStepL( void );
+    };
+
 #endif //__SOCKETTEST_1_H__
 
 

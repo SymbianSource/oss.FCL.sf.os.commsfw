@@ -579,6 +579,44 @@ enum TVerdict CSocketTest1_9::InternalDoTestStepL( void )
 	}
 
 
+// Test step 1.10
+const TDesC& CSocketTest1_10::GetTestName()
+    {
+    _LIT(ret,"Test1.10");
+    return ret;
+    }
+    
+    
+enum TVerdict CSocketTest1_10::InternalDoTestStepL( void )
+    {
+    // Create a KAfInet socket specifying KUndefinedProtocol and then close it.
+
+    TVerdict verdict = EPass;
+    Logger().WriteFormat(_L("Test Purpose: Open a socket specifying protocol as KUndefinedProtocol"));
+
+    // Connect to esock
+    Logger().WriteFormat(_L("Attempting to connect to socket server"));
+    RSocketServ ss;
+    TInt ret = ss.Connect();
+    Logger().WriteFormat(_L("Connect returned %S"), &EpocErrorToText(ret));
+    TESTL(KErrNone == ret);
+    CleanupClosePushL(ss); 
+
+    // Create and open socket (this opens a TCP socket, but we are only interested in seeing that KUndefinedProtocol works correctly). 
+    RSocket socket;
+    
+    Logger().WriteFormat(_L("Opening KUndefinedProtocol Socket"));
+    ret = socket.Open(ss, KAfInet, KSockStream, KUndefinedProtocol);
+    Logger().WriteFormat(_L("Socket Open returned %S"), &EpocErrorToText(ret)); 
+    TESTL(KErrNone == ret);
+    CleanupClosePushL(socket); 
+    
+    CleanupStack::PopAndDestroy(); //socket
+    CleanupStack::PopAndDestroy(); //ss
+
+    SetTestStepResult(verdict);
+    return verdict;
+    }
 
 
 

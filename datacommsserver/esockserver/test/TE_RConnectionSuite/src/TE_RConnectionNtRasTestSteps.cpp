@@ -1213,8 +1213,7 @@ enum TVerdict TE_RConnectionSnapNotSupported::doTestStepL(void)
  * So the test step should fail with KErrArgument.
  */
 {
-
-	TCommSnapPref pref(227); //this is the recordid of a Link level AP.
+	TCommSnapPref pref(23); //this is the recordid of a Link level AP.
 
 	RSocketServ ss;
 	RConnection conn;

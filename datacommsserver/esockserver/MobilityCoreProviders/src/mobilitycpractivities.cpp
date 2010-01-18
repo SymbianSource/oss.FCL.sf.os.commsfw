@@ -201,6 +201,13 @@ TInt CMobilityActivity::TNoTagBackwardsOrRecoverableErrorOrError::TransitionTag(
 			}
 		else if  (resp.iAction == TErrResponse::EPropagate || resp.iError == KErrCancel)
 			{
+            if (resp.iError != KErrNone)
+                {
+                //The activity is already errored. The errored state needs to be reset first.
+                iContext.Activity()->SetError(KErrNone);
+                iContext.Activity()->SetError(resp.iError);
+                }
+            
 			return KErrorTag;
 			}
 		else if (resp.iAction == TErrResponse::EIgnore) // and or iError is KErrCancel

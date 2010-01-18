@@ -63,5 +63,6 @@ RUN_SCRIPT z:\testdata\scripts\BearerMobility\Mobility_761510.script
 
 RUN_SCRIPT z:\testdata\scripts\BearerMobility\Mobility_780100.script
 RUN_SCRIPT z:\testdata\scripts\BearerMobility\Mobility_780110.script
+RUN_SCRIPT z:\testdata\scripts\BearerMobility\Mobility_780120.script
 PRINT Completed Mobility Tests
 

@@ -6785,3 +6785,70 @@ enum TVerdict TE_RConnectionTest80::doTestStepL(void)
 // End of Test TE_RConnectionTest80
 
 
+TE_RConnectionTest81::~TE_RConnectionTest81()
+{
+}
+
+enum TVerdict TE_RConnectionTest81::doTestStepL(void)
+/*
+ * Test reporting of the interface coming down
+ */
+{
+	TInt err;
+	TRequestStatus status;
+
+	RSocketServ ss;
+	RConnection conn;
+	RConnection conn_clone;
+	TNifProgressBuf progress;
+	TNifProgress progMain, progClone;
+	TName connname;
+	
+	err = OpenSocketServer(ss);
+	TESTEL(KErrNone == err, err);
+	CleanupClosePushL(ss);
+
+	err = OpenConnection(conn, ss);
+	TESTEL(KErrNone == err, err);
+	CleanupClosePushL(conn);
+
+	err = StartConnection(conn);
+	TESTEL(KErrNone == err, err);
+	
+	_LIT_SECURITY_POLICY_C2(KProcPolicy1, ECapabilityNetworkServices, ECapabilityNetworkControl);
+	TSecurityPolicyBuf secPolBuf;
+	secPolBuf().Set(KProcPolicy1().Package());
+	conn.Control(KCOLConnection, KCoEnableCloneOpen, secPolBuf);
+
+	User::LeaveIfError(conn.Name(connname));
+	User::LeaveIfError(conn_clone.Open(ss, connname));
+	CleanupClosePushL(conn_clone);
+
+	err = Progress(conn, progMain);
+	TESTEL(KErrNone == err, err);
+	err = Progress(conn_clone, progClone);
+	TESTEL(KErrNone == err, err);
+
+	TESTEL(progMain == progClone, progMain.iStage);
+
+	ProgressNotification(conn_clone, status, progress, KLinkLayerClosed);
+
+	err = RequestInterfaceDownL(conn, ss);
+	TESTEL(KErrNone == err, err);
+
+	User::WaitForRequest(status);
+	TESTEL(status.Int() == KErrNone, status.Int());
+	TESTEL(progress().iStage == KLinkLayerClosed, progress().iStage);
+
+	CloseConnection(conn_clone);
+	CleanupStack::Pop();
+	
+	CloseConnection(conn);
+	CleanupStack::Pop();
+
+	CloseSocketServer(ss);
+	CleanupStack::Pop();
+
+	return TestStepResult();
+} // TE_RConnectionTest31
+

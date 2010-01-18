@@ -85,6 +85,11 @@ START_TESTCASE			COMINF-ESOCK-Socket-0109
 RUN_TEST_STEP 10 TE_Socket Test1.9 z:\TestData\configs\te_socket.ini
 END_TESTCASE			COMINF-ESOCK-Socket-0109
 
+START_TESTCASE          COMINF-ESOCK-Socket-0172
+//! @SYMTestCaseID      COMINF-ESOCK-Socket-0172
+
+RUN_TEST_STEP 10 TE_Socket Test1.10 z:\TestData\configs\te_socket.ini
+END_TESTCASE            COMINF-ESOCK-Socket-0172
 
 START_TESTCASE			COMINF-ESOCK-Socket-0110
 //! @SYMTestCaseID		COMINF-ESOCK-Socket-0110

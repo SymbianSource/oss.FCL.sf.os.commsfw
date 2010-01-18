@@ -1233,7 +1233,6 @@ void CCDValidatorConnPref::ValidateBearerAndDirectionL(const TDesC& aServiceType
 // This might change, so is not included in the check at top of the function, when finding mapped AP records.
 //
 //static const TUint KAPToIAPTagMappingThreshold     = 255;
-static const TUint KAPToIAPRecordIdMappingConstant = 251;
 
 // TCleanupOperation function.
 //
@@ -1398,8 +1397,6 @@ void CCDValidatorIAPRecord::AssociatedLinkLevelAPGenerationL()
    	                static_cast<CCDAccessPointRecord*>(CCDRecordBase::RecordFactoryL(KCDTIdAccessPointRecord));
 		CleanupStack::PushL(newAPRecord);
 
-	    const TInt KBaseAPRecordId = KAPToIAPRecordIdMappingConstant - KThisIAPRecordId;
-
         // ... and finally the link record
 
         // The clean up stack handling of 'pBearerType' seems a bit contorted.
@@ -1431,7 +1428,7 @@ void CCDValidatorIAPRecord::AssociatedLinkLevelAPGenerationL()
             InitialiseAccessPointRecordL(
                 *newAPRecord,
                 tempName,
-                KBaseAPRecordId - KThisIAPRecordId,
+                KCDNewRecordRequest,
                 KLinkAPTag,
                 pBearerType->iTier,
                 pBearerType->iMCpr,

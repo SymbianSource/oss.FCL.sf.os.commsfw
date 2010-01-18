@@ -142,7 +142,7 @@ CTransportFlowShim* CTransportFlowShim::NewL(CSubConnectionFlowFactoryBase& aFac
 #endif
 
 CTransportFlowShim::CTransportFlowShim(CSubConnectionFlowFactoryBase& aFactory, const TNodeId& aSubConn, CProtocolIntfBase* aProtocolIntf)
-: CNetworkFlow(aFactory, aSubConn, aProtocolIntf), iFlowParams(TFlowParams(NULL, NULL, KUndefinedProtocol, NULL, NULL))
+: CNetworkFlow(aFactory, aSubConn, aProtocolIntf), iFlowParams(TFlowParams(0, 0, 0, 0, NULL))
 	{
     LOG_NODE_CREATE(KESockFlowTag, CTransportFlowShim)
 	}
@@ -224,6 +224,12 @@ MSessionData* CTransportFlowShim::BindL(MSessionDataNotify& aNotify)
         __ASSERT_DEBUG(iProtocolReference == NULL, User::Panic(KSpecAssert_ESockSSocksspshm, 6));
         iProtocolReference = protocolReference;
 
+        // If the client requested a wildcard protocol, fill in the actual protocol that was selected
+        if (iFlowParams.iProtocol == KUndefinedProtocol)
+            {
+            iFlowParams.iProtocol = protocolReference->Info().iProtocol;
+            }
+        
         // Have the protocol added to the list of protocols for the session it is associated with
         CSockSessionProxy* sessionProxy = reinterpret_cast<CSockSessionProxy*>(iFlowParams.iSessionProxy);
         if(sessionProxy != NULL)
@@ -266,7 +272,7 @@ void CTransportFlowShim::Unbind()
 	LOG( ESockLog::Printf(_L8("CTransportFlowShim %08x:\tUnbind()"), this) );
 
 	// Infant mortality case in which binding never completed,
-	if(iFlowParams.iProtocol == KUndefinedProtocol)
+	if (!FlowParamsInitialised())
 		{
 		delete this;
 		return;
@@ -835,7 +841,7 @@ CTransportFlowShim* CTransportFlowShim::CloneNSetSAP(CServProviderBase& aSSP)
 	    {
         __ASSERT_DEBUG(shimFlow, User::Panic(KSpecAssert_ESockSSocksspshm, 35)); //otherwise we shouldn't be here
        	shimFlow->SetSSP(aSSP);
-       	shimFlow->iFlowParams = iFlowParams;
+       	shimFlow->SetFlowParams(iFlowParams);
 	    }
 	return shimFlow;
     }
@@ -1203,7 +1209,7 @@ void CTransportFlowShim::ReceivedL(const TRuntimeCtxId& aSender, const TNodeId& 
 		switch (aMessage.MessageId().MessageId())
 			{
 	    case TCFInternalEsock::TFlowProvision::EId :
-			iFlowParams = (static_cast<TCFInternalEsock::TFlowProvision&>(aMessage)).iFlowParams;
+			SetFlowParams((static_cast<TCFInternalEsock::TFlowProvision&>(aMessage)).iFlowParams);
 			break;
 		default:
 			//TODO - logging

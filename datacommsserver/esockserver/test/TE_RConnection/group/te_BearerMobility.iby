@@ -27,6 +27,8 @@
 //
 //configs
 data=EPOCROOT##epoc32\data\z\testdata\configs\BearerMobility\BearerMobility_001.ced.cfg TestData\configs\BearerMobility\BearerMobility_001.ced.cfg
+data=EPOCROOT##epoc32\data\z\testdata\configs\BearerMobility\BearerMobility_DummyProviders_002.ced.cfg TestData\configs\BearerMobility\BearerMobility_DummyProviders_002.ced.cfg
+data=EPOCROOT##epoc32\data\z\testdata\configs\BearerMobility\BearerMobility_DummyProviders_003.ced.cfg TestData\configs\BearerMobility\BearerMobility_DummyProviders_003.ced.cfg
 
 // ini
 data=EPOCROOT##epoc32\data\z\TestData\configs\BearerMobility\Mobility_760600.ini TestData\configs\BearerMobility\Mobility_760600.ini
@@ -75,6 +77,7 @@ data=EPOCROOT##epoc32\data\z\TestData\configs\BearerMobility\Mobility_761510.ini
 
 data=EPOCROOT##epoc32\data\z\TestData\configs\BearerMobility\Mobility_780100.ini TestData\configs\BearerMobility\Mobility_780100.ini
 data=EPOCROOT##epoc32\data\z\TestData\configs\BearerMobility\Mobility_780110.ini TestData\configs\BearerMobility\Mobility_780110.ini
+data=EPOCROOT##epoc32\data\z\TestData\configs\BearerMobility\Mobility_780120.ini TestData\configs\BearerMobility\Mobility_780120.ini
 
 //scripts
 data=EPOCROOT##epoc32\data\z\TestData\scripts\te_rconnection_mobility.script TestData\scripts\te_rconnection_mobility.script
@@ -124,6 +127,7 @@ data=EPOCROOT##epoc32\data\z\TestData\scripts\BearerMobility\Mobility_761510.scr
 
 data=EPOCROOT##epoc32\data\z\TestData\scripts\BearerMobility\Mobility_780100.script TestData\scripts\BearerMobility\Mobility_780100.script
 data=EPOCROOT##epoc32\data\z\TestData\scripts\BearerMobility\Mobility_780110.script TestData\scripts\BearerMobility\Mobility_780110.script
+data=EPOCROOT##epoc32\data\z\TestData\scripts\BearerMobility\Mobility_780120.script TestData\scripts\BearerMobility\Mobility_780120.script
 
 file=ABI_DIR\DEBUG_DIR\te_bearermobilitytestsuite.exe		System\bin\te_bearermobilitytestsuite.exe
 
