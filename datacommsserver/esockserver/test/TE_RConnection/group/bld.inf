@@ -267,6 +267,8 @@ PRJ_TESTEXPORTS
 
 ../scripts/Mobility/Mobility_761402.script z:/testdata/scripts/bearermobility/mobility_761402.script
 ../scripts/Mobility/Mobility_761403.script z:/testdata/scripts/bearermobility/mobility_761403.script
+../scripts/Mobility/Mobility_761404.script z:/testdata/scripts/bearermobility/mobility_761404.script
+../scripts/Mobility/Mobility_761405.script z:/testdata/scripts/bearermobility/mobility_761405.script
 ../scripts/Mobility/Mobility_761406.script z:/testdata/scripts/bearermobility/mobility_761406.script
 ../scripts/Mobility/Mobility_780100.script z:/testdata/scripts/bearermobility/mobility_780100.script
 ../scripts/Mobility/Mobility_780110.script z:/testdata/scripts/bearermobility/mobility_780110.script

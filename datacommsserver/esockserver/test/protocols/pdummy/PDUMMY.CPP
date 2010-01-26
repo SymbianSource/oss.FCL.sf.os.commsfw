@@ -1035,16 +1035,15 @@ TInt CDummyProvd::Write(RMBufChain& aData,TUint aOptions, TSockAddr*)
 		return 0;
 		}
 
-	// From opposite angle, we dont need a new chain if it is a stream
-	// we just append to the existing, unless there isn't an existing...
-	if(iDataArray->Count()==0 || IsTransportType(KSockDatagram))
+	// add a new chain for storing data
+	if(iDataArray->Count()==0 ||( iDataArray->Count()>0 && !iDataArray->At(iDataArray->Count()-1).IsEmpty()))
 		{
 		RMBufChain chain;
 		TRAPD(ret, iDataArray->AppendL(chain));
 		if(ret!=KErrNone)
 			return ret;
 		}
-
+	
 	iDataArray->At(iDataArray->Count()-1).Append(aData);
 
 	// Gotta save the length of the chain before calling

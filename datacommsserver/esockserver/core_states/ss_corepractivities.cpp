@@ -1891,6 +1891,39 @@ CStartActivity::CStartActivity(const MeshMachine::TNodeActivity& aActivitySig, M
 
 EXPORT_C CStartActivity::~CStartActivity()
 	{
+    CMMCommsProviderBase& node(static_cast<CMMCommsProviderBase&>(iNode));
+    const TProviderInfoExt* providerInfoExt = static_cast<const TProviderInfoExt*>(node.AccessPointConfig().FindExtension(
+            STypeId::CreateSTypeId(TProviderInfoExt::EUid, TProviderInfoExt::ETypeId)));
+    
+    __ASSERT_DEBUG(providerInfoExt, User::Panic(KSpecAssert_ESockCrStaCPRAC, 40));
+
+    if (Error() != KErrNone)
+        {
+		CNodeActivityBase* stopActivity = iNode.FindActivityById(ECFActivityStop);
+
+		// If the Stop activity is running we skip sending the GoneDown message. This is because the Stop
+		// activity will send GoneDown too. 
+		if (!stopActivity)
+		    {
+            TCFControlClient::TGoneDown goneDown(Error(), providerInfoExt->iProviderInfo.APId());
+        
+            TClientIter<TDefaultClientMatchPolicy> iter = iNode.GetClientIter<TDefaultClientMatchPolicy>(
+                    TClientType(TCFClientType::ECtrl), TClientType(0, TCFClientType::ELeaving));
+            RNodeInterface* ctrlClient = NULL;
+
+            while ( (ctrlClient = iter++) )
+                {
+                // Let control clients know the node has gone down, other than those that originated Start (they will be errored by ~CNodeActivityBase)...
+                if (FindOriginator(*ctrlClient) >= 0)
+                    {
+                    continue; // ControlClient is a Start originator
+                    }
+                    
+                TNodeCtxId ctxId(ActivityId(), iNode.Id());
+                ctrlClient->PostMessage(ctxId, goneDown.CRef());
+                }
+		    }
+        }
 	}
 
 EXPORT_C MeshMachine::CNodeActivityBase* CStartActivity::NewL(const MeshMachine::TNodeActivity& aActivitySig, MeshMachine::AMMNodeBase& aNode)

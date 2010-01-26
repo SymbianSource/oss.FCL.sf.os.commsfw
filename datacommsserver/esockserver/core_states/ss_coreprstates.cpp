@@ -1204,9 +1204,10 @@ void TSendGoneUp::DoL()
 	TClientIter<TDefaultClientMatchPolicy> iter = iContext.Node().GetClientIter<TDefaultClientMatchPolicy>(TClientType(TCFClientType::ECtrl));
 	for (TInt i = 0; iter[i]; i++)
 		{
-		//Send TGoneUp to every Ctrl client except the originator (who would be recieving TStarted)
-		if ((iContext.iNodeActivity && iContext.iNodeActivity->FindOriginator(*iter[i]) != KErrNone)
-			&& iter[i] != iContext.iPeer)
+		// Send TGoneUp to every Ctrl client except the originator (who would be recieving TStarted)
+		// (activity might be the GoneUp Activity rather than the Start Activity, but then the originator
+		// would be a ServiceProvider, and so the ControlClient will not be found)
+		if (iContext.iNodeActivity && iContext.iNodeActivity->FindOriginator(*iter[i]) == KErrNotFound)
 			{
 			iter[i]->PostMessage(TNodeCtxId(iContext.ActivityId(), iContext.NodeId()), TCFControlClient::TGoneUp());
 			}
@@ -1291,17 +1292,22 @@ EXPORT_C void TSendStoppedAndGoneDown::DoL()
 
 	TCFControlClient::TGoneDown goneDown(stopCode, providerInfo.APId());
 	TClientIter<TDefaultClientMatchPolicy> iter = iContext.Node().GetClientIter<TDefaultClientMatchPolicy>(TClientType(TCFClientType::ECtrl));
-	for (TInt i = 0; iter[i]; i++)
-		{
-		CNodeActivityBase* startActivity = iContext.Node().FindActivityById(ECFActivityStart);
+    CNodeActivityBase* startActivity = iContext.Node().FindActivityById(ECFActivityStart);
 
+    for (TInt i = 0; iter[i]; i++)
+		{
 		//Send TGoneDown to every Ctrl client except
 		// * the originator (who would be recieving TStopped)
 		// * originators of the start activity (these will be errored separately)
-		if (((iContext.iNodeActivity && iContext.iNodeActivity->FindOriginator(*iter[i]) != KErrNone) ||
-				(iContext.iNodeActivity == NULL && iter[i] != iContext.iPeer))
-			&& (startActivity == NULL || startActivity->FindOriginator(*iter[i]) != KErrNone))
+        if (iContext.iNodeActivity && iContext.iNodeActivity->FindOriginator(*iter[i]) >= 0)
+            {
+            continue; // ControlClient is a Stop originator
+            }
+		
+        // So far the control client is not a Stop originator
+        if (startActivity == NULL || startActivity->FindOriginator(*iter[i]) == KErrNotFound)
 			{
+            // ControlClient is not a Start originator
 			iter[i]->PostMessage(TNodeCtxId(iContext.ActivityId(), iContext.NodeId()), goneDown);
 			}
 		}

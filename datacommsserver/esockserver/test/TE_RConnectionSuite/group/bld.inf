@@ -107,6 +107,7 @@ PRJ_TESTEXPORTS
 
 // Configs
 // ------------------------------------
+../config/def143083.xml								z:/testdata/configs/def143083.xml
 ../config/rconnectionudp.xml						z:/testdata/configs/rconnectionudp.xml
 ../config/rconnectionntras.xml						z:/testdata/configs/rconnectionntras.xml
 ../config/ainudp.xml                                z:/testdata/configs/ainudp.xml

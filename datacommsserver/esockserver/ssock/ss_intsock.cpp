@@ -1195,10 +1195,19 @@ void ASocket::DoSend(TBool aInitialRequest)
 					ret = KErrNoMemory;
 					}
 				}
-			if(ret == KErrNone && (iOptions & KOptBlocking))
-				{
-				completeReq = EFalse;
-				}
+			if(ret == KErrNone)
+			    {
+                if(iOptions & KOptBlocking)
+                    {
+                    completeReq = EFalse;
+                    }
+                else if(iBlockedOperations & EWriteFlowedOff)
+                    {
+                    //it should return KErrWouldBlock instead of KErrNone
+                    //but it returns KErrNone for backward compatibility.
+                    iSendData.Free();
+                    }
+			    }
 			}
 		}
 	else	// !IsStream()
@@ -1317,8 +1326,12 @@ void ASocket::DoSend(TBool aInitialRequest)
 			if (nwr == 0)
 				{
 				// Flow unable to accept data but not erroring
-				completeReq = EFalse;
-				iSendData.Assign(data);
+                // WriteFlowedOff
+                if(iOptions & KOptBlocking)
+                    {
+                    completeReq = EFalse;
+                    iSendData.Assign(data);
+                    }
 				}
 
 			if (iErrorOperationMask & (MSessionControlNotify::EErrorSend))

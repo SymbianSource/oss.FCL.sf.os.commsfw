@@ -1707,14 +1707,12 @@ void TCompleteRMessage2::DoL()
 DEFINE_SMELEMENT(THandleRMessage2Error, NetStateMachine::MStateTransition, ConnStates::TContext)
 void THandleRMessage2Error::DoL()
     {
-    CConnLegacyRMessage2Activity* act = static_cast<CConnLegacyRMessage2Activity*>(iContext.Activity());
-	
+	CConnLegacyRMessage2Activity* act = static_cast<CConnLegacyRMessage2Activity*>(iContext.Activity());
 	ASSERT(act->Message().IsTypeOf(Meta::STypeId::CreateSTypeId(TCFSigLegacyRMessage2Ext::EUid, TCFSigLegacyRMessage2Ext::ETypeId)));
 	TInt error = static_cast<TCFSigLegacyRMessage2Ext&>(act->Message()).CheckError(iContext, act->Error());
 	act->SetError(error);
 	act->Complete(error);
     }
-
 
 DEFINE_SMELEMENT(TCancelAllLegacyRMessage2Activities, NetStateMachine::MStateTransition, TContext)
 void TCancelAllLegacyRMessage2Activities::DoL()

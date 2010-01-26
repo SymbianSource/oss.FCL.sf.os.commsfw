@@ -52,6 +52,7 @@ protected:
 	
 private:
 	TBool EvaluatePreference(TContext& aContext);
+
     void SetHandshakingFlag();
     void ClearHandshakingFlag();
 
@@ -78,6 +79,10 @@ public:
 	DECLARE_SMELEMENT_HEADER(TNoTagOrAwaitMobilityBackwardsOnMobilityTrigger, MeshMachine::TStateFork<TContext>, NetStateMachine::MStateFork, CMobilityActivity::TContext)
 		virtual TInt TransitionTag();
 	DECLARE_SMELEMENT_FOOTER(TNoTagOrAwaitMobilityBackwardsOnMobilityTrigger)
+
+	DECLARE_SMELEMENT_HEADER(TRejectedOrStartMobilityHandshakeBackwards, MeshMachine::TStateFork<TContext>, NetStateMachine::MStateFork, TContext)
+        virtual TInt TransitionTag();
+    DECLARE_SMELEMENT_FOOTER(TRejectedOrStartMobilityHandshakeBackwards)
 	
 	DECLARE_SMELEMENT_HEADER(TClearHandshakingFlag, MeshMachine::TStateTransition<TContext>, NetStateMachine::MStateTransition, CMobilityActivity::TContext)
 		virtual void DoL();

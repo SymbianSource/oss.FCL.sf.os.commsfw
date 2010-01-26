@@ -41,7 +41,7 @@ void TGetOrSetParameters::ForwardL(MeshMachine::TNodeContextBase& aContext)
 	TUint interfaceId = (*iDataObject)->RequiredItfExtId();
 	RLegacyResponseMsg responseMsg(aContext, iMessage, iMessage.Int0());
 	TRAPD(err, ForwardRequestL(aContext));
-	if(err == KErrNotFound)
+	if(err == KErrNotReady)
 		{
 		// We've reached the bottom of the stack, so complete the message
 		if ((*iDataObject)->IsProgressive())
@@ -104,7 +104,7 @@ void TGetOrSetParameters::ProcessL(MeshMachine::TNodeContextBase& aContext)
 	    // forward the data object down to the next node
 	    TRAP(err, ForwardRequestL(aContext));
 
-		if(err == KErrNotFound)
+		if(err == KErrNotReady)
 			{
 			// We've reached the bottom of the stack, so complete the message
 			Complete(aContext, KErrNone);

@@ -43,6 +43,7 @@
 #include "SocketTestSection19.h"
 #include "SocketTestSection20.h"
 #include "SocketTestSection21.h"
+#include "SocketTestSection31.h"
 
 _LIT(KServerName,"TE_Socket");
 
@@ -225,6 +226,11 @@ Implementation of CTestServer pure virtual
 		ADD_TEST_STEP(CSocketTest20_5)
 		ADD_TEST_STEP(CSocketTest21_1)		
 		ADD_TEST_STEP(CSocketTest21_2)
+		
+		ADD_TEST_STEP(CSocketTest31_1)
+		ADD_TEST_STEP(CSocketTest31_2)
+		ADD_TEST_STEP(CSocketTest31_3)
+		ADD_TEST_STEP(CSocketTest31_4)
 	END_TEST_STEP_LIST
 	}
 

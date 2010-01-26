@@ -100,7 +100,7 @@ DECLARE_DEFINE_CUSTOM_NODEACTIVITY(ECFActivityMCprMobility, MCprMobility, TCFMob
 	//first checks (TNoTagOrAwaitMobilityBlockedByErrorRecovery) if the availability has changed since it last checked 
 	//(availability could have been reported amidst the previous handshake loop) 
 	THROUGH_NODEACTIVITY_ENTRY(MobilityMCprStates::KStartMobilityHandshake, CMobilityActivity::TClearHandshakingFlag, CMobilityActivity::TNoTagOrAwaitMobilityBlockedByErrorRecovery)
-	NODEACTIVITY_ENTRY(MobilityMCprStates::KAwaitMobility, MeshMachine::TDoNothing, CMobilityActivity::TAwaitingCurrentCarrierRejectedOrAvailabilityChange, CMobilityActivity::TNoTagOrAwaitMobilityBackwardsOnMobilityTriggerBlockedByErrorRecovery)
+	    NODEACTIVITY_ENTRY(MobilityMCprStates::KAwaitMobility, MeshMachine::TDoNothing, CMobilityActivity::TAwaitingCurrentCarrierRejectedOrAvailabilityChange, CMobilityActivity::TNoTagOrAwaitMobilityBackwardsOnMobilityTriggerBlockedByErrorRecovery)
 
 		//Mobility has been triggered ((a) or (b)). Start mobility handshake (set handshaking flag and inform the client about the preferred bearer) 
 		NODEACTIVITY_ENTRY(KNoTag, CMobilityActivity::TInformMigrationAvailableAndSetHandshakingFlag, MobilityMCprStates::TAwaitingMigrationRequestedOrRejected, CMobilityActivity::TNoTagOrStartMobilityHandshakeBackwards)
@@ -112,7 +112,8 @@ DECLARE_DEFINE_CUSTOM_NODEACTIVITY(ECFActivityMCprMobility, MCprMobility, TCFMob
 		NODEACTIVITY_ENTRY(KNoTag, CMobilityActivity::TRequestReConnect, MCprStates::TAwaitingReConnectCompleteOrError, CMobilityActivity::TNoTagOrStartMobilityHandshakeBackwards)
 		//Rebinding has been successful. As far as MCPR is concerned, the mobility is finished, but the MCPR must await
 		//for the handshake (accept|reject) before it can offer another bearer. 
-		NODEACTIVITY_ENTRY(KNoTag, CMobilityActivity::TInformMigrationCompleted, MobilityMCprStates::TAwaitingMigrationAcceptedOrRejected, MeshMachine::TTag<MobilityMCprStates::KStartMobilityHandshake|EBackward>)
+        NODEACTIVITY_ENTRY(KNoTag, CMobilityActivity::TInformMigrationCompleted, MobilityMCprStates::TAwaitingMigrationAcceptedOrRejected, CMobilityActivity::TRejectedOrStartMobilityHandshakeBackwards)
+        NODEACTIVITY_ENTRY(MobilityMCprStates::KRejected, CoreNetStates::TStopDataClients, CoreNetStates::TAwaitingDataClientsStopped, MeshMachine::TTag<MobilityMCprStates::KStartMobilityHandshake|NetStateMachine::EBackward>)
 NODEACTIVITY_END()
 }
 
@@ -310,6 +311,53 @@ TInt CMobilityActivity::TNoTagOrAwaitMobility::TransitionTag()
 	    }
 	return MobilityMCprStates::KAwaitMobility;
 	}
+
+
+DEFINE_SMELEMENT(CMobilityActivity::TRejectedOrStartMobilityHandshakeBackwards, NetStateMachine::MStateFork, MobilityMCprStates::TContext)
+TInt CMobilityActivity::TRejectedOrStartMobilityHandshakeBackwards::TransitionTag()
+    {
+	__ASSERT_DEBUG(iContext.iNodeActivity, User::Panic(KCoreMobileMCprPanic, KPanicNoActivity));
+	CMobilityActivity& activity = static_cast<CMobilityActivity&>(*iContext.iNodeActivity);
+
+	// if rejected last ap and there's no more
+	if (iContext.iMessage.IsMessage<TCFMobilityProvider::TMigrationRejected>())
+		{
+		TBool otherSP = EFalse;
+		
+		// Find if there anymore available non rejected service providers
+		TClientIter<TDefaultClientMatchPolicy> iter = iContext.Node().GetClientIter<TDefaultClientMatchPolicy>(TClientType(TCFClientType::EServProvider));
+		__ASSERT_DEBUG(iter[0], User::Panic(KCoreMobileMCprPanic, KPanicNoServiceProvider)); //A Service Provider must exist!
+		RMetaServiceProviderInterface* rejected = static_cast<RMetaServiceProviderInterface*>(iContext.Node().ServiceProvider());
+		RMetaServiceProviderInterface* candidate = NULL;
+		
+		while ((candidate = static_cast<RMetaServiceProviderInterface*>(iter++)) != NULL)
+			{
+			if (candidate == rejected)
+				{
+				continue;
+				}
+			
+			const TAvailabilityStatus& status = candidate->AvailabilityStatus();
+			if (!status.IsKnown())
+				{
+				continue;
+				}
+
+			if (status.Score() > activity.iAvailabilityScoreTreshold)
+				{
+				otherSP=ETrue;
+				break;
+				}
+			}
+
+		if (!otherSP)
+			{
+			return MobilityMCprStates::KRejected;
+			}
+		}
+
+    return MobilityMCprStates::KStartMobilityHandshake | NetStateMachine::EBackward;
+    }
 
 DEFINE_SMELEMENT(CMobilityActivity::TSendAvailabilityRequest, NetStateMachine::MStateTransition, CMobilityActivity::TContext)
 void CMobilityActivity::TSendAvailabilityRequest::DoL()

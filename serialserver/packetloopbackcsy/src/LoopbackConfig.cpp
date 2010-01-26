@@ -64,6 +64,8 @@ void CLoopbackConfig::ConstructL()
 	{	
 	RFs fs;
 	User::LeaveIfError(fs.Connect());
+	CleanupClosePushL(fs);
+	
 	CTestConfig* configFile = CTestConfig::NewLC(fs, KConfigFileDir, KLoopbackConfigFilename);
 	
 	TBuf8<KMaxName> sectionName;
@@ -164,6 +166,7 @@ void CLoopbackConfig::ConstructL()
 		}
 	
 	CleanupStack::PopAndDestroy(configFile);
+    CleanupStack::PopAndDestroy(); // RFs handle
 	}
 
 /**

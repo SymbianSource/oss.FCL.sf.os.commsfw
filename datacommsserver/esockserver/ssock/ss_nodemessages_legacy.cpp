@@ -122,7 +122,7 @@ void TCFSigLegacyRMessage2Ext::ForwardRequestL(MeshMachine::TNodeContextBase& aC
     	}
 	else
 		{
-		User::Leave(KErrNotFound);
+		User::Leave(KErrNotReady);
 		}
 
 	}
@@ -308,7 +308,7 @@ TInt TCprRetrieveProgress::CheckError(MeshMachine::TNodeContextBase& aContext, T
 	{
 	CConnection* conn = static_cast<CConnection*>(&aContext.Node());
     ConnActivities::CConnLegacyRMessage2Activity* act = static_cast<ConnActivities::CConnLegacyRMessage2Activity*>(aContext.Activity());
-    if (aError == KErrNotFound)
+    if (aError == KErrNotReady)
         {
         TPckgBuf<TStateChange> progressBuf;
 		progressBuf().iStage = conn->iLastProgress.iStage;
@@ -372,7 +372,7 @@ TInt TCprRetrieveLastProgressError::CheckError(MeshMachine::TNodeContextBase& aC
 	{
 	CConnection* conn = static_cast<CConnection*>(&aContext.Node());
     ConnActivities::CConnLegacyRMessage2Activity* act = static_cast<ConnActivities::CConnLegacyRMessage2Activity*>(aContext.Activity());
-    if (aError == KErrNotFound)
+    if (aError == KErrNotReady)
         {
         TPckgBuf<TStateChange> progressBuf;
 		progressBuf().iStage = conn->iLastProgressError.iStage;
@@ -646,15 +646,6 @@ void TLegacyDataMonitoringTransferredRequest::Cancel(MeshMachine::TNodeContextBa
 	// do nothing, a DataMonitoringTransferedRequest cannot be cancelled as the response is immediate
 	}
 
-TInt TLegacyDataMonitoringTransferredRequest::CheckError(MeshMachine::TNodeContextBase& /*aContext*/, TInt aError)
-	{
-	if (aError == KErrNotFound)
-		{
-		return KErrNotReady;
-		}
-	return aError;
-	}
-
 /**
 Return ETrue if the node has a Service Provider, else EFalse.
 
@@ -779,11 +770,6 @@ void TLegacyDataMonitoringNotificationRequest::Cancel(MeshMachine::TNodeContextB
     	}
 	}
 
-TInt TLegacyDataMonitoringNotificationRequest::CheckError(MeshMachine::TNodeContextBase& /*aContext*/, TInt aError)
-	{
-	return aError;
-	}
-
 /**
  *
  * TLegacyEnumerateSubConnections
@@ -890,7 +876,7 @@ void TLegacyControlMessage::ProcessL(MeshMachine::TNodeContextBase& aContext)
 			// it or we hit the bottom
 			TRAP(ret, ForwardRequestL(aContext));
 			
-			if(ret == KErrNotFound)
+			if(ret == KErrNotReady)
 				{
 				// We've reached the bottom of the stack and control call was never serviced
 				User::Leave(KErrNotSupported);

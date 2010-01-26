@@ -481,6 +481,8 @@ CTestStep* TE_RConnectionSuiteTestServer::CreateRConnTestStep3(const TDesC& aSte
 		testStep=new TE_RConnectionTest318();
 	else if(aStepName.Compare(_L("Test319")) == 0)
 		testStep=new TE_RConnectionTest319();
+	else if (aStepName.Compare(_L("TestAllInterfaceNot210")) == 0)
+	    testStep = new TE_RConnectionTestAllInterfaceNot210();
 	
 	return testStep;
 	}

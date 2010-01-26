@@ -42,6 +42,7 @@ data=EPOCROOT##epoc32\data\z\testdata\scripts\te_rconnectioncmmtests_connection_
 data=EPOCROOT##epoc32\data\z\testdata\scripts\te_rconnectionhostresolvertests_connection_eth_target.script      testdata\scripts\te_rconnectionhostresolvertests_connection_eth.script
 data=EPOCROOT##epoc32\data\z\testdata\scripts\te_rconnectionallinterfacenot_connection_eth_target.script        testdata\scripts\te_rconnectionallinterfacenot_connection_eth.script
 
+data=EPOCROOT##epoc32\data\z\testdata\configs\def143083.xml                 						testdata\configs\def143083.xml
 data=EPOCROOT##epoc32\data\z\testdata\configs\rconnectionudp_ethernet_MOMAP16xx.xml                 testdata\configs\rconnectionudp_ethernet.xml
 data=EPOCROOT##epoc32\data\z\testdata\configs\rconnectionethernet_MOMAP16xx.xml                     testdata\configs\rconnectionethernet.xml
 data=EPOCROOT##epoc32\data\z\testdata\configs\ainethernet_MOMAP16xx.xml                             testdata\configs\ainethernet.xml

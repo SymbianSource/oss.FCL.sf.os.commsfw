@@ -56,6 +56,8 @@ RUN_SCRIPT z:\testdata\scripts\BearerMobility\Mobility_761220.script
 
 RUN_SCRIPT z:\testdata\scripts\BearerMobility\Mobility_761402.script
 RUN_SCRIPT z:\testdata\scripts\BearerMobility\Mobility_761403.script
+RUN_SCRIPT z:\testdata\scripts\BearerMobility\Mobility_761404.script
+RUN_SCRIPT z:\testdata\scripts\BearerMobility\Mobility_761405.script
 RUN_SCRIPT z:\testdata\scripts\BearerMobility\Mobility_761406.script
 
 RUN_SCRIPT z:\testdata\scripts\BearerMobility\Mobility_761500.script

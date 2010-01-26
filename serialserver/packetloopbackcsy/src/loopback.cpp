@@ -1012,6 +1012,9 @@ CHWPortFactory::~CHWPortFactory()
  * This method is the destructor for the factory object.
  */
 	{
+    ASSERT(iPorts.Count()==0);
+    iPorts.Close();
+    
 	delete iLoopbackConfig;
 	iLoopbackConfig = NULL;
 	LOGDESTROY();

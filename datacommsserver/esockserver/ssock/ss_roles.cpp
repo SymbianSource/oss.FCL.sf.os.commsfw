@@ -143,7 +143,7 @@ TBool CPlayer::IsPlayerShutdownComplete()
 			}
 		}
 
-	LOG(ESockLog::Printf(KESockBootingTag, _L8("CPlayer::MaybeSetPlayerShutdownComplete(), shutdownComplete = %d [#subSess=%d, numFam=%d, dataPending=%d]"),
+	LOG(ESockLog::Printf(KESockBootingTag, _L8("CPlayer::IsPlayerShutdownComplete(), shutdownComplete = %d [#subSess=%d, numFam=%d, dataPending=%d]"),
 		shutdownComplete, SubSessions().Count(), globals->iNumFamilies, dataThreadShutdownPending) );
 
 	if(globals->iNumFamilies)

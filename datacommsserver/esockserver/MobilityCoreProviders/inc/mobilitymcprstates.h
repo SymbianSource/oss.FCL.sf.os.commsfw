@@ -41,6 +41,7 @@ typedef MeshMachine::TNodeContext<CMobilityMetaConnectionProvider, MCprStates::T
 
 const TInt KStartMobilityHandshake	= 10000;
 const TInt KAwaitMobility        	= 10001;
+const TInt KRejected                = 10002;
 
 //-=========================================================
 //

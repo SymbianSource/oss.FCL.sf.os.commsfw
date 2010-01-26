@@ -101,6 +101,19 @@ public:
 	enum TVerdict doTestStepL(void);
 	};
 
+class CBearerMobilityTestStep_761404 : public CTestStep
+	{
+public:
+	virtual ~CBearerMobilityTestStep_761404() {}
+	enum TVerdict doTestStepL(void);
+	};
+	
+class CBearerMobilityTestStep_761405 : public CTestStep
+	{
+public:
+	virtual ~CBearerMobilityTestStep_761405() {}
+	enum TVerdict doTestStepL(void);
+	};
 
 #endif /* TE_BEARERMOBILITYTESTSUITE_H */
 

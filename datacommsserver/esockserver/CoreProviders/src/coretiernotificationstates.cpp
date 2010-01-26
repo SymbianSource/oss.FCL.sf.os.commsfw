@@ -175,8 +175,8 @@ EXPORT_C void TStartTierNotifications::DoL()
 				message_cast<TCFDataCollector::TTierDataCollectors>(iContext.iMessage);
 
 	RPointerArray<MDataCollector>* collrs = static_cast< RPointerArray<MDataCollector>*> (inMsg.iPtr);
-	CleanupStack::PushL(collrs);
-	CleanupResetAndDestroyPushL(*collrs);
+	CleanupStack::PushL(collrs); // We take ownership of the collector array
+	CleanupResetAndDestroyPushL(*collrs);  // Note that RPointerArray<> doesn't destroy contained items at destruction so this cleanup item is needed
 
 	CTierNotificationActivity* act = static_cast<CTierNotificationActivity*>(iContext.iNodeActivity);
 	// my custom StartL (sets the activity going)

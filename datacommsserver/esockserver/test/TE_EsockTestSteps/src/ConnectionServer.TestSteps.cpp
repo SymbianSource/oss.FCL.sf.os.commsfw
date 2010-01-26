@@ -1756,6 +1756,160 @@ TVerdict CSetPppAccessPointAvailabilityStep::doSingleTestStep()
 	return TestStepResult();
 	}
 
+// Packet Data (PDP) specific availability simulation
+CSetPacketDataAccessPointAvailabilityStep::CSetPacketDataAccessPointAvailabilityStep(CCEsockTestBase*& aEsockTest)
+:   CTe_EsockStepBase(aEsockTest)
+    {
+    SetTestStepName(KSetPppAccessPointAvailabilityStep);
+    }
+
+TVerdict CSetPacketDataAccessPointAvailabilityStep::doTestStepPreambleL()
+    {
+    SetTestStepResult(EFail);
+
+    if (iEsockTest==NULL)
+        iEsockTest = new (ELeave) CCEsockTestBase;
+
+    SetTestStepResult(EPass);
+    return TestStepResult();
+    }
+
+
+TInt CSetPacketDataAccessPointAvailabilityStep::ConfigureFromIni()
+    {
+    TBool found(EFalse);
+    TPtrC availState;
+    if(GetStringFromConfig(iSection, KAccessPointState, availState))
+        {
+        if (availState == KAvailable)
+            {
+            iSetToAvailable = ETrue;
+            found=ETrue;
+            }
+        else if (availState == KUnavailable)
+            {
+            iSetToAvailable = EFalse;
+            found=ETrue;
+            }
+        }
+
+    if( ! found)
+        {
+        INFO_PRINTF1(_L("Must have availability status set to Available or Unavailable."));
+        return KErrArgument;
+        }
+    
+    // All ok if we got this far
+    return KErrNone;
+    }
+
+_LIT(KSimtsyName,"SIM");
+
+TVerdict CSetPacketDataAccessPointAvailabilityStep::doSingleTestStep()
+    {
+    // Fail by default
+    SetTestStepResult(EFail);
+
+    // Action 1- RTelServer::Connect
+    RTelServer telServer;
+    TInt ret = telServer.Connect();
+    if (ret!=KErrNone)
+        {
+        INFO_PRINTF1(_L("Failed to connect to telephony server"));
+        }
+    else
+        {
+        // Action 2- RTelServer::LoadPhoneModule
+        ret=telServer.LoadPhoneModule(KSimtsyName);
+        if (ret!=KErrNone)
+            {
+            INFO_PRINTF1(_L("Failed to load phone module"));
+            }
+        else
+            {
+            // Action 3- RPhone::Open
+            RPhone phone;
+            ret=phone.Open(telServer,KPhoneName) ;
+            if (ret!=KErrNone)
+                {
+                INFO_PRINTF1(_L("Failed to open phone module"));
+                }
+            else
+                {
+                // Action 4- RPhone::Initialise
+                ret=phone.Initialise();
+                if (ret!=KErrNone)
+                    {
+                    INFO_PRINTF1(_L("Failed to initialise the phone"));
+                    }
+                else
+                    {
+                    // Action 5- RPacketService::Open
+                    RPacketService packetService;
+                    ret = packetService.Open(phone);
+                    if (ret!=KErrNone)
+                        {
+                        INFO_PRINTF1(_L("Failed to initialise the packet service"));
+                        }
+                    else
+                        {
+                        // Action 6- RPacketService::NotifyStatusChange
+                        TRequestStatus notifyStatus;
+                        RPacketService::TStatus pktStatus;
+                        packetService.NotifyStatusChange(notifyStatus,pktStatus);
+                        
+                        // Action 7- RPacketService::Attach/Detach
+                        TRequestStatus status;
+                        if(iSetToAvailable)
+                            {
+                            packetService.Attach(status);
+                            }
+                        else
+                            {
+                            packetService.Detach(status);
+                            }
+                        User::WaitForRequest(status);
+                        User::WaitForRequest(notifyStatus);
+                    
+                        if(status.Int() != KErrNone )
+                            {
+                            INFO_PRINTF1(_L("Failed to attach/detach the packet service"));
+                            }
+                        else if( notifyStatus.Int() != KErrNone )
+                            {
+                            INFO_PRINTF1(_L("Failed to receive notification of packet service attach/detach"));
+                            }
+                        else
+                            {
+                            // Success at last!!!
+                            SetTestStepResult(EPass);
+                            }
+                        
+                        // now clean up:
+                        
+                        // Action 5- RPacketService::Open
+                        packetService.Close();
+                        }
+                    // Action 4- RPhone::Initialise
+                    // don't need to "un-Initialise" phone
+                    }
+                // Action 3- RPhone::Open
+                phone.Close();
+                }
+            // Action 2- RTelServer::LoadPhoneModule
+            telServer.UnloadPhoneModule(KSimtsyName);            
+            }
+        // Action 1- RTelServer::Connect
+        telServer.Close();
+        }
+    // There! CleanupStack ShmeanupStack.
+    User::LeaveIfError(ret);
+
+    return TestStepResult();
+    }
+
+
+
 // wifi specific availability simulation
 // Requires the "MockupWifiHardware" emulation mechanism to be enabled on udeb
 CSetWifiAccessPointAvailabilityStep::CSetWifiAccessPointAvailabilityStep(CCEsockTestBase*& aEsockTest)

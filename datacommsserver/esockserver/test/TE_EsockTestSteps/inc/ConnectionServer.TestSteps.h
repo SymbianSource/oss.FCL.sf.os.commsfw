@@ -451,6 +451,26 @@ private:
 _LIT(KSetPppAccessPointAvailabilityStep, "SetPppAccessPointAvailabilityStep");
 
 /**
+Class implementing CSetPacketDataAccessPointAvailabilityStep
+
+@internalComponent
+@description Enables the setting of PDP availability status on access points for simulation of availability
+*/
+class CSetPacketDataAccessPointAvailabilityStep : public CTe_EsockStepBase
+    {
+public:
+    CSetPacketDataAccessPointAvailabilityStep(CCEsockTestBase*& aEsockTest);
+    TVerdict doTestStepPreambleL();
+    TVerdict doSingleTestStep();
+    TInt ConfigureFromIni();
+
+private:
+    TBool iSetToAvailable;
+    };
+
+_LIT(KSetPacketDataAccessPointAvailabilityStep, "SetPacketDataAccessPointAvailabilityStep");
+
+/**
 Class implementing CSetWifiAccessPointAvailabilityStep
 
 @internalComponent

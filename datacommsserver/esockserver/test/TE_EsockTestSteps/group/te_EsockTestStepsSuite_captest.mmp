@@ -74,7 +74,7 @@ LIBRARY	    esock.lib
 LIBRARY	    commdb.lib
 LIBRARY	    efsrv.lib
 LIBRARY	    ecom.lib
-LIBRARY	    etel.lib etelmm.lib
+LIBRARY	    etel.lib etelmm.lib etelpckt.lib
 LIBRARY	    c32root.lib
 LIBRARY	    netmeta.lib
 LIBRARY     esocksvr.lib

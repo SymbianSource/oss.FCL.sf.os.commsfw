@@ -41,6 +41,8 @@ LIBRARY		esock.lib
 LIBRARY		testexecuteutils.lib
 LIBRARY		testexecutelogclient.lib
 LIBRARY		ecom.lib
+LIBRARY		esock_api_ext.lib
+LIBRARY		insock.lib
 
 START WINS
 BASEADDRESS		0x59100000

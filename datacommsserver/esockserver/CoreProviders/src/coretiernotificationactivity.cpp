@@ -156,7 +156,6 @@ EXPORT_C /*static*/ MeshMachine::CNodeActivityBase* CTierNotificationActivity::N
 
 /*virtual*/ void CTierNotificationActivity::StartL(RPointerArray<MDataCollector>& aCollectors)
 	{
-	CleanupResetAndDestroyPushL(aCollectors);
 	if(aCollectors.Count() == 0)
 		{
 		User::Leave(KErrArgument);
@@ -167,15 +166,17 @@ EXPORT_C /*static*/ MeshMachine::CNodeActivityBase* CTierNotificationActivity::N
 	iCache = CTierNotificationCache::NewL();
 
 	// set up a session with each collector
-	for(TInt sessionId=0 ; sessionId<aCollectors.Count() ; ++sessionId)
+	for (TInt sessionId=0 ; sessionId<aCollectors.Count() ; ++sessionId)
 		{
 		CDataCollectorSession* newCollector = CDataCollectorSession::NewL(aCollectors[sessionId], *this, sessionId );
-		__ASSERT_DEBUG(newCollector, User::Panic(KSpecAssert_ESockCrPrvTNotAC, 2));
+		CleanupStack::PushL(newCollector);
 		iCollectorSessions.AppendL(newCollector);
-		aCollectors[sessionId] = 0; // now owned by *this so don't want it to be in the cleanup path twice!
+		CleanupStack::Pop(newCollector);
+		
+		// now owned by the CDataCollectorSession in iCollectorSessions so don't want it to be in the cleanup path twice!
+		aCollectors[sessionId] = 0;
 		}
 
-	CleanupStack::PopAndDestroy();
 
 	// Must run session creation and start loops separately in case the initial data fetch is synchronous.
 	// Reasoning:

@@ -153,5 +153,23 @@ public:
 
 };
 
-#endif // TS_ALLINTERFACENOTIFICATION_H
+class TE_RConnectionTestAllInterfaceNot210 : public CTestStep
+    {
+public:
+    virtual TVerdict doTestStepL();
+    virtual TVerdict doTestStepPreambleL();
+    virtual TVerdict doTestStepPostambleL();
+
+    ~TE_RConnectionTestAllInterfaceNot210();
+    
+private:
+    RSocketServ iSS;
+    RConnection iConnStart;
+    RConnection iConnAttach;
+    RConnection iConnAllIfaceNotify;
+    RTimer iTimer;
+    };
+
+#endif
+// TS_ALLINTERFACENOTIFICATION_H
 

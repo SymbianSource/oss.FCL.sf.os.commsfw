@@ -391,7 +391,8 @@ CTestStep* CTe_esockteststepsSuite::CreateTestStep(const TDesC& aStepName)
 	NEW_ESOCK_TESTSTEP(CancelMBMSNtfnStep)
 	// Availability control
 	NEW_ESOCK_TESTSTEP(SetAccessPointAvailabilityStep)
-	NEW_ESOCK_TESTSTEP(SetPppAccessPointAvailabilityStep)
+    NEW_ESOCK_TESTSTEP(SetPppAccessPointAvailabilityStep)
+    NEW_ESOCK_TESTSTEP(SetPacketDataAccessPointAvailabilityStep)
 	NEW_ESOCK_TESTSTEP(SetWifiAccessPointAvailabilityStep)
 
 	NEW_ESOCK_TESTSTEP(EnumerateConnectionsStep)

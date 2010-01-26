@@ -492,3 +492,67 @@ PRINT
 RUN_TEST_STEP 100 TE_Socket Test21.2
 TEST_COMPLETE
 END_TESTCASE			COMINF-ESOCK-Socket-0171
+
+START_TESTCASE			COMINF-ESOCK-Socket-0172
+//! @SYMTestCaseID		COMINF-ESOCK-Socket-0172
+//! @SYMTestCaseDesc    	Sending more than 60k packet by Stream protocol with blocking mode
+//! @SYMTestActions    		RSocket::Send
+//! @SYMTestExpectedResults     pass
+//! @SYMTestPriority  		Critical 
+//! @SYMTestType 		CT
+//! @SYMComponent   		comms-infras_esock
+//! @SYMDEF				DEF143021
+
+// run test 31.1
+PRINT
+RUN_TEST_STEP 100 TE_Socket Test31.1
+TEST_COMPLETE
+END_TESTCASE			COMINF-ESOCK-Socket-0172
+
+START_TESTCASE			COMINF-ESOCK-Socket-0173
+//! @SYMTestCaseID		COMINF-ESOCK-Socket-0173
+//! @SYMTestCaseDesc    	Sending more than 60k packet by Stream protocol with non-blocking mode
+//! @SYMTestActions    		RSocket::Send
+//! @SYMTestExpectedResults     pass
+//! @SYMTestPriority  		Critical 
+//! @SYMTestType 		CT
+//! @SYMComponent   		comms-infras_esock
+//! @SYMDEF				DEF143021
+
+// run test 31.2
+PRINT
+RUN_TEST_STEP 100 TE_Socket Test31.2
+TEST_COMPLETE
+END_TESTCASE			COMINF-ESOCK-Socket-0173
+
+START_TESTCASE			COMINF-ESOCK-Socket-0174
+//! @SYMTestCaseID		COMINF-ESOCK-Socket-0174
+//! @SYMTestCaseDesc    	Sending more than 60k packet by datagram protocol with blocking mode
+//! @SYMTestActions    		RSocket::SendTo
+//! @SYMTestExpectedResults     pass
+//! @SYMTestPriority  		Critical 
+//! @SYMTestType 		CT
+//! @SYMComponent   		comms-infras_esock
+//! @SYMDEF				DEF143021
+
+// run test 31.3
+PRINT
+RUN_TEST_STEP 100 TE_Socket Test31.3
+TEST_COMPLETE
+END_TESTCASE			COMINF-ESOCK-Socket-0174
+
+START_TESTCASE			COMINF-ESOCK-Socket-0175
+//! @SYMTestCaseID		COMINF-ESOCK-Socket-0175
+//! @SYMTestCaseDesc    	Sending more than 60k packet by Stream protocol with non-blocking mode
+//! @SYMTestActions    		RSocket::SendTo
+//! @SYMTestExpectedResults     pass
+//! @SYMTestPriority  		Critical 
+//! @SYMTestType 		CT
+//! @SYMComponent   		comms-infras_esock
+//! @SYMDEF				DEF143021
+
+// run test 31.4
+PRINT
+RUN_TEST_STEP 100 TE_Socket Test31.4
+TEST_COMPLETE
+END_TESTCASE			COMINF-ESOCK-Socket-0175

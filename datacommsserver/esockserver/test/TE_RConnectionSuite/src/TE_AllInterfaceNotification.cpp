@@ -1628,3 +1628,201 @@ enum TVerdict TE_RConnectionTest318::doTestStepL(void)
     return TestStepResult();
 } // TE_RConnectionTest318
 
+
+/******************************************************************************
+ *
+ * Test TestAllInterfaceNot112
+ *
+ * Added for def143083
+ * 
+ * Commsdat configuration should have a default connection that fails to start.
+ * Uses dummynif and sets it to fail using the mobility pub/sub.
+ * 
+ * Start listening for AllInterfaceNotification
+ * Start a connection asynchronously
+ * On completion of AllInterfaceNotification with EInterfaceUp - Re-request
+ * Attach another connection to the interface reported as up
+ * Async start completes with error
+ * AllInterfaceNotification *SHOULD* complete with EInterfaceDown
+ *****************************************************************************/
+TVerdict TE_RConnectionTestAllInterfaceNot210::doTestStepL(void)
+    {
+    TInt err;
+    
+    TRequestStatus allIfaceStatus;
+    TInterfaceNotificationBuf notificationBuf;
+    iConnAllIfaceNotify.AllInterfaceNotification(notificationBuf, allIfaceStatus);
+
+    TRequestStatus connStartStatus;
+    iConnStart.Start(connStartStatus);
+    User::WaitForRequest(connStartStatus, allIfaceStatus);
+    
+    if (allIfaceStatus == KRequestPending)
+        {
+        // Fail
+        INFO_PRINTF2(_L("Connection start completed with %d before AllInterfaceNotification()"), connStartStatus.Int());
+        iConnAllIfaceNotify.CancelAllInterfaceNotification();
+        User::WaitForRequest(allIfaceStatus);
+        return EFail; // EFail has no effect, default fail result set in pre-amble
+        }
+    
+    // AllInterfaceNotification() completed
+    if (notificationBuf().iState != EInterfaceUp)
+        {
+        // Fail
+        INFO_PRINTF1(_L("AllInterfaceNotification() completed with unexpected state [iState != EInterfaceUp]"));
+        iConnStart.Stop();
+        User::WaitForRequest(connStartStatus);
+        return EFail; // EFail has no effect, default fail result set in pre-amble
+        }
+    
+    INFO_PRINTF1(_L("AllInterfaceNotification() completed with [iState == EInterfaceUp]"));
+    TConnectionInfoBuf connInfoBuf(notificationBuf().iConnectionInfo);
+
+    // Attach() to the connection
+    err = iConnAttach.Attach(connInfoBuf, RConnection::EAttachTypeMonitor);
+    if (err != KErrNone)
+        {
+        // FAIL
+        INFO_PRINTF2(_L("Attach() completed with %d"), err);
+        iConnStart.Stop();
+        User::WaitForRequest(connStartStatus);
+        return EFail; // EFail has no effect, default fail result set in pre-amble
+        }
+
+    // Re-request
+    iConnAllIfaceNotify.AllInterfaceNotification(notificationBuf, allIfaceStatus);
+
+    // Set test time out 
+    TRequestStatus timerStatus;
+    const TInt KTimerDelay = 20 * 1000 * 1000; // 20 secs should be plenty for the connection start to fail
+    iTimer.After(timerStatus, KTimerDelay);
+    
+    const TInt KRequestCount = 3; 
+    TRequestStatus* requests[KRequestCount] = { &connStartStatus, &allIfaceStatus, &timerStatus };
+    User::WaitForNRequest(requests, KRequestCount);
+    
+    if (timerStatus != KRequestPending)
+        {
+        // Fail
+        INFO_PRINTF1(_L("Guard timer elapsed"));
+        iConnAllIfaceNotify.CancelAllInterfaceNotification();
+        User::WaitForRequest(allIfaceStatus);
+        iConnStart.Stop();
+        User::WaitForRequest(connStartStatus);
+        return EFail; // EFail has no effect, default fail result set in pre-amble
+        }
+    
+    iTimer.Cancel();
+    User::WaitForRequest(timerStatus);
+    
+    if (allIfaceStatus == KRequestPending)
+        {
+        // Connection start completed
+        if (connStartStatus.Int() != KErrNone)
+            {
+            // Reset timer and wait a little longer
+            iTimer.After(timerStatus, KTimerDelay);
+            User::WaitForRequest(allIfaceStatus, timerStatus);
+            }
+        else
+            {
+            // FAIL - Misconfigured? Connection is expected to fail
+            INFO_PRINTF1(_L("Connection started successfully (** Was expected to fail **)"));
+            iConnAllIfaceNotify.CancelAllInterfaceNotification();
+            User::WaitForRequest(allIfaceStatus);
+            return EFail; // EFail has no effect, default fail result set in pre-amble
+            }
+        
+        if (allIfaceStatus == KRequestPending)
+            {
+            // FAIL
+            INFO_PRINTF1(_L("Guard timer elapsed"));
+            iConnAllIfaceNotify.CancelAllInterfaceNotification();
+            User::WaitForRequest(allIfaceStatus);
+            return EFail; // EFail has no effect, default fail result set in pre-amble
+            }
+        
+        iTimer.Cancel();
+        User::WaitForRequest(timerStatus);
+        }
+    else
+        {
+        // Just wait for the conn start to complete
+        User::WaitForRequest(connStartStatus);
+        if (connStartStatus.Int() == KErrNone)
+            {
+            // FAIL - Misconfigured? Connection is expected to fail
+            INFO_PRINTF1(_L("Connection started successfully (** Was expected to fail **)"));
+            iConnAllIfaceNotify.CancelAllInterfaceNotification();
+            User::WaitForRequest(allIfaceStatus);
+            return EFail; // EFail has no effect, default fail result set in pre-amble
+            }
+        }
+    
+    // Last thing to check - make sure it completed with interface down
+    if (notificationBuf().iState != EInterfaceDown)
+        {
+        // FAIL
+        INFO_PRINTF1(_L("AllInterfaceNotification() completed with unexpected state [iState != EInterfaceDown]"));
+        return EFail; // EFail has no effect, default fail result set in pre-amble
+        }
+    
+    // PASS
+    SetTestStepResult(EPass);
+    }
+
+TVerdict TE_RConnectionTestAllInterfaceNot210::doTestStepPreambleL()
+    {
+    TInt err;
+    
+    SetTestStepResult(EFail);
+
+    // Prepare socket server and connections
+    err = iSS.Connect();
+    TESTEL(err == KErrNone, err);
+    
+    err = iConnStart.Open(iSS);
+    TESTEL(err == KErrNone, err);
+    
+    err = iConnAttach.Open(iSS);
+    TESTEL(err == KErrNone, err);
+
+    err = iConnAllIfaceNotify.Open(iSS);
+    TESTEL(err == KErrNone, err);
+    
+    err = iTimer.CreateLocal();
+    TESTEL(err == KErrNone, err);
+    
+    // Setup the dummynif pub/sub setting
+    const TUid KAvailabilityTestingPubSubUid = { 0x10272F42 };
+    const TInt KApId = 6; /* see the def143083.xml config */
+
+    RProperty dummyNifEnableProperty;
+    err = dummyNifEnableProperty.Define(KAvailabilityTestingPubSubUid, KApId , RProperty::EInt);
+    if (err != KErrAlreadyExists)
+        {
+        TESTEL(err == KErrNone, err);
+        }
+    
+    err = dummyNifEnableProperty.Attach(KAvailabilityTestingPubSubUid, KApId);
+    TESTEL(err == KErrNone, err);
+
+    dummyNifEnableProperty.Set(0); // Dummy NIF not available - Start should fail
+    dummyNifEnableProperty.Close();
+    }
+
+TVerdict TE_RConnectionTestAllInterfaceNot210::doTestStepPostambleL()
+    {
+    
+    }
+
+TE_RConnectionTestAllInterfaceNot210::~TE_RConnectionTestAllInterfaceNot210()
+    {
+    iConnAllIfaceNotify.Close();
+    iConnAttach.Close();
+    iConnStart.Close();
+    iSS.Close();
+    
+    iTimer.Close();
+    }

@@ -1221,7 +1221,8 @@ will return the amount of data sent.
 @param someFlags Flags which are passed through to protocol
 @param aStatus On completion, KErrNone if successful, otherwise one of the system 
 wide error codes. Note that KErrEof indicates that the socket has been shutdown 
-with option EStopOutput.
+with option EStopOutput. In the case of KSONonBlockingIO & writeFlowedoff, 
+it has to return KerrWouldBlock, but it returns KErrNone for compatibiity
 @param aLen Filled in with amount of data sent before completion
 
 @capability Dependent on the type of socket so deferred to PRT */

@@ -46,7 +46,8 @@ SOURCE        SocketTestSection17.cpp
 SOURCE        SocketTestSection18.cpp
 SOURCE        SocketTestSection19.cpp
 SOURCE        SocketTestSection20.cpp
-SOURCE		  SocketTestSection21.cpp
+SOURCE		  SocketTestSection21.cpp 
+SOURCE		  SocketTestSection31.cpp 
 
 USERINCLUDE   	../../protocols/pdummy
 

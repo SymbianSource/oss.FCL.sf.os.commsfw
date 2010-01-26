@@ -118,5 +118,25 @@ test_complete
 END_TESTCASE			COMINF-ESOCK-RConnectionSuite-AllInterfaceNot-0209
 
 
+
+
+
+
+// NOTE: This test changes the previously loaded commdb
+run_script z:\TestData\scripts\te_esock_test_unloadesockForced.script
+ced z:\testdata\configs\def143083.xml
+run_script z:\TestData\scripts\te_esock_test_loadesock.script
+
+
+START_TESTCASE			COMINF-ESOCK-RConnectionSuite-AllInterfaceNot-0210
+//! @SYMTestCaseID		COMINF-ESOCK-RConnectionSuite-AllInterfaceNot-0210
+
+heap_mark
+run_test_step 500, TE_RConnectionSuite TestAllInterfaceNot210 
+heap_markend
+test_complete
+END_TESTCASE			COMINF-ESOCK-RConnectionSuite-AllInterfaceNot-0210
+
+
 run_script z:\TestData\scripts\te_esock_test_unloadesockForced.script
 

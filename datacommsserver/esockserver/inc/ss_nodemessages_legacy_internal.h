@@ -285,7 +285,6 @@ protected:
     virtual void ProcessL(MeshMachine::TNodeContextBase& aContext);
 
 	virtual void Cancel(MeshMachine::TNodeContextBase& aContext);
-	virtual TInt CheckError(MeshMachine::TNodeContextBase& aContext, TInt aError);
 
 private:
 	TBool HasServiceProviderL(const Messages::TRuntimeCtxId& aRecipient);
@@ -350,7 +349,6 @@ protected:
     virtual void ProcessL(MeshMachine::TNodeContextBase& aContext);
 
 	virtual void Cancel(MeshMachine::TNodeContextBase& aContext);
-	virtual TInt CheckError(MeshMachine::TNodeContextBase& aContext, TInt aError);
 
 public:
     DECLARE_MVIP_CTR(TLegacyDataMonitoringNotificationRequest)

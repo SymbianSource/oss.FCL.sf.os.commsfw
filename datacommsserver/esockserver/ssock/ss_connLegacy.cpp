@@ -353,13 +353,11 @@ void AConnectionLegacy::AllInterfaceNotificationL(const RMessage2& aMessage)
 
 void AConnectionLegacy::CompleteAllInterfaceNotificationL(TInt aError)
 	{
-	LOG(ESockLog::Printf(KESockConnectionTag, _L8("AConnectionLegacy [this=%08x] CompleteAllInterfaceNotificationL message (%08X) with %d"), &iConnection, iAllInterfaceNotificationMessage.Handle(), aError));
-
-	if(!iAllInterfaceNotificationMessage.IsNull())
+	if (!iAllInterfaceNotificationMessage.IsNull())
 		{
 		if(aError == KErrNone)
 			{
-			if(!iNotificationQueue.IsEmpty())
+			if (!iNotificationQueue.IsEmpty())
 				{
 				TInterfaceNotification notification;
 				iNotificationQueue.Deque(notification);
@@ -368,12 +366,14 @@ void AConnectionLegacy::CompleteAllInterfaceNotificationL(TInt aError)
 
 				// Write the buffer to the client
 				iAllInterfaceNotificationMessage.WriteL(0, buf);
+			    LOG(ESockLog::Printf(KESockConnectionTag, _L8("AConnectionLegacy [this=%08x] CompleteAllInterfaceNotificationL, RMessage2::Complete (%08x) with 0"), &iConnection, iAllInterfaceNotificationMessage.Handle()));
 				iAllInterfaceNotificationMessage.Complete(KErrNone);
 				iAllInterfaceNotificationMessage = RMessage2();
 				}
 			}
 		else
 			{
+            LOG(ESockLog::Printf(KESockConnectionTag, _L8("AConnectionLegacy [this=%08x] CompleteAllInterfaceNotificationL, RMessage2::Complete (%08x) with %d"), &iConnection, iAllInterfaceNotificationMessage.Handle(), aError));
 			iAllInterfaceNotificationMessage.Complete(aError);
 			iAllInterfaceNotificationMessage = RMessage2();
 			}

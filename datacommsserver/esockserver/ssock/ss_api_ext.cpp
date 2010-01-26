@@ -305,6 +305,7 @@ EXPORT_C TInt AIPCClientPlatsecInfo::CheckPolicy(TSubSessionUniqueId aSubSession
 
     TBool platsecResult;
     platsecResult = aPolicy.CheckPolicy(process);
+    process.Close();
     if (!platsecResult)
         {
         return KErrPermissionDenied;
