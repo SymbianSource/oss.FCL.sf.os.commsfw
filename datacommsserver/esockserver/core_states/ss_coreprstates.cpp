@@ -2092,10 +2092,11 @@ EXPORT_C void TCreateDataClient::DoL()
 EXPORT_DEFINE_SMELEMENT(TCancelDataClientStart, NetStateMachine::MStateTransition, PRStates::TContext)
 EXPORT_C void TCancelDataClientStart::DoL()
 	{
-	// Cancel must come from the same activity that sent TStart
-	// This transition will handle Data Clients started by ECFActivityStart
-	// it will not handle those started by ECFActivityStartDataClient
-	RClientInterface::OpenPostMessageClose(TNodeCtxId(ECFActivityStart, iContext.NodeId()), iContext.NodeId(), TEBase::TCancel().CRef());
+	CNodeActivityBase* dcstart = iContext.Node().FindActivityById(ECFActivityStartDataClient);
+	if (dcstart)
+		{
+		dcstart->Cancel(iContext);
+		}
 	}
 
 EXPORT_DEFINE_SMELEMENT(TProcessDataClientStop, NetStateMachine::MStateTransition, PRStates::TContext)

@@ -40,7 +40,7 @@ EXPORTS
 	?__DbgGetBufTotal@TCommsBufPondDbg@@QAEIXZ @ 39 NONAME ; unsigned int TCommsBufPondDbg::__DbgGetBufTotal(void)
 	?Append@RCommsBufQ@@QAEXAAV1@@Z @ 40 NONAME ; void RCommsBufQ::Append(class RCommsBufQ &)
 	?CancelRequest@RCommsBufPond@@AAEXAAVRCommsBufAsyncRequest@@@Z @ 41 NONAME ; void RCommsBufPond::CancelRequest(class RCommsBufAsyncRequest &)
-	?Open@RCommsBufPondOp@@QAEHAAV?$RArray@VTCommsBufPoolCreateInfo@@@@H@Z @ 42 NONAME ; int RCommsBufPondOp::Open(class RArray<class TCommsBufPoolCreateInfo> &, int)
+	?Open@RCommsBufPondOp@@QAEHAAV?$RArray@UTCommsBufPoolCreateInfo@@@@H@Z @ 42  NONAME ; int RCommsBufPondOp::Open(class RArray<struct TCommsBufPoolCreateInfo> &, int)
 	?Goto@RCommsBufChain@@IBEPAVRCommsBuf@@HAAH0AAPAV2@@Z @ 43 NONAME ; class RCommsBuf * RCommsBufChain::Goto(int, int &, int &, class RCommsBuf * &) const
 	?Transfer@RCommsBufQ@@IAEHAAV1@HHAAH@Z @ 44 NONAME ; int RCommsBufQ::Transfer(class RCommsBufQ &, int, int, int &)
 	?__Cleanup@RCommsBufQ@@CAXPAX@Z @ 45 NONAME ; void RCommsBufQ::__Cleanup(void *)

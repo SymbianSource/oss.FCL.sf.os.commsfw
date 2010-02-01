@@ -32,13 +32,14 @@
 #include <elements/cftransportmsg.h>
 #include <elements/nm_address_internal.h>
 #include <elements/sd_msgs.h>
-#include <elements/sd_rootserverchannelhandler.h>
 #include "ss_connectionserver.h"
 #include <comms-infras/ss_common.h>
 #include <comms-infras/ss_tiermanager.h>
 #include <cfforwardmsg.h>
 #include "ss_tierthreadmap.h"
 
+// Required for the VERIFY_RESULT's in CFBindMessageReceived and DoCompleteUnbinding.
+#include "../../../commsfwsupport/commselements/serverden/inc/sd_rootserverchannelhandler.h"
 
 #ifdef _DEBUG
 // Panic category for "absolutely impossible!" vanilla ASSERT()-type panics from this module
