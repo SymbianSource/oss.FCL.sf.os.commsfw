@@ -657,6 +657,8 @@ prior to the socket being opened.
 */ 
 const TInt KErrProtocolNotReady = -17214;
 
+// -17215 used for non published error. Do not use here.
+
 
 /** Used in RSocket read and write calls to pass the length of data read and written.
 @publishedAll

@@ -63,7 +63,7 @@ of the data in the TSockAddr object is defined by individual protocols.
 @return Returns KErrNone if the local name is correctly set or, if this is
 not the case, an informative error number. */
 	{
-	iLocalAddressSet = ETrue;
+	SetLocalAddressSet();
 	iLocalAddress = anAddr;
 	
 	}
@@ -76,7 +76,7 @@ of the data in the TSockAddr object is defined by individual protocols.
 @return Returns KErrNone if the remote name is correctly set or, if this is
 not the case, an informative error number. */
 	{
-	iRemoteAddressSet = ETrue;
+	SetRemoteAddressSet();
 	iRemoteAddress = anAddr;
 	return KErrNone;
 	}
@@ -84,7 +84,7 @@ not the case, an informative error number. */
 void CNetworkFlow::UpdateDestinationAddress(const TSockAddr& aDest)
 	{
 	iRemoteAddress = aDest;
-	iRemoteAddressSet = ETrue;
+	SetRemoteAddressSet();
 	}
 
 TUint CNetworkFlow::Write(const TDesC8& /*aDesc*/, TUint /*aOptions*/, TSockAddr* anAddr)
@@ -223,9 +223,9 @@ void CNetworkFlow::Unbind()
 		iSessionDataNotify = NULL;
 		if(iSubConnectionProvider.IsOpen())
 			{
-			if(iDCIdle < EIdle)
+			if (!Idle())
 				{
-				iDCIdle = EIdle;
+				SetIdle();
 		    	ProcessDCIdleState();
 				}
 			}
@@ -250,12 +250,12 @@ MFlowBinderControl* CNetworkFlow::DoGetBinderControlL()
 void CNetworkFlow::ProcessDCIdleState()
 	{
 #ifdef SYMBIAN_NETWORKING_UPS
-	if(iDCIdle == EIdle && !ActivityRunning())
+	if (Idle() && !IdleSent() && !ActivityRunning())
 #else
-	if(iDCIdle == EIdle && !iNoBearerRunning)
+	if (Idle() && !IdleSent() && !NoBearerGuard())
 #endif
 		{
-		iDCIdle = EIdleSent;
+		SetIdleSent();
 		iSubConnectionProvider.PostMessage(Id(), TCFControlProvider::TIdle().CRef());
 		}
 	}

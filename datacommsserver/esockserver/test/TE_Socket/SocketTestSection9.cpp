@@ -601,3 +601,64 @@ enum TVerdict CSocketTest9_8::InternalDoTestStepL( void )
     return verdict;
     }
 
+// Test step 9.9
+//
+// Test ESoRecvOneOrMoreNoLength IPC
+//
+const TDesC& CSocketTest9_9::GetTestName()
+    {
+    _LIT(ret,"Test9.9");
+    return ret;
+    }
+
+enum TVerdict CSocketTest9_9::InternalDoTestStepL( void )
+    {
+    TVerdict verdict = EPass;
+    
+    Logger().WriteFormat(_L("Test Purpose: Test RecvOneOrMore (no length) API"));
+    
+    // connect to esock
+    Logger().WriteFormat(_L("Attempting to connect to socket server"));
+    RSocketServ ss;
+    TInt ret = OptimalConnect(ss);
+    CleanupClosePushL(ss);
+    Logger().WriteFormat(_L("Connect returned %S"), &EpocErrorToText(ret));
+    TESTL(KErrNone == ret);
+    
+    RSocket sk;
+    Logger().WriteFormat(_L("Opening a socket on Dummy protocol 2"));
+    ret = sk.Open(ss, _L("Dummy Protocol 2"));
+    CleanupClosePushL(sk);
+    Logger().WriteFormat(_L("Open returned %S"), &EpocErrorToText(ret));
+    TESTL(KErrNone == ret);
+    
+    Logger().WriteFormat(_L("Connecting socket"));
+    TSockAddr addr;
+    TRequestStatus rstat;
+    sk.Connect(addr, rstat);
+    User::WaitForRequest(rstat);
+    Logger().WriteFormat(_L("Connect status %S"), &EpocErrorToText(rstat.Int()));
+    TESTL(KErrNone == rstat.Int());
+    
+    Logger().WriteFormat(_L("Trying RecvOneOrMore (no length)"));
+    TBuf8<10> buf;
+    sk.RecvOneOrMore(buf, 0, rstat);
+    TRequestStatus sstat;
+    _LIT8(KTestString, "Hello");
+    sk.Send(KTestString(), 0, sstat);
+    User::WaitForRequest(rstat);
+    Logger().WriteFormat(_L("RecvOneOrMore status %S"), &EpocErrorToText(rstat.Int()));
+    TESTL(KErrNone == rstat.Int());
+    User::WaitForRequest(sstat);
+    Logger().WriteFormat(_L("Send status %S"), &EpocErrorToText(sstat.Int()));
+    TESTL(KErrNone == sstat.Int());
+    TESTL(buf == KTestString());
+    
+    CleanupStack::Pop(&sk);
+    sk.Close();
+    CleanupStack::Pop(&ss);
+    ss.Close();
+    
+    SetTestStepResult(verdict);
+    return verdict;
+    }

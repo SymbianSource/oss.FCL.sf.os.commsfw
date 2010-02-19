@@ -55,7 +55,6 @@
 #include <comms-infras/ss_nodemessages_mcpr.h>
 #include <comms-infras/ss_nodemessages_cpr.h>
 
-
 #ifdef _DEBUG
 // Panic category for "absolutely impossible!" vanilla ASSERT()-type panics from this module
 // (if it could happen through user error then you should give it an explicit, documented, category + code)
@@ -521,6 +520,7 @@ EXPORT_C void THandleDataClientIdle::DoL()
 	__ASSERT_DEBUG(iContext.iPeer, User::Panic(KSpecAssert_ESockCrStaCPRSC, 13));
 	__ASSERT_DEBUG(iContext.iPeer->Type()==TCFClientType::EData, User::Panic(KSpecAssert_ESockCrStaCPRSC, 14));
 
+	__CFLOG_VAR((KCoreProviderStatesTag, KCoreProviderStatesSubTag, _L8("TSendDestroyToSendingDataClient::DoL - iContext.iPeer->Flags(): %x"), iContext.iPeer->Flags()));
 	if (!(iContext.iPeer->Flags() &
 			(TCFClientType::EActivating|TCFClientType::EStarting|TCFClientType::ELeaving|TCFClientType::EStarted)))
     	{
@@ -625,12 +625,24 @@ EXPORT_DEFINE_SMELEMENT(TStopDataClients, NetStateMachine::MStateTransition, PRS
 EXPORT_C void TStopDataClients::DoL()
 	{
 	__ASSERT_DEBUG(iContext.iNodeActivity, CorePrPanic(KPanicNoActivity));
-	TInt stopCode = ExtractErrorCode(iContext.iMessage);
-
-	iContext.Node().PostToClients<TDefaultClientMatchPolicy>(TNodeCtxId(iContext.ActivityId(), iContext.NodeId()),
-		TCFDataClient::TStop(stopCode).CRef(), TClientType(TCFClientType::EData, TCFClientType::EStarted));
-	iContext.iNodeActivity->ClearPostedTo();
+	TInt aStopCode = ExtractErrorCode(iContext.iMessage);
+    // Stop all non-default data clients before the default data client, as there are some cases where non-default data clients
+    // have a reference to the default data client.  Also, stop non-default data clients unconditionally (i.e. whether started or
+    // not) and the default data client only if started.  This ensures that a non-default data client that is still starting
+    // will receive the stop, so preventing a hang.
+    //
+    // NOTE: the logic in this method is coupled to the logic in TNoTagOrDataClientsToStop.
+	iContext.Node().PostToClients<TDefaultClientMatchPolicy>(TNodeCtxId(iContext.ActivityId(), iContext.NodeId()),TCFDataClient::TStop(aStopCode).CRef(), TClientType(TCFClientType::EData), TClientType(0, TClientType::ELeaving|TCFClientType::EDefault), TCFClientType::EStopping);
+	iContext.Node().PostToClients<TDefaultClientMatchPolicy>(TNodeCtxId(iContext.ActivityId(), iContext.NodeId()),TCFDataClient::TStop(aStopCode).CRef(), TClientType(TCFClientType::EData, TCFClientType::EStarted|TCFClientType::EDefault), TClientType(0, TClientType::ELeaving), TCFClientType::EStopping);
+    iContext.iNodeActivity->ClearPostedTo();
 	}
+
+void TStopDataClients::StopDataClient(RNodeInterface& aDataClient, TInt aStopCode)
+    {
+    aDataClient.SetFlags(TCFClientType::EStopping);
+    aDataClient.PostMessage(TNodeCtxId(iContext.ActivityId(), iContext.NodeId()), TCFDataClient::TStop(aStopCode).CRef());
+    }
+
 
 EXPORT_DEFINE_SMELEMENT(TStopSelf, NetStateMachine::MStateTransition, PRStates::TContext)
 EXPORT_C void TStopSelf::DoL()
@@ -653,7 +665,7 @@ EXPORT_C TBool TAwaitingDataClientStopped::Accept()
     	}
 	if (iContext.iPeer)
 		{
-		iContext.iPeer->ClearFlags(TCFClientType::EStarted);
+		iContext.iPeer->ClearFlags(TCFClientType::EStarted | TCFClientType::EStopping); 		
 		}
 	if (iContext.iNodeActivity &&
 	    (iContext.iNodeActivity->ActivitySigId() == ECFActivityStop ||
@@ -675,9 +687,9 @@ EXPORT_C TBool TAwaitingDataClientsStopped::Accept()
     	}
 	if (iContext.iPeer)
 		{
-		iContext.iPeer->ClearFlags(TCFClientType::EStarted);
+		iContext.iPeer->ClearFlags(TCFClientType::EStopping); 
 		}
-	if (iContext.Node().CountClients<TDefaultClientMatchPolicy>(TClientType(TCFClientType::EData, TCFClientType::EStarted)))
+	if (iContext.Node().CountClients<TDefaultClientMatchPolicy>(TClientType(TCFClientType::EData, TCFClientType::EStopping)))  
 		{
 		//There are more to wait for
 		iContext.iMessage.ClearMessageId();
@@ -1768,12 +1780,14 @@ EXPORT_C TInt TNoTagOrDataClientPresent::TransitionTag()
 EXPORT_DEFINE_SMELEMENT(TNoTagOrDataClientsToStop, NetStateMachine::MStateFork, CoreNetStates::TContext)
 EXPORT_C TInt TNoTagOrDataClientsToStop::TransitionTag()
 	{
-	if (iContext.Node().GetFirstClient<TDefaultClientMatchPolicy>(TClientType(TCFClientType::EData, TCFClientType::EStarted),
-		TClientType(0, TClientType::ELeaving)))
-		{
-       	return CoreNetStates::KDataClientsToStop | NetStateMachine::EForward;
-    	}
-	return KNoTag;
+    // Check if there are any non-default data clients, or the default data client is started.
+    // NOTE: the logic in this method is coupled to the logic in TStopDataClients - see that method for further explanation.
+    if ((iContext.Node().CountClients<TDefaultClientMatchPolicy>(TClientType(TCFClientType::EData, TCFClientType::EDefault | TCFClientType::EStarted), TClientType(0, TClientType::ELeaving))) 
+	 || (iContext.Node().CountClients<TDefaultClientMatchPolicy>(TClientType(TCFClientType::EData), TClientType(0, TCFClientType::EDefault | TClientType::ELeaving))))
+        {
+        return CoreNetStates::KDataClientsToStop;
+        }
+    return KNoTag;
 	}
 
 EXPORT_DEFINE_SMELEMENT(TNoTagOrNoDataClientsToStop, NetStateMachine::MStateFork, CoreNetStates::TContext)

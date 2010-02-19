@@ -67,7 +67,8 @@ enum
 	KPanicPeerMisbehaving = 20,
 
 	KPanicActivity = 21,
-	KPanicNoContext = 22
+	KPanicNoContext = 22,
+	KPanicMultipleDefaultDataClients = 23
 	};
 }
 
@@ -706,6 +707,7 @@ DECLARE_SMELEMENT_FOOTER( THandleDataClientIdle )
 
 EXPORT_DECLARE_SMELEMENT_HEADER( TStopDataClients, MeshMachine::TStateTransition<TContext>, NetStateMachine::MStateTransition, TContext )
 	IMPORT_C virtual void DoL();
+    void StopDataClient(Messages::RNodeInterface& aDataClient, TInt aStopCode);
 DECLARE_SMELEMENT_FOOTER( TStopDataClients )
 
 EXPORT_DECLARE_SMELEMENT_HEADER( TStopSelf, MeshMachine::TStateTransition<TContext>, NetStateMachine::MStateTransition, TContext )

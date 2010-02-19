@@ -93,8 +93,8 @@ public:
 		EActive                  = 0x00000400,//Given away handle to this client and got a response, i.e.: assuming somebody bound to the client until
 		                                      //the client reports idle. (cleared by TDataClientIdle).
 		EStarting                = 0x00000800,//
-		EStarted                 = 0x00001000,//The client has sent TStarted (cleared by TStopped).
-
+		EStarted                 = 0x00001000,//The client has sent TStarted .
+		EStopping                = 0x00002000,//Stop Data Cients (cleared by TStopped)
 		/**
 		   Internal, not to be used by partners
 		   
