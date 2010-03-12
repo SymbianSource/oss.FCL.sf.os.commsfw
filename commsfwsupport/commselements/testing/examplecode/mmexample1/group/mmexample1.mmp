@@ -11,13 +11,27 @@
 // Contributors:
 //
 // Description:
-//
-PRJ_PLATFORMS
-BASEDEFAULT
+target			MMExample1.exe
+targettype	        exe
 
+UID             0x1000007A 0x2002D4B3
+VENDORID 0x70000001
 
-PRJ_EXPORTS
-../data/utddefs.txt	/epoc32/tools/commsfw/nmexample1.definition.txt
+sourcepath		../src
+source			MMExample1.cpp
+source			MMExample1nodes.cpp
+source			MMExample1states.cpp
 
-PRJ_MMPFILES
-NMExample1
+OS_LAYER_SYSTEMINCLUDE_SYMBIAN
+
+userinclude		../inc
+library			euser.lib
+library			nodemessages.lib
+library			meshmachine.lib
+library			commsfw.lib
+library			netmeta.lib
+library 		virtualconstructors.lib
+
+CAPABILITY None
+
+SMPSAFE

@@ -15,9 +15,8 @@
 PRJ_PLATFORMS
 BASEDEFAULT
 
-
 PRJ_EXPORTS
-../data/utddefs.txt	/epoc32/tools/commsfw/nmexample1.definition.txt
+../data/utddefs.txt	/epoc32/tools/commsfw/mmexample1.definition.txt
 
 PRJ_MMPFILES
-NMExample1
+MMExample1

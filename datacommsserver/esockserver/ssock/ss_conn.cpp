@@ -194,7 +194,7 @@ DECLARE_DEFINE_CUSTOM_NODEACTIVITY(ECFActivityStop, ConnectionStop, TCFInternalE
 	// complete the message upon return from the blocked activity.
 	THROUGH_NODEACTIVITY_ENTRY(KNoTag, SubSessStates::TAcquireMessageOwnership, CoreNetStates::TActiveOrNoTagBlockedByGoneDown)
 	THROUGH_NODEACTIVITY_ENTRY(KActiveTag, ConnStates::TCancelStartOrAttachConnection, ConnStates::TNoTagOrNoBearerBlockedByStartOrAttach)
-	THROUGH_NODEACTIVITY_ENTRY(KNoTag, CoreNetStates::TCancelAndCloseZone0ClientExtIfaces, MeshMachine::TNoTag)
+	THROUGH_NODEACTIVITY_ENTRY(KNoTag, SubSessStates::TCancelAndCloseClientExtIfaces, MeshMachine::TNoTag)
     THROUGH_NODEACTIVITY_ENTRY(KNoTag, ConnStates::TCancelAllLegacyRMessage2Activities, ConnStates::TNoTagBlockedByLegacyRMessage2Activities)
 	NODEACTIVITY_ENTRY(KNoTag, ConnStates::TSendStopConnection, TECABState<CoreNetStates::TAwaitingStopped>, MeshMachine::TNoTag)
     THROUGH_NODEACTIVITY_ENTRY(KNoTag, ConnStates::TGenerateConnectionDownProgress, MeshMachine::TNoTag)

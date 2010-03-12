@@ -730,6 +730,11 @@ void ConnStates::TProcessProgressRequest::DoL()
 			{
 			msg->iStateChange.iStage = KConnectionUp;	// KLinkLayerOpen
 			}
+		//TODO: Verify if this (connection) is the right place to translate the error
+		if (msg->iStateChange.iError == KErrForceDisconnected)
+			{
+            msg->iStateChange.iError = KErrDisconnected;
+			}
 		if (selectedProgressStage == KConnProgressDefault
 			|| selectedProgressStage == msg->iStateChange.iStage
 				|| KErrNone != msg->iStateChange.iError)
