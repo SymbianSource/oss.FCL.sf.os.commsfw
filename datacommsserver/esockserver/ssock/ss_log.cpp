@@ -200,6 +200,7 @@ Write a multiple argument list to the log, trapping and ignoring any leave
 		case ESoRecv: return _S8("ESoRecv");
 		case ESoRecvNoLength: return _S8("ESoRecvNoLength");
 		case ESoRecvOneOrMore: return _S8("ESoRecvOneOrMore");
+        case ESoRecvOneOrMoreNoLength: return _S8("ESoRecvOneOrMoreNoLength");
 		case ESoRead: return _S8("ESoRead");
 		case ESoWrite: return _S8("ESoWrite");
 		case ESoSendTo: return _S8("ESoSendTo");

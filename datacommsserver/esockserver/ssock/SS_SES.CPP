@@ -334,6 +334,7 @@ void CSockSession::ServiceL(const RMessage2& aMessage)
 	case ESoRecvFromNoLength:
 	case ESoRecvNoLength:
 	case ESoRecvOneOrMore:
+    case ESoRecvOneOrMoreNoLength:
 	case ESoRecvFrom:
 	case ESoRecv:
 	case ESoRead:

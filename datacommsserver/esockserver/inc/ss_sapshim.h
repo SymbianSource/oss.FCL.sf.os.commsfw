@@ -65,6 +65,7 @@ calls the CServProviderBase in such an erroneous way, the protocol should panic.
 #ifdef SYMBIAN_NETWORKING_UPS
 	friend class CHostResolver;		// to allow CHostResolver to call SecurityCheck()
 #endif
+
 public:
     typedef CTransportFlowShimFactory FactoryType; //for factoryobject_cast to work
 
@@ -165,9 +166,7 @@ protected:
 	inline TBool IsHostResolver() const;
 	inline TBool IsStopped();
 	inline void SetIfInfo(const TSoIfConnectionInfo& aInfo);
-	inline void ClearUseBearerErrors();
-    inline void ClearDataClientRoutedGuard();
-
+	    
     void PostNoBearer();
     void PostDataClientRouted();
 	// From MSocketNotify
@@ -203,19 +202,33 @@ private:
 	// Needs to be protected rather than private for UPS support
     void PostNoBearer();
     void PostDataClientRouted();
-    inline void ClearDataClientRoutedGuard();
 #endif
     void CompleteStart(TInt aError);
 
-#ifdef SYMBIAN_NETWORKING_UPS
-	// Not entirely UPS specific - cleanup of CNetworkFlow/CTransportFlowShim functionality split
-    inline TBool NoBearerGuard() const;
-    inline void SetNoBearerGuard();
-    inline void ClearNoBearerGuard();
-#endif
 	void NoBearerCompletion();
 	inline void SetFlowParams(const TFlowParams& aFlowParams);
-	inline TBool FlowParamsInitialised() const;
+
+protected:
+	// Flags to set on iStateFlags inherited from CNetworkFlow
+	enum TStateFlag
+		{
+		EDetaching = 0x0001000,
+		EDataClientRoutedGuard = 0x00020000,
+		EStopped = 0x00040000,
+		EShuttingDown = 0x00080000,
+		EFlowParamsInitialised = 0x00100000,
+		EBearerExpected = 0x00200000,
+		EDeleteUponBearerReception = 0x00400000,
+		EUseBearerErrors = 0x00800000
+		};
+	SAP_FLAG_FUNCTIONS(Detaching, EDetaching)
+	SAP_FLAG_FUNCTIONS(DataClientRoutedGuard, EDataClientRoutedGuard)
+	SAP_FLAG_FUNCTIONS(Stopped, EStopped)
+	SAP_FLAG_FUNCTIONS(ShuttingDown, EShuttingDown)
+	SAP_FLAG_FUNCTIONS(FlowParamsInitialised, EFlowParamsInitialised)
+	SAP_FLAG_FUNCTIONS(BearerExpected, EBearerExpected)
+	SAP_FLAG_FUNCTIONS(DeleteUponBearerReception, EDeleteUponBearerReception)
+	SAP_FLAG_FUNCTIONS(UseBearerErrors, EUseBearerErrors)
 
 private:
 	CServProviderBase* iProvider;
@@ -227,15 +240,8 @@ private:
 	Messages::RRequestOriginator iStartRequest;
 
     TSoIfConnectionInfo iIfInfo;
-    TUint iDetaching:1;
-    TUint iUseBearerErrors:1;		// error the socket on Error() upcalls from bearer rather than StopFlow() calls from SCPR
-	TUint iDataClientRoutedGuard:1;	// DataClientRouted msg has been issued to SCPR
-	TUint iIsStopped:1;				// DataClientStop has been received.
-#ifdef SYMBIAN_NETWORKING_UPS
-	TBool iNoBearerRunning:1;		// NoBearer message has been issued to SCPR
-	TBool iShuttingDown:1;
-#endif
-	TBool iFlowParamsInitialised:1; // whether iFlowParams has been initialised or not
+	
+
 #ifdef SYMBIAN_ADAPTIVE_TCP_RECEIVE_WINDOW
     const CSAPSetOpt *iProtocolOptions;
 #endif //SYMBIAN_ADAPTIVE_TCP_RECEIVE_WINDOW
@@ -243,8 +249,6 @@ private:
 	// Reference to the protocol as managed by the ProtocolManager
 	CProtocolRef* iProtocolReference;
 	TFlowParams iFlowParams;
-	TBool iBearerExpected;
-	TBool iDeleteUponBearerReception;
 	};
 
 inline CServProviderBase* CTransportFlowShim::Provider()
@@ -255,12 +259,7 @@ inline CServProviderBase* CTransportFlowShim::Provider()
 inline void CTransportFlowShim::SetFlowParams(const TFlowParams& aFlowParams)
     {
     iFlowParams = aFlowParams;
-    iFlowParamsInitialised = ETrue;
-    }
-
-inline TBool CTransportFlowShim::FlowParamsInitialised() const
-    {
-    return iFlowParamsInitialised;
+    SetFlowParamsInitialised();
     }
 
 #ifdef SYMBIAN_NETWORKING_UPS
@@ -268,22 +267,6 @@ inline TBool CTransportFlowShim::FlowParamsInitialised() const
 //
 // CTransportFlowShim inline methods
 //
-
-inline TBool CTransportFlowShim::NoBearerGuard() const
-	{ return iNoBearerRunning; }
-
-inline void CTransportFlowShim::SetNoBearerGuard()
-   	{ iNoBearerRunning = ETrue; }
-
-inline void CTransportFlowShim::ClearNoBearerGuard()
-    { iNoBearerRunning = EFalse; }
-
-inline void CTransportFlowShim::ClearUseBearerErrors()
-	{ iUseBearerErrors = EFalse; }
-
-inline TBool CTransportFlowShim::IsStopped()
-	{ return iIsStopped; }
-
 inline TBool CTransportFlowShim::IsHostResolver() const
 	{ return iHostResolverNotify != NULL; }
 

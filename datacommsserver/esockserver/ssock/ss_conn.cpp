@@ -523,28 +523,6 @@ Main body of CConnection::NewL(CSockSession* aSession, const CConnection& aExist
 	iLastProgressError = aExistingConnection.iLastProgressError;
 	iProgressQueue = aExistingConnection.iProgressQueue;
 
-	/**
-	   The first commented in section of code here is incorrect. It only clones one of the service providers and not them
-	   all. This means that certain calls, GetIntSetting being one, does not work on cloned connections. Unfortunately,
-	   some code now relies on this being broken (browser). This code needs to be fixed before the first section of code
-	   is removed and the proper code reinstated.
-	*/
-#if 1   // BAD CODE
-	RNodeInterface* sp = aExistingConnection.ServiceProvider();
-	if (sp)
-		{
-	    AddClientL(sp->RecipientId(), TClientType(TCFClientType::EServProvider, TCFClientType::EActive));
-
-		// TODO IK: This is the wrong message to be using here, should use JoinRequest/Complete handshake
-	    sp->PostMessage(Id(), TCFFactory::TPeerFoundOrCreated(Id(), 0).CRef());
-        }
-	else
-		{
-		LOG( ESockLog::Printf(KESockConnectionTag, _L8("CConnection %08x CloneL KErrNotReady"), this) );
-		User::Leave(KErrNotReady);
-		}
-
-#else   // PROPER CODE
 	/*
 	  This function looks like it'd be better to do in one loop. dont do this though. All fallible parts need to be done before
 	  sending the messages to ourselves, otherwise the mesh machine will panic.
@@ -595,7 +573,6 @@ Main body of CConnection::NewL(CSockSession* aSession, const CConnection& aExist
 			sp = iter++;
 			}
 		}
-#endif
 	}
 
 

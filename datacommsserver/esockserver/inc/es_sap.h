@@ -50,6 +50,7 @@ SAPs to work with a seperate control path.
 @released Since 9.0 */
 	{
 	friend class ProtocolManager;
+
 public:
 
 	IMPORT_C virtual ~CNetworkFlow();
@@ -78,20 +79,20 @@ protected:
 
 	void ProcessDCIdleState();
 
-#ifdef SYMBIAN_NETWORKING_UPS
-	virtual TBool ActivityRunning() = 0;
-#else
-    inline TBool NoBearerGuard()
-    	{ return iNoBearerRunning; }
-    inline void SetNoBearerGuard()
-    	{ iNoBearerRunning = ETrue; }
-    inline void ClearNoBearerGuard()
-    	{ iNoBearerRunning = EFalse; }
-#endif
-
+	
 protected:
 	IMPORT_C CNetworkFlow(CSubConnectionFlowFactoryBase& aFactory, const Messages::TNodeId& aSubConn, CProtocolIntfBase* aProtocolIntf);
 	void UpdateDestinationAddress(const TSockAddr& aDest);
+
+    #define SAP_FLAG_FUNCTIONS(name, flag) \
+		inline TBool name() { return iStateFlags & flag; } \
+		inline void Set##name() { iStateFlags |= flag; }	\
+		inline void Clear##name() { iStateFlags &= ~flag; }
+
+#ifdef SYMBIAN_NETWORKING_UPS
+	virtual TBool ActivityRunning() = 0;
+#endif
+
 
 protected:
 	TSockAddr iLocalAddress;
@@ -104,22 +105,23 @@ protected:
 	MFlowBinderControl* iLowerFlow;
 	MLowerControl* iLowerControl; //just to keep the lower flow up
 
-	enum TDCIdleState
+	enum TStateFlag
 		{
-		EClientsPresent = 0, // presumption is we're always created for a client (ie HR or socket)
-		EIdle = 1,
-		EIdleSent = 2
+		ELocalAddressSet = 0x00000001,
+		ERemoteAddressSet = 0x00000002,
+		ENoBearerRunning = 0x00000004,
+		EStarted = 0x00000008,
+		EIdle = 0x00000080,
+		EIdleSent = 0x00000100
 		};
-	TBool iLocalAddressSet:1;
-	TBool iRemoteAddressSet:1;
-	TBool iConnectionInfoSet:1;
-	TBool iJoinOutstanding:1;
-	TBool iLeaveOutstanding:1;	
-#ifndef SYMBIAN_NETWORKING_UPS
-	TBool iNoBearerRunning:1;			// NoBearer msg has been issued to SCPR
-#endif
-	TBool iIsStarted:1;	
-	TDCIdleState iDCIdle:2;			
+	SAP_FLAG_FUNCTIONS(LocalAddressSet, ELocalAddressSet)
+	SAP_FLAG_FUNCTIONS(RemoteAddressSet, ERemoteAddressSet)
+	SAP_FLAG_FUNCTIONS(NoBearerGuard, ENoBearerRunning)
+	SAP_FLAG_FUNCTIONS(Started, EStarted)
+	SAP_FLAG_FUNCTIONS(Idle, EIdle)
+	SAP_FLAG_FUNCTIONS(IdleSent, EIdleSent)
+		
+	TUint iStateFlags;
 	};
 
 } //namespace ESock

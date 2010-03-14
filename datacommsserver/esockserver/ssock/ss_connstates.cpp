@@ -670,6 +670,10 @@ void ConnStates::TProcessStateChange::DoL()
 		{
 		progress.iStage = KConnectionUp;	// KLinkLayerOpen
 		}
+	if (progress.iError == KErrForceDisconnected)
+		{
+		progress.iError = KErrDisconnected;
+		}
 
 	LOG( ESockLog::Printf(KESockConnectionTag, _L("CConnection %08x:\tProgressNotification(TInt aStage %d, TInt aError %d)"),
 		&(iContext.Node()), progress.iStage, progress.iError) );

@@ -245,6 +245,18 @@ START_TESTCASE			COMINF-ESOCK-Socket-0908
 RUN_TEST_STEP 10 TE_Socket Test9.8 z:\TestData\configs\te_socket.ini
 END_TESTCASE			COMINF-ESOCK-Socket-0908
 
+START_TESTCASE			COMINF-ESOCK-Socket-0909
+//! @SYMTestCaseID		COMINF-ESOCK-Socket-0909
+//! @SYMTestCaseDesc		Simple regression test of ESoRecvOneOrMoreNoLength IPC
+//! @SYMTestActions		Uses RSocket::RecvOneOrMore(TDes8&, TUint, TRequestStatus&)
+//! @SYMTestExpectedResults	Pass
+//! @SYMTestPriority		Critical 
+//! @SYMTestType		CT
+//! @SYMComponent		comms-infras_esock
+//! @SYMDEF			DEF143623
+RUN_TEST_STEP 10 TE_Socket Test9.9 z:\TestData\configs\te_socket.ini
+END_TESTCASE			COMINF-ESOCK-Socket-0909
+
 START_TESTCASE			COMINF-ESOCK-Socket-0137
 //! @SYMTestCaseID		COMINF-ESOCK-Socket-0137
 

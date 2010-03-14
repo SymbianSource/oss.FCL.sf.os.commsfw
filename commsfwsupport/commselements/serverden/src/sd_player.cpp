@@ -58,7 +58,7 @@ EXPORT_C CCommonSessionProxy::~CCommonSessionProxy()
 
 void CCommonSessionProxy::BeginSessionClose()
 	{
-	//COMMONLOG((WorkerId(),KECommonBootingTag, _L8("CSockSessionProxy %08x:\tBeginSessionClose(), iSockSession %08x"), this, iSession) );
+	COMMONLOG((Player().WorkerId(),KECommonBootingTag, _L8("CCommonSessionProxy %08x:\tBeginSessionClose(), iSockSession %08x"), this, iSession) );
 	/* Only do something if the message is within the deadline and we're sure
 	   the session pointer is safe to use */
 	CCommonWorkerThread& worker = iPlayer.WorkerThread();
@@ -87,7 +87,7 @@ void CCommonSessionProxy::BeginSessionClose()
 
 EXPORT_C void CCommonSessionProxy::NotifySubSessionDestroyed()
 	{
-	//COMMONLOG((WorkerId(),KECommonBootingTag, _L8("CSockSessionProxy %08x:\tNotifySubSessionDestroyed(), iSockSession %08x"), this, iSession) );
+	//COMMONLOG((Player().WorkerId(),KECommonBootingTag, _L8("CCommonSessionProxy %08x:\tNotifySubSessionDestroyed(), iSockSession %08x"), this, iSession) );
 	if(IsClosing() && --iNumSubSessClosing <= 0)
 		{
 		__ASSERT_DEBUG(iNumSubSessClosing == 0, User::Panic(KSpecAssert_ElemSvrDenPlayrC, 2));
@@ -202,13 +202,22 @@ TBool CCommonPlayer::CanUnbindFromWorker(TWorkerId aWorker)
 			return EFalse;
 			}
 		}
-	return ETrue;
+    
+	if (!iSessionProxies.IsEmpty())
+        {
+        COMMONLOG((WorkerId(), KECommonBootingTag, _L8("-- can't; session proxies still present")));
+        return EFalse;
+        }
+    
+
+    return ETrue;
 	}
 
 EXPORT_C void CCommonPlayer::MaybeSetPlayerShutdownComplete(TBool aForceShutdownNow)
 	{
 	//A forced shutdown trumps all other considerations
-	TBool shutdownComplete = aForceShutdownNow || (SubSessions().Count() == 0 && IsPlayerShutdownComplete());
+	TBool shutdownComplete = aForceShutdownNow
+	        || (SubSessions().Count() == 0  && iSessionProxies.IsEmpty() && IsPlayerShutdownComplete());
 
 	COMMONLOG((WorkerId(), KECommonBootingTag, _L8("CPlayer::MaybeSetPlayerShutdownComplete(), shutdownComplete = %d [forced=%d, #subSess=%d]"),
 		shutdownComplete, aForceShutdownNow, SubSessions().Count()));

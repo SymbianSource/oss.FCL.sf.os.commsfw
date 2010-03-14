@@ -23,7 +23,6 @@
 
 #include <e32base.h>
 #include <f32file.h>
-#include <comms-infras/commsdebugutility.h>
 #include "elements/cftransportmacro.h"
 
 // This namespace is split between this file and cfutil.h. You can include this file to use COwnEntryList

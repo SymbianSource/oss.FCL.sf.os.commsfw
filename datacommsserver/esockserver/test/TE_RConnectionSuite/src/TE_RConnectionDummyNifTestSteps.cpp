@@ -5195,10 +5195,12 @@ enum TVerdict TE_RConnectionTest59::doTestStepL(void)
 	TESTEL(KErrNone == err, err);
 
 	err = ConnectTcpSocket(sock, iEchoServerAddr);
-	TESTEL(KErrNone == err, err);
-
+	// TimeOuts - unable to connect to ssock whis is down
+	TESTEL(KErrTimedOut == err, err);
+	
 	err = TestTcpDataPathL(sock);
-	TESTEL(KErrNone == err, err);
+	TESTEL(KErrTimedOut == err, err);
+	
 
 	DestroyUdpSocket(sock);
 	CleanupStack::Pop();
