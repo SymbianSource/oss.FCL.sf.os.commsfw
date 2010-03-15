@@ -332,7 +332,16 @@ void CDummyNetworkFlow::ReceivedL(const TRuntimeCtxId& aSender, const TNodeId& a
 			TCFDataClient::TBindTo& bindToMsg(static_cast<TCFDataClient::TBindTo&>(aMessage));
 			TRAPD(err,BindToL(bindToMsg));
 			ProcessDCIdleState();	// in case we were waiting to send idle
-			RClientInterface::OpenPostMessageClose(Id(), aSender, TCFDataClient::TBindToComplete(err).CRef());
+
+	        if(err == KErrNone)
+	            {
+	            RClientInterface::OpenPostMessageClose(Id(), aSender, TCFDataClient::TBindToComplete().CRef());
+	            }
+	        else
+	            {
+	            RClientInterface::OpenPostMessageClose(Id(), aSender, TEBase::TError(aMessage.MessageId(), err).CRef());
+	            }
+	        
 			//If we have received TCDDataClient::TStart before (when we did not yet have a bearer),
 			//we complete the start here as well
 			if (iIsStarting)

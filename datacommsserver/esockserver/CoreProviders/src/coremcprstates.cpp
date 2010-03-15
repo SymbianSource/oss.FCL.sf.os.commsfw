@@ -397,8 +397,7 @@ EXPORT_C void TProcessProviderStatusChangeRegistration::DoL()
 DEFINE_SMELEMENT(TAwaitingClientLeaveAndNoClients, NetStateMachine::MState, MCprStates::TContext)
 TBool TAwaitingClientLeaveAndNoClients::Accept()
     {
-    CoreStates::TAwaitingClientLeave clientLeave(iContext);
-    if (clientLeave.Accept())
+    if (iContext.iMessage.IsMessage<TEPeer::TLeaveRequest>() || iContext.iMessage.IsMessage<TEChild::TLeft>())
 		{
 		TClientIter<TDefaultClientMatchPolicy> iter = iContext.Node().GetClientIter<TDefaultClientMatchPolicy>(TClientType(TCFClientType::ECtrl|TCFClientType::EData));
 		__ASSERT_DEBUG(iter[0], User::Panic(KSpecAssert_ESockCrPrvMCPRSC, 5));

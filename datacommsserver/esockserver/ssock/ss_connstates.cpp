@@ -1029,6 +1029,20 @@ TInt CStartAttachActivity::TAwaitingSelectCompleteOrError::Accept()
 	return EFalse;
 	}
 
+DEFINE_SMELEMENT(CStartAttachActivity::TSetIdleIfStopOutstanding, NetStateMachine::MStateTransition, TContext)
+void CStartAttachActivity::TSetIdleIfStopOutstanding::DoL()
+	{
+	__ASSERT_DEBUG(iContext.iNodeActivity, ConnPanic(KPanicNoActivity));
+	ConnActivities::CStartAttachActivity& activity = static_cast<ConnActivities::CStartAttachActivity&>(*iContext.iNodeActivity);
+
+	// If there is a stop activity outstanding then we set this start activity idle
+	TInt numRunningStopActivities = iContext.Node().CountActivities(ESock::ECFActivityStop);
+	if (numRunningStopActivities > 0)
+		{
+		activity.SetIdle();
+		}
+	}
+
 
 #ifdef SYMBIAN_NETWORKING_UPS
 

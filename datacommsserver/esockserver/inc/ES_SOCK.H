@@ -707,8 +707,8 @@ StartProtocol() - loads a protocol asynchronously.
 	{
 public:
     IMPORT_C RSocketServ();
-	IMPORT_C TInt Connect(TUint aMessageSlots=KESockDefaultMessageSlots);
-	IMPORT_C TInt Connect(const TSessionPref& aPref, TUint aMessageSlots=KESockDefaultMessageSlots);
+	IMPORT_C TInt Connect(TUint aMessageSlots = (TUint) -1);
+	IMPORT_C TInt Connect(const TSessionPref& aPref, TUint aMessageSlots = (TUint) -1);
 	IMPORT_C TVersion Version() const;
 	IMPORT_C TInt NumProtocols(TUint& aCount);
 	IMPORT_C TInt GetProtocolInfo(TUint anIndex,TProtocolDesc& aProtocol);

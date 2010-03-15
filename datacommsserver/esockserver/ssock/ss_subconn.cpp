@@ -301,6 +301,7 @@ DECLARE_DEFINE_ACTIVITY_MAP(subconnectionActivities)
 	ACTIVITY_MAP_ENTRY(SubConnectionNoBearer, SubConnNoBearer)
     ACTIVITY_MAP_ENTRY(SubConnectionLegacyRMessage2Activity, SubConnectionLegacyRMessage2)
 	ACTIVITY_MAP_ENTRY(PRDataClientJoinActivity, PRDataClientJoin)
+	ACTIVITY_MAP_ENTRY(PRClientLeftActivity, PRClientLeft)
 	ACTIVITY_MAP_ENTRY(PRClientLeaveActivity, PRClientLeave)
 ACTIVITY_MAP_END()
 }

@@ -207,9 +207,10 @@ Assumes type and record id set by caller
     TInt err = TMDBVisitor<TInt>::LoadL(aSession, (*iElementId & ~KCDMaskShowRecordId) | (aRecordId & KCDMaskShowRecordId), aAttributeFlags);
     
     if (iOwner->Type() == ELink &&
-        err == KErrNone )
+        err == KErrNone &&
+        iLinkedRecord != NULL)
         {
-        if (iLinkedRecord != NULL && *iLinkedRecord != NULL)
+        if (*iLinkedRecord != NULL)
             {
             CheckLinkedRecordL(iTarget->iValue);
 

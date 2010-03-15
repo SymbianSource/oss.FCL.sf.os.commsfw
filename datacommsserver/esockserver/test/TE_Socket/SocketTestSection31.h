@@ -49,6 +49,28 @@ class CSocketTest31_4 : public CTestStepSocket
         virtual enum TVerdict InternalDoTestStepL( void );
     };
 
+class CSocketTest31_5 : public CTestStepSocket
+    {
+public:
+    static const TDesC &GetTestName();
+    virtual enum TVerdict InternalDoTestStepL( void );
+private:
+    TInt MakePendingRequestL();
+    
+    // Member data largely as convenience; not cleaned up by destructor
+    RSocketServ iSess;
+    class CSockReq : public CBase
+        {
+    public:
+        static CSockReq* NewLC();
+        ~CSockReq();
+    public:
+        RSocket iSock;
+        TRequestStatus iReq;
+        TBuf8<20> iData;
+        };
+    RPointerArray<CSockReq> iSocks;
+    };
 
 #endif //__SOCKETTEST_31_H__
 

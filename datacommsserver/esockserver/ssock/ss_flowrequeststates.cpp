@@ -158,6 +158,32 @@ void FlowRequestActivities::CFlowRequestActivity::TStoreFlowParams::DoL()
 	CleanupStack::Pop(params);
 	}
 
+DEFINE_SMELEMENT(FlowRequestActivities::CFlowRequestActivity::TSendBindToComplete, NetStateMachine::MStateTransition, TContext)
+void FlowRequestActivities::CFlowRequestActivity::TSendBindToComplete::DoL()
+    {
+    __ASSERT_DEBUG(iContext.iNodeActivity, User::Panic(KCFlowRequestPanic, KPanicNoActivity));
+    CFlowRequestActivity& activity = static_cast<CFlowRequestActivity&>(*iContext.iNodeActivity);
+    __ASSERT_DEBUG(!activity.iBindToSender.IsNull(), User::Panic(KSpecAssert_ESockSSockFlwRqS, 2)); 
+    RClientInterface::OpenPostMessageClose(iContext.Node().Id(), activity.iBindToSender, TCFDataClient::TBindToComplete().CRef());
+    activity.iBindToSender.SetNull();
+    }
+
+DEFINE_SMELEMENT(FlowRequestActivities::CFlowRequestActivity::TAwaitingBindTo, NetStateMachine::MState, TContext)
+TBool FlowRequestActivities::CFlowRequestActivity::TAwaitingBindTo::Accept()
+    {
+    TBool accept(EFalse);     
+    if(iContext.iMessage.IsMessage<TCFDataClient::TBindTo>()) 
+        { 
+        // store the node to which we send the response later on.
+        __ASSERT_DEBUG(iContext.iNodeActivity, User::Panic(KCFlowRequestPanic, KPanicNoActivity));
+        CFlowRequestActivity& activity = static_cast<CFlowRequestActivity&>(*iContext.iNodeActivity);
+        __ASSERT_DEBUG(activity.iBindToSender.IsNull(), User::Panic(KSpecAssert_ESockSSockFlwRqS, 3));
+        activity.iBindToSender = iContext.iSender;
+        accept = ETrue;
+        } 
+    
+    return accept;
+    }
 
 DEFINE_SMELEMENT(FlowRequestStates::TSendNoBearer, NetStateMachine::MStateTransition, FlowRequestStates::TContext)
 void FlowRequestStates::TSendNoBearer::DoL()
@@ -255,3 +281,18 @@ void FlowRequestStates::TJoinSCpr::DoL()
 	}
 
 
+
+DEFINE_SMELEMENT(FlowRequestStates::TSendClientLeavingAndRemoveControlProvider, NetStateMachine::MStateTransition, FlowRequestStates::TContext)
+void FlowRequestStates::TSendClientLeavingAndRemoveControlProvider::DoL()
+	{
+   	TClientIter<TDefaultClientMatchPolicy> iter = iContext.Node().GetClientIter<TDefaultClientMatchPolicy>(TClientType(TCFClientType::ECtrlProvider));
+   	RNodeInterface* cl = iter[0];
+   	//It is perfectly possible that there is no Control Provider at all.
+   	if (cl)
+   		{
+		__ASSERT_DEBUG(iContext.iNodeActivity, User::Panic(KCFlowRequestPanic, KPanicNoActivity));
+		cl->PostMessage(TNodeCtxId(iContext.ActivityId(), iContext.NodeId()), TEChild::TLeft().CRef());
+   		iContext.Node().RemoveClient(cl->RecipientId(),iContext);
+   		__ASSERT_DEBUG(iter[1] == NULL, User::Panic(KCFlowRequestPanic, KPanicNoControlProvider)); //But it is not possible to have two Control Providers!
+   		}
+	}

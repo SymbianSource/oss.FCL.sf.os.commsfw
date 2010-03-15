@@ -100,7 +100,11 @@ public:
 	*/
     inline static TBool IsBlocked(const MeshMachine::TNodeContextBase& aContext)
     	{
-		return aContext.iNode.CountActivities(ACTIVITYID) != 0;
+		TInt count = aContext.iNode.CountActivities(ACTIVITYID);
+		MESH_LOG((KMeshMachineSubTag, _L8("TActivityIdMutex: Node [%08x] Activity [%08x]: Number of actid (%d) = %d"), aContext.NodeId().Ptr(), aContext.iNodeActivity,
+				 ACTIVITYID, count));
+
+		return count != 0;
     	}
 	};
 	
@@ -192,11 +196,54 @@ public:
 	*/
     inline static TBool IsBlocked(const MeshMachine::TNodeContextBase& aContext)
     	{
-    	TBool isBlocked = aContext.iNode.CountActivities(ACTIVITYID1) != 0;
-    	isBlocked |= aContext.iNode.CountActivities(ACTIVITYID2) != 0;
-    	isBlocked |= (ACTIVITYID3)? aContext.iNode.CountActivities(ACTIVITYID3) != 0 : EFalse;
-    	isBlocked |= (ACTIVITYID4)? aContext.iNode.CountActivities(ACTIVITYID4) != 0 : EFalse;
-    	isBlocked |= (ACTIVITYID5)? aContext.iNode.CountActivities(ACTIVITYID5) != 0 : EFalse;
+
+		MESH_LOG((KMeshMachineSubTag, _L8("TActivitiesIdMutex: Node [%08x] Activity [%08x]: [2] Number of actid (%d) = %d"), aContext.NodeId().Ptr(), aContext.iNodeActivity,
+				ACTIVITYID2, aContext.iNode.CountActivities(ACTIVITYID2)));
+		if (ACTIVITYID3)
+			{
+			MESH_LOG((KMeshMachineSubTag, _L8("TActivitiesIdMutex: Node [%08x] Activity [%08x]: [3] Number of actid (%d) = %d"), aContext.NodeId().Ptr(), aContext.iNodeActivity,
+					ACTIVITYID3, aContext.iNode.CountActivities(ACTIVITYID3)));
+			if (ACTIVITYID4)
+				{
+				MESH_LOG((KMeshMachineSubTag, _L8("TActivitiesIdMutex: Node [%08x] Activity [%08x]: [4] Number of actid (%d) = %d"), aContext.NodeId().Ptr(), aContext.iNodeActivity,
+						ACTIVITYID4, aContext.iNode.CountActivities(ACTIVITYID4)));
+				if (ACTIVITYID5)
+					{
+					MESH_LOG((KMeshMachineSubTag, _L8("TActivitiesIdMutex: Node [%08x] Activity [%08x]: [5] Number of actid (%d) = %d"), aContext.NodeId().Ptr(), aContext.iNodeActivity,
+							ACTIVITYID5, aContext.iNode.CountActivities(ACTIVITYID5)));
+					}
+				}
+			}
+		TInt count = 0;
+		count = aContext.iNode.CountActivities(ACTIVITYID1);
+		MESH_LOG((KMeshMachineSubTag, _L8("TActivitiesIdMutex: Node [%08x] Activity [%08x]: [1] Number of actid (%d) = %d"), aContext.NodeId().Ptr(), aContext.iNodeActivity, ACTIVITYID1, count));
+    	TBool isBlocked = (count != 0);
+
+		count = aContext.iNode.CountActivities(ACTIVITYID2);
+		MESH_LOG((KMeshMachineSubTag, _L8("TActivitiesIdMutex: Node [%08x] Activity [%08x]: [2] Number of actid (%d) = %d"), aContext.NodeId().Ptr(), aContext.iNodeActivity, ACTIVITYID2, count));
+    	isBlocked |= (count != 0);
+		
+		if (ACTIVITYID3)
+			{
+			count = aContext.iNode.CountActivities(ACTIVITYID3);
+			MESH_LOG((KMeshMachineSubTag, _L8("TActivitiesIdMutex: Node [%08x] Activity [%08x]: [3] Number of actid (%d) = %d"), aContext.NodeId().Ptr(), aContext.iNodeActivity, ACTIVITYID3, count));
+			isBlocked |= (count != 0);
+
+			if (ACTIVITYID4)
+				{
+				count = aContext.iNode.CountActivities(ACTIVITYID4);
+				MESH_LOG((KMeshMachineSubTag, _L8("TActivitiesIdMutex: Node [%08x] Activity [%08x]: [4] Number of actid (%d) = %d"), aContext.NodeId().Ptr(), aContext.iNodeActivity, ACTIVITYID4, count));
+				isBlocked |= (count != 0);
+
+				if (ACTIVITYID5)
+					{
+					count = aContext.iNode.CountActivities(ACTIVITYID5);
+					MESH_LOG((KMeshMachineSubTag, _L8("TActivitiesIdMutex: Node [%08x] Activity [%08x]: [5] Number of actid (%d) = %d"), aContext.NodeId().Ptr(), aContext.iNodeActivity, ACTIVITYID5, count));
+					isBlocked |= (count != 0);
+					}
+				}
+			}
+		
 		return isBlocked;
     	}
 	};
@@ -213,7 +260,9 @@ public:
 	*/
     inline static TBool IsBlocked(const MeshMachine::TNodeContextBase& aContext)
     	{
-    	return aContext.iNode.CountAllActivities() != 0;
+		TInt count = aContext.iNode.CountAllActivities();
+		MESH_LOG((KMeshMachineSubTag, _L8("Node [%08x] Activity [%08x]: Count all activities %d"), aContext.NodeId().Ptr(), aContext.iNodeActivity, count));
+    	return count != 0;
     	}
 	};
 
@@ -238,7 +287,9 @@ public:
 #ifdef __GCCXML__
 		return EFalse;
 #else
-		return aContext.iNode.CountClients<TMATCHPOLICY>(Messages::TClientType(TYPE,FLAGS)) != 0;
+		TInt count = aContext.iNode.CountClients<TMATCHPOLICY>(Messages::TClientType(TYPE,FLAGS));
+		MESH_LOG((KMeshMachineSubTag, _L8("TClientMutex Node [%08x] Activity [%08x]: Count Clients (%x, %x) = %d"), aContext.NodeId().Ptr(), aContext.iNodeActivity, TYPE, FLAGS, count));
+		return count != 0;
 #endif
     	}
 	};
@@ -264,7 +315,9 @@ public:
 #ifdef __GCCXML__
 		return EFalse;
 #else
-		return aContext.iNode.CountClients<TMATCHPOLICY>(Messages::TClientType(TYPE,FLAGS)) == 0;
+		TInt count = aContext.iNode.CountClients<TMATCHPOLICY>(Messages::TClientType(TYPE,FLAGS));
+		MESH_LOG((KMeshMachineSubTag, _L8("TNoClientMutex Node [%08x] Activity [%08x]: Count Clients (%x, %x) = %d"), aContext.NodeId().Ptr(), aContext.iNodeActivity, TYPE, FLAGS, count));
+		return count == 0;
 #endif
     	}
 	};

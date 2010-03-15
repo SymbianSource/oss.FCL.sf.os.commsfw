@@ -157,8 +157,7 @@ CCDAccessPointRecord* CommsDatMapperAndValidator::GenerateIPProtoAPL(TInt aTagGe
 	apRecordToBeCreated->iCpr.SetL(templateForTheAPRec->iCpr);
 	apRecordToBeCreated->iSCpr.SetL(templateForTheAPRec->iSCpr);
 	apRecordToBeCreated->iProtocol.SetL(templateForTheAPRec->iProtocol);
-    CMDBField<TInt>* custFiel = &(apRecordToBeCreated->iCustomSelectionPolicy);
-    *custFiel = aLinkLevelAPTagId;
+	apRecordToBeCreated->iCustomSelectionPolicy.SetL(aLinkLevelAPTagId);
     apRecordToBeCreated->iCprConfig.SetL(aLinkLevelAPTagId);
     
     CleanupStack::PopAndDestroy(templateForTheAPRec);
@@ -309,49 +308,72 @@ TInt CommsDatMapperAndValidator::GetIPProtoTierRecordIdL(CommsDat::CMDBSession& 
 	return recId;
 	}
 
+
+/*
+Populates an access point record with the first matching IP Proto Access Point record.
+
+@param aAccessPoint An access point record that will be populated with data from the
+                    first matching record. This can have fields primed in order to
+                    make the match more specific
+@param aSession     The commsdat session to use  
+@return             ETrue if a matching IP Proto access point is found. EFalse if it is not.
+@exception          KErrCorrupt if the IP Proto Tier entry is missing from the database.
+                    It can leave with other errors from other parts of commsdat/cenrep
+*/
+TBool CommsDatMapperAndValidator::FindIPProtoAccessPointRecordL(CommsDat::CCDAccessPointRecord& aAccessPoint, CommsDat::CMDBSession& aSession)
+    {
+    // Find the IP Proto tier record - we can then use this information to more efficently find the ip proto access points
+    CMDBField<TInt> tierRecord;
+    tierRecord.SetElementId(KCDTIdTierRecord | KCDTIdRecordTag);
+    tierRecord.SetL(EIPProtoTierId);
+    TBool found = tierRecord.FindL(aSession);
+    if (!found)
+        {
+        __FLOG_STATIC0(KLogComponent, KCDInfoLog, _L("CommsDatMapperAndValidator::FindIPProtoAccessPointRecordL - ERROR: IP Proto Tier entry missing!!"));
+        User::Leave(KErrCorrupt);
+        }
+
+    TMDBElementId tierElement; // This is where the AP record will link if it is an IP Proto AP
+    tierElement = tierRecord.ElementId() & (KCDMaskShowType | KCDMaskShowRecordId);
+    
+    aAccessPoint.iTier = tierElement;
+    found = aAccessPoint.FindL(aSession);
+    
+    return found;
+    }
+
 TBool CommsDatMapperAndValidator::IsIPProtoAPAlreadyExistL(TInt aLinkLevelTagId,
 														  CommsDat::CMDBSession& aSession)
 	{
-	TBool ret = EFalse;
-	
-	CMDBField<TInt>* ipprotoCustSelPolField = new(ELeave)CMDBField<TInt>(KCDTIdCustomSelectionPolicy);
-	CleanupStack::PushL(ipprotoCustSelPolField);
-	
-	*ipprotoCustSelPolField = aLinkLevelTagId;
-	
-	if (ipprotoCustSelPolField->FindL(aSession))
-		{
-		ret = ETrue;
-		}
-	
-	CleanupStack::PopAndDestroy(ipprotoCustSelPolField);
-	
-	return ret;
+    CCDAccessPointRecord* ap = (CCDAccessPointRecord*)CCDRecordBase::RecordFactoryL(KCDTIdAccessPointRecord);
+    CleanupStack::PushL(ap);
+    
+    ap->iCustomSelectionPolicy = aLinkLevelTagId;
+    
+    TBool found = FindIPProtoAccessPointRecordL(*ap, aSession);
+	CleanupStack::PopAndDestroy(ap);
+    
+	return found;
 	}
 
 TBool CommsDatMapperAndValidator::IsIPProtoAPAlreadyExistL(TInt aLinkLevelTagId, 
 														   TInt aConnPrefElementId, 
 														   CommsDat::CMDBSession& aSession)
 	{
-	TBool ret = EFalse;
-	
-	CCDAccessPointRecord* apRec = static_cast<CCDAccessPointRecord*>(CCDRecordBase::RecordFactoryL(KCDTIdAccessPointRecord));
-	CleanupStack::PushL(apRec);
-	
-	apRec->iCprConfig = aConnPrefElementId;
-	apRec->iCustomSelectionPolicy = aLinkLevelTagId;
-	
-	if (apRec->FindL(aSession))
-		{
-		ret = ETrue;
-		}
-	
-	CleanupStack::PopAndDestroy(apRec);
-	
-	return ret;
+    CCDAccessPointRecord* ap = (CCDAccessPointRecord*)CCDRecordBase::RecordFactoryL(KCDTIdAccessPointRecord);
+    CleanupStack::PushL(ap);
+    
+    ap->iCprConfig = aConnPrefElementId;
+    ap->iCustomSelectionPolicy = aLinkLevelTagId;
+
+    TBool found = FindIPProtoAccessPointRecordL(*ap, aSession);
+    CleanupStack::PopAndDestroy(ap);
+    
+    return found;
 	}
 
-CommsDat::CCDAccessPointRecord* CommsDatMapperAndValidator::LoadTheAPL(TInt aLinkLevelTagId,
+
+CommsDat::CCDAccessPointRecord* CommsDatMapperAndValidator::LoadIPProtoAccessPoint(TInt aLinkLevelTagId,
 										   							   CommsDat::CMDBSession& aSession)
 	{
     CCDAccessPointRecord* apRec = static_cast<CCDAccessPointRecord*>(CCDRecordBase::RecordFactoryL(KCDTIdAccessPointRecord));
@@ -359,16 +381,16 @@ CommsDat::CCDAccessPointRecord* CommsDatMapperAndValidator::LoadTheAPL(TInt aLin
     
     apRec->iCustomSelectionPolicy = aLinkLevelTagId;
     
-    if(!apRec->FindL(aSession))
-    	{
-    	//no records were found with the given customSelectionPolicy value
-    	User::Leave(KErrNotFound);
-    	}
+    if (!FindIPProtoAccessPointRecordL(*apRec, aSession))
+        {
+        CleanupStack::PopAndDestroy(apRec);
+        return NULL;
+        }
     
-    CleanupStack::Pop(apRec);
-    
+    CleanupStack::Pop(apRec); // ownership of the AP record is given to the caller
     return apRec;
 	}
+
 
 /* All of the APPrioritySelectionPolicy fields are exemined checking that how many
  * fields, in different APPrioritySelPol records, are referencing the given AP
@@ -481,6 +503,7 @@ TInt CommsDatMapperAndValidator::CountReferenceToThisIPProtoAPL(TUint aElementId
 	
 	return refCount;
 	}
+
 
 TBool CommsDatMapperAndValidator::IsIAPRecInDB(CommsDat::CMDBSession& aSession)
 	{

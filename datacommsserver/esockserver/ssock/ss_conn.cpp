@@ -146,6 +146,10 @@ DECLARE_DEFINE_CUSTOM_NODEACTIVITY(ECFActivityStart, ConnectionStart, TCFInterna
 #ifdef SYMBIAN_NETWORKING_UPS
 	THROUGH_NODEACTIVITY_ENTRY(CStartAttachActivity::KUpsErrorTag, TDoNothing, MeshMachine::TErrorTag)
 #endif
+
+	// If there is a stop activity outstanding (it should be waiting for this activity to complete) then we will leave that to decide the fate of our service providers
+	THROUGH_NODEACTIVITY_ENTRY(KErrorTag, ConnActivities::CStartAttachActivity::TSetIdleIfStopOutstanding, MeshMachine::TErrorTag)
+
 	NODEACTIVITY_ENTRY(KErrorTag, CoreNetStates::TSendClientLeavingRequestToServiceProviders, MeshMachine::TAwaitingLeaveComplete, MeshMachine::TNoTag)
 	NODEACTIVITY_ENTRY(KNoTag, CoreNetStates::TSetIdleIfNoServiceProviders, MeshMachine::TAwaitingLeaveComplete, ConnectionCleanupActivities::TNoTagOrNoTagBackwards)
 	LAST_NODEACTIVITY_ENTRY(KNoTag, MeshMachine::TDoNothing)

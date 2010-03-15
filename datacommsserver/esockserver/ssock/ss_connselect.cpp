@@ -104,13 +104,23 @@ void CSelectionRequest::ReceivedL(const TRuntimeCtxId& aSender, const TNodeId& /
 			break;
 		case TEBase::TError::EId:
 			{
+			TEBase::TError& error = message_cast<TEBase::TError>(aCFMessage);
 			if (iSelectionStatus==ERequestingCommsBinder)
-				{
-				CommsBinderRequestError(aSender, message_cast<TEBase::TError>(aCFMessage));
-				}
+			    {
+			    CommsBinderRequestError(aSender,error);
+			    }
+			else if(error.iMsgId == TCFDataClient::TBindToComplete::Id())
+			    {
+			    if (KErrNone==iOriginalError)
+			        {
+			        iOriginalError = error.iValue;
+			        }
+	            // Send TCFServiceProvider::TBindToComplete to complete BinderRequest
+	            __ASSERT_DEBUG(!iTopMcprId.IsNull(), User::Panic(KSpecAssert_ESockSSockscnslc, 43)); //iTopMcprId must be selected by now!
+	            RNodeInterface::OpenPostMessageClose(Id(), iTopMcprId, TCFServiceProvider::TBindToComplete(error.iValue).CRef());
+			    }
 			else
-				{
-				TEBase::TError& error = message_cast<TEBase::TError>(aCFMessage);
+			    {
 				if (error.iMsgId == TCFSelector::TSimpleSelect::Id()
 					|| error.iMsgId == TCFSelector::TSelect::Id())
 					{
@@ -206,10 +216,13 @@ void CSelectionRequest::ReceivedL(const TRuntimeCtxId& aSender, const TNodeId& /
 		}
 	else if ( aCFMessage.IsMessage<TCFDataClient::TBindToComplete>() )
 		{
-		__ASSERT_DEBUG(KErrNone==message_cast<TCFDataClient::TBindToComplete>(aCFMessage).iValue || iRequestingNode==aSender, User::Panic(KSpecAssert_ESockSSockscnslc, 12));
-		__ASSERT_DEBUG(KErrNone==message_cast<TCFDataClient::TBindToComplete>(aCFMessage).iValue || iSelectionStatus==ERequestingCommsBinder || iSelectionStatus==EIdle, User::Panic(KSpecAssert_ESockSSockscnslc, 13));
-		__ASSERT_DEBUG(KErrNone==message_cast<TCFDataClient::TBindToComplete>(aCFMessage).iValue || !iTopMcprId.IsNull(), User::Panic(KSpecAssert_ESockSSockscnslc, 14)); //iTopMcprId must be selected by now!
-		RNodeInterface::OpenPostMessageClose(Id(), iTopMcprId, aCFMessage);
+		__ASSERT_DEBUG(iRequestingNode==aSender, User::Panic(KSpecAssert_ESockSSockscnslc, 12));
+		__ASSERT_DEBUG(iSelectionStatus==ERequestingCommsBinder || iSelectionStatus==EIdle, User::Panic(KSpecAssert_ESockSSockscnslc, 13));
+		__ASSERT_DEBUG(!iTopMcprId.IsNull(), User::Panic(KSpecAssert_ESockSSockscnslc, 14)); //iTopMcprId must be selected by now!
+
+		// Notify the service provider to complete binding activity (TCFServiceProvider::TCommsBinderRequest)
+		RNodeInterface::OpenPostMessageClose(Id(), iTopMcprId, TCFServiceProvider::TBindToComplete().CRef());
+
 		}
 	else if ( aCFMessage.IsMessage<TCFMessage::TStateChange>() )
 		{

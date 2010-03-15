@@ -83,7 +83,7 @@ enum TCFInternalActivityId
 	ECFActivityImplicitFlow				= 112,
 	ECFActivityConnectionFlow			= 113,
 	ECFActivitySubConnectionFlow		= 114,
-	// spare = 115,
+	ECFActivityDestroyOrphans           = 115,
 
 	//CSubConnection / SCPR specific activities (could be reuse when other IDs exhausted)
 	ECFActivityGetParamLength			= 116,

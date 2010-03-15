@@ -232,7 +232,8 @@ class TCFMessage
 	
 	ECFTransportNotification		= 100,  // For SYMBIAN_ADAPTIVE_TCP_RECEIVE_WINDOW
 	
-    ECFProvisionConnectionInfo      = 101
+    ECFProvisionConnectionInfo      = 101,
+	ECFDestroyOrphans               = 102
 	};
 protected:
 	friend class ::CSockManData;
@@ -351,6 +352,8 @@ public:
 	    fact until it is requested to do something (e.g.: TCFDataClient::Start)
 	    */
 	    typedef TMessageSigConnectionInfoPtr<ECFProvisionConnectionInfo, TCFMessage::ERealmId> TProvisionConnectionInfo;
+
+	  typedef Messages::TMessageSigVoid <ECFDestroyOrphans, TCFMessage::ERealmId> TDestroyOrphans;
 	};
 } //namespace ESock
 

@@ -79,6 +79,8 @@ using namespace Messages;
 using namespace MeshMachine;
 using namespace Factories;
 
+const TUint32 KOrphanExcludeFlags = TCFClientType::EActive|TCFClientType::EActivating|TCFClientType::ELeaving|TCFClientType::EStarted|TCFClientType::EStarting;
+
 //-=========================================================
 //
 // Panics
@@ -393,8 +395,7 @@ EXPORT_C void TSendRejoinComplete::DoL()
 EXPORT_DEFINE_SMELEMENT(TAwaitingClientLeave, NetStateMachine::MState, CoreStates::TContext)
 EXPORT_C TBool TAwaitingClientLeave::Accept()
 	{
-	return iContext.iMessage.IsMessage<TEChild::TLeft>()
-		|| iContext.iMessage.IsMessage<TEPeer::TLeaveRequest>();
+	return iContext.iMessage.IsMessage<TEPeer::TLeaveRequest>() || iContext.iMessage.IsMessage<TEChild::TLeft>();
 	}
 
 EXPORT_DEFINE_SMELEMENT(TDestroyOrphanedDataClients, NetStateMachine::MStateTransition, PRStates::TContext)
@@ -520,7 +521,6 @@ EXPORT_C void THandleDataClientIdle::DoL()
 	__ASSERT_DEBUG(iContext.iPeer, User::Panic(KSpecAssert_ESockCrStaCPRSC, 13));
 	__ASSERT_DEBUG(iContext.iPeer->Type()==TCFClientType::EData, User::Panic(KSpecAssert_ESockCrStaCPRSC, 14));
 
-	__CFLOG_VAR((KCoreProviderStatesTag, KCoreProviderStatesSubTag, _L8("TSendDestroyToSendingDataClient::DoL - iContext.iPeer->Flags(): %x"), iContext.iPeer->Flags()));
 	if (!(iContext.iPeer->Flags() &
 			(TCFClientType::EActivating|TCFClientType::EStarting|TCFClientType::ELeaving|TCFClientType::EStarted)))
     	{
@@ -529,7 +529,8 @@ EXPORT_C void THandleDataClientIdle::DoL()
       		   iContext.Node().CountClients<TDefaultClientMatchPolicy>(TClientType(TCFClientType::EData),
       		                                                           TClientType(0, TCFClientType::EDefault)) > 0))
       		{
-	    	iContext.iPeer->PostMessage(iContext.NodeId(), TEChild::TDestroy().CRef());
+			// Send from null activity so no cancel message can ever get at it.
+			iContext.iPeer->PostMessage(Messages::TNodeCtxId(MeshMachine::KActivityNull, iContext.NodeId()), TEChild::TDestroy().CRef());
 	    	iContext.iPeer->SetFlags(TClientType::ELeaving);
 	    	}
 	    else
@@ -687,7 +688,7 @@ EXPORT_C TBool TAwaitingDataClientsStopped::Accept()
     	}
 	if (iContext.iPeer)
 		{
-		iContext.iPeer->ClearFlags(TCFClientType::EStopping); 
+		iContext.iPeer->ClearFlags(TCFClientType::EStarted | TCFClientType::EStopping); 
 		}
 	if (iContext.Node().CountClients<TDefaultClientMatchPolicy>(TClientType(TCFClientType::EData, TCFClientType::EStopping)))  
 		{
@@ -909,7 +910,7 @@ EXPORT_C void TSendClientLeavingAndRemoveControlProvider::DoL()
    	if (cl)
    		{
 		__ASSERT_DEBUG(iContext.iNodeActivity, CorePrPanic(KPanicNoActivity));
-   		cl->PostMessage(TNodeCtxId(iContext.ActivityId(), iContext.NodeId()), TEChild::TLeft().CRef());
+   		iContext.iNodeActivity->PostToOriginators(TEChild::TLeft().CRef());
    		iContext.Node().RemoveClient(cl->RecipientId(),iContext);
    		__ASSERT_DEBUG(iter[1] == NULL, User::Panic(KSpecAssert_ESockCrStaCPRSC, 19)); //But it is not possible to have two Control Providers!
    		}
@@ -1359,7 +1360,7 @@ EXPORT_DEFINE_SMELEMENT(TSendBindToComplete, NetStateMachine::MStateTransition, 
 EXPORT_C void TSendBindToComplete::DoL()
 	{
 	__ASSERT_DEBUG(iContext.iNodeActivity, CorePrPanic(KPanicNoActivity));
-	iContext.iNodeActivity->PostToOriginators(TCFDataClient::TBindToComplete(iContext.iNodeActivity->Error()).CRef());
+	iContext.iNodeActivity->PostToOriginators(TCFDataClient::TBindToComplete().CRef());
 	}
 
 EXPORT_DEFINE_SMELEMENT(TBindSelfToPresentBearer, NetStateMachine::MStateTransition, CoreNetStates::TContext)
@@ -1506,18 +1507,7 @@ EXPORT_C TBool TAwaitingDataClientStop::Accept()
 EXPORT_DEFINE_SMELEMENT(TAwaitingBindTo, NetStateMachine::MState, CoreStates::TContext)
 EXPORT_C TBool TAwaitingBindTo::Accept()
 	{
-	const TCFDataClient::TBindTo* bindToMessage = message_cast<TCFDataClient::TBindTo>(&iContext.iMessage);
-	if (bindToMessage)
-    	{
-    	//TBindTo is always a response. there's gotta be an activity.
-    	if (iContext.iNodeActivity && iContext.iNodeActivity->SupportsExtInterface(ABindingActivity::KInterfaceId))
-        	{
-        	ABindingActivity* bindingActivity = reinterpret_cast<ABindingActivity*>(iContext.iNodeActivity->FetchExtInterface(ABindingActivity::KInterfaceId));
-       	    bindingActivity->StoreOriginator(iContext.iSender);
-        	}
-        return ETrue;
-    	}
-    return EFalse;
+	return iContext.iMessage.IsMessage<TCFDataClient::TBindTo>();
 	}
 
 EXPORT_DEFINE_SMELEMENT(TAwaitingBindToOrCancel, NetStateMachine::MState, CoreStates::TContext)
@@ -1612,14 +1602,7 @@ EXPORT_C TBool TAwaitingBinderResponse::Accept()
 EXPORT_DEFINE_SMELEMENT(CoreNetStates::TAwaitingBindToComplete, NetStateMachine::MState, CoreNetStates::TContext)
 EXPORT_C TBool CoreNetStates::TAwaitingBindToComplete::Accept()
 	{
-	TCFDataClient::TBindToComplete* bindToComplete = message_cast<TCFDataClient::TBindToComplete>(&iContext.iMessage);
-	if (bindToComplete)
-    	{
-    	__ASSERT_DEBUG(iContext.iNodeActivity, CorePrPanic(KPanicNoActivity));
-	    iContext.iNodeActivity->SetError(bindToComplete->iValue);
-		return ETrue;
-    	}
-    return EFalse;
+	return iContext.iMessage.IsMessage<TCFDataClient::TBindToComplete>();
 	}
 
 EXPORT_DEFINE_SMELEMENT(TAwaitingProvision, NetStateMachine::MState, PRStates::TContext)
@@ -1867,7 +1850,7 @@ Returns KNoTag uif sender is marked EDefault, else CoreNetStates::KNonDefault.
 EXPORT_DEFINE_SMELEMENT(TNoTagOrNoClients, NetStateMachine::MStateFork, CoreNetStates::TContext)
 TInt TNoTagOrNoClients::TransitionTag()
 /**
-Returns KNoTag uif sender is marked EDefault, else CoreNetStates::KNonDefault.
+Return KNoTag if there are data or control clients, else return KNoClients.
 */
     {
     return iContext.Node().CountClients<TDefaultClientMatchPolicy>(TClientType(TCFClientType::EData | TCFClientType::ECtrl))? KNoTag : KNoClients;
@@ -2185,3 +2168,128 @@ void TCancelStart::DoL()
 		}
 	}
 
+//-=========================================================
+//
+//  PRDestroyOrphans and PRDestroy
+//
+//-=========================================================
+
+void DestroyFirstClient(PRStates::TContext& aContext, const TClientType& aIncClientType, const TClientType& aExcClientType = TClientType::NullType())
+/**
+Send a TDestroy to the first non-default data client, or to the default data client if there
+are no non-default data clients.  We need to destroy the non-default data clients before the default data
+client because there can be internal references from non-default clients to the default data client.  
+
+The include and exclude iteration parameters are used to narrow the data client list as the caller requires.
+*/
+    {
+    TClientIter<TDefaultClientMatchPolicy> iter = aContext.Node().GetClientIter<TDefaultClientMatchPolicy>(aIncClientType, aExcClientType);
+
+    RNodeInterface* client = NULL;
+    RNodeInterface* defaultClient = NULL;
+    while ((client = iter++) != NULL)
+        {
+        if (!(client->Flags() & TCFClientType::EDefault))
+            {
+            // Found a non-default data client, so destroy it.
+            break;
+            }
+        else
+            {
+            // Remember default data client.  Destroy it only if no non-default data clients.
+            if (defaultClient == NULL)
+                {
+                defaultClient = client;
+                }
+            }
+        }
+    
+    if (client == NULL)
+        {
+        client = defaultClient;
+        }
+    // Should we panic if client is NULL?
+    if (client)
+        {
+        aContext.iNodeActivity->PostRequestTo(*client, TEChild::TDestroy().CRef());
+        client->SetFlags(TClientType::ELeaving);
+        }
+     }
+
+DEFINE_SMELEMENT(TDestroyFirstOrphan, NetStateMachine::MStateTransition, PRStates::TContext)
+void TDestroyFirstOrphan::DoL()
+/**
+Destroy first orphan data client
+*/
+    {
+    DestroyFirstClient(iContext, TClientType(TCFClientType::EData), TClientType(0, KOrphanExcludeFlags));
+    }
+
+DEFINE_SMELEMENT(TDestroyFirstClient, NetStateMachine::MStateTransition, PRStates::TContext)
+void TDestroyFirstClient::DoL()
+/**
+Destroy first data client
+*/
+    {
+    DestroyFirstClient(iContext, TClientType(TCFClientType::EData), TClientType(0, TCFClientType::ELeaving));
+    }
+
+DEFINE_SMELEMENT(TOrphansOrNoTag, NetStateMachine::MStateFork, PRStates::TContext)
+TInt TOrphansOrNoTag::TransitionTag()
+/**
+If there are orphan data clients present, return KOrphans, else return KNoTag
+*/
+    {
+    if (iContext.Node().CountClients<TDefaultClientMatchPolicy>(
+            TClientType(TCFClientType::EData), TClientType(0, KOrphanExcludeFlags)))
+        {
+        return KOrphans;
+        }
+    return KNoTag;
+    }
+
+DEFINE_SMELEMENT(TOrphansBackwardsOrNoTag, NetStateMachine::MStateFork, PRStates::TContext)
+TInt TOrphansBackwardsOrNoTag::TransitionTag()
+/**
+If there are orphan data clients present, return KOrphans|EBackward, else return KNoTag
+*/
+    {
+    TOrphansOrNoTag orphansOrNoTag(iContext);
+    TInt tag = orphansOrNoTag.TransitionTag();
+    if (tag == KOrphans)
+        {
+        tag = KOrphans | NetStateMachine::EBackward;
+        }
+    return tag;
+    }
+
+DEFINE_SMELEMENT(TNoTagBackwardsOrNoClients, NetStateMachine::MStateFork, PRStates::TContext)
+TInt TNoTagBackwardsOrNoClients::TransitionTag()
+/**
+If there are (non-leaving) data clients present, return KNoTag|EBackward, else return KNoClients
+*/
+    {
+    TNonLeavingNoTagOrNoClients nonLeavingNoTagOrNoClients(iContext);
+    TInt tag = nonLeavingNoTagOrNoClients.TransitionTag();
+    if (tag == KNoTag)
+        {
+        tag = KNoTag | NetStateMachine::EBackward;
+        }
+    return tag;
+    }
+
+
+DEFINE_SMELEMENT(TNonLeavingNoTagOrNoClients, NetStateMachine::MStateFork, PRStates::TContext)
+TInt TNonLeavingNoTagOrNoClients::TransitionTag()
+/**
+If there are (non-leaving) data clients left, return KNoTag, else return KNoClients
+*/
+    {
+    if (iContext.Node().CountClients<TDefaultClientMatchPolicy>(
+            TClientType(TCFClientType::EData), TClientType(0, TCFClientType::ELeaving)))
+        {
+        return KNoTag;
+        }
+
+    return KNoClients;
+    }

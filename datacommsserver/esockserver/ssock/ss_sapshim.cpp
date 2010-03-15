@@ -1089,7 +1089,7 @@ void CTransportFlowShim::ReceivedL(const TRuntimeCtxId& aSender, const TNodeId& 
     	//before break, hence it tries to apply the new owner, during which time the new
     	//owner starts and hence attempts to TBindTo his new child. The child hates it
     	//as it arrives from an unknown node. The rejoin protocol needs rethinking.
-		RClientInterface::OpenPostMessageClose(Id(), aSender, TCFDataClient::TBindToComplete(KErrNone).CRef());
+		RClientInterface::OpenPostMessageClose(Id(), aSender, TCFDataClient::TBindToComplete().CRef());
     	return;
     	}
     CNetworkFlow::ReceivedL(aSender, aRecipient, aMessage);
@@ -1161,7 +1161,16 @@ void CTransportFlowShim::ReceivedL(const TRuntimeCtxId& aSender, const TNodeId& 
 			TRAPD(err,BindToL(bindToMsg));
 			// Ensure that TBindToComplete message gets sent before TIdle so that it gets to the destination
 			// before destroy processing.
-			RClientInterface::OpenPostMessageClose(Id(), aSender, TCFDataClient::TBindToComplete(err).CRef());
+			if(err == KErrNone)
+			    {
+			    RClientInterface::OpenPostMessageClose(Id(), aSender, TCFDataClient::TBindToComplete().CRef());
+			    }
+			else
+			    {
+			    RClientInterface::OpenPostMessageClose(Id(), aSender, TEBase::TError(aMessage.MessageId(), err).CRef());
+			    }
+			
+			
 			ProcessDCIdleState();	// in case we were waiting to send idle
 			//If we have received TDataClientStart before (when we did not yet have a bearer),
 			//we complete the start here as well
@@ -1809,7 +1818,7 @@ This method overrides CTransportFlowShim::NoBearer() for UPS specific handling.
 				}
 	        PostNoBearer();
 		    }
-
+		ClearUseBearerErrors();
 		ClearDataClientRoutedGuard();
 		}
 	else

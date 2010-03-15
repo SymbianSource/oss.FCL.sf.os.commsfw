@@ -143,6 +143,18 @@ EXPORT_C ACommsFactoryNodeId* CConnectionProviderFactoryBase::DoFindOrCreateObje
 	return provider ? provider : CreateL(aQuery);		
 	}
 
+LOCAL_C void RemoveClientAndDestroy(TAny* aConnProvider)
+    {
+    CConnectionProviderBase* connProv = static_cast<CConnectionProviderBase*>(aConnProvider);
+    Messages::RNodeInterface* cntrProv = connProv->ControlProvider();
+    if(cntrProv != NULL)
+        {
+        connProv->RemoveClient(cntrProv->RecipientId());
+        }
+    
+    // cast needed because CConnectionProviderBase destructor is protected
+    delete static_cast<CCommsProviderBase*>(aConnProvider);
+    }
 
 EXPORT_C ACommsFactoryNodeId* CConnectionProviderFactoryBase::CreateL(TFactoryQueryBase& aQuery)
 /**	Create a new instance of connection provider
@@ -150,8 +162,7 @@ EXPORT_C ACommsFactoryNodeId* CConnectionProviderFactoryBase::CreateL(TFactoryQu
 @return Pointer to the created connection provider or NULL if there's a failure */
 	{
 	CConnectionProviderBase* provider = static_cast<CConnectionProviderBase*>(DoCreateObjectL(aQuery));
-	CleanupStack::PushL(provider);
-
+	CleanupStack::PushL(TCleanupItem(RemoveClientAndDestroy, provider));
 	const TDefaultConnectionFactoryQuery& query = static_cast<const TDefaultConnectionFactoryQuery&>(aQuery);
 	provider->AddClientL(address_cast<TNodeId>(query.iMCprId), TClientType(TCFClientType::ECtrlProvider));
 

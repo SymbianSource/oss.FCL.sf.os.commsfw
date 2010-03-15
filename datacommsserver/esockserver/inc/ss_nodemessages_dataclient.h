@@ -107,7 +107,7 @@ public:
 				      TBindTo sender may roll back a transaction by cancelling the reuqest (TCancel).
 	*/
     typedef Messages::TMessageSigNodeIdNumberDefault<ECFBindTo,  TCFDataClient::ERealmId> TBindTo;
-    typedef Messages::TMessageSigNumberDefault<ECFBindToComplete, TCFDataClient::ERealmId> TBindToComplete;
+    typedef Messages::TMessageSigVoid<ECFBindToComplete, TCFDataClient::ERealmId> TBindToComplete;
     typedef Messages::TMessageSigVoid<ECFCommitBindTo, TCFDataClient::ERealmId> TCommitBindTo;
 
 	/**

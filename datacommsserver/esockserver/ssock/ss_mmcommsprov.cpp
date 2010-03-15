@@ -19,7 +19,9 @@
 
 #include "ss_mmcommsprov.h"
 #include <elements/nm_messages_child.h>
-
+#include <elements/mm_activities.h> 
+#include "ss_nodemessages_internal.h"
+#include "ss_internal_activities.h"
 
 #ifdef _DEBUG
 // Panic category for "absolutely impossible!" vanilla ASSERT()-type panics from this module
@@ -112,17 +114,19 @@ EXPORT_C void CMMCommsProviderBase::ReturnInterfacePtrL(MAccessPointConfigApi*& 
 
 void CMMCommsProviderBase::DestroyOrphanedDataClients()
 	{
-	//Destroy orphaned data clients
-	RNodeInterface* dc;
-	TClientIter<TDefaultClientMatchPolicy> iter = GetClientIter<TDefaultClientMatchPolicy>(TClientType(TCFClientType::EData));
-	while ((dc = iter++) != NULL)
+    // Note: If PRDataClientStopActivity is running, it will call PRStates::TDestroyOrphanedDataClients
+    // once it has stopped the data clients, so we don't need to start PRDestroyOrphans activity here.
+    // What was happening before was that we were destroying the Default data client before one or more
+    // non-Default clients.  This causes problems due to internal references between some non-Default
+    // and Default data client types.
+	if (CountClients<TDefaultClientMatchPolicy>(
+	        TClientType(TCFClientType::EData),
+	        TClientType(0, TCFClientType::EActive|TCFClientType::EActivating|TCFClientType::ELeaving|TCFClientType::EStarted|TCFClientType::EStarting))
+		&& CountActivities(ECFActivityDestroyOrphans) == 0
+		&& CountActivities(ECFActivityDestroy) == 0
+	    && CountActivities(ECFActivityStopDataClient) == 0)
 		{
-		if (!(dc->Flags()&(TCFClientType::EActive|TCFClientType::EActivating|TCFClientType::ELeaving|TCFClientType::EStarted|TCFClientType::EStarting)))
-			{
-			//AbortActivitiesOriginatedBy(dc->RecipientId(),aContext);
-			dc->PostMessage(Id(), TEChild::TDestroy().CRef());
-			dc->SetFlags(TClientType::ELeaving);
-			}
+		RNodeInterface::OpenPostMessageClose(Id(), Id(), TCFMessage::TDestroyOrphans().CRef());
 		}
 	}
 

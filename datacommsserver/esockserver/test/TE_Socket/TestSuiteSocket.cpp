@@ -232,6 +232,7 @@ Implementation of CTestServer pure virtual
 		ADD_TEST_STEP(CSocketTest31_2)
 		ADD_TEST_STEP(CSocketTest31_3)
 		ADD_TEST_STEP(CSocketTest31_4)
+		ADD_TEST_STEP(CSocketTest31_5)
 	END_TEST_STEP_LIST
 	}
 

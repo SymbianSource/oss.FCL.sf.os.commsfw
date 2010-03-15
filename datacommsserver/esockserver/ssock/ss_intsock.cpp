@@ -113,9 +113,17 @@ void ASocket::ReceivedL(const TRuntimeCtxId& aSender, const TNodeId& aRecipient,
 			{
 			TRAP(err,BindToL(bindToMsg));
 			}
-
-		RClientInterface::OpenPostMessageClose(Id(), aSender, TCFDataClient::TBindToComplete(err).CRef());
-
+		
+		if(err == KErrNone)
+		    {
+		    RClientInterface::OpenPostMessageClose(Id(), aSender, TCFDataClient::TBindToComplete().CRef());
+		    }
+		else
+		    {
+		    RClientInterface::OpenPostMessageClose(Id(), aSender, TEBase::TError(aMessage.MessageId(), err).CRef());
+		    }
+		
+		
 		CompleteFlowRequestMessage(err);
 		SetFlowRequestPending(EFalse);
 

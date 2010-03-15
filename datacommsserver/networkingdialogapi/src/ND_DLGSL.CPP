@@ -311,6 +311,7 @@ void CIAPSelection::ReselectL()
 		}
 
 	TBuf<KCommsDbSvrDefaultTextFieldLength> tmpBuffer;
+    // coverity[var_deref_model] - ptrIapRecord guaranteed initialised by RecordFactoryL
 	tmpBuffer = ptrIapRecord->iRecordName;
 	iAgentDialogInput.iLabel.Format(KSelectPrompt,&tmpBuffer);
 	iAgentDialogInput.iDialog = ENoYesDialog;

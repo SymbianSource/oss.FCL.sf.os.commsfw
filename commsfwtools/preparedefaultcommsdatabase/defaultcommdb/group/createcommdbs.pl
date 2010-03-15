@@ -368,8 +368,8 @@ sub RunCed
 	print("Copy $winsCdb to $zDriveCre\n");
 	CopyFile($winsCdb, $zDriveCre);
 
-	#print("Copy $winsCdb to $romCdb\n");
-	#CopyFile($winsCdb, $romCdb);
+	print("Copy $winsCdb to $romCdb\n");
+	CopyFile($winsCdb, $romCdb);
 }
 
 sub CheckCedLog 
