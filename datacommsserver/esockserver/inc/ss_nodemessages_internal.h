@@ -136,7 +136,7 @@ public:
 		}
 
 private:
-	inline TMetaExtensionContainerMetaType::TMetaExtensionContainerMetaType(const RMetaExtensionContainerC* aData)
+	inline TMetaExtensionContainerMetaType(const RMetaExtensionContainerC* aData)
 		: iData(aData)
 		{
 		__ASSERT_DEBUG(iData!=NULL, User::Panic(_L("RMECMeta"),KErrArgument));
