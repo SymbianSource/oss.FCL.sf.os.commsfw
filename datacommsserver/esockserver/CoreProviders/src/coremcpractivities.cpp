@@ -146,7 +146,7 @@ DECLARE_DEFINE_CUSTOM_NODEACTIVITY(ECFActivityNoBearer, MCprNoBearer, TCFControl
 	NODEACTIVITY_ENTRY(KNoTag, MCprStates::TSelectNextLayer, MCprStates::TAwaitingSelectNextLayerCompleted, CoreNetStates::TNoTagOrBearerPresent)
 
 	//Special for the Meta Plane (don't just copy & paste)
-	NODEACTIVITY_ENTRY(CoreNetStates::KBearerPresent, CoreNetStates::TStartServiceProvider, CoreNetStates::TAwaitingStarted, TTag<CoreNetStates::KBearerPresent>)
+//	NODEACTIVITY_ENTRY(CoreNetStates::KBearerPresent, CoreNetStates::TStartServiceProvider, CoreNetStates::TAwaitingStarted, TTag<CoreNetStates::KBearerPresent>)
 	NODEACTIVITY_ENTRY(CoreNetStates::KBearerPresent, CoreNetStates::TRequestCommsBinderRetry, CoreNetStates::TAwaitingBinderResponse, TTag<CoreNetStates::KBearerPresent>)
 	NODEACTIVITY_ENTRY(CoreNetStates::KBearerPresent, CoreNetStates::TSendBindTo, CoreNetStates::TAwaitingBindToComplete, TTag<CoreNetStates::KBearerPresent>)
 	THROUGH_NODEACTIVITY_ENTRY(CoreNetStates::KBearerPresent, CoreActivities::ABindingActivity::TSendBindToComplete, MeshMachine::TNoTag)
@@ -162,10 +162,6 @@ namespace MCprReConnectActivity
 DECLARE_DEFINE_CUSTOM_NODEACTIVITY(ECFActivityReConnect, MCprReConnect, TCFMcpr::TReConnect, CReConnectActivity::NewL)
 	FIRST_NODEACTIVITY_ENTRY(MCprStates::TAwaitingReConnectRequest, MeshMachine::TNoTag)
 	THROUGH_NODEACTIVITY_ENTRY(KNoTag, CReConnectActivity::TProcessReConnectRequest, MeshMachine::TNoTag)
-
-	//Start reconnection by stopping the old MCpr
-	NODEACTIVITY_ENTRY(KNoTag, CReConnectActivity::TStopStartedServiceProvider, CoreNetStates::TAwaitingStopped, MeshMachine::TNoTag)
-	NODEACTIVITY_ENTRY(KNoTag, CReConnectActivity::TStartNextServiceProvider, CoreNetStates::TAwaitingStarted, MeshMachine::TNoTag)
 
 	//Build lower layer
 	NODEACTIVITY_ENTRY(KNoTag, CReConnectActivity::TBuildLowerLayer, CoreNetStates::TAwaitingBindToComplete, MeshMachine::TNoTag)
@@ -200,28 +196,6 @@ DECLARE_DEFINE_CUSTOM_NODEACTIVITY(ECFActivityBinderRequest, MCprBinderRequest, 
 	NODEACTIVITY_ENTRY(CoreStates::KUseExisting, CCommsBinderActivity::TSendBinderResponse, CCommsBinderActivity::TAwaitingBindToComplete, MeshMachine::TNoTagOrErrorTag)
     LAST_NODEACTIVITY_ENTRY(KNoTag, MeshMachine::TDoNothing)
 	LAST_NODEACTIVITY_ENTRY(KErrorTag, MeshMachine::TClearError)
-NODEACTIVITY_END()
-}
-
-namespace MCprStartActivity
-{
-//Semantics of start on the meta plane differ from the one on connection plane.
-//Meta provider is started with the first requesting client and stopped with the last one.
-//Since in our reference MCprs we do not do anything on start or stop (except keeping the
-//sequences right for other activities) we are just responding back with the proper message.
-DECLARE_DEFINE_NODEACTIVITY(ECFActivityStart, MCprStart, TCFServiceProvider::TStart)
-	NODEACTIVITY_ENTRY(KNoTag, CoreNetStates::TSendStarted, CoreNetStates::TAwaitingStart, MeshMachine::TNoTag)
-NODEACTIVITY_END()
-}
-
-namespace MCprStopActivity
-{
-//Semantics of start on the meta plane differ from the one on connection plane.
-//Meta provider is started with the first requesting client and stopped with the last one.
-//Since in our reference MCprs we do not do anything on start or stop (except keeping the
-//sequences right for other activities) we are just responding back with the proper message.
-DECLARE_DEFINE_NODEACTIVITY(ECFActivityStop, MCprStop, TCFServiceProvider::TStop)
-	NODEACTIVITY_ENTRY(KNoTag, PRStates::TSendStopped, CoreNetStates::TAwaitingStop, MeshMachine::TNoTag)
 NODEACTIVITY_END()
 }
 
@@ -272,14 +246,36 @@ DECLARE_DEFINE_NODEACTIVITY(ECFActivityDataClientGoneDown, MCprDataClientGoneDow
 NODEACTIVITY_END()
 }
 
-namespace MCprDataClientStopActivity
+namespace MCprStartActivity
 {
-DECLARE_DEFINE_CUSTOM_NODEACTIVITY(ECFActivityStopDataClient, MCprDataClientStop, TCFDataClient::TStop, MeshMachine::CNodeRetryActivity::NewL)
-	FIRST_NODEACTIVITY_ENTRY(CoreNetStates::TAwaitingDataClientStop, MeshMachine::TNoTag)
-	THROUGH_NODEACTIVITY_ENTRY(KNoTag, PRStates::TProcessDataClientStop, CoreNetStates::TNoTagOrDataClientsToStopBlockedByStarting)
+DECLARE_DEFINE_CUSTOM_NODEACTIVITY(ECFActivityStart, MCprStart, TCFServiceProvider::TStart, PRActivities::CStartActivity::NewL)
+    FIRST_NODEACTIVITY_ENTRY(CoreNetStates::TAwaitingStart, CoreNetStates::TNoTagOrBearerPresentBlockedByStop)
+	NODEACTIVITY_ENTRY(KNoTag, MCprStates::TSelectNextLayer, MCprStates::TAwaitingSelectNextLayerCompleted, CoreNetStates::TNoTagOrBearerPresent)
+	NODEACTIVITY_ENTRY(CoreNetStates::KBearerPresent, CoreNetStates::TBindSelfToPresentBearer, CoreNetStates::TAwaitingBindToComplete, TTag<CoreNetStates::KBearerPresent>)
 
-	NODEACTIVITY_ENTRY(CoreNetStates::KDataClientsToStop, CoreNetStates::TStopDataClients, CoreNetStates::TAwaitingDataClientsStopped, MeshMachine::TNoTag)
-	LAST_NODEACTIVITY_ENTRY(KNoTag, MeshMachine::TClearError)
+	//Start the service provider, use the default cancellation.
+	//Forward TCancel to the service provider, wait for TStarted or TError (via the Error Activity)
+	//When TStarted arrives after TCancel the activity will move to the nearest KErrorTag
+	NODEACTIVITY_ENTRY(CoreNetStates::KBearerPresent, CoreNetStates::TStartServiceProviderRetry, CoreNetStates::TAwaitingStarted, MeshMachine::TNoTagOrErrorTag)
+	LAST_NODEACTIVITY_ENTRY(KErrorTag, MeshMachine::TDoNothing)
+	//Start data clients, use the default cancellation.
+	//Forward TCancel to the self, wait for TCFDataClient::TStarted or TError (via the Error Activity)
+	//When TCFDataClient::TStarted arrives after TCancel the activity will move to the nearest KErrorTag
+	NODEACTIVITY_ENTRY(KNoTag, CoreNetStates::TStartSelf, CoreNetStates::TAwaitingDataClientStarted, MeshMachine::TNoTagOrErrorTag)
+	NODEACTIVITY_ENTRY(KErrorTag, CoreNetStates::TStopSelf, CoreNetStates::TAwaitingDataClientStopped, MeshMachine::TErrorTag)
+	LAST_NODEACTIVITY_ENTRY(KErrorTag, MeshMachine::TDoNothing)
+	LAST_NODEACTIVITY_ENTRY(KNoTag, CoreNetStates::TSendStarted)
+NODEACTIVITY_END()
+}
+
+namespace MCprStopActivity
+{
+DECLARE_DEFINE_CUSTOM_NODEACTIVITY(ECFActivityStop, MCprStop, TCFServiceProvider::TStop, MeshMachine::CNodeRetryActivity::NewL)
+	FIRST_NODEACTIVITY_ENTRY(CoreNetStates::TAwaitingStop, CoreNetStates::TActiveOrNoTagBlockedByBindTo)
+	THROUGH_NODEACTIVITY_ENTRY(KActiveTag, CoreNetStates::TCancelDataClientStart, MeshMachine::TNoTag)
+	NODEACTIVITY_ENTRY(KNoTag, CoreNetStates::TStopSelf, CoreNetStates::TAwaitingDataClientStopped, CoreNetStates::TNoTagOrNoBearer)
+	NODEACTIVITY_ENTRY(KNoTag, CoreNetStates::TSendStop, CoreNetStates::TAwaitingStopped, TTag<CoreNetStates::KNoBearer>)
+	LAST_NODEACTIVITY_ENTRY(CoreNetStates::KNoBearer, PRStates::TSendStoppedAndGoneDown)
 NODEACTIVITY_END()
 }
 
@@ -293,16 +289,15 @@ DEFINE_EXPORT_ACTIVITY_MAP(coreMCprActivitiesSuper)
 	ACTIVITY_MAP_ENTRY(MCprSimpleSelectActivitySuper, MCprSimpleSelect)
 	ACTIVITY_MAP_ENTRY(MCprNoBearerActivity, MCprNoBearer)
 	ACTIVITY_MAP_ENTRY(MCprReConnectActivity, MCprReConnect)
-	ACTIVITY_MAP_ENTRY(MCprStopActivity, MCprStop)
 	ACTIVITY_MAP_ENTRY(MCprAvailabilityNotificationActivity, MCprAvailability)
 	ACTIVITY_MAP_ENTRY(MCprBinderRequestActivity, MCprBinderRequest)
-	ACTIVITY_MAP_ENTRY(MCprStartActivity, MCprStart)
 	ACTIVITY_MAP_ENTRY(MCprReportProviderStatusActivity, MCprReportProviderStatus)
 	ACTIVITY_MAP_ENTRY(MCprDataClientJoinActivity, MCprDataClientJoin)
 	ACTIVITY_MAP_ENTRY(MCprControlClientJoinActivity, MCprControlClientJoin)
 	ACTIVITY_MAP_ENTRY(MCprErrorRecoveryDefaultActivity, DefaultErrorRecovery)
 	ACTIVITY_MAP_ENTRY(MCprDataClientGoneDownActivity, MCprDataClientGoneDown)
-	ACTIVITY_MAP_ENTRY(MCprDataClientStopActivity, MCprDataClientStop)
+	ACTIVITY_MAP_ENTRY(MCprStopActivity, MCprStop)
+	ACTIVITY_MAP_ENTRY(MCprStartActivity, MCprStart)
 ACTIVITY_MAP_END_BASE(PRActivities, coreActivitiesMCpr)
 
 //This activiy map supports legacy selection and the additional activity
@@ -794,27 +789,6 @@ void CReConnectActivity::TProcessReConnectRequest::DoL()
 
 	activity.iStartingSP = iContext.Node().FindClientL(msg.iNodeId2);
 	__ASSERT_DEBUG(activity.iStartingSP->Type()&TCFClientType::EServProvider, User::Panic(KSpecAssert_ESockCoreProvcprac, 22));
-	}
-
-DEFINE_SMELEMENT(CReConnectActivity::TStopStartedServiceProvider, NetStateMachine::MStateTransition, CReConnectActivity::TContext)
-void CReConnectActivity::TStopStartedServiceProvider::DoL()
-	{
-	__ASSERT_DEBUG(iContext.iNodeActivity, CoreMCprPanic(KPanicNoActivity));
-	CReConnectActivity& activity = static_cast<CReConnectActivity&>(*iContext.iNodeActivity);
-
-	__ASSERT_DEBUG(activity.iStoppingSP, User::Panic(KSpecAssert_ESockCoreProvcprac, 23));
-	activity.PostRequestTo(*activity.iStoppingSP, TCFServiceProvider::TStop(0).CRef());
-	}
-
-DEFINE_SMELEMENT(CReConnectActivity::TStartNextServiceProvider, NetStateMachine::MStateTransition, CReConnectActivity::TContext)
-void CReConnectActivity::TStartNextServiceProvider::DoL()
-	{
-	__ASSERT_DEBUG(iContext.iNodeActivity, CoreMCprPanic(KPanicNoActivity));
-	CReConnectActivity& activity = static_cast<CReConnectActivity&>(*iContext.iNodeActivity);
-	__ASSERT_DEBUG(activity.iStartingSP, User::Panic(KSpecAssert_ESockCoreProvcprac, 24));
-
-	//Start the service provider
-	activity.PostRequestTo(*activity.iStartingSP, TCFServiceProvider::TStart().CRef());
 	}
 
 DEFINE_SMELEMENT(CReConnectActivity::TBuildLowerLayer, NetStateMachine::MStateTransition, CReConnectActivity::TContext)

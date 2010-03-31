@@ -583,6 +583,15 @@ EXPORT_C void CErrorActivity::TSendErrorRecoveryReq::DoL()
     	return;
         }
 
+    //Determine who TErrorRecoveryRequest should be sent to.
+    //If there is no ControlProvider we send a RecoveryRequest to ourselves to recover from the error,
+    //otherwise we sned the RecoveryRequest up to our ControlProvider.
+    //MCPrs typically put all of the error recovery function in a single error recovery activity therefore
+    //it makes sense even for MCPrs to send TErrorRecoveryRequest to their error recovery function. By
+    //posting a TErrorRecoveryRequest sub-classes of the MCPrs get a chance to override the default error
+    //recovery.
+    RNodeInterface*  errorRecoverer = iContext.Node().ControlProvider() ? iContext.Node().ControlProvider() : &iContext.Node().SelfInterface();
+
 	__ASSERT_DEBUG(iContext.iNodeActivity, User::Panic(KCorePrPanic, KPanicNoActivity));
     CoreActivities::CErrorActivity& activity = static_cast<CoreActivities::CErrorActivity&>(*iContext.iNodeActivity);
     __ASSERT_DEBUG(activity.iErroredActivityId==MeshMachine::KActivityNull, User::Panic(KSpecAssert_ESockCrStaCPRAC, 4));
@@ -597,7 +606,7 @@ EXPORT_C void CErrorActivity::TSendErrorRecoveryReq::DoL()
 	TEErrorRecovery::TErrorRecoveryRequest msg(ctx);
 
     activity.PostRequestTo(
-    	*iContext.Node().ControlProvider(),//ControlProvider() verified above
+    	*errorRecoverer,//ControlProvider() verified above
     	TCFSafeMessage::TRequestCarrierEast<TEErrorRecovery::TErrorRecoveryRequest>(msg).CRef()
     	);
 
@@ -978,6 +987,8 @@ DECLARE_DEFINE_ACTIVITY_MAP(coreActivitiesPR)
     ACTIVITY_MAP_ENTRY(PRClientLeaveActivity, PRClientLeave)
 	ACTIVITY_MAP_ENTRY(PRForwardStateChangeActivity, PRForwardStateChange)
 	ACTIVITY_MAP_ENTRY(PRBindToActivity, PRBindTo)
+	ACTIVITY_MAP_ENTRY(PRDataClientStartActivity, PRDataClientStart)
+	ACTIVITY_MAP_ENTRY(PRDataClientStopActivity, PRDataClientStop)
 	ACTIVITY_MAP_ENTRY(PRDestroyOrphansActivity, PRDestroyOrphans)
 ACTIVITY_MAP_END_BASE(CoreActivities,coreActivitiesAll)
 
@@ -987,8 +998,6 @@ DEFINE_EXPORT_ACTIVITY_MAP(coreActivitiesSCpr)
 	ACTIVITY_MAP_ENTRY(PRProvisionActivity, PrProvision)
     ACTIVITY_MAP_ENTRY(PRStartActivity, PRStart)
     ACTIVITY_MAP_ENTRY(PRStopActivity, PRStop)
-	ACTIVITY_MAP_ENTRY(PRDataClientStartActivity, PRDataClientStart)
-	ACTIVITY_MAP_ENTRY(PRDataClientStopActivity, PRDataClientStop)
 	ACTIVITY_MAP_ENTRY(PRDataClientIdleActivity, PRDataClientIdle)
 	ACTIVITY_MAP_ENTRY(PRDataClientActiveActivity, PRDataClientActive)
 	ACTIVITY_MAP_ENTRY(PRDestroyActivity, PRDestroy)
@@ -1007,8 +1016,6 @@ DEFINE_EXPORT_ACTIVITY_MAP(coreActivitiesCpr)
 	ACTIVITY_MAP_ENTRY(PRProvisionActivity, PrProvision)
     ACTIVITY_MAP_ENTRY(PRStartActivity, PRStart)
     ACTIVITY_MAP_ENTRY(PRStopActivity, PRStop)
-	ACTIVITY_MAP_ENTRY(PRDataClientStartActivity, PRDataClientStart)
-	ACTIVITY_MAP_ENTRY(PRDataClientStopActivity, PRDataClientStop)
 	ACTIVITY_MAP_ENTRY(PRDataClientIdleActivity, PRDataClientIdle)
 	ACTIVITY_MAP_ENTRY(PRDataClientActiveActivity, PRDataClientActive)
 	ACTIVITY_MAP_ENTRY(PRDestroyActivity, PRDestroy)
@@ -2036,7 +2043,7 @@ EXPORT_C CStartActivity::~CStartActivity()
     CMMCommsProviderBase& node(static_cast<CMMCommsProviderBase&>(iNode));
     const TProviderInfoExt* providerInfoExt = static_cast<const TProviderInfoExt*>(node.AccessPointConfig().FindExtension(
             STypeId::CreateSTypeId(TProviderInfoExt::EUid, TProviderInfoExt::ETypeId)));
-    
+
     __ASSERT_DEBUG(providerInfoExt, User::Panic(KSpecAssert_ESockCrStaCPRAC, 40));
 
     if (Error() != KErrNone)
@@ -2044,11 +2051,11 @@ EXPORT_C CStartActivity::~CStartActivity()
 		CNodeActivityBase* stopActivity = iNode.FindActivityById(ECFActivityStop);
 
 		// If the Stop activity is running we skip sending the GoneDown message. This is because the Stop
-		// activity will send GoneDown too. 
+		// activity will send GoneDown too.
 		if (!stopActivity)
 		    {
             TCFControlClient::TGoneDown goneDown(Error(), providerInfoExt->iProviderInfo.APId());
-        
+
             TClientIter<TDefaultClientMatchPolicy> iter = iNode.GetClientIter<TDefaultClientMatchPolicy>(
                     TClientType(TCFClientType::ECtrl), TClientType(0, TCFClientType::ELeaving));
             RNodeInterface* ctrlClient = NULL;
@@ -2060,7 +2067,7 @@ EXPORT_C CStartActivity::~CStartActivity()
                     {
                     continue; // ControlClient is a Start originator
                     }
-                    
+
                 TNodeCtxId ctxId(ActivityId(), iNode.Id());
                 ctrlClient->PostMessage(ctxId, goneDown.CRef());
                 }
@@ -2204,6 +2211,3 @@ EXPORT_C TInt PRDataClientStopActivity::TNoTagOrProviderStopped::TransitionTag()
 		}
 	return CoreNetStates::KProviderStopped;
     }
-
-
-

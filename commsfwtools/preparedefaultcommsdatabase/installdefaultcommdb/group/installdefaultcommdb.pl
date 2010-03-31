@@ -94,19 +94,22 @@ $cdbDatFile = $cdbOutPath . 'CommsDb.dat' if (! defined $cdbDatFile);
 
 $CdbDest = $data->{$platType}->{destinationCdb};
 
+##
+## NOTE: all copying and releasing is now done from defaultcommdb - this installdefaultcommdb should be entirely deleted, system model updated, etc
+##
 
-if ($::command eq 'build') 
-{
-	PreBuild();
-}
-elsif ($::command eq 'clean')
-{
-	Clean();
-}
-elsif ($::command eq 'releasables') 
-{
-	Releasables();
-}
+#if ($::command eq 'build') 
+#{
+#	PreBuild();
+#}
+#elsif ($::command eq 'clean')
+#{
+#	Clean();
+#}
+#elsif ($::command eq 'releasables') 
+#{
+#	Releasables();
+#}
 
 #
 # Subs.

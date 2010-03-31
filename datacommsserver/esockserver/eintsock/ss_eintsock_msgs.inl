@@ -195,6 +195,10 @@ inline TEIntSockMsgExt::TEIntSockMsgExt(TSockMess aOperation, TEIntSockOpMsgWrap
 	{
 	TParams* params = reinterpret_cast<TParams*>(ParamBlock());
 	params->iSender = aSender;
+    
+	// caution - TRuntimeCtxId assignment operator overloaded - it assumes a properly constructed destination, which it isn't here
+	// so we in-place construct it
+	new (&params->iImplCookie)Messages::TNodeId();
 	params->iImplCookie = aImplCookie;
 	}
 

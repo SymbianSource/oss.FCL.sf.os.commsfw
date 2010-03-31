@@ -49,7 +49,7 @@ protected:
 	CMobilityActivity(const MeshMachine::TNodeActivity& aActivitySig, MeshMachine::AMMNodeBase& aNode);
 	virtual ~CMobilityActivity();
 	typedef MeshMachine::TNodeContext<CMobilityMetaConnectionProvider, MCprStates::TContext> TContext;
-	
+
 private:
 	TBool EvaluatePreference(TContext& aContext);
 
@@ -58,24 +58,29 @@ private:
 
 private:
 	ESock::RMetaServiceProviderInterface* iCurrent;
-	ESock::RMetaServiceProviderInterface* iPreferred;
+	ESock::RMetaServiceProviderInterface* iAvailable;
+	ESock::RMetaServiceProviderInterface* iCandidate;
 	const TUint iAvailabilityScoreTreshold;
 
 
 public:
-		
+
 	DECLARE_SMELEMENT_HEADER(TAwaitingCurrentCarrierRejectedOrAvailabilityChange, MeshMachine::TState<TContext>, NetStateMachine::MState, TContext)
 		virtual TBool Accept();
 	DECLARE_SMELEMENT_FOOTER(TAwaitingCurrentCarrierRejectedOrAvailabilityChange)
-	
+
 	DECLARE_SMELEMENT_HEADER(TNoTagOrAwaitMobility, MeshMachine::TStateFork<TContext>, NetStateMachine::MStateFork, CMobilityActivity::TContext)
 		virtual TInt TransitionTag();
-	DECLARE_SMELEMENT_FOOTER(TNoTagOrAwaitMobility)	
+	DECLARE_SMELEMENT_FOOTER(TNoTagOrAwaitMobility)
+
+	DECLARE_SMELEMENT_HEADER(TNoTagOrReConnectOrStartMobilityHandshakeBackwards, MeshMachine::TStateFork<TContext>, NetStateMachine::MStateFork, CMobilityActivity::TContext)
+		virtual TInt TransitionTag();
+	DECLARE_SMELEMENT_FOOTER(TNoTagOrReConnectOrStartMobilityHandshakeBackwards)
 
 	DECLARE_SMELEMENT_HEADER(TNoTagOrStartMobilityHandshakeBackwards, MeshMachine::TStateFork<TContext>, NetStateMachine::MStateFork, CMobilityActivity::TContext)
 		virtual TInt TransitionTag();
 	DECLARE_SMELEMENT_FOOTER(TNoTagOrStartMobilityHandshakeBackwards)
-	
+
 	DECLARE_SMELEMENT_HEADER(TNoTagOrAwaitMobilityBackwardsOnMobilityTrigger, MeshMachine::TStateFork<TContext>, NetStateMachine::MStateFork, CMobilityActivity::TContext)
 		virtual TInt TransitionTag();
 	DECLARE_SMELEMENT_FOOTER(TNoTagOrAwaitMobilityBackwardsOnMobilityTrigger)
@@ -83,7 +88,7 @@ public:
 	DECLARE_SMELEMENT_HEADER(TRejectedOrStartMobilityHandshakeBackwards, MeshMachine::TStateFork<TContext>, NetStateMachine::MStateFork, TContext)
         virtual TInt TransitionTag();
     DECLARE_SMELEMENT_FOOTER(TRejectedOrStartMobilityHandshakeBackwards)
-	
+
 	DECLARE_SMELEMENT_HEADER(TClearHandshakingFlag, MeshMachine::TStateTransition<TContext>, NetStateMachine::MStateTransition, CMobilityActivity::TContext)
 		virtual void DoL();
 	DECLARE_SMELEMENT_FOOTER(TClearHandshakingFlag)
@@ -105,20 +110,20 @@ public:
 	DECLARE_SMELEMENT_HEADER(TInformMigrationCompleted, MeshMachine::TStateTransition<TContext>, NetStateMachine::MStateTransition, CMobilityActivity::TContext)
 		virtual void DoL();
 	DECLARE_SMELEMENT_FOOTER(TInformMigrationCompleted)
-	
-	typedef MeshMachine::TActivitiesIdMutex<ESock::ECFActivityConnectionStartRecovery, 
+
+	typedef MeshMachine::TActivitiesIdMutex<ESock::ECFActivityConnectionStartRecovery,
 											ESock::ECFActivityConnectionGoneDownRecovery> TActivityErrorRecoveryMutex;
 	DECLARE_SERIALIZABLE_STATE(
 	    TNoTagOrAwaitMobilityBackwardsOnMobilityTriggerBlockedByErrorRecovery,
 		TActivityErrorRecoveryMutex,
 		TNoTagOrAwaitMobilityBackwardsOnMobilityTrigger
-		)	
-	
+		)
+
 	DECLARE_SERIALIZABLE_STATE(
 		TNoTagOrAwaitMobilityBlockedByErrorRecovery,
 		TActivityErrorRecoveryMutex,
 		TNoTagOrAwaitMobility
-		)		
+		)
 	};
 
 ///////////////////////////////////////////////////////////////////////////////

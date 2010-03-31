@@ -402,7 +402,7 @@ EXPORT_DECLARE_SMELEMENT_HEADER( TAwaitingBinderRequest, MeshMachine::TState<TCo
 DECLARE_SMELEMENT_FOOTER( TAwaitingBinderRequest )
 
 EXPORT_DECLARE_SMELEMENT_HEADER( TAwaitingStop, MeshMachine::TState<TContext>, NetStateMachine::MState, TContext )
-	virtual TBool Accept();
+    IMPORT_C virtual TBool Accept();
 DECLARE_SMELEMENT_FOOTER( TAwaitingStop )
 
 EXPORT_DECLARE_SMELEMENT_HEADER( TAwaitingProviderStatusChangeOrDataClientStatusChange, MeshMachine::TState<TContext>, NetStateMachine::MState, TContext )

@@ -1061,7 +1061,7 @@ EXPORT_C TBool TAwaitingStopped::Accept()
 	}
 
 EXPORT_DEFINE_SMELEMENT(TAwaitingStop, NetStateMachine::MState, CoreNetStates::TContext)
-TBool TAwaitingStop::Accept()
+EXPORT_C TBool TAwaitingStop::Accept()
 	{
 	if (!iContext.iMessage.IsMessage<TCFServiceProvider::TStop>())
     	{

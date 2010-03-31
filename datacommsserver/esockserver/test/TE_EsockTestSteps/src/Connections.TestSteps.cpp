@@ -168,7 +168,7 @@ TInt CStartRConnectionStep::ConfigureFromIni()
 	iParams.iStartWithConPrefList = ConnPrefPresent;
 	iParams.iStartWithDummy = DummyPresent;
 	iParams.iAsynch = AsynchPresent;
-	
+
 	GetBoolFromConfig(iSection, KTe_AutoStartPrefName, iParams.iStartAuto);
 
 	if (iParams.iStartWithOldPreferences && iParams.iStartWithSnapPreferences)
@@ -644,13 +644,13 @@ TInt CAwaitRConnectionStartComplete::ConfigureFromIni()
 TVerdict CAwaitRConnectionStartComplete::doSingleTestStep()
 	{
     INFO_PRINTF2(_L("Awaiting Connection (%S) to start."),&iParams.iConnectionName);
-    TInt error = iEsockTest->AwaitRequestStatus(iParams.iConnectionName); 
+    TInt error = iEsockTest->AwaitRequestStatus(iParams.iConnectionName);
 	if ( error == iExpectedError)
 		{
-        INFO_PRINTF3(_L("Connection (%S) start completed as expected (%d)"),&iParams.iConnectionName, error);		
+        INFO_PRINTF3(_L("Connection (%S) start completed as expected (%d)"),&iParams.iConnectionName, error);
 		return EPass;
 		}
-    INFO_PRINTF4(_L("Connection (%S) start completed with (%d), which is different to expected (%d)"),&iParams.iConnectionName, error, iExpectedError);	
+    INFO_PRINTF4(_L("Connection (%S) start completed with (%d), which is different to expected (%d)"),&iParams.iConnectionName, error, iExpectedError);
 	return EFail;
     }
 
@@ -836,8 +836,14 @@ TInt CCreatePublishSubscribeVar::ConfigureFromIni()
 
 	if (!GetIntFromConfig(iSection,KTe_CreatePublishSubscribeVarValue,iValue))
 			{
-			INFO_PRINTF1(_L("Couldn't find appropriate UID field in config file"));
+			INFO_PRINTF1(_L("Couldn't find appropriate Value field in config file"));
 			return KErrNotFound;
+			}
+
+	if (!GetIntFromConfig(iSection,KTe_CreatePublishSubscribeVarKey,iKey))
+			{
+			// The key field was added at a later date, report but don't error.
+			INFO_PRINTF1(_L("Couldn't find appropriate Key field in config file, defaulting to 0"));
 			}
 
     return KErrNone;
@@ -851,8 +857,8 @@ TVerdict CCreatePublishSubscribeVar::doTestStepPreambleL()
 TVerdict CCreatePublishSubscribeVar::doSingleTestStep()
 	{
 	RProperty property;
-	TInt result = property.Define(TUid::Uid(iUid),0,RProperty::EInt);
-	result = property.Attach(TUid::Uid(iUid), 0);
+	TInt result = property.Define(TUid::Uid(iUid),iKey,RProperty::EInt);
+	result = property.Attach(TUid::Uid(iUid), iKey);
 	if(result == KErrNone)
 		{
 		result = property.Set(iValue);
@@ -889,6 +895,12 @@ TInt CCheckPublishSubscribeVar::ConfigureFromIni()
 		return KErrNotFound;
 		}
 
+	if (!GetIntFromConfig(iSection,KTe_CheckPublishSubscribeVarKey,iKey))
+		{
+		// The key field was added at a later date, report but don't error.
+		INFO_PRINTF1(_L("Couldn't find appropriate Key field in config file, defaulting to 0"));
+		}
+
 	return KErrNone;
 	}
 
@@ -900,11 +912,11 @@ TVerdict CCheckPublishSubscribeVar::doTestStepPreambleL()
 TVerdict CCheckPublishSubscribeVar::doSingleTestStep()
 	{
 	RProperty property;
-	TInt result = property.Attach(TUid::Uid(iUid), 0);
+	TInt result = property.Attach(TUid::Uid(iUid), iKey);
 	if(result == KErrNone)
 		{
 		TInt existingValue;
-		result = property.Get(TUid::Uid(iUid), 0, existingValue);
+		result = property.Get(TUid::Uid(iUid), iKey, existingValue);
 		if(result == KErrNone && iValue == existingValue)
 			return EPass;
 		}
@@ -1119,12 +1131,12 @@ TInt CCheckNegativeProgressNotificationStep::ConfigureFromIni()
 		{
 		iExpectedError = KExpectedErrorNotUsed;
 		}
-	
+
     // Get any timeout value and if we have one then we are not expecting any notification
     if(!GetIntFromConfig(iSection, KTimeoutInMilliSeconds, iParams.iTimeoutMiliSecs))
         {
         // Default to 5 second timeout
-        iParams.iTimeoutMiliSecs = 5000; 
+        iParams.iTimeoutMiliSecs = 5000;
         }
 
 	if (iExpectedError != KExpectedErrorNotUsed)
@@ -1145,7 +1157,7 @@ TVerdict CCheckNegativeProgressNotificationStep::doSingleTestStep()
 	if (event == NULL || err == KErrNone)
 		{
 		INFO_PRINTF2(_L("%S: Did not receive any event."),&iParams.iEventName);
-		
+
 		return EPass;
 		}
 		else if (event == NULL || err != KErrNone)

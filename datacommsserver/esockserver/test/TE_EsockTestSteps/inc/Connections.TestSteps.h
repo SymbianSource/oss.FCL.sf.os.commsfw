@@ -83,10 +83,12 @@ _LIT(KConnStatusChangeNotificationResponse, "ConnStatusChangeNotificationRespons
 _LIT(KTe_CreatePublishSubscribeVar, "createpublishsubscribevar");
 _LIT(KTe_CreatePublishSubscribeVarUid, "CreatePublishSubscribeVarUid");
 _LIT(KTe_CreatePublishSubscribeVarValue, "CreatePublishSubscribeVarValue");
+_LIT(KTe_CreatePublishSubscribeVarKey, "CreatePublishSubscribeVarKey");
 
 _LIT(KTe_CheckPublishSubscribeVar, "checkpublishsubscribevar");
 _LIT(KTe_CheckPublishSubscribeVarUid, "CheckPublishSubscribeVarUid");
 _LIT(KTe_CheckPublishSubscribeVarValue, "CheckPublishSubscribeVarValue");
+_LIT(KTe_CheckPublishSubscribeVarKey, "CheckPublishSubscribeVarKey");
 
 //progress notification events
 _LIT(KTe_ConnEventsName,"ConnEventsName");
@@ -350,6 +352,7 @@ public:
 private:
 	TInt iUid;
 	TInt iValue;
+	TInt iKey;
 	};
 
 _LIT(KCreatePublishSubscribeVar,"CreatePublishSubscribeVar");
@@ -371,6 +374,7 @@ public:
 private:
 	TInt iUid;
 	TInt iValue;
+	TInt iKey;
 	};
 
 _LIT(KCheckPublishSubscribeVar,"CheckPublishSubscribeVar");

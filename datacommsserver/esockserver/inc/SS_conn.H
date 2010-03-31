@@ -42,7 +42,7 @@ namespace ConnStates
 	class TProcessBinderResponseForCpr;
 	class TCompleteLegacyAttach;
 	class TProcessEnumResponse;
-	
+
 	class TGenerateConnectionUpProgress;
 	class TGenerateConnectionDownProgress;
 
@@ -160,7 +160,7 @@ NONSHARABLE_CLASS(CConnection) : public CMMSockSubSession,
 
 	friend class ConnStates::TNoTagOrCancelAllInterfaceWorker;
 	friend class ConnStates::TCancelAllInterfaceNotificationWorker;
-	
+
 
 public:
 	typedef ITFHIERARCHY_LINK_1(CConnection, MeshMachine::AMMNodeBase, MPlatsecApiExt) TIfStaticFetcherNearestInHierarchy;
@@ -231,7 +231,7 @@ private:
     TBool iIsMonitor          :1;
 	XCommsDataObject* iCommsDataObject;
 	TUint iCommsDataObjectLength;	// output query length
-	
+
 protected:
 
 	//-=============================================

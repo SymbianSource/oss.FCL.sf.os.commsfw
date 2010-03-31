@@ -1947,4 +1947,5 @@ EXPORTS
 	_ZNK5ESock25RCFParameterFamilyBundleC18CountParameterSetsEv @ 1946 NONAME
 	_ZN20PRClientLeftActivity12PRClientLeft11FirstTripleEv @ 1947 NONAME
 	_ZN20PRClientLeftActivity12PRClientLeft4SelfEv @ 1948 NONAME
+	_ZN13CoreNetStates13TAwaitingStop6AcceptEv @ 1949 NONAME
 

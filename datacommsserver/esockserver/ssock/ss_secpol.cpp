@@ -166,7 +166,11 @@ are implemented within ESOCK.  NIFMAN will police the remainder of the options.
 
 */
 	{
-	__ASSERT_ALWAYS(aMsg.Function() == ECNControl, Fault(ENotImplementedYet));
+	// ECNControl is all we are expecting
+	if(aMsg.Function() != ECNControl)
+		{
+		return EFail;
+		}
 
    TInt optionLevel = aMsg.Int0();
 

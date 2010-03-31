@@ -24,12 +24,16 @@ data=EPOCROOT##epoc32\data\z\TestData\scripts\te_dummyprovider.script		Testdata\
 data=EPOCROOT##epoc32\data\z\TestData\scripts\te_dummyprovider_001.script TestData\scripts\te_dummyprovider_001.script
 data=EPOCROOT##epoc32\data\z\TestData\scripts\te_dummyprovider_002.script TestData\scripts\te_dummyprovider_002.script
 data=EPOCROOT##epoc32\data\z\TestData\scripts\te_dummyprovider_003.script TestData\scripts\te_dummyprovider_003.script
+data=EPOCROOT##epoc32\data\z\TestData\scripts\te_dummyprovider_004.script TestData\scripts\te_dummyprovider_004.script
+data=EPOCROOT##epoc32\data\z\TestData\scripts\te_dummyprovider_005.script TestData\scripts\te_dummyprovider_005.script
 data=EPOCROOT##epoc32\data\z\TestData\scripts\te_dummyprovider_incomingSCPR.script TestData\scripts\te_dummyprovider_incomingSCPR.script
 
 data=EPOCROOT##epoc32\data\z\TestData\configs\te_dummyproviders.cfg TestData\configs\te_dummyproviders.cfg
 data=EPOCROOT##epoc32\data\z\TestData\configs\te_dummyprovider_001.ini TestData\configs\te_dummyprovider_001.ini
 data=EPOCROOT##epoc32\data\z\TestData\configs\te_dummyprovider_002.ini TestData\configs\te_dummyprovider_002.ini
 data=EPOCROOT##epoc32\data\z\TestData\configs\te_dummyprovider_003.ini TestData\configs\te_dummyprovider_003.ini
+data=EPOCROOT##epoc32\data\z\TestData\configs\te_dummyprovider_004.ini TestData\configs\te_dummyprovider_004.ini
+data=EPOCROOT##epoc32\data\z\TestData\configs\te_dummyprovider_005.ini TestData\configs\te_dummyprovider_005.ini
 
 #endif // __TE_DummyProviders_IBY__
 
