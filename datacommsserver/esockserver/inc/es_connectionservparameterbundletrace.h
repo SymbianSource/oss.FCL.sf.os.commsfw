@@ -54,7 +54,7 @@ _LIT8(KCoreTMgrSubTag, "coretiermgr");
 
 #define _TIER_LOG_SVG(src,dest,fn)
 
-#endif SYMBIAN_TRACE_ENABLE
+#endif // SYMBIAN_TRACE_ENABLE
 
 
 //   2. rich logging with CommsDebugUtility- generally only
