@@ -35,6 +35,8 @@ namespace ConnStates
 	class TClearProgressQueue;
 	class TRequestCSRCreation;
 	class TProcessStateChange;
+    class TEnqueueStateChange;	
+	class TAwaitingStateChange;
 	class TProcessIncomingConnection;
 	class TProcessProgressRequest;
 	class TParseECNAttach;
@@ -42,10 +44,8 @@ namespace ConnStates
 	class TProcessBinderResponseForCpr;
 	class TCompleteLegacyAttach;
 	class TProcessEnumResponse;
-
 	class TGenerateConnectionUpProgress;
 	class TGenerateConnectionDownProgress;
-
 	class TNoTagOrCancelAllInterfaceWorker;
 	class TCancelAllInterfaceNotificationWorker;
 }
@@ -139,6 +139,8 @@ NONSHARABLE_CLASS(CConnection) : public CMMSockSubSession,
 	friend class ConnStates::TClearProgressQueue;
 	friend class ConnStates::TRequestCSRCreation;
 	friend class ConnStates::TProcessStateChange;
+	friend class ConnStates::TAwaitingStateChange;
+	friend class ConnStates::TEnqueueStateChange;  
 	friend class ConnStates::TProcessIncomingConnection;
 	friend class ConnStates::TProcessProgressRequest;
 	friend class ConnStates::TParseECNAttach;

@@ -151,8 +151,8 @@ DECLARE_DEFINE_CUSTOM_NODEACTIVITY(ECFActivityStart, ConnectionStart, TCFInterna
 	THROUGH_NODEACTIVITY_ENTRY(KErrorTag, ConnActivities::CStartAttachActivity::TSetIdleIfStopOutstanding, MeshMachine::TErrorTag)
 
 	NODEACTIVITY_ENTRY(KErrorTag, CoreNetStates::TSendClientLeavingRequestToServiceProviders, MeshMachine::TAwaitingLeaveComplete, MeshMachine::TNoTag)
-	NODEACTIVITY_ENTRY(KNoTag, CoreNetStates::TSetIdleIfNoServiceProviders, MeshMachine::TAwaitingLeaveComplete, ConnectionCleanupActivities::TNoTagOrNoTagBackwards)
-	LAST_NODEACTIVITY_ENTRY(KNoTag, MeshMachine::TDoNothing)
+	NODEACTIVITY_ENTRY(KNoTag, MeshMachine::TDoNothing, MeshMachine::TAwaitingLeaveComplete, ConnectionCleanupActivities::TNoTagOrNoTagBackwards)
+	LAST_NODEACTIVITY_ENTRY(KNoTag, ConnStates::TGenerateConnectionUninitialisedProgress)
 NODEACTIVITY_END()
 }
 
@@ -204,10 +204,10 @@ DECLARE_DEFINE_CUSTOM_NODEACTIVITY(ECFActivityStop, ConnectionStop, TCFInternalE
     THROUGH_NODEACTIVITY_ENTRY(KNoTag, ConnStates::TGenerateConnectionDownProgress, MeshMachine::TNoTag)
 
 	NODEACTIVITY_ENTRY(KNoTag, CoreNetStates::TSendClientLeavingRequestToServiceProviders, MeshMachine::TAwaitingLeaveComplete, MeshMachine::TNoTag)
-	NODEACTIVITY_ENTRY(KNoTag, CoreNetStates::TSetIdleIfNoServiceProviders, MeshMachine::TAwaitingLeaveComplete, ConnectionCleanupActivities::TNoTagOrNoTagBackwards)
+	NODEACTIVITY_ENTRY(KNoTag, MeshMachine::TDoNothing, MeshMachine::TAwaitingLeaveComplete, ConnectionCleanupActivities::TNoTagOrNoTagBackwards)
 	
 	LAST_NODEACTIVITY_ENTRY(CoreNetStates::KNoBearer, MeshMachine::TDoNothing)
-	LAST_NODEACTIVITY_ENTRY(KNoTag, MeshMachine::TDoNothing)
+	LAST_NODEACTIVITY_ENTRY(KNoTag, ConnStates::TGenerateConnectionUninitialisedProgress)
 NODEACTIVITY_END()
 }
 
@@ -269,21 +269,34 @@ DECLARE_DEFINE_CUSTOM_NODEACTIVITY(ECFActivityDestroy, ConnectionClose, TCFInter
     THROUGH_NODEACTIVITY_ENTRY(KNoTag, ConnStates::TCancelAllLegacyRMessage2Activities, ConnStates::TNoTagBlockedByLegacyRMessage2Activities)
 	NODEACTIVITY_ENTRY(KNoTag, ConnStates::TProcessClose, TECABState<MeshMachine::TAwaitingLeaveComplete>, MeshMachine::TNoTag)
 	//TDestroyAwaitingLeaveCompleteLoop loops back to its own triple if more SPs
-	NODEACTIVITY_ENTRY(KNoTag, TECABTransition<CoreNetStates::TSetIdleIfNoServiceProviders>, TECABState<MeshMachine::TAwaitingLeaveComplete>, CoreActivities::CDestroyActivity::TNoTagOrNoTagBackwards)
-	LAST_NODEACTIVITY_ENTRY(KNoTag, MeshMachine::TDoNothing) //Never gets here
+	NODEACTIVITY_ENTRY(KNoTag, MeshMachine::TDoNothing, TECABState<MeshMachine::TAwaitingLeaveComplete>, CoreActivities::CDestroyActivity::TNoTagOrNoTagBackwards)
+	LAST_NODEACTIVITY_ENTRY(KNoTag, MeshMachine::TDoNothing)
 NODEACTIVITY_END()
 }
 
+//--------------------------------------------------
+//Progress/TStateChange activities.
+//ConnectionStateChangeNotificationActivity acts on the subscription and completes the client with progresses
+//ConnectionStateChangeActivity acts on TStateChange coming from the stack.
 namespace ConnectionStateChangeNotificationActivity
 {
 DECLARE_DEFINE_CUSTOM_NODEACTIVITY(ECFActivityConnectionStateChangeRequest, ConnectionStateChangeNotification, TCFInternalEsock::TSubSess, CESockClientActivityBase::NewL)
 	FIRST_NODEACTIVITY_ENTRY(SubSessStates::TAwaitingIPC<ECNProgressNotification>, MeshMachine::TNoTag)
 	THROUGH_NODEACTIVITY_ENTRY(KNoTag, SubSessStates::TAcquireMessageOwnership, MeshMachine::TNoTag)
-	//TAwaitingStateChangeLoop also cancels the activity when requested
-	NODEACTIVITY_ENTRY(KNoTag, ConnStates::TProcessProgressRequest, TECABState<MeshMachine::TAwaitingMessageState<TCFMessage::TStateChange> >, 		MeshMachine::TNoTagBackward)
+	NODEACTIVITY_ENTRY(KNoTag, ConnStates::TProcessProgressRequest, TECABState<ConnStates::TAwaitingStateChange >, MeshMachine::TNoTag)
+	
+	NODEACTIVITY_ENTRY(KNoTag, ConnStates::TProcessStateChange, TECABState<ConnStates::TAwaitingStateChange >, MeshMachine::TNoTagBackward)
 	LAST_NODEACTIVITY_ENTRY(KNoTag, MeshMachine::TDoNothing) //Never gets here
 NODEACTIVITY_END()
 }
+
+namespace ConnectionStateChangeActivity
+{
+DECLARE_DEFINE_NODEACTIVITY(ECFActivityStateChange, ConnectionStateChange, TCFMessage::TStateChange)
+    NODEACTIVITY_ENTRY(KNoTag, ConnStates::TEnqueueStateChange, ConnStates::TAwaitingStateChange, MeshMachine::TNoTag)
+NODEACTIVITY_END()
+}
+
 
 namespace ConnectionWaitForIncomingActivity
 { //Synchronised, waits for Start to complete
@@ -297,27 +310,18 @@ DECLARE_DEFINE_CUSTOM_NODEACTIVITY(ECFActivityConnectionWaitForIncoming, Connect
 NODEACTIVITY_END()
 }
 
-//
-//Activities serving framework requests
-namespace ConnectionStateChangeActivity
-{
-DECLARE_DEFINE_NODEACTIVITY(ECFActivityStateChange, ConnectionStateChange, TCFMessage::TStateChange)
-	NODEACTIVITY_ENTRY(KNoTag, ConnStates::TProcessStateChange, MeshMachine::TAwaitingMessageState<TCFMessage::TStateChange>, MeshMachine::TNoTag)
-NODEACTIVITY_END()
-}
-
 
 namespace ConnectionGoingDownActivity
 {
 DECLARE_DEFINE_CUSTOM_NODEACTIVITY(ECFActivityGoneDown, ConnectionGoingDown, TCFControlClient::TGoneDown, PRActivities::CGoneDownActivity::NewL)
 	FIRST_NODEACTIVITY_ENTRY(ConnStates::TAwaitingGoneDown, MeshMachine::TNoTag)
 	THROUGH_NODEACTIVITY_ENTRY(KNoTag, ConnectionGoingDownActivity::TStoreGoneDownError, MeshMachine::TNoTag)
-	THROUGH_NODEACTIVITY_ENTRY(KNoTag, CoreNetStates::TCancelAndCloseZone0ClientExtIfaces, MeshMachine::TNoTag)
+	THROUGH_NODEACTIVITY_ENTRY(KNoTag, SubSessStates::TCancelAndCloseClientExtIfaces, MeshMachine::TNoTag)
     THROUGH_NODEACTIVITY_ENTRY(KNoTag, ConnStates::TCancelAllLegacyRMessage2Activities, ConnStates::TNoTagBlockedByLegacyRMessage2Activities)
     THROUGH_NODEACTIVITY_ENTRY(KNoTag, ConnStates::TGenerateConnectionDownProgress, MeshMachine::TNoTag)
 	NODEACTIVITY_ENTRY(KNoTag, CoreNetStates::TSendClientLeavingRequestToServiceProviders, MeshMachine::TAwaitingLeaveComplete, MeshMachine::TNoTag)
-	NODEACTIVITY_ENTRY(KNoTag, CoreNetStates::TSetIdleIfNoServiceProviders, MeshMachine::TAwaitingLeaveComplete, ConnectionCleanupActivities::TNoTagOrNoTagBackwards)
-    LAST_NODEACTIVITY_ENTRY(KNoTag, MeshMachine::TDoNothing)
+	NODEACTIVITY_ENTRY(KNoTag, MeshMachine::TDoNothing, MeshMachine::TAwaitingLeaveComplete, ConnectionCleanupActivities::TNoTagOrNoTagBackwards)
+    LAST_NODEACTIVITY_ENTRY(KNoTag, ConnStates::TGenerateConnectionUninitialisedProgress)
 NODEACTIVITY_END()
 }
 

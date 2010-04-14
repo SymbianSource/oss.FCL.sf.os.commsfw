@@ -232,7 +232,6 @@ CConnectionTest1b::~CConnectionTest1b()
 void CConnectionTest1b::Start()
 	{
 	INFO_PRINTF1(_L("Starting Connection"));
-
 	iConnection.Start(iStatus);
 	SetActive();
 	}
@@ -1948,6 +1947,10 @@ enum TVerdict TE_RConnectionTest23::doTestStepL(void)
 
 	TESTEL(KErrNone == progress().iError, progress().iError);
 	TESTEL(ECsdStartingHangUp == progress().iStage, progress().iStage);
+	
+	INFO_PRINTF1(_L("Waiting for KConnectionDown and KConnectionUninitialised. If the test times-out they didn't come (in the right seq)."));
+    WaitForRelevantProgress(conn1, progress, KConnectionDown);
+    WaitForRelevantProgress(conn1, progress, KConnectionUninitialised); 
 
 	CloseConnection(conn1);
 	CleanupStack::Pop();
@@ -5088,6 +5091,10 @@ enum TVerdict TE_RConnectionTest57::doTestStepL(void)
 
 	TESTEL(KErrNone == progress().iError, progress().iError);
 	TESTEL(ECsdStartingHangUp == progress().iStage, progress().iStage);
+	
+    INFO_PRINTF1(_L("Waiting for KConnectionDown and KConnectionUninitialised. If the test times-out they didn't come (in the right seq)."));	
+    WaitForRelevantProgress(conn1, progress, KConnectionDown);
+    WaitForRelevantProgress(conn1, progress, KConnectionUninitialised);	
 
 	CloseConnection(conn1);
 	CleanupStack::Pop();

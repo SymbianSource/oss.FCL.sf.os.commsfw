@@ -113,13 +113,21 @@ void CTierManagerFactoryContainer::ReceivedL(const TRuntimeCtxId& aSender, const
 	if (aMessage.IsMessage<TCFInternalEsock::TCreateCSR>())
 		{
 		TCFInternalEsock::TCreateCSR& msg = message_cast<TCFInternalEsock::TCreateCSR>(aMessage);
-		// Maps Tier to ImplId For ECOM since ImplId is used in Factory
-		CommsDat::CMDBSession* dbs = CommsDat::CMDBSession::NewLC(KCDVersion1_2);
-		msg.iUid= TierManagerUtils::MapTierIdtoTierImplIdL(msg.iUid, *dbs);
-		CleanupStack::PopAndDestroy(dbs);
-		CCommsFactoryBase* factory = static_cast<CCommsFactoryBase*>(FindOrCreateFactoryL(msg.iUid));
-		TAlwaysFindFactoryQuery query;
-		CSelectionRequest* sr = CSelectionRequest::NewL(address_cast<TNodeId>(aSender), factory->FindOrCreateObjectL(query)->Id());
+		TTierTypeIdFactoryQuery tierTypeQuery(msg.iUid);
+		ACommsFactoryNodeId* obj = Find(tierTypeQuery);   // match the address family to tierTypeId in factory container
+		if (!obj)
+	        {
+            // object not found, use the commsdat to find the Tier Manager
+            CommsDat::CMDBSession* dbs = CommsDat::CMDBSession::NewLC(KCDVersion1_2);
+            // Maps Tier to ImplId For ECOM since ImplId is used in Factory
+            msg.iUid= TierManagerUtils::MapTierIdtoTierImplIdL(msg.iUid, *dbs);
+            CleanupStack::PopAndDestroy(dbs);
+            CCommsFactoryBase* factory = static_cast<CCommsFactoryBase*>(FindOrCreateFactoryL(msg.iUid));
+            TAlwaysFindFactoryQuery query;  // since there is only one Tier Manager per Tier Manager factory, return the first one
+            obj = factory->FindOrCreateObjectL(query);
+	        }
+		
+		CSelectionRequest* sr = CSelectionRequest::NewL(address_cast<TNodeId>(aSender), obj->Id());
 		RClientInterface::OpenPostMessageClose(Id(), aSender, TCFInternalEsock::TCSRCreated(sr->Id()).CRef());
 		aMessage.ClearMessageId();
 		}

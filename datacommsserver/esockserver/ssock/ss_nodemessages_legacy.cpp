@@ -508,6 +508,11 @@ void TCprAllSubConnectionNotificationEnable::Error(const TRuntimeCtxId& /*aSende
     }
 
 
+void CLegacyDataMonitoringResponder::DoComplete(TInt aError)
+    {
+    iLegacyResponseMsg.Complete(aError);
+    }
+
 void CLegacyDataMonitoringResponder::DoCancelRequest()
 	{
 	iLegacyResponseMsg.Complete(KErrCancel);
@@ -731,9 +736,9 @@ void TLegacyDataMonitoringNotificationRequest::ProcessL(MeshMachine::TNodeContex
 	RLegacyResponseMsg responseMsg(aContext, iMessage, iMessage.Int0());
 	CDataMonitoringResponder* responder = CLegacyDataMonitoringResponder::NewL(responseMsg);
 
-    	ADataMonitoringProtocolReq& dataMonItf = *static_cast<ADataMonitoringProtocolReq*>(interface);
-    	switch(iDirection)
-    		{
+    ADataMonitoringProtocolReq& dataMonItf = *static_cast<ADataMonitoringProtocolReq*>(interface);
+    switch(iDirection)
+        {
 		case ESent:
 			dataMonItf.RequestDataSentNotification(responder, delta, volume, iClientId);
 			break;
@@ -741,19 +746,20 @@ void TLegacyDataMonitoringNotificationRequest::ProcessL(MeshMachine::TNodeContex
 		case EReceived:
 			dataMonItf.RequestDataReceivedNotification(responder, delta, volume, iClientId);
 			break;
+		
 		default:
 			delete responder;
-    		}
+        }
 	// coverity [leaked_storage] - responder is owned by dataMonItf.RequestDataSentNotification, dataMonItf.RequestDataReceivedNotification
 	// therefore we don't need to push them onto the cleanup stack.
-    	}
+	}
 
 void TLegacyDataMonitoringNotificationRequest::Cancel(MeshMachine::TNodeContextBase& aContext)
 	{
 	TAny* interface = FetchInterfaceL(aContext.Node(), EDataMonitoringApiExt);
 	ASSERT(interface);
 	
-	if (interface)
+    if (interface)
     	{
     	ADataMonitoringProtocolReq& dataMonItf = *static_cast<ADataMonitoringProtocolReq*>(interface);
 		

@@ -274,6 +274,64 @@ heap_markend
 test_complete
 END_TESTCASE			COMINF-ESOCK-RConnectionSuite-CMM-0622
 
+
+
+START_TESTCASE			COMINF-ESOCK-RConnectionSuite-CMM-0481
+//! @SYMTestCaseID		COMINF-ESOCK-RConnectionSuite-CMM-0481
+//!@SYMTestCaseDesc     Data Monitoring cancellation test - sent data notification
+// 						NOTE: If this test fails it can bring down esock when the connection stops (because of the original defect in esock)
+run_script z:\TestData\scripts\te_esock_test_unloadesockForced.script
+run_script z:\TestData\scripts\te_esock_test_loadesock.script
+heap_mark
+run_test_step 100, TE_RConnectionSuite Test481 c:\rconnectiontest.ini
+heap_markend
+test_complete
+END_TESTCASE			COMINF-ESOCK-RConnectionSuite-CMM-0481
+
+
+
+START_TESTCASE			COMINF-ESOCK-RConnectionSuite-CMM-0482
+//! @SYMTestCaseID		COMINF-ESOCK-RConnectionSuite-CMM-0482
+//!@SYMTestCaseDesc     Data Monitoring cancellation test - received data notification 
+// 						NOTE: If this test fails it can bring down esock when the connection stops (because of the original defect in esock)
+run_script z:\TestData\scripts\te_esock_test_unloadesockForced.script
+run_script z:\TestData\scripts\te_esock_test_loadesock.script
+heap_mark
+run_test_step 100, TE_RConnectionSuite Test482 c:\rconnectiontest.ini
+heap_markend
+test_complete
+END_TESTCASE			COMINF-ESOCK-RConnectionSuite-CMM-0482
+
+
+
+START_TESTCASE			COMINF-ESOCK-RConnectionSuite-CMM-0483
+//! @SYMTestCaseID		COMINF-ESOCK-RConnectionSuite-CMM-0483
+//!@SYMTestCaseDesc     Data Monitoring cancellation test - sent data notification 
+// 						NOTE: If this test fails it can bring down esock when the connection stops (because of the original defect in esock)
+run_script z:\TestData\scripts\te_esock_test_unloadesockForced.script
+run_script z:\TestData\scripts\te_esock_test_loadesock.script
+heap_mark
+run_test_step 100, TE_RConnectionSuite Test483 c:\rconnectiontest.ini
+heap_markend
+test_complete
+END_TESTCASE			COMINF-ESOCK-RConnectionSuite-CMM-0483
+
+
+
+START_TESTCASE			COMINF-ESOCK-RConnectionSuite-CMM-0484
+//! @SYMTestCaseID		COMINF-ESOCK-RConnectionSuite-CMM-0484
+//!@SYMTestCaseDesc     Data Monitoring cancellation test - received data notification 
+// 						NOTE: If this test fails it can bring down esock when the connection stops (because of the original defect in esock)
+run_script z:\TestData\scripts\te_esock_test_unloadesockForced.script
+run_script z:\TestData\scripts\te_esock_test_loadesock.script
+heap_mark
+run_test_step 100, TE_RConnectionSuite Test484 c:\rconnectiontest.ini
+heap_markend
+test_complete
+END_TESTCASE			COMINF-ESOCK-RConnectionSuite-CMM-0484
+
+
+
 run_script z:\TestData\scripts\te_esock_test_unloadesockForced.script
 
 run_utils MakeReadWrite c:\rconnectiontest.ini

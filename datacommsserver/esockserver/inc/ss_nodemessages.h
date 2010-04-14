@@ -115,6 +115,23 @@ public:
 	EXPORT_DATA_VTABLE_AND_FN
 	};
 
+class TTierTypeIdFactoryQuery : public TFactoryQueryBase
+    {
+public:
+    IMPORT_C TTierTypeIdFactoryQuery();
+
+    IMPORT_C explicit TTierTypeIdFactoryQuery(const TUid aTierTypeId);
+
+protected:
+    IMPORT_C virtual Factories::MFactoryQuery::TMatchResult Match(Factories::TFactoryObjectInfo& aFactoryObjectInfo);
+
+public:
+    TUid iTierTypeId;
+
+    DECLARE_MVIP_CTR(TTierTypeIdFactoryQuery)
+    EXPORT_DATA_VTABLE_AND_FN
+    };
+
 class TDefaultConnectionFactoryQuery : public TFactoryQueryBase
 /** Class implementing MFactoryQuery to find a connection provider.
 

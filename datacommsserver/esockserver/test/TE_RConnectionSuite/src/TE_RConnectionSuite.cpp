@@ -655,6 +655,14 @@ CTestStep* TE_RConnectionSuiteTestServer::CreateRConnTestStep4(const TDesC& aSte
 		testStep=new TE_RConnectionTest479();
 	else if(aStepName.Compare(_L("Test480")) == 0)
 		testStep=new TE_RConnectionTest480();
+    else if(aStepName.Compare(_L("Test481")) == 0)
+        testStep=new TE_RConnectionTest481();
+    else if(aStepName.Compare(_L("Test482")) == 0)
+        testStep=new TE_RConnectionTest482();
+    else if(aStepName.Compare(_L("Test483")) == 0)
+        testStep=new TE_RConnectionTest483();
+    else if(aStepName.Compare(_L("Test484")) == 0)
+        testStep=new TE_RConnectionTest484();
 
 	return testStep;
 	}

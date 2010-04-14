@@ -172,7 +172,7 @@ class TNotificationRequest
 public:
 	TNotificationRequest(CDataMonitoringResponder* aResponder, TSubSessionUniqueId aClientId) 
 		: iThreshold(0), iResponder(aResponder), iClientId(aClientId), iCancelled(EFalse), iWrapped(EFalse)
-		{		
+		{
 		}
 	
 	TUint32 Threshold() const
@@ -205,7 +205,7 @@ public:
 		
 	void SetCancelled()
 		{
-		iCancelled = ETrue;
+	    iCancelled = ETrue;
 		}
 	
 	TBool Wrapped() const
@@ -220,6 +220,7 @@ public:
 
 	static TInt CompareThresholds(const TNotificationRequest& aFirst, const TNotificationRequest& aSecond);
 	static TBool CompareClientIds(const TNotificationRequest& aFirst, const TNotificationRequest& aSecond);
+	static TBool CompareClientIdsAndCancelledFlag(const TNotificationRequest& aFirst, const TNotificationRequest& aSecond);
 	
 private:
 	TUint32 iThreshold;	

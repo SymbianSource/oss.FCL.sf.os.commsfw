@@ -625,6 +625,160 @@ TBool ConnStates::TAwaitingGoneDown::Accept()
     return EFalse;
 	}
 
+
+
+//----------------------------------------------------
+//Handling Progress/TStateChange
+DEFINE_SMELEMENT(ConnStates::TAwaitingStateChange, NetStateMachine::MState, ConnStates::TContext)
+TBool ConnStates::TAwaitingStateChange::Accept()
+    {
+    TCFMessage::TStateChange* progressMsg = message_cast<TCFMessage::TStateChange>(&iContext.iMessage);
+    if (progressMsg)
+        {
+        TStateChange& progress = progressMsg->iStateChange;
+        
+        if (iContext.iSender != iContext.Node().Id())
+            {
+            //CConnection trusts that locally generated progresses are to be trusted,
+            //but some of the legacy progresses coming from the stack need some filtering.
+            //Here's the filtering.
+        
+            // Check whether KDataTransferUnblocked is received and if yes, then traslate it to KConnectionUp (== KLinkLayerOpen)
+            // the log only sees the translated version, this goes into the queue, so it alright I suppose.
+            if (progress.iStage == KDataTransferUnblocked )
+                {
+                progress.iStage = KConnectionUp;    // KLinkLayerOpen
+                }
+            if (progress.iError == KErrForceDisconnected)
+                {
+                progress.iError = KErrDisconnected;
+                }
+            
+            if (progress.iStage == KConnectionUninitialised)
+                {
+                //KConnectionUninitialised has been deprecated in the stack and it will be ignored
+                //when reported by it. It is still valid towards the application. Here it is being reported by the stack.
+                //The original KConnectionUninitialised denoted CAgentReference destruction and as such speculated too
+                //much about the sturcture of the stack (notably: there isn't necesserily an agent anymore.
+                //As defined KConnectionUninitialised would need to be reported after TCFControlClient::TGoneDown or TCFServiceProvider::TStopped,
+                //except the stack decomposes after TCFControlClient::TGoneDown or TCFServiceProvider::TStopped and the progress path along with
+                //it. It is therefore impossible for the stack to generate KConnectionUninitialised after
+                //TCFControlClient::TGoneDown or TCFServiceProvider::TStopped. CConnection takes over and will generate KConnectionUninitialised
+                //when detatching from the service providers (see ConnStates::TGenerateConnectionUninitialisedProgress)
+                LOG( ESockLog::Printf(KESockConnectionTag, _L("CConnection %08x:\tProgressNotification(TInt aStage %d, TInt aError %d) - deprecated progress, ignoring"),
+                        &(iContext.Node()), progress.iStage, progress.iError) );
+                progressMsg->ClearMessageId();
+                return EFalse;
+                }   
+            }
+        LOG( ESockLog::Printf(KESockConnectionTag, _L("CConnection %08x:\tProgressNotification(TInt aStage %d, TInt aError %d)"),
+            &(iContext.Node()), progress.iStage, progress.iError) );
+        
+        CConnection& cc = iContext.Node();
+        if (cc.iLastProgress == progress)
+            {
+            progressMsg->ClearMessageId();            
+            return EFalse; //ignore this duplicate
+            }
+        cc.iLastProgress = progress;
+
+        if (progress.iError != KErrNone)
+            {
+            cc.iLastProgressError = progress; //Save last progress in error for use by LastProgressErrorL()
+            }
+        return ETrue;
+        }
+    return EFalse;
+    }
+
+//Progress & Progress Request
+DEFINE_SMELEMENT(ConnStates::TEnqueueStateChange, NetStateMachine::MStateTransition, ConnStates::TContext)
+void ConnStates::TEnqueueStateChange::DoL()
+    {
+    TStateChange& progress = message_cast<TCFMessage::TStateChange>(iContext.iMessage).iStateChange;
+    //Diagnostic assertion.
+    
+    //If ECFActivityConnectionStateChangeRequest is running, it has not been
+    //presented with the TStateChange message (channel activity id != 0?) which is a serious mistake.
+    __ASSERT_DEBUG(iContext.Node().CountActivities(ECFActivityConnectionStateChangeRequest)==0, User::Panic(KSpecAssert_ESockSSockscnsts, 9));
+
+    CConnection& cc = iContext.Node();
+#ifdef ESOCK_LOGGING_ACTIVE
+    // Check to see if the progress queue is full causing older progress to be discarded.
+    // This has the potential to cause problems if a critical progress item is lost.
+    // Normally the queue is large enough such that this doesn't happen but this log entry
+    // serves as a warning if it ever does.
+    if( cc.iProgressQueue.IsFull() )
+        {
+        LOG( ESockLog::Printf(KESockConnectionTag, _L("CConnection %08x:\tThe maximum progress queue size of %d has been exceeded - discarding old progress to make space for new item"), this, KMaxProgressQueueLength); )
+        }
+#endif
+    
+    //Add the progress to queue
+    cc.iProgressQueue.Enque(progress);
+    }
+
+
+DEFINE_SMELEMENT(ConnStates::TProcessProgressRequest, NetStateMachine::MStateTransition, ConnStates::TContext)
+void ConnStates::TProcessProgressRequest::DoL()
+    {
+    __ASSERT_DEBUG(iContext.iNodeActivity, ConnPanic(KPanicNoActivity));
+    CESockClientActivityBase& ac = static_cast<CESockClientActivityBase&>(*iContext.iNodeActivity);
+    TUint selectedProgressStage = ac.Int1();
+    TStateChange progress;
+    TBool found = EFalse;
+
+    __ASSERT_DEBUG((subsessmessage_cast<ECNProgressNotification>(&iContext.iMessage)), ConnPanic(KPanicIncorrectMessage));
+    
+    //Process the queue looking for the progress of interest
+    found = iContext.Node().iProgressQueue.Deque(progress);
+    if (found && selectedProgressStage != KConnProgressDefault)
+        {
+        // For a selected progress request, dequeue entries until we find one which
+        // matches the criteria.  If we dequeue all entries, fall through without
+        // completing the message.  It it not considered useful to retain un-matching
+        // entries on the queue if a selected progress request is pending.
+        while (found)
+            {
+            if (progress.iStage == selectedProgressStage || progress.iError != KErrNone)
+                {
+                break;
+                }
+            found = iContext.Node().iProgressQueue.Deque(progress);
+            }
+        }
+
+    if (found)
+        {
+        //We have found a progress of interest, finish
+        TPckg<TStateChange> progressPkg(progress);
+        ac.WriteL(0,progressPkg);
+        ac.SetIdle(); //We are done
+        }
+    }
+
+DEFINE_SMELEMENT(ConnStates::TProcessStateChange, NetStateMachine::MStateTransition, ConnStates::TContext)
+void ConnStates::TProcessStateChange::DoL()
+    {
+    __ASSERT_DEBUG(iContext.iNodeActivity, ConnPanic(KPanicNoActivity));
+    CESockClientActivityBase& ac = static_cast<CESockClientActivityBase&>(*iContext.iNodeActivity);
+    TUint selectedProgressStage = ac.Int1();
+
+    //Are we here as a result of receiving TStateChange (rather than ECNProgressNotification)?
+    TCFMessage::TStateChange& progress = message_cast<TCFMessage::TStateChange>(iContext.iMessage);
+
+    if (selectedProgressStage == KConnProgressDefault || 
+        selectedProgressStage == progress.iStateChange.iStage || 
+        KErrNone != progress.iStateChange.iError)
+        {
+        //We have found a progress of interest, finish
+        TPckg<TStateChange> progressPkg(progress.iStateChange);
+        ac.WriteL(0,progressPkg);
+        ac.SetIdle(); //We are done
+        }
+    }
+
+
 DEFINE_SMELEMENT(ConnStates::TGenerateConnectionUpProgress, NetStateMachine::MStateTransition, ConnStates::TContext)
 void ConnStates::TGenerateConnectionUpProgress::DoL()
 	{
@@ -657,124 +811,19 @@ void ConnStates::TGenerateConnectionDownProgress::DoL()
 		}
 	}
 
-//
-//Progress & Progress Request
-DEFINE_SMELEMENT(ConnStates::TProcessStateChange, NetStateMachine::MStateTransition, ConnStates::TContext)
-void ConnStates::TProcessStateChange::DoL()
-	{
-	TStateChange& progress = message_cast<TCFMessage::TStateChange>(iContext.iMessage).iStateChange;
-
-	//Check whether KDataTransferUnblocked is received and if yes, then traslate it to KConnectionUp (== KLinkLayerOpen)
-	// the log only sees the translated version, this goes into the queue, so it alright I suppose.
-	if (progress.iStage == KDataTransferUnblocked )
-		{
-		progress.iStage = KConnectionUp;	// KLinkLayerOpen
-		}
-	if (progress.iError == KErrForceDisconnected)
-		{
-		progress.iError = KErrDisconnected;
-		}
-
-	LOG( ESockLog::Printf(KESockConnectionTag, _L("CConnection %08x:\tProgressNotification(TInt aStage %d, TInt aError %d)"),
-		&(iContext.Node()), progress.iStage, progress.iError) );
-
-	//Diagnostic assertion.
-	//If ECFActivityConnectionStateChangeRequest is running, it has not been
-	//presented with the TStateChange message (channel activity id != 0?) which is a serious mistake.
-	__ASSERT_DEBUG(iContext.Node().CountActivities(ECFActivityConnectionStateChangeRequest)==0, User::Panic(KSpecAssert_ESockSSockscnsts, 9));
-
-	CConnection& cc = iContext.Node();
-	if (cc.iLastProgress == progress)
-		{
-		return; //ignore this duplicate
-		}
-	cc.iLastProgress = progress;
-
-	if (progress.iError != KErrNone)
-		{
-        cc.iLastProgressError = progress; //Save last progress in error for use by LastProgressErrorL()
-    	}
-
-	#ifdef ESOCK_LOGGING_ACTIVE
-		// Check to see if the progress queue is full causing older progress to be discarded.
-		// This has the potential to cause problems if a critical progress item is lost.
-		// Normally the queue is large enough such that this doesn't happen but this log entry
-		// serves as a warning if it ever does.
-		if( cc.iProgressQueue.IsFull() )
-			{
-			LOG( ESockLog::Printf(KESockConnectionTag, _L("CConnection %08x:\tThe maximum progress queue size of %d has been exceeded - discarding old progress to make space for new item"), this, KMaxProgressQueueLength); )
-			}
-	#endif
-
-	//Add the progress to queue
-	cc.iProgressQueue.Enque(progress);
-	}
-
-DEFINE_SMELEMENT(ConnStates::TProcessProgressRequest, NetStateMachine::MStateTransition, ConnStates::TContext)
-void ConnStates::TProcessProgressRequest::DoL()
-	{
-	__ASSERT_DEBUG(iContext.iNodeActivity, ConnPanic(KPanicNoActivity));
-	CESockClientActivityBase& ac = static_cast<CESockClientActivityBase&>(*iContext.iNodeActivity);
-	TUint selectedProgressStage = ac.Int1();
-
-	TStateChange progress;
-	TBool found = EFalse;
-
-	//Are we here as a result of receiving TStateChange (rather than ECNProgressNotification)?
-	TCFMessage::TStateChange* msg = message_cast<TCFMessage::TStateChange>(&iContext.iMessage);
-	if (msg)
-		{ //Yes, we have been triggered by a TStateChange message
-		//Check if this is the progress we are waiting for, otherwise dump the progress
-		//Check whether KDataTransferUnblocked is received and if yes, then traslate it to KConnectionUp (== KLinkLayerOpen)
-		if (msg->iStateChange.iStage == KDataTransferUnblocked )
-			{
-			msg->iStateChange.iStage = KConnectionUp;	// KLinkLayerOpen
-			}
-		//TODO: Verify if this (connection) is the right place to translate the error
-		if (msg->iStateChange.iError == KErrForceDisconnected)
-			{
-            msg->iStateChange.iError = KErrDisconnected;
-			}
-		if (selectedProgressStage == KConnProgressDefault
-			|| selectedProgressStage == msg->iStateChange.iStage
-				|| KErrNone != msg->iStateChange.iError)
-			{
-			progress = msg->iStateChange;
-			found = ETrue;
-			}
-		}
-	else
-		{ //No, we must have been triggered by a ECNProgressNotification message
-		__ASSERT_DEBUG((subsessmessage_cast<ECNProgressNotification>(&iContext.iMessage)), ConnPanic(KPanicIncorrectMessage));
-
-		//Process the queue looking for the progress of interest
-		found = iContext.Node().iProgressQueue.Deque(progress);
-		if (found && selectedProgressStage != KConnProgressDefault)
-			{
-			// For a selected progress request, dequeue entries until we find one which
-			// matches the criteria.  If we dequeue all entries, fall through without
-			// completing the message.  It it not considered useful to retain un-matching
-			// entries on the queue if a selected progress request is pending.
-			while (found)
-				{
-				if (progress.iStage == selectedProgressStage || progress.iError != KErrNone)
-					{
-					break;
-					}
-				found = iContext.Node().iProgressQueue.Deque(progress);
-				}
-			}
-		}
-
-	if (found)
-		{
-		//We have found a progress of interest, finish
-		TPckg<TStateChange> progressPkg(progress);
-		ac.WriteL(0,progressPkg);
-		ac.SetIdle(); //We are done
-		}
-	}
-
+DEFINE_SMELEMENT(ConnStates::TGenerateConnectionUninitialisedProgress, NetStateMachine::MStateTransition, ConnStates::TContext)
+void ConnStates::TGenerateConnectionUninitialisedProgress::DoL()
+    {
+    if (iContext.Node().CountActivities(ECFActivityDestroy) == 0)
+        {//TGenerateConnectionUninitialisedProgress is called when the stack goes away 
+         //below the CConnection's feet and it sometimes goes away because CConnection is
+         //being ECNClosed and therefore sitting on an electric chair. It is risky, but
+         //above all uselsess to send the progress when when app clearly doesn't want
+         //to see it.
+        TCFMessage::TStateChange msg(TStateChange(KConnectionUninitialised, KErrNone));
+        RNodeInterface::OpenPostMessageClose(iContext.Node().Id(), iContext.Node().Id(), msg);
+        }
+    }
 
 //
 //Legacy enumeration
@@ -1602,8 +1651,6 @@ TInt ConnectionCleanupActivities::TNoTagOrNoTagBackwards::TransitionTag()
     {
 	if ( iContext.iMessage.IsMessage<TEPeer::TLeaveComplete>() )
 		{
-//		__ASSERT_DEBUG(iContext.Node().GetClientIter(RNodeInterface::ECtrl|RNodeInterface::EData)[0] == NULL,
-//		User::Panic(KCorePRPanic, KPanicClientsStillPresent));
 		if (iContext.Node().GetFirstClient<TDefaultClientMatchPolicy>(TCFClientType(TCFClientType::EServProvider)) == NULL)
 			{ // This was the last service provider
 			return NetStateMachine::EForward | MeshMachine::KNoTag;

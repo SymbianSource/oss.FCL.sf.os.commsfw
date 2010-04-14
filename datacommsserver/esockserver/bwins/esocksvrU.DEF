@@ -1047,4 +1047,10 @@ EXPORTS
 	?Self@PRClientLeft@PRClientLeftActivity@@SAABUTNodeActivity@MeshMachine@@XZ @ 1046 NONAME ; struct MeshMachine::TNodeActivity const & PRClientLeftActivity::PRClientLeft::Self(void)
 	?FirstTriple@PRClientLeft@PRClientLeftActivity@@SAABUTStateTriple@NetStateMachine@@XZ @ 1047 NONAME ; struct NetStateMachine::TStateTriple const & PRClientLeftActivity::PRClientLeft::FirstTriple(void)
 	?Accept@TAwaitingStop@CoreNetStates@@UAEHXZ @ 1048 NONAME ; int CoreNetStates::TAwaitingStop::Accept(void)
+	?GetVDataTable@TTierTypeIdFactoryQuery@ESock@@UBEPBUSVDataTableEntry@Meta@@XZ @ 1049 NONAME ; struct Meta::SVDataTableEntry const * ESock::TTierTypeIdFactoryQuery::GetVDataTable(void) const
+	?GetAttribPtr@TTierTypeIdFactoryQuery@ESock@@UBEPAEH@Z @ 1050 NONAME ; unsigned char * ESock::TTierTypeIdFactoryQuery::GetAttribPtr(int) const
+	??0TTierTypeIdFactoryQuery@ESock@@QAE@VTUid@@@Z @ 1051 NONAME ; ESock::TTierTypeIdFactoryQuery::TTierTypeIdFactoryQuery(class TUid)
+	??0TTierTypeIdFactoryQuery@ESock@@QAE@XZ @ 1052 NONAME ; ESock::TTierTypeIdFactoryQuery::TTierTypeIdFactoryQuery(void)
+	?Match@TTierTypeIdFactoryQuery@ESock@@MAE?AW4TMatchResult@MFactoryQuery@Factories@@AAUTFactoryObjectInfo@5@@Z @ 1053 NONAME ; enum Factories::MFactoryQuery::TMatchResult ESock::TTierTypeIdFactoryQuery::Match(struct Factories::TFactoryObjectInfo &)
+	?GetVDataTableStatic@TTierTypeIdFactoryQuery@ESock@@SAPBUSVDataTableEntry@Meta@@XZ @ 1054 NONAME ; struct Meta::SVDataTableEntry const * ESock::TTierTypeIdFactoryQuery::GetVDataTableStatic(void)
 

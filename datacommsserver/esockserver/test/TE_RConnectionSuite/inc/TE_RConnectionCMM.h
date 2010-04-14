@@ -861,6 +861,31 @@ public:
 	virtual enum TVerdict doTestStepL ();
 };
 
+class TE_RConnectionTest481 : public TE_RConnectionStep
+{
+public:
+    virtual enum TVerdict doTestStepL();
+};
+
+class TE_RConnectionTest482 : public TE_RConnectionStep
+{
+public:
+    virtual enum TVerdict doTestStepL();
+};
+
+class TE_RConnectionTest483 : public TE_RConnectionStep
+{
+public:
+    virtual enum TVerdict doTestStepL();
+};
+
+class TE_RConnectionTest484 : public TE_RConnectionStep
+{
+public:
+    virtual enum TVerdict doTestStepL();
+};
+
+
 class TE_RConnectionTest319 : public TE_RConnectionStep
 {
 public:

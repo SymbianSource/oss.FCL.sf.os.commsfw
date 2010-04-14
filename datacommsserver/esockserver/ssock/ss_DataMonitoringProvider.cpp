@@ -114,8 +114,8 @@ EXPORT_C void ADataMonitoringProvider::RequestDataReceivedNotification(CDataMoni
 
 	// Ensure this client has not registered before or if it has, any outstanding requests are
 	// marked as cancelled.
-	TInt requestIdx = iReceivedNotificationRequests.Find(notificationRequest, TIdentityRelation<TNotificationRequest>(TNotificationRequest::CompareClientIds));
-	if(requestIdx != KErrNotFound && !iReceivedNotificationRequests[requestIdx]->Cancelled())
+	TInt requestIdx = iReceivedNotificationRequests.Find(notificationRequest, TIdentityRelation<TNotificationRequest>(TNotificationRequest::CompareClientIdsAndCancelledFlag));
+	if(requestIdx != KErrNotFound)
 		{
 		delete notificationRequest;
 		CDataMonitoringResponder::Error(aResponder, KErrInUse);
@@ -162,14 +162,17 @@ EXPORT_C void ADataMonitoringProvider::CancelDataReceivedNotificationRequest(TSu
 	TNotificationRequest exemplarRequest(NULL, aClientId);
 	
 	// Locate the request matching the specified client ID
-	TInt requestIdx = iReceivedNotificationRequests.Find(&exemplarRequest, TIdentityRelation<TNotificationRequest>(TNotificationRequest::CompareClientIds));	
-	if(requestIdx != KErrNotFound && !iReceivedNotificationRequests[requestIdx]->Cancelled())
+	TInt requestIdx = iReceivedNotificationRequests.Find(&exemplarRequest, TIdentityRelation<TNotificationRequest>(TNotificationRequest::CompareClientIdsAndCancelledFlag));	
+	if(requestIdx != KErrNotFound)
 		{
 		TNotificationRequest* notificationRequest = iReceivedNotificationRequests[requestIdx];
 		
 		// Cancel it and complete the client
 		notificationRequest->SetCancelled();
 		CDataMonitoringResponder::CancelRequest(notificationRequest->Responder());
+		
+		iReceivedNotificationRequests.Remove(requestIdx); 
+        delete notificationRequest;
 		}
 	}
 
@@ -187,8 +190,8 @@ EXPORT_C void ADataMonitoringProvider::RequestDataSentNotification(CDataMonitori
 	
 	// Ensure this client has not registered before or if it has, any outstanding requests are
 	// marked as cancelled.
-	TInt requestIdx = iSentNotificationRequests.Find(notificationRequest, TIdentityRelation<TNotificationRequest>(TNotificationRequest::CompareClientIds));
-	if(requestIdx != KErrNotFound && !iSentNotificationRequests[requestIdx]->Cancelled())
+	TInt requestIdx = iSentNotificationRequests.Find(notificationRequest, TIdentityRelation<TNotificationRequest>(TNotificationRequest::CompareClientIdsAndCancelledFlag));
+	if(requestIdx != KErrNotFound)
 		{
 		delete notificationRequest;
 		CDataMonitoringResponder::Error(aResponder, KErrInUse);
@@ -235,14 +238,17 @@ EXPORT_C void ADataMonitoringProvider::CancelDataSentNotificationRequest(TSubSes
 	TNotificationRequest exemplarRequest(NULL, aClientId);
 	
 	// Locate the request matching the specified client id
-	TInt requestIdx = iSentNotificationRequests.Find(&exemplarRequest, TIdentityRelation<TNotificationRequest>(TNotificationRequest::CompareClientIds));
-	if(requestIdx != KErrNotFound && !iSentNotificationRequests[requestIdx]->Cancelled())
+	TInt requestIdx = iSentNotificationRequests.Find(&exemplarRequest, TIdentityRelation<TNotificationRequest>(TNotificationRequest::CompareClientIdsAndCancelledFlag));
+	if(requestIdx != KErrNotFound)
 		{
 		TNotificationRequest* notificationRequest = iSentNotificationRequests[requestIdx];
 		
 		// Cancel it and complete the client
 		notificationRequest->SetCancelled();
 		CDataMonitoringResponder::CancelRequest(notificationRequest->Responder());
+
+		iSentNotificationRequests.Remove(requestIdx);
+		delete notificationRequest;
 		}
 	}
 
@@ -526,6 +532,21 @@ TBool TNotificationRequest::CompareClientIds(const TNotificationRequest& aFirst,
 		return EFalse;
 		}
 	}
+
+/**
+    Compares two TNotificationRequest objects using their client ids and the cancelled flag as the criteria.
+*/
+TBool TNotificationRequest::CompareClientIdsAndCancelledFlag(const TNotificationRequest& aFirst, const TNotificationRequest& aSecond)
+    {
+    if(aFirst.ClientId() == aSecond.ClientId())
+        {
+        return aFirst.Cancelled() == aSecond.Cancelled();
+        }
+    else
+        {
+        return EFalse;
+        }
+    }
 
 EXPORT_START_ATTRIBUTE_TABLE_AND_FN(TDataMonitoringProvisioningInfoBase, TDataMonitoringProvisioningInfoBase::iUid, TDataMonitoringProvisioningInfoBase::iId)
 	REGISTER_ATTRIBUTE(TDataMonitoringProvisioningInfoBase, iDataVolumesPtr, TMeta<TDataMonitoringProvisioningInfoBase*>)

@@ -29,4 +29,3 @@ EXPORTS
 	?SignalDeletion@CFactoryBase@Factories@@AAEXAAVAFactoryObject@2@@Z @ 28 NONAME ; void Factories::CFactoryBase::SignalDeletion(class Factories::AFactoryObject &)
 	?Uid@CFactoryBase@Factories@@QBE?AVTUid@@XZ @ 29 NONAME ; class TUid Factories::CFactoryBase::Uid(void) const
 
-

@@ -134,6 +134,7 @@ enum EMessageTypeId //message signatures only (NOT messages) messages are declar
 	EDefaultSCPRFactoryQuery		=1010,
 	EDefaultFlowFactoryQuery		=1011,
 	EDefaultProtocolIntfFactoryQuery =1012,	
+	ETierTypeIdFactoryQuery     =1013,
 	};
 
 //no need to serialise return value
@@ -263,6 +264,10 @@ EXPORT_START_ATTRIBUTE_TABLE_AND_FN(TMetaConnectionFactoryQuery, KESockInternalM
 	REGISTER_ATTRIBUTE(TMetaConnectionFactoryQuery, iTierImplUid, TMeta<TUint>)  
 END_ATTRIBUTE_TABLE()
 
+EXPORT_START_ATTRIBUTE_TABLE_AND_FN(TTierTypeIdFactoryQuery, KESockInternalMessagesImplementationUid, ETierTypeIdFactoryQuery)  
+    REGISTER_ATTRIBUTE(TTierTypeIdFactoryQuery, iTierTypeId, TMeta<TUint>)  
+END_ATTRIBUTE_TABLE()
+
 EXPORT_START_ATTRIBUTE_TABLE_AND_FN(TDefaultConnectionFactoryQuery, KESockInternalMessagesImplementationUid, EDefaultConnectionFactoryQuery)	
 	REGISTER_ATTRIBUTE(TDefaultConnectionFactoryQuery, iMCprId, TMeta<TNodeId>)	
 END_ATTRIBUTE_TABLE()
@@ -330,6 +335,7 @@ DEFINE_MVIP_CTR(TDefaultConnectionFactoryQuery)
 DEFINE_MVIP_CTR(TDefaultSCPRFactoryQuery)
 DEFINE_MVIP_CTR(TDefaultFlowFactoryQuery)
 DEFINE_MVIP_CTR(TDefaultProtocolIntfFactoryQuery)
+DEFINE_MVIP_CTR(TTierTypeIdFactoryQuery)
 
 
 const TImplementationProxy SignatureImplementationTable[] =
@@ -373,6 +379,7 @@ const TImplementationProxy SignatureImplementationTable[] =
 	MVIP_CTR_ENTRY(EDefaultSCPRFactoryQuery, TDefaultSCPRFactoryQuery), //1008	
 	MVIP_CTR_ENTRY(EDefaultFlowFactoryQuery, TDefaultFlowFactoryQuery),
 	MVIP_CTR_ENTRY(EDefaultProtocolIntfFactoryQuery, TDefaultProtocolIntfFactoryQuery),	
+	MVIP_CTR_ENTRY(ETierTypeIdFactoryQuery, TTierTypeIdFactoryQuery), //1013
 	};
 
 
@@ -640,6 +647,23 @@ EXPORT_C MFactoryQuery::TMatchResult TMetaConnectionFactoryQuery::Match(Factorie
 	CMetaConnectionProviderBase* prov = static_cast<CMetaConnectionProviderBase*>(aFactoryObjectInfo.iInfo.iFactoryObject);
 	return prov->ProviderInfo() == iProviderInfo? MFactoryQuery::EMatch : MFactoryQuery::EContinue;		
 	}
+
+EXPORT_C TTierTypeIdFactoryQuery::TTierTypeIdFactoryQuery()
+    {
+        
+    }
+
+EXPORT_C TTierTypeIdFactoryQuery::TTierTypeIdFactoryQuery(const TUid aTierTypeId)
+: iTierTypeId(aTierTypeId)
+    {
+    
+    }
+    
+EXPORT_C MFactoryQuery::TMatchResult TTierTypeIdFactoryQuery::Match(Factories::TFactoryObjectInfo& aFactoryObjectInfo)
+    {
+    CTierManagerBase* prov = static_cast<CTierManagerBase*>(aFactoryObjectInfo.iInfo.iFactoryObject);
+    return prov->TierId() == iTierTypeId ? MFactoryQuery::EMatch : MFactoryQuery::EContinue;     
+    }
 
 EXPORT_C TDefaultConnectionFactoryQuery::TDefaultConnectionFactoryQuery(const Messages::TNodeId& aMCprId)
 : iMCprId(aMCprId)
