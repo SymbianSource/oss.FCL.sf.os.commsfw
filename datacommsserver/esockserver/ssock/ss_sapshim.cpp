@@ -92,8 +92,9 @@ void CTransportFlowShim::Unbind( MUpperDataReceiver* /*aReceiver*/, MUpperContro
     {
     (void)aControl;
     __ASSERT_DEBUG(aControl == iHostResolverNotify, User::Panic(KSpecAssert_ESockSSocksspshm, 1));
-    __ASSERT_DEBUG(iDCIdle <= EClientsPresent, User::Panic(KSpecAssert_ESockSSocksspshm, 2));
-    iDCIdle = EIdle;
+    __ASSERT_DEBUG(!(Idle() || IdleSent()), User::Panic(KSpecAssert_ESockSSocksspshm, 2));
+    SetIdle();
+	
     iHostResolverNotify = NULL;
     if(iSubConnectionProvider.IsOpen())	// legacy flows have no control side
     	{
@@ -163,7 +164,7 @@ CTransportFlowShim::~CTransportFlowShim()
 		iListenerControlNotify->DisconnectFromListener(*this);
 		}
 
-	if(!iDetaching)
+	if(!Detaching())
 		{
 		delete iProvider;
 		iProvider = NULL;
@@ -283,14 +284,14 @@ void CTransportFlowShim::Unbind()
 		{
 		__ASSERT_DEBUG(!iProvider, User::Panic(KSpecAssert_ESockSSocksspshm, 9));	// can't have both HR & SAP
 
-		LOG( ESockLog::Printf(_L8("CTransportFlowShim %08x:\tUnbind(): iBearerExpected %d"), this, iBearerExpected) );
-		if (!iBearerExpected)
+		LOG( ESockLog::Printf(_L8("CTransportFlowShim %08x:\tUnbind(): iBearerExpected %d"), this, BearerExpected()) );
+		if (!BearerExpected())
 			{
 			delete this;
 			}
 		else
 			{
-			iDeleteUponBearerReception = ETrue;
+			SetDeleteUponBearerReception();
 			iHostResolverNotify = NULL;
 			}
 		return;
@@ -300,7 +301,7 @@ void CTransportFlowShim::Unbind()
 		{
 		iProvider->SetNotify(NULL);
 
-		if (!iDetaching)
+		if (!Detaching())
 			{
 			delete iProvider;
 			iProvider = NULL;
@@ -412,7 +413,7 @@ Do the actual no Bearer call.
 */
 	{
 	TInt ret = EFalse;
-	if(!iIsStopped)
+	if(!Stopped())
 		{ // Prevent sending NoBearer if DataClientStop was received
 		if (LockToConnectionInfo() != KErrNone)
 		    {
@@ -420,7 +421,8 @@ Do the actual no Bearer call.
 			PostNoBearer();
 			ret = ETrue;
 		    }
-		iUseBearerErrors = EFalse;
+		ClearUseBearerErrors();
+
 		ClearDataClientRoutedGuard();
 		}
 	return ret;
@@ -632,7 +634,7 @@ will be destroyed as soon as Shutdown() returns.
 	__ASSERT_DEBUG(iProvider, User::Panic(KSpecAssert_ESockSSocksspshm, 24));
 	if (aOption == MSessionControl::EImmediate)
 		{
-		iShuttingDown = ETrue;
+		SetShuttingDown();
 		}
 
 	// It is possible for the provider to be null if an error occurs immediatly
@@ -880,7 +882,8 @@ void CTransportFlowShim::CanClose(MSocketNotify::TDelete aDelete)
 
 	if(iSessionControlNotify)
 		{
-		iDetaching = aDelete == MSocketNotify::EDetach;
+		aDelete == MSocketNotify::EDetach ? SetDetaching() : ClearDetaching();
+		
 		iSessionControlNotify->CanClose(MSessionControlNotify::TDelete(aDelete));
         if(aDelete==MSocketNotify::EDetach)
             {
@@ -903,7 +906,7 @@ void CTransportFlowShim::CanClose(const TDesC8& aDisconnectData,MSocketNotify::T
 
 	if(iSessionControlNotify)
 		{
-        iDetaching = aDelete == MSocketNotify::EDetach;
+		aDelete == MSocketNotify::EDetach ? SetDetaching() : ClearDetaching();
 		iSessionControlNotify->CanClose(aDisconnectData, MSessionControlNotify::TDelete(aDelete));
 		if(aDelete==MSocketNotify::EDetach)
 			{
@@ -945,7 +948,7 @@ void CTransportFlowShim::Error(TInt anError, TUint anOperationMask)
 
 		// No control above us - likely cause is that we're the result of a passive open that
 		// hasn't yet been accepted.
-		iDetaching = MSocketNotify::EDetach;
+		SetDetaching();
 		Unbind();
 		}
 	}
@@ -964,7 +967,7 @@ void CTransportFlowShim::Disconnect(void)
 
 		// No control above us - likely cause is that we're the result of a passive open that
 		// hasn't yet been accepted.
-		iDetaching = MSocketNotify::EDetach;
+		SetDetaching();
 		Unbind();
 		}
 	}
@@ -983,7 +986,7 @@ void CTransportFlowShim::Disconnect(TDesC8& aDisconnectData)
 
 		// No control above us - likely cause is that we're the result of a passive open that
 		// hasn't yet been accepted.
-		iDetaching = MSocketNotify::EDetach;
+		SetDetaching();
 		Unbind();
 		}
 	}
@@ -1027,11 +1030,11 @@ void CTransportFlowShim::Bearer(const TDesC8& aConnectionInfo)
 		return;
 		}
 
-	iUseBearerErrors = ETrue;
+	SetUseBearerErrors();
 	LocalName(iLocalAddress);
-	iLocalAddressSet = ETrue;
+	SetLocalAddressSet();
 	RemName(iRemoteAddress);
-	iRemoteAddressSet = ETrue;
+	SetRemoteAddressSet();
 	__ASSERT_DEBUG(iSubConnectionProvider.IsOpen(), User::Panic(KSpecAssert_ESockSSocksspshm, 41));	// legacy flows have no control side; should never get here
 
 	PostDataClientRouted();
@@ -1086,7 +1089,7 @@ void CTransportFlowShim::ReceivedL(const TRuntimeCtxId& aSender, const TNodeId& 
     	//before break, hence it tries to apply the new owner, during which time the new
     	//owner starts and hence attempts to TBindTo his new child. The child hates it
     	//as it arrives from an unknown node. The rejoin protocol needs rethinking.
-		RClientInterface::OpenPostMessageClose(Id(), aSender, TCFDataClient::TBindToComplete(KErrNone).CRef());
+		RClientInterface::OpenPostMessageClose(Id(), aSender, TCFDataClient::TBindToComplete().CRef());
     	return;
     	}
     CNetworkFlow::ReceivedL(aSender, aRecipient, aMessage);
@@ -1158,7 +1161,16 @@ void CTransportFlowShim::ReceivedL(const TRuntimeCtxId& aSender, const TNodeId& 
 			TRAPD(err,BindToL(bindToMsg));
 			// Ensure that TBindToComplete message gets sent before TIdle so that it gets to the destination
 			// before destroy processing.
-			RClientInterface::OpenPostMessageClose(Id(), aSender, TCFDataClient::TBindToComplete(err).CRef());
+			if(err == KErrNone)
+			    {
+			    RClientInterface::OpenPostMessageClose(Id(), aSender, TCFDataClient::TBindToComplete().CRef());
+			    }
+			else
+			    {
+			    RClientInterface::OpenPostMessageClose(Id(), aSender, TEBase::TError(aMessage.MessageId(), err).CRef());
+			    }
+			
+			
 			ProcessDCIdleState();	// in case we were waiting to send idle
 			//If we have received TDataClientStart before (when we did not yet have a bearer),
 			//we complete the start here as well
@@ -1170,7 +1182,7 @@ void CTransportFlowShim::ReceivedL(const TRuntimeCtxId& aSender, const TNodeId& 
 					{
 					CompleteStart(err);
 					}
-               iBearerExpected = ETrue;
+				SetBearerExpected();
 				}
 			else
 		    	{
@@ -1249,7 +1261,7 @@ void CTransportFlowShim::ReceivedL(const TRuntimeCtxId& aSender, const TNodeId& 
 			{
 			CompleteStart(KErrNone);
 			}
-		LOG( ESockLog::Printf(_L8("CTransportFlowShim %08x:\tReceivedL(): TBearer: iDeleteUponBearerReception %d"), this, iDeleteUponBearerReception) );
+		LOG( ESockLog::Printf(_L8("CTransportFlowShim %08x:\tReceivedL(): TBearer: iDeleteUponBearerReception %d"), this, DeleteUponBearerReception()));
 
 		ClearNoBearerGuard();
 		ProcessDCIdleState();
@@ -1266,8 +1278,9 @@ void CTransportFlowShim::ReceivedL(const TRuntimeCtxId& aSender, const TNodeId& 
 
 void CTransportFlowShim::NoBearerCompletion()
 	{
-	iBearerExpected = EFalse;
-	if (iDeleteUponBearerReception)
+	ClearBearerExpected();
+
+	if (DeleteUponBearerReception())
 		{
 		delete this;
 		}
@@ -1283,8 +1296,8 @@ void CTransportFlowShim::CompleteStart(TInt aError)
 	if (aError==KErrNone)
 		{
 		iStartRequest.ReplyTo(Id(), TCFDataClient::TStarted().CRef());
-		iIsStarted = ETrue;
-		iIsStopped = EFalse;
+		SetStarted();
+		ClearStopped();
 		}
 	else
 		{
@@ -1333,7 +1346,7 @@ up and running and that we should bind to a Flow below.
 	NM_LOG((KESockServerTag, _L8("CTransportFlowShim %08x:\tSynchronous call: From=%08x To=%08x Func=BindToL"),
 			this, static_cast<Messages::ANode*>(this), &aBindTo.iNodeId.Node()) )
 
-	if (iShuttingDown)
+	if (ShuttingDown())
 		{
 		User::Leave(KErrCancel);
 		return;
@@ -1344,9 +1357,10 @@ up and running and that we should bind to a Flow below.
 		{
 		LockToConnectionInfo();
 		LocalName(iLocalAddress);
-		iLocalAddressSet = ETrue;
+		SetLocalAddressSet();
 		RemName(iRemoteAddress);
-		iRemoteAddressSet = ETrue;
+		SetRemoteAddressSet();
+		
 		__ASSERT_DEBUG(iSubConnectionProvider.IsOpen(), User::Panic(KSpecAssert_ESockSSocksspshm, 48));	// legacy flows have no control side; should never get here
 		}
 	else if (iHostResolverNotify)
@@ -1382,13 +1396,13 @@ void CTransportFlowShim::Rejoin(const TCFFlow::TRejoin& aRejoinMessage)
 
 void CTransportFlowShim::StartFlowL(const TRuntimeCtxId& aSender)
 	{
-	__ASSERT_DEBUG(!iIsStarted, User::Panic(KSpecAssert_ESockSSocksspshm, 49));
+	__ASSERT_DEBUG(!Started(), User::Panic(KSpecAssert_ESockSSocksspshm, 49));
 	__ASSERT_DEBUG(iSubConnectionProvider.IsOpen(), User::Panic(KSpecAssert_ESockSSocksspshm, 50));	// legacy flows have no control side; should never get here
 
 	//We will wait for it and complete the start after we have received it
 	User::LeaveIfError(iStartRequest.Open(iSubConnectionProvider, aSender));
 
-	if (iDCIdle != EClientsPresent)
+	if (Idle())
 		{
 		iStartRequest.ReplyTo(Id(), TEBase::TError(TCFDataClient::TStart::Id(), KErrNotReady).CRef());
 		iStartRequest.Close();
@@ -1399,8 +1413,8 @@ void CTransportFlowShim::StartFlowL(const TRuntimeCtxId& aSender)
 		{
 		iStartRequest.ReplyTo(Id(), TCFDataClient::TStarted().CRef());
 		iStartRequest.Close();
-		iIsStarted = ETrue;
-		iIsStopped = EFalse;
+		SetStarted();
+		ClearStopped();
 		return;
 		}
 
@@ -1411,7 +1425,6 @@ void CTransportFlowShim::StartFlowL(const TRuntimeCtxId& aSender)
 
 void CTransportFlowShim::StopFlow(TCFDataClient::TStop& aMessage)
 	{
-	__ASSERT_DEBUG(iIsStarted, User::Panic(KSpecAssert_ESockSSocksspshm, 51)); //Must be started now
 	__ASSERT_DEBUG(iSubConnectionProvider.IsOpen(), User::Panic(KSpecAssert_ESockSSocksspshm, 52));	// legacy flows have no control side; should never get here
 
 	// We need to error the socket if the lower protocol stack is not going to do this.  Once a
@@ -1425,7 +1438,11 @@ void CTransportFlowShim::StopFlow(TCFDataClient::TStop& aMessage)
 	// RConnection but not transferring any data will not cause the TCP/IP stack to attach the flow
 	// to the route and hence not call Error() if the interface comes down.
 
-	if (IsBoundToSession() && !iUseBearerErrors)
+	if (IsBoundToSession() && aMessage.iValue == KErrForceDisconnected)
+		{
+		Error(KErrDisconnected, EErrorAllOperations);
+		}
+	else if (IsBoundToSession() && !UseBearerErrors())
 	    {
     	Error(aMessage.iValue, EErrorAllOperations);
 	    }
@@ -1438,14 +1455,14 @@ void CTransportFlowShim::StopFlow(TCFDataClient::TStop& aMessage)
 	iLowerControl = NULL;
 
 	iSubConnectionProvider.PostMessage(Id(), TCFDataClient::TStopped(aMessage.iValue).CRef());
-	iIsStarted = EFalse;
-	iIsStopped = ETrue;
+	ClearStarted();
+	SetStopped();
 	}
 
 void CTransportFlowShim::InitDestroy()
 	{
-    __ASSERT_DEBUG(iDCIdle <= EClientsPresent, User::Panic(KSpecAssert_ESockSSocksspshm, 53));
-    iDCIdle = EIdle;
+	__ASSERT_DEBUG(!(Idle() || IdleSent()), User::Panic(KSpecAssert_ESockSSocksspshm, 53));
+    SetIdle();
 
     if(iSubConnectionProvider.IsOpen())	// legacy flows have no control side
     	{
@@ -1473,8 +1490,8 @@ void CTransportFlowShim::PostNoBearer()
 
 void CTransportFlowShim::PostDataClientRouted()
 	{
- 	if (iLocalAddressSet && iRemoteAddressSet
-	&& iRemoteAddress.Family() != KAFUnspec && !iDataClientRoutedGuard)
+	if (LocalAddressSet() && RemoteAddressSet()
+		&& iRemoteAddress.Family() != KAFUnspec && !DataClientRoutedGuard())
 		{
 		iSubConnectionProvider.PostMessage(
 			Id(),
@@ -1486,15 +1503,9 @@ void CTransportFlowShim::PostDataClientRouted()
 					iIfInfo.iIAPId)
 				).CRef()
 			);
-		iDataClientRoutedGuard = ETrue;
+		SetDataClientRoutedGuard();
 		}
 	}
-
-void CTransportFlowShim::ClearDataClientRoutedGuard()
-	{
-	iDataClientRoutedGuard = EFalse;
-	}
-
 
 /*
 Store the provision information passed from the Control side.
@@ -1770,7 +1781,7 @@ This method overrides CTransportFlowShim::NoBearer() for UPS specific handling.
 			}
 		}
 
-	if(!IsStopped())
+	if(!Stopped())
 		{ // Prevent sending NoBearer if DataClientStop was received
 		ParseNoBearerParams(aConnectionParams);
 		if (iIsScoped)
@@ -1887,7 +1898,7 @@ scope id in the socket address).
 	{
 	SetPolicyCheckRequestPending(EFalse);
 
-	if (iDCIdle == EIdle)
+	if (Idle() && !IdleSent())
 		{
 		ProcessDCIdleState();
 		}

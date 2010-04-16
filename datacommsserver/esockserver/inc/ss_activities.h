@@ -71,9 +71,8 @@ enum TCFNodeActivityId
 
 	ECFActivityGoneUp                   = 25,
 	ECFActivityAny			    = 26,
+	ECFActivityClientLeft       = 27,
 
-
-	//spare = 27,
 	//spare = 28,
 	//spare = 29,
 	//spare = 30,

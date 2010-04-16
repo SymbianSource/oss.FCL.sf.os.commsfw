@@ -53,7 +53,7 @@ DECLARE_DEFINE_CUSTOM_NODEACTIVITY(ECFActivityDestroy, FlowRequestDestroy, TEChi
 	FIRST_NODEACTIVITY_ENTRY(MeshMachine::TAwaitingDestroy, MeshMachine::TNoTag)
 	THROUGH_NODEACTIVITY_ENTRY(KNoTag, FlowRequestStates::TRemoveRequestor, MeshMachine::TNoTag)
 	//TCFSubConnFlowRequest adds subconnection as a control provider so remove if necessary
-	THROUGH_NODEACTIVITY_ENTRY(KNoTag, CoreNetStates::TSendClientLeavingAndRemoveControlProvider, MeshMachine::TNoTag)
+	THROUGH_NODEACTIVITY_ENTRY(KNoTag, FlowRequestStates::TSendClientLeavingAndRemoveControlProvider, MeshMachine::TNoTag)
 	THROUGH_NODEACTIVITY_ENTRY(KNoTag, CoreNetStates::TLeaveServiceProvidersOrSetIdle, MeshMachine::TNoTag)
 	//TDestroyAwaitingLeaveCompleteLoop loops back to its own triple if more SPs
 	NODEACTIVITY_ENTRY(KNoTag, CoreNetStates::TSetIdleIfNoServiceProviders, MeshMachine::TAwaitingLeaveComplete, CoreActivities::CDestroyActivity::TNoTagOrNoTagBackwards)
@@ -67,13 +67,14 @@ DECLARE_DEFINE_CUSTOM_NODEACTIVITY(ECFActivityImplicitFlow, ImplicitFlow, TCFInt
 	FIRST_NODEACTIVITY_ENTRY(FlowRequestStates::TAwaitingImplicitFlowRequest, MeshMachine::TNoTag)
 	THROUGH_NODEACTIVITY_ENTRY(KNoTag, CFlowRequestActivity::TStoreFlowParams, MeshMachine::TNoTag)
 	NODEACTIVITY_ENTRY(KNoTag, FlowRequestStates::TRequestCSRCreation, CoreNetStates::TAwaitingCSRCreated, MeshMachine::TNoTag)
-	NODEACTIVITY_ENTRY(KNoTag, FlowRequestStates::TSelectMetaPlane, CoreNetStates::TAwaitingBindTo, MeshMachine::TNoTag)
+	NODEACTIVITY_ENTRY(KNoTag, FlowRequestStates::TSelectMetaPlane, CFlowRequestActivity::TAwaitingBindTo, MeshMachine::TNoTag)
 	NODEACTIVITY_ENTRY(KNoTag, CoreNetStates::TSendControlClientJoinRequest, CoreStates::TAwaitingJoinComplete, MeshMachine::TNoTag)
-	NODEACTIVITY_ENTRY(KNoTag, CoreActivities::ABindingActivity::TSendBindToCompleteAndRequestCommsBinder, CoreNetStates::TAwaitingBinderResponse,MeshMachine::TNoTag)
+	THROUGH_NODEACTIVITY_ENTRY(KNoTag, CFlowRequestActivity::TSendBindToComplete,MeshMachine::TNoTag)
+	NODEACTIVITY_ENTRY(KNoTag, CoreNetStates::TRequestCommsBinder, CoreNetStates::TAwaitingBinderResponse,MeshMachine::TNoTag)
 	NODEACTIVITY_ENTRY(KNoTag, FlowRequestStates::TJoinReceivedSCpr, CoreStates::TAwaitingJoinComplete, MeshMachine::TNoTag)
 	THROUGH_NODEACTIVITY_ENTRY(KNoTag, CoreActivities::ABindingActivity::TSendBindToComplete, MeshMachine::TNoTag)
 	NODEACTIVITY_ENTRY(KNoTag, FlowRequestStates::TRequestCommsBinderFromSCpr, CoreNetStates::TAwaitingBinderResponse, MeshMachine::TNoTag)
-	NODEACTIVITY_ENTRY(KNoTag, CoreNetStates::TSendBindTo, CoreNetStates::TAwaitingBindToComplete, MeshMachine::TNoTag)
+	NODEACTIVITY_ENTRY(KNoTag, CoreNetStates::TSendBindTo, TAcceptErrorState<CoreNetStates::TAwaitingBindToComplete>, MeshMachine::TNoTag)
 	THROUGH_NODEACTIVITY_ENTRY(KNoTag, CoreActivities::ABindingActivity::TSendBindToComplete, MeshMachine::TNoTag)
 	//Cleanup
 	THROUGH_NODEACTIVITY_ENTRY(KNoTag, FlowRequestStates::TRemoveRequestor, MeshMachine::TNoTag)
@@ -93,7 +94,7 @@ DECLARE_DEFINE_CUSTOM_NODEACTIVITY(ECFActivityConnectionFlow, ConnectionFlow, TC
 	NODEACTIVITY_ENTRY(KNoTag, FlowRequestStates::TJoinReceivedSCpr, CoreStates::TAwaitingJoinComplete, MeshMachine::TNoTag)
 	THROUGH_NODEACTIVITY_ENTRY(KNoTag, CoreActivities::ABindingActivity::TSendBindToComplete, MeshMachine::TNoTag)
 	NODEACTIVITY_ENTRY(KNoTag, FlowRequestStates::TRequestCommsBinderFromSCpr, CoreNetStates::TAwaitingBinderResponse, MeshMachine::TNoTag)
-	NODEACTIVITY_ENTRY(KNoTag, CoreNetStates::TSendBindTo, CoreNetStates::TAwaitingBindToComplete,MeshMachine::TNoTag)
+	NODEACTIVITY_ENTRY(KNoTag, CoreNetStates::TSendBindTo, TAcceptErrorState<CoreNetStates::TAwaitingBindToComplete>,MeshMachine::TNoTag)
 	THROUGH_NODEACTIVITY_ENTRY(KNoTag, CoreActivities::ABindingActivity::TSendBindToComplete, MeshMachine::TNoTag)
 	//Cleanup
 	THROUGH_NODEACTIVITY_ENTRY(KNoTag, FlowRequestStates::TRemoveRequestor, MeshMachine::TNoTag)
@@ -111,13 +112,13 @@ DECLARE_DEFINE_CUSTOM_NODEACTIVITY(ECFActivitySubConnectionFlow, SubConnectionFl
 	// Send TNoBearer to CSubConnection and wait for TBindTo?
 	THROUGH_NODEACTIVITY_ENTRY(KNoTag, CFlowRequestActivity::TStoreFlowParams, MeshMachine::TNoTag)
 	NODEACTIVITY_ENTRY(KNoTag, FlowRequestStates::TJoinSubConnection, CoreStates::TAwaitingJoinComplete, MeshMachine::TNoTag)
-	NODEACTIVITY_ENTRY(KNoTag, FlowRequestStates::TSendNoBearer, MeshMachine::TAcceptErrorState<CoreNetStates::TAwaitingBindTo>, MeshMachine::TNoTagOrErrorTag)
+	NODEACTIVITY_ENTRY(KNoTag, FlowRequestStates::TSendNoBearer, MeshMachine::TAcceptErrorState<CFlowRequestActivity::TAwaitingBindTo>, MeshMachine::TNoTagOrErrorTag)
 
         // NoBearer Succeeded
         // Forward TBindTo to the socket itself. After all it is the one to do the binding
-        NODEACTIVITY_ENTRY(KNoTag, FlowRequestStates::TForwardBindToMsgToOriginator, CoreNetStates::TAwaitingBindToComplete, MeshMachine::TNoTag)
+        NODEACTIVITY_ENTRY(KNoTag, FlowRequestStates::TForwardBindToMsgToOriginator, TAcceptErrorState<CoreNetStates::TAwaitingBindToComplete>, MeshMachine::TNoTag)
         THROUGH_NODEACTIVITY_ENTRY(KNoTag, MeshMachine::TClearError, MeshMachine::TNoTag) // The socket will error the client. Allow the BindToComplete to finish naturally.
-        THROUGH_NODEACTIVITY_ENTRY(KNoTag, CoreActivities::ABindingActivity::TSendBindToComplete, MeshMachine::TNoTag)
+        THROUGH_NODEACTIVITY_ENTRY(KNoTag, CFlowRequestActivity::TSendBindToComplete, MeshMachine::TNoTag)
     
         // Cleanup
         THROUGH_NODEACTIVITY_ENTRY(KNoTag, FlowRequestStates::TRemoveRequestor, MeshMachine::TNoTag)

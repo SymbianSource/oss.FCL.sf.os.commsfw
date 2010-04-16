@@ -1,6 +1,6 @@
 EXPORTS
 	?ThreadEntrypoint@CWorkerThread@@SAHPAX@Z @ 1 NONAME ; int CWorkerThread::ThreadEntrypoint(void *)     
-        ?GetVDataTableStatic@TMCprGetConnectionSetting@ESock@@SAPBUSVDataTableEntry@Meta@@XZ @ 2 NONAME ; struct Meta::SVDataTableEntry const * ESock::TMCprGetConnectionSetting::GetVDataTableStatic(void)
+	?GetVDataTableStatic@TMCprGetConnectionSetting@ESock@@SAPBUSVDataTableEntry@Meta@@XZ @ 2 NONAME ; struct Meta::SVDataTableEntry const * ESock::TMCprGetConnectionSetting::GetVDataTableStatic(void)
 	?Write@RInternalSocket@@QAEXABVTDesC8@@AAVTRequestStatus@@@Z @ 3 NONAME ; void RInternalSocket::Write(class TDesC8 const &, class TRequestStatus &)
 	?WorkerId@ESockLogExternal@@SAHXZ @ 4 NONAME ; int ESockLogExternal::WorkerId(void)
 	??0CConnectionSettings@@QAE@XZ @ 5 NONAME ; CConnectionSettings::CConnectionSettings(void)
@@ -472,7 +472,7 @@ EXPORTS
 	?DoL@TSendBindTo@CoreNetStates@@UAEXXZ @ 471 NONAME ; void CoreNetStates::TSendBindTo::DoL(void)
 	?DoL@TSendBindToComplete@ABindingActivity@CoreActivities@@UAEXXZ @ 472 NONAME ; void CoreActivities::ABindingActivity::TSendBindToComplete::DoL(void)
 	?DoL@TSendBindToComplete@CoreNetStates@@UAEXXZ @ 473 NONAME ; void CoreNetStates::TSendBindToComplete::DoL(void)
-	?DoL@TSendBindToCompleteIfExpected@ABindingActivity@CoreActivities@@UAEXXZ @ 474 NONAME ; void CoreActivities::ABindingActivity::TSendBindToCompleteIfExpected::DoL(void)
+	?DoL@TSendBindToCompleteIfExpected@ABindingActivity@CoreActivities@@UAEXXZ @ 474 NONAME ABSENT; void CoreActivities::ABindingActivity::TSendBindToCompleteIfExpected::DoL(void)
 	?DoL@TSendBinderResponse@CCommsBinderActivity@PRActivities@@UAEXXZ @ 475 NONAME ; void PRActivities::CCommsBinderActivity::TSendBinderResponse::DoL(void)
 	?DoL@TSendClientLeavingAndRemoveControlProvider@CoreNetStates@@UAEXXZ @ 476 NONAME ; void CoreNetStates::TSendClientLeavingAndRemoveControlProvider::DoL(void)
 	?DoL@TSendClientLeavingAndRemoveControlProviderIfNoServiceProviders@CoreNetStates@@UAEXXZ @ 477 NONAME ; void CoreNetStates::TSendClientLeavingAndRemoveControlProviderIfNoServiceProviders::DoL(void)
@@ -808,7 +808,7 @@ EXPORTS
 	?GetVTablePtr@TSendBindToComplete@ABindingActivity@CoreActivities@@SAPAVMStateTransition@NetStateMachine@@AAVTDesC8@@PAX@Z @ 807 NONAME ; class NetStateMachine::MStateTransition * CoreActivities::ABindingActivity::TSendBindToComplete::GetVTablePtr(class TDesC8 &, void *)
 	?GetVTablePtr@TSendBindToComplete@CBindToActivity@PRActivities@@SAPAVMStateTransition@NetStateMachine@@AAVTDesC8@@PAX@Z @ 808 NONAME ; class NetStateMachine::MStateTransition * PRActivities::CBindToActivity::TSendBindToComplete::GetVTablePtr(class TDesC8 &, void *)
 	?GetVTablePtr@TSendBindToComplete@CoreNetStates@@SAPAVMStateTransition@NetStateMachine@@AAVTDesC8@@PAX@Z @ 809 NONAME ; class NetStateMachine::MStateTransition * CoreNetStates::TSendBindToComplete::GetVTablePtr(class TDesC8 &, void *)
-	?GetVTablePtr@TSendBindToCompleteIfExpected@ABindingActivity@CoreActivities@@SAPAVMStateTransition@NetStateMachine@@AAVTDesC8@@PAX@Z @ 810 NONAME ; class NetStateMachine::MStateTransition * CoreActivities::ABindingActivity::TSendBindToCompleteIfExpected::GetVTablePtr(class TDesC8 &, void *)
+	?GetVTablePtr@TSendBindToCompleteIfExpected@ABindingActivity@CoreActivities@@SAPAVMStateTransition@NetStateMachine@@AAVTDesC8@@PAX@Z @ 810 NONAME ABSENT; class NetStateMachine::MStateTransition * CoreActivities::ABindingActivity::TSendBindToCompleteIfExpected::GetVTablePtr(class TDesC8 &, void *)
 	?GetVTablePtr@TSendBinderResponse@CCommsBinderActivity@PRActivities@@SAPAVMStateTransition@NetStateMachine@@AAVTDesC8@@PAX@Z @ 811 NONAME ; class NetStateMachine::MStateTransition * PRActivities::CCommsBinderActivity::TSendBinderResponse::GetVTablePtr(class TDesC8 &, void *)
 	?GetVTablePtr@TSendClientLeavingAndRemoveControlProvider@CoreNetStates@@SAPAVMStateTransition@NetStateMachine@@AAVTDesC8@@PAX@Z @ 812 NONAME ; class NetStateMachine::MStateTransition * CoreNetStates::TSendClientLeavingAndRemoveControlProvider::GetVTablePtr(class TDesC8 &, void *)
 	?GetVTablePtr@TSendClientLeavingAndRemoveControlProviderIfNoServiceProviders@CoreNetStates@@SAPAVMStateTransition@NetStateMachine@@AAVTDesC8@@PAX@Z @ 813 NONAME ; class NetStateMachine::MStateTransition * CoreNetStates::TSendClientLeavingAndRemoveControlProviderIfNoServiceProviders::GetVTablePtr(class TDesC8 &, void *)
@@ -1044,4 +1044,7 @@ EXPORTS
 	?TierImplId@CTierManagerBase@ESock@@QBE?AVTUid@@XZ @ 1043 NONAME ; class TUid ESock::CTierManagerBase::TierImplId(void) const
 	?GetVTablePtr@TCancelStart@CoreNetStates@@SAPAVMStateTransition@NetStateMachine@@AAVTDesC8@@PAX@Z @ 1044 NONAME ; class NetStateMachine::MStateTransition * CoreNetStates::TCancelStart::GetVTablePtr(class TDesC8 &, void *)
 	?CountParameterSets@RCFParameterFamilyBundleC@ESock@@QBEIXZ @ 1045 NONAME ; unsigned int ESock::RCFParameterFamilyBundleC::CountParameterSets(void) const
-
+	?Self@PRClientLeft@PRClientLeftActivity@@SAABUTNodeActivity@MeshMachine@@XZ @ 1046 NONAME ; struct MeshMachine::TNodeActivity const & PRClientLeftActivity::PRClientLeft::Self(void)
+	?FirstTriple@PRClientLeft@PRClientLeftActivity@@SAABUTStateTriple@NetStateMachine@@XZ @ 1047 NONAME ; struct NetStateMachine::TStateTriple const & PRClientLeftActivity::PRClientLeft::FirstTriple(void)
+	?Accept@TAwaitingStop@CoreNetStates@@UAEHXZ @ 1048 NONAME ; int CoreNetStates::TAwaitingStop::Accept(void)
+	

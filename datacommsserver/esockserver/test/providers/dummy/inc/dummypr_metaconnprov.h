@@ -26,11 +26,12 @@
 #include <comms-infras/ss_coreprstates.h>
 #include <comms-infras/mobilitymcpr.h>
 
-class CMCPrPubSubSubscriber;
+class CMCPrPubSubAvailability;
+class CMCPrPubSubStopTrigger;
 
 struct TCprConfigModifier
 	{
-	enum 
+	enum
 	/*
 	Bits on the CprConfig.
 	This is a very naive way of instructing the dummy providers to respond to
@@ -43,11 +44,11 @@ struct TCprConfigModifier
 		ESCPRHangOnStart  = 2,			  //when lit on CprConfig, the SCPR will hang on start
 		ESCPRFailOnRebind = 3,            //when lit on CprConfig, the SCPR will fail on rebind
 		};
-	
-	static TBool Is(TInt aValue, TInt aFlags) 
+
+	static TBool Is(TInt aValue, TInt aFlags)
 	    {
 	    aFlags = (1 << aFlags);
-	    return aValue & aFlags; 
+	    return aValue & aFlags;
 	    }
 	};
 
@@ -65,11 +66,12 @@ protected:
 	virtual ~CDummyMetaConnectionProvider();
 	virtual void ReceivedL(const Messages::TRuntimeCtxId& aSender, const Messages::TNodeId& aRecipient, Messages::TSignatureBase& aMessage);
 	virtual void ConstructL();
-	
+
 	virtual void StartAvailabilityMonitoringL(const Messages::TNodeCtxId& aAvailabilityActivity); //Default implementation, usually empty on the mid-tier MCprs
     virtual void CancelAvailabilityMonitoring(); //Default implementation, usually empty on the mid-tier MCprs
-    
-    CMCPrPubSubSubscriber* iPubSubSubscriber;    
+
+    CMCPrPubSubAvailability* iPubSubAvailability;
+    CMCPrPubSubStopTrigger* iPubSubStopTrigger;
     };
 
 namespace DummyMCPRStates

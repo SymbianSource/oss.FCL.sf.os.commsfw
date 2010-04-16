@@ -16,7 +16,7 @@
 //
 
 #include "StateMachineStep.h"
-#include <testexecutelog.h>
+#include <test/testexecutelog.h>
 
 void CElementStateMachineTestBase::Setup()
     {

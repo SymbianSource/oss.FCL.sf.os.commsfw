@@ -67,7 +67,8 @@ enum
 	KPanicPeerMisbehaving = 20,
 
 	KPanicActivity = 21,
-	KPanicNoContext = 22
+	KPanicNoContext = 22,
+	KPanicMultipleDefaultDataClients = 23
 	};
 }
 
@@ -401,7 +402,7 @@ EXPORT_DECLARE_SMELEMENT_HEADER( TAwaitingBinderRequest, MeshMachine::TState<TCo
 DECLARE_SMELEMENT_FOOTER( TAwaitingBinderRequest )
 
 EXPORT_DECLARE_SMELEMENT_HEADER( TAwaitingStop, MeshMachine::TState<TContext>, NetStateMachine::MState, TContext )
-	virtual TBool Accept();
+	IMPORT_C virtual TBool Accept();
 DECLARE_SMELEMENT_FOOTER( TAwaitingStop )
 
 EXPORT_DECLARE_SMELEMENT_HEADER( TAwaitingProviderStatusChangeOrDataClientStatusChange, MeshMachine::TState<TContext>, NetStateMachine::MState, TContext )
@@ -706,6 +707,7 @@ DECLARE_SMELEMENT_FOOTER( THandleDataClientIdle )
 
 EXPORT_DECLARE_SMELEMENT_HEADER( TStopDataClients, MeshMachine::TStateTransition<TContext>, NetStateMachine::MStateTransition, TContext )
 	IMPORT_C virtual void DoL();
+    void StopDataClient(Messages::RNodeInterface& aDataClient, TInt aStopCode);
 DECLARE_SMELEMENT_FOOTER( TStopDataClients )
 
 EXPORT_DECLARE_SMELEMENT_HEADER( TStopSelf, MeshMachine::TStateTransition<TContext>, NetStateMachine::MStateTransition, TContext )
@@ -795,6 +797,8 @@ typedef MeshMachine::TNodeContext<ESock::CMMCommsProviderBase, CoreNetStates::TC
 //
 //-=========================================================
 const TInt KParamsPresent                      = 4000;
+const TInt KOrphans                            = 4001;
+const TInt KContinue                           = 4002;
 
 //-=========================================================
 //
@@ -814,6 +818,22 @@ DECLARE_SMELEMENT_FOOTER( TAwaitingApplyRequest )
 //State Forks
 //
 //-=========================================================
+
+DECLARE_SMELEMENT_HEADER( TOrphansOrNoTag, MeshMachine::TStateFork<TContext>, NetStateMachine::MStateFork, TContext)
+    virtual TInt TransitionTag();
+DECLARE_SMELEMENT_FOOTER( TOrphansOrNoTag )
+
+DECLARE_SMELEMENT_HEADER( TOrphansBackwardsOrNoTag, MeshMachine::TStateFork<TContext>, NetStateMachine::MStateFork, TContext)
+    virtual TInt TransitionTag();
+DECLARE_SMELEMENT_FOOTER( TOrphansBackwardsOrNoTag )
+
+DECLARE_SMELEMENT_HEADER( TNoTagBackwardsOrNoClients, MeshMachine::TStateFork<TContext>, NetStateMachine::MStateFork, TContext)
+    virtual TInt TransitionTag();
+DECLARE_SMELEMENT_FOOTER( TNoTagBackwardsOrNoClients )
+
+DECLARE_SMELEMENT_HEADER( TNonLeavingNoTagOrNoClients, MeshMachine::TStateFork<TContext>, NetStateMachine::MStateFork, TContext)
+    virtual TInt TransitionTag();
+DECLARE_SMELEMENT_FOOTER( TNonLeavingNoTagOrNoClients )
 
 //-=========================================================
 //
@@ -866,6 +886,13 @@ DECLARE_AGGREGATED_TRANSITION4(
 	MeshMachine::TRemoveClient,
 	PRStates::TDestroyOrphanedDataClients,
 	CoreNetStates::TSendLeaveCompleteIfRequest,
+	CoreNetStates::TSendDataClientIdleIfNoClients
+	)
+
+DECLARE_AGGREGATED_TRANSITION3(
+	TProcessClientLeft,
+	MeshMachine::TRemoveClient,
+	PRStates::TDestroyOrphanedDataClients,
 	CoreNetStates::TSendDataClientIdleIfNoClients
 	)
 
@@ -958,6 +985,15 @@ DECLARE_AGGREGATED_TRANSITION2(
 	CoreStates::TPostToOriginators
 	)
 
+void DestroyFirstClient(const Messages::TClientType& aIncClientType, const Messages::TClientType& aExcClientType = Messages::TClientType::NullType());
+
+DECLARE_SMELEMENT_HEADER( TDestroyFirstOrphan, MeshMachine::TStateTransition<TContext>, NetStateMachine::MStateTransition, TContext)
+    virtual void DoL();
+DECLARE_SMELEMENT_FOOTER( TDestroyFirstOrphan )
+
+DECLARE_SMELEMENT_HEADER( TDestroyFirstClient, MeshMachine::TStateTransition<TContext>, NetStateMachine::MStateTransition, TContext)
+    virtual void DoL();
+DECLARE_SMELEMENT_FOOTER( TDestroyFirstClient )
 } //namespace PRStates
 
 #endif //SYMBIAN_SS_COREPRSTATES_H

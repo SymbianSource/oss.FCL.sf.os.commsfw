@@ -1776,7 +1776,15 @@ TInt CPitBoss::DoCreateRedShirt(RThread& aRedShirt, CommsFW::TWorkerId aWorkerId
 
 		if(err == KErrNone)
 			{
-		   	err = aRedShirt.Create(KNullDesC, RESockCleanupThreadFunction, 8192, static_cast<RHeap*>(heap), startupInfo);
+            // Attempt to create the RedShirt with a useful diagnostic name, to reduce the
+            // likelihood that time is wasted debugging a problem in it rather than in the original
+            // crashed worker
+            TBuf<KMaxKernelName> threadName;
+            _LIT(KNameFmt, "IgnoreMe_PostCrashCleanupHelper_%x");
+            TWorkerThreadRegister* deadInfo = aDeadWorker.WorkerProperties(aDeadWorker.WorkerId()); 
+            TUint deadThreadId = deadInfo? (TUint) deadInfo->iThreadId: User::TickCount();
+            threadName.Format(KNameFmt, deadThreadId);
+		   	err = aRedShirt.Create(threadName, RESockCleanupThreadFunction, 8192, static_cast<RHeap*>(heap), startupInfo);
 			}
 	   	// If any error occured, delete the startup info structure.
 	   	if(err != KErrNone)

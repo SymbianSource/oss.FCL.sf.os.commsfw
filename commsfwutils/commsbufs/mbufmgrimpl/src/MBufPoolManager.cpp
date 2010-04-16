@@ -265,6 +265,8 @@ void CMBufPoolManager::RunL()
 			}
 		}
 
+    ASSERT(selectedPoolChain != NULL);  // AO should only be triggered once a pool selected for growth
+
 	// Might have wrapped round all the PoolChains
 	if ( (iNextMBufSize == KNoOutstandingRequests)  
 			&& (lowestRequest != growThisPoolChain) )

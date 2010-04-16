@@ -422,6 +422,10 @@ public:
 		virtual void DoL();
 	DECLARE_SMELEMENT_FOOTER( TSubscribeForAvailability )
 
+	DECLARE_SMELEMENT_HEADER( TSetIdleIfStopOutstanding, MeshMachine::TStateTransition<TContext>, NetStateMachine::MStateTransition, TContext)
+		virtual void DoL();
+	DECLARE_SMELEMENT_FOOTER( TSetIdleIfStopOutstanding )
+
 	DECLARE_SMELEMENT_HEADER(TAwaitingSelectCompleteOrError, MeshMachine::TState<TContext>, NetStateMachine::MState, TContext)
 		virtual TBool Accept();
 	DECLARE_SMELEMENT_FOOTER(TAwaitingSelectCompleteOrError)

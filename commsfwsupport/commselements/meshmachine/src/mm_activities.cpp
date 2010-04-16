@@ -697,7 +697,6 @@ EXPORT_C void AContextStore::Retry(CNodeActivityBase& aActivity, TNodeContextBas
     iRetryingForMessageId = msg.iErrResponse.iMessageId;
 	aActivity.ACore::DoCurrent(storedContext);
     aContext.Node().HandleMessageReturnValue(*storedContext);
-    iContextDesc.Zero();
     }
 
 //-=========================================================

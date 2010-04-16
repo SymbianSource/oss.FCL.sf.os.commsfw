@@ -12,7 +12,7 @@
 //
 // Description:
 // This contains ESock Test cases from section 1
-// 
+//
 //
 
 // EPOC includes
@@ -59,8 +59,8 @@ enum TVerdict CSocketTest1_1::InternalDoTestStepL( void )
 
 	CleanupStack::Pop();
 	ss.Close();
- 
- 	SetTestStepResult(verdict);   
+
+ 	SetTestStepResult(verdict);
 	return verdict;
 	}
 
@@ -71,7 +71,7 @@ const TDesC& CSocketTest1_2::GetTestName()
 	_LIT(ret,"Test1.2");
 	return ret;
 	}
-	
+
 enum TVerdict CSocketTest1_2::InternalDoTestStepL( void )
 	{
 	TVerdict verdict = EPass;
@@ -91,7 +91,7 @@ enum TVerdict CSocketTest1_2::InternalDoTestStepL( void )
 //	ss.__DbgMarkHeap();		// in ESOCKMT leak checking is best done by shutting down the server
 	TUint numProtocols;
 	ret = ss.NumProtocols(numProtocols);
-	Logger().WriteFormat(_L("NumProtocols returned %S, number %d"), 
+	Logger().WriteFormat(_L("NumProtocols returned %S, number %d"),
 			&EpocErrorToText(ret), numProtocols);
 	TESTL(KErrNone == ret);
 
@@ -101,10 +101,10 @@ enum TVerdict CSocketTest1_2::InternalDoTestStepL( void )
 	RSocket sock1;
 	TInt pdummyIndex = -1;
  	Logger().WriteFormat(_L("Trying GetProtocolInfo until Dummy Protocol 1 is found"));
-	for (aIndex=1;aIndex<=numProtocols;aIndex++) 
+	for (aIndex=1;aIndex<=numProtocols;aIndex++)
 		{
 		ret = ss.GetProtocolInfo(aIndex, protoInfo);
-		Logger().WriteFormat(_L("GetProtocolInfo returned %S"), &EpocErrorToText(ret));	
+		Logger().WriteFormat(_L("GetProtocolInfo returned %S"), &EpocErrorToText(ret));
 		TESTL(KErrNone == ret || KErrCannotFindProtocol == ret);
 		Logger().WriteFormat(_L("Protocol Index %d corresponds to %S"), aIndex, &protoInfo.iName);
 		if (protoInfo.iName == KDummyProtocol1Name())
@@ -122,7 +122,7 @@ enum TVerdict CSocketTest1_2::InternalDoTestStepL( void )
 
 	Logger().WriteFormat(_L("Opening Socket for Family: %d, Sock: %d, protocol: %d"),
 			protoInfo.iAddrFamily, protoInfo.iSockType, protoInfo.iProtocol);
-		
+
 	ret=sock1.Open(ss, protoInfo.iAddrFamily, protoInfo.iSockType, protoInfo.iProtocol);
 	Logger().WriteFormat(_L("Open returned %S"), &EpocErrorToText(ret));
 	TESTL(KErrNone == ret);
@@ -196,7 +196,7 @@ enum TVerdict CSocketTest1_3::InternalDoTestStepL( void )
 
 	Logger().WriteFormat(_L("Attempting to create bad socket type"));
 	RSocket sock;
-	ret = sock.Open(ss, 0, 0, 0); 
+	ret = sock.Open(ss, 0, 0, 0);
 	Logger().WriteFormat(_L("Open returned %S"), &EpocErrorToText(ret));
 	TESTL(KErrBadName == ret);
 
@@ -213,7 +213,7 @@ const TDesC& CSocketTest1_4::GetTestName()
 	_LIT(ret,"Test1.4");
 	return ret;
 	}
-	
+
 enum TVerdict CSocketTest1_4::InternalDoTestStepL( void )
 	{
 	TVerdict verdict = EPass;
@@ -238,7 +238,7 @@ enum TVerdict CSocketTest1_4::InternalDoTestStepL( void )
 	ret = ss.FindProtocol(KDummyProtocol1Name(), protoInfo);
 	Logger().WriteFormat(_L("FindProtocol returned %S"), &EpocErrorToText(ret));
 	TESTL(KErrNone == ret);
-	
+
 	CleanupStack::Pop(&ss);
 	ss.Close();
 	SetTestStepResult(verdict);
@@ -268,7 +268,7 @@ enum TVerdict CSocketTest1_5::InternalDoTestStepL( void )
 	a.iNumSockets = KNumTestSockets;
 	//Need to share logger across different threads
 	Logger().ShareAuto();
-	t.Create(_L("SocketThread1"), SocketThread, 
+	t.Create(_L("SocketThread1"), SocketThread,
 			 KDefaultStackSize, KDefaultHeapSize, KDefaultHeapSize, &a);
 	t.Resume();
 	s.Wait();
@@ -287,7 +287,7 @@ const TDesC& CSocketTest1_6::GetTestName()
 	_LIT(ret,"Test1.6");
 	return ret;
 	}
-	
+
 enum TVerdict CSocketTest1_6::InternalDoTestStepL( void )
 	{
 	TVerdict verdict = EPass;
@@ -308,11 +308,11 @@ const TDesC& CSocketTest1_7::GetTestName()
 	_LIT(ret,"Test1.7");
 	return ret;
 	}
-	
+
 enum TVerdict CSocketTest1_7::InternalDoTestStepL( void )
 	{
 	TVerdict verdict = EPass;
-	
+
 	TInt numExhaustiveSockets = iNormalTest ? KNumExhaustiveSockets : 10;
 	iNormalTest = EFalse; // normal test is only run once, the rest are OOM tests
 
@@ -350,7 +350,7 @@ enum TVerdict CSocketTest1_7::InternalDoTestStepL( void )
 	ret = KErrNone;
 	while (KErrNone==ret && sockNum<numExhaustiveSockets)
 		{
-		ret = socks[sockNum].Open(ss, protoInfo.iAddrFamily, 
+		ret = socks[sockNum].Open(ss, protoInfo.iAddrFamily,
 								  protoInfo.iSockType, protoInfo.iProtocol);
 		sockNum++;
 		}
@@ -359,14 +359,14 @@ enum TVerdict CSocketTest1_7::InternalDoTestStepL( void )
 		sockNum--;
 		}
 	Logger().WriteFormat(_L("Created %d sockets"), sockNum);
-	
+
 	Logger().WriteFormat(_L("Freeing sockets in creation order"));
 	TInt i;
 	for (i=0; i<sockNum; i++)
 		{
 		socks[i].Close();
 		}
-		
+
 
 #if defined (_DEBUG_SOCKET_FUNCTIONS)
 
@@ -376,7 +376,7 @@ enum TVerdict CSocketTest1_7::InternalDoTestStepL( void )
 	sockNum = 0;
 	while (ret==KErrNone && sockNum<numExhaustiveSockets)
 		{
-		ret=socks[sockNum].Open(ss, protoInfo.iAddrFamily, 
+		ret=socks[sockNum].Open(ss, protoInfo.iAddrFamily,
 								protoInfo.iSockType,protoInfo.iProtocol);
 		sockNum++;
 		}
@@ -384,8 +384,8 @@ enum TVerdict CSocketTest1_7::InternalDoTestStepL( void )
 		{
 		sockNum--;
 		}
-	Logger().WriteFormat(_L("Created %d sockets, expected %d sockets"), sockNum, sockCount1);
-	TESTL(sockCount1 == sockNum);
+	Logger().WriteFormat(_L("Created %d sockets, expected at least %d sockets"), sockNum, sockCount1);
+	TESTL(sockNum >= sockCount1);
 
 	Logger().WriteFormat(_L("Freeing sockets in creation order"));
 	for (i=0; i<sockNum; i++)
@@ -402,14 +402,14 @@ enum TVerdict CSocketTest1_7::InternalDoTestStepL( void )
 	SetTestStepResult(verdict);
 	return verdict;
 	}
-	
+
 // Test step 1.8
 const TDesC& CSocketTest1_8::GetTestName()
 	{
 	_LIT(ret,"Test1.8");
 	return ret;
 	}
-	
+
 enum TVerdict CSocketTest1_8::InternalDoTestStepL( void )
 	{
 	TVerdict verdict = EPass;
@@ -427,7 +427,7 @@ enum TVerdict CSocketTest1_8::InternalDoTestStepL( void )
 	Logger().WriteFormat(_L("Try NumProtocols"));
 	TUint numProtocols;
 	ret = ss.NumProtocols(numProtocols);
-	Logger().WriteFormat(_L("NumProtocols returned %S, number %d"), 
+	Logger().WriteFormat(_L("NumProtocols returned %S, number %d"),
 			&EpocErrorToText(ret), numProtocols);
 	TESTL(KErrNone == ret);
 
@@ -435,10 +435,10 @@ enum TVerdict CSocketTest1_8::InternalDoTestStepL( void )
 	TUint aIndex;
 	TInt pdummyIndex = -1;
  	Logger().WriteFormat(_L("Trying GetProtocolInfo on each protocol"));
-	for (aIndex=1;aIndex<=numProtocols;aIndex++) 
+	for (aIndex=1;aIndex<=numProtocols;aIndex++)
 		{
 		ret = ss.GetProtocolInfo(aIndex, protoInfo);
-		Logger().WriteFormat(_L("GetProtocolInfo returned %S"), &EpocErrorToText(ret));	
+		Logger().WriteFormat(_L("GetProtocolInfo returned %S"), &EpocErrorToText(ret));
 		TESTL(KErrNone == ret);
 		Logger().WriteFormat(_L("Protocol Index %d corresponds to %S"), aIndex, &protoInfo.iName);
 		if (protoInfo.iName ==KDummyProtocol1Name())
@@ -454,7 +454,7 @@ enum TVerdict CSocketTest1_8::InternalDoTestStepL( void )
 		verdict = EFail;
 		}
 	verdict = EPass;
-	
+
 	SetTestStepResult(verdict);
 	return verdict;
 	}
@@ -471,12 +471,12 @@ const TDesC& CSocketTest1_9::GetTestName()
 	_LIT(ret,"Test1.9");
 	return ret;
 	}
-	
-	
+
+
 enum TVerdict CSocketTest1_9::InternalDoTestStepL( void )
 	{
 
-	// Create socket, shutdown socket then connect 
+	// Create socket, shutdown socket then connect
 	TVerdict verdict = EPass;
 	Logger().WriteFormat(_L("Test Purpose: Connect Socket, then Shutdown"));
 
@@ -486,11 +486,11 @@ enum TVerdict CSocketTest1_9::InternalDoTestStepL( void )
 	TInt ret = ss.Connect();
 	Logger().WriteFormat(_L("Connect returned %S"), &EpocErrorToText(ret));
 	TESTL(KErrNone == ret);
-	CleanupClosePushL(ss); 
+	CleanupClosePushL(ss);
 
 	// Create and open RConnection
 	Logger().WriteFormat(_L("Creating RConnection"));
-	RConnection conn; 
+	RConnection conn;
 	ret = conn.Open(ss);
 	Logger().WriteFormat(_L("Connection Open returned %S"), &EpocErrorToText(ret));
 	TESTL(KErrNone == ret);
@@ -498,21 +498,21 @@ enum TVerdict CSocketTest1_9::InternalDoTestStepL( void )
 
 	// Create and open socket on TCP protocol
 	RSocket socket1;
-	
-	
+
+
 	TProtocolDesc protoInfo;
-	
+
 	TUint numProtocols;
 	ret = ss.NumProtocols(numProtocols);
-	Logger().WriteFormat(_L("NumProtocols returned %S, number %d"), 
+	Logger().WriteFormat(_L("NumProtocols returned %S, number %d"),
 			&EpocErrorToText(ret), numProtocols);
 	TESTL(KErrNone == ret);
 
-	
-	for (TInt index=1;index<=numProtocols;index++) 
+
+	for (TInt index=1;index<=numProtocols;index++)
 		{
 		ret = ss.GetProtocolInfo(index, protoInfo);
-		Logger().WriteFormat(_L("GetProtocolInfo returned %S"), &EpocErrorToText(ret));	
+		Logger().WriteFormat(_L("GetProtocolInfo returned %S"), &EpocErrorToText(ret));
 		TESTL(KErrNone == ret || KErrCannotFindProtocol == ret);
 		Logger().WriteFormat(_L("Protocol Index %d corresponds to %S"), index, &protoInfo.iName);
 		if (protoInfo.iName == KDummyProtocol1Name())
@@ -520,14 +520,14 @@ enum TVerdict CSocketTest1_9::InternalDoTestStepL( void )
 			break;
 			}
 		}
-	
-	
-	
+
+
+
 	Logger().WriteFormat(_L("Opening Socket 1"));
 	ret = socket1.Open(ss, protoInfo.iAddrFamily, protoInfo.iSockType, protoInfo.iProtocol /*KAfInet, KSockStream, KProtocolInetTcp, conn*/);
-	Logger().WriteFormat(_L("Socket 1 Open returned %S"), &EpocErrorToText(ret)); 
+	Logger().WriteFormat(_L("Socket 1 Open returned %S"), &EpocErrorToText(ret));
 	TESTL(KErrNone == ret);
-	CleanupClosePushL(socket1); 
+	CleanupClosePushL(socket1);
 
 	// Create Ports for Socket and socket to connect to
 	const TInt KSocket1Port = 3441;
@@ -541,7 +541,7 @@ enum TVerdict CSocketTest1_9::InternalDoTestStepL( void )
 	socket1Addr.Input(KLocal);
 	ret = socket1.Bind(socket1Addr);
 
-	// Set remote address for socket 
+	// Set remote address for socket
 	TInetAddr socket2Addr;
 	socket2Addr.SetPort(KSocket2Port);
 	socket2Addr.Input(KLoopback);
@@ -550,9 +550,9 @@ enum TVerdict CSocketTest1_9::InternalDoTestStepL( void )
 	Logger().WriteFormat(_L("Shutting down Connection on Socket1"));
 	TRequestStatus shutdownStatus;
 	_LIT8(desOut, "Some test stuff to send to protocol");
-	
+
 	TBuf8<50> desIn;
-	
+
 	socket1.Shutdown(RSocket::EImmediate,desOut,desIn, shutdownStatus);
 	User::WaitForRequest(shutdownStatus);
 	Logger().WriteFormat(_L("Socket 1 shutdown returned %S"), &EpocErrorToText(shutdownStatus.Int()));
@@ -568,7 +568,7 @@ enum TVerdict CSocketTest1_9::InternalDoTestStepL( void )
 		{
 		verdict = EFail;
 		}
-	
+
 	CleanupStack::PopAndDestroy(); //socket
 	CleanupStack::PopAndDestroy(); //conn
 	CleanupStack::PopAndDestroy(); //ss

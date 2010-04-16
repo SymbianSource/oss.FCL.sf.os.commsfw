@@ -20,6 +20,7 @@
 #include <cs_subconevents.h>
 #include "ConnectionServer.TestSteps.h"
 #include "networking\qos3gpp_subconparams.h"
+#include <etelpckt.h>			// no longer available from qos3gpp_subconparams.h
 #include <in_sock.h>
 
 #ifdef _DEBUG

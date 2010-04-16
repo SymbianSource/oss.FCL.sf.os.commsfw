@@ -158,14 +158,19 @@ Default Constructor
     {
     }
 
-EXPORT_C TInt RSocketServ::Connect(TUint aMessageSlots /* =8 */)
+EXPORT_C TInt RSocketServ::Connect(TUint aAsyncMessageSlots /* = (TUint) -1 */)
 /** Opens a session to the socket server.
 
-The number of message slots indicates how many asychronous operations are 
-allowed to be uncompleted at any one time by the combined resources opened 
-on the session. The result of having too few slots is not fatal. However, 
-operations may return KErrServerBusy indicating that no message slot was 
-available after a small time trying.
+Each outstanding asynchronous request made upon the session (typically via
+a subsession such as RSocket) requires a message slot. If there is no free slot
+the request is immediately completed with KErrServerBusy. If a client specifies
+a fixed number of slots then they form an inelastic pool exclusive to the 
+session. Alternatively a client can specify -1 to use the global free message
+pool, which can grow upon demand but has poorer time bounds and can in principle
+fail any request. For most clients the global pool will be appropriate since it 
+removes the need to accurately determine the worst case size.
+
+Note that in previous releases the default value was KESockDefaultMessageSlots (8).
 
 RHandleBase::Close() should be called once the session is no longer required. 
 All resources which are opened using the session will be automatically closed 
@@ -174,7 +179,8 @@ when the session terminates.
 When the last session which has open resources for a protocol is closed a 
 protocol module will be unloaded automatically by the socket server.
 
-@param aMessageSlots The number of message slots required. If not specified, 8.
+@param aAsyncMessageSlots The number of message slots required. If not specified then -1 to
+use the global pool of free messages.
 @return KErrNone if successful, otherwise another of the system-wide error 
 codes. */
 	{
@@ -184,7 +190,7 @@ codes. */
 #endif
 	
 	TSessionPref pref;
-	TInt r = Connect(pref, aMessageSlots);
+	TInt r = Connect(pref, aAsyncMessageSlots);
 
    // Because ESock is now loaded by the Comms Root Server which is generally started during
 	// the boot this should commonly succeed; however for test code this is still a possibility
@@ -194,7 +200,7 @@ codes. */
 		r=StartC32();
 		if (r==KErrNone || r==KErrAlreadyExists)
 			{
-			r = Connect(pref, aMessageSlots);
+			r = Connect(pref, aAsyncMessageSlots);
 			}
 		}
 
@@ -215,17 +221,25 @@ EXPORT_C TSessionPref::TSessionPref():
     iReserved4(0)
     {}
 
-EXPORT_C TInt RSocketServ::Connect(const TSessionPref& aPref, TUint aMessageSlots)
+EXPORT_C TInt RSocketServ::Connect(const TSessionPref& aPref, TUint aMessageSlots /* = (TUint) -1 */)
 /** Opens a session to the socket server.
 
-The session prefs provides a hint to the server of which protocol the client intend to use.
-This might result in better performance for the connection.
+By providing session prefs the client states what services they require of the server. This
+allows the server to configure the client connection in an optimal manner. Such a 
+configuration may not support all normal abilities of a session. For example a connection
+opened specifying KAfInet for the address family will be able to create TCP sockets but
+might not be able to create SMS sockets.
 
-The number of message slots indicates how many asychronous operations are
-allowed to be uncompleted at any one time by the combined resources opened
-on the session. The result of having too few slots is not fatal. However,
-operations may return KErrServerBusy indicating that no message slot was
-available after a small time trying.
+Each outstanding asynchronous request made upon the session (typically via
+a subsession such as RSocket) requires a message slot. If there is no free slot
+the request is immediately completed with KErrServerBusy. If a client specifies
+a fixed number of slots then they form an inelastic pool exclusive to the 
+session. Alternatively a client can specify -1 to use the global free message
+pool, which can grow upon demand but has poorer time bounds and can in principle
+fail any request. For most clients the global pool will be appropriate since it 
+removes the need to accurately determine the worst case size.
+
+Note that in previous releases the default value was KESockDefaultMessageSlots (8).
 
 RHandleBase::Close() should be called once the session is no longer required.
 All resources which are opened using the session will be automatically closed
@@ -235,7 +249,8 @@ When the last session which has open resources for a protocol is closed a
 protocol module will be unloaded automatically by the socket server.
 
 @param aPrefs Hint for server to create most optimal connection possible.
-@param aMessageSlots The number of message slots required. If not specified, 8.
+@param aAsyncMessageSlots The number of message slots required. If not specified then -1 to
+use the global pool of free messages.
 @return KErrNone if successful, otherwise another of the system-wide error
 codes. */
 	{

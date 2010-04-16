@@ -1770,6 +1770,7 @@ TVerdict TE_RConnectionTestAllInterfaceNot210::doTestStepL(void)
     
     // PASS
     SetTestStepResult(EPass);
+    return EPass;
     }
 
 TVerdict TE_RConnectionTestAllInterfaceNot210::doTestStepPreambleL()
@@ -1810,11 +1811,12 @@ TVerdict TE_RConnectionTestAllInterfaceNot210::doTestStepPreambleL()
 
     dummyNifEnableProperty.Set(0); // Dummy NIF not available - Start should fail
     dummyNifEnableProperty.Close();
+    return EPass;
     }
 
 TVerdict TE_RConnectionTestAllInterfaceNot210::doTestStepPostambleL()
     {
-    
+    return EPass;
     }
 
 TE_RConnectionTestAllInterfaceNot210::~TE_RConnectionTestAllInterfaceNot210()

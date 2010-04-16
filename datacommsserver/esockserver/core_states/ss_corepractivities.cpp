@@ -108,10 +108,51 @@ DEFINE_EXPORT_NODEACTIVITY(ECFActivityDataClientJoin, PRDataClientJoin, TCFPeer:
 NODEACTIVITY_END()
 }
 
+
+namespace PRDestroyOrphansActivity
+{
+DECLARE_DEFINE_CUSTOM_NODEACTIVITY(ECFActivityDestroyOrphans, PRDestroyOrphans, TCFMessage::TDestroyOrphans, CoreActivities::CDestroyOrphansActivity::New)
+    // Destroy non-Default Data clients first (as there can be references from non-Default Data clients to the Default Data client)
+    FIRST_NODEACTIVITY_ENTRY(MeshMachine::TAwaitingMessageState<TCFMessage::TDestroyOrphans>, PRStates::TOrphansOrNoTag)
+    NODEACTIVITY_ENTRY(KOrphans, PRStates::TDestroyFirstOrphan, MeshMachine::TAwaitingMessageState<Messages::TEChild::TLeft>, MeshMachine::TTag<KContinue>)
+    THROUGH_NODEACTIVITY_ENTRY(KContinue, PRStates::TProcessClientLeft, PRStates::TOrphansBackwardsOrNoTag)
+    ROUTING_NODEACTIVITY_ENTRY(KNoTag, CDestroyOrphansActivity::TNoTagOrNoClients)
+    LAST_NODEACTIVITY_ENTRY(KNoTag, MeshMachine::TDoNothing)
+
+    // At this point, there are no Data or Control clients, so leave the Service Providers (if any) and destroy the node.
+    // (Can we just modify the above tuples so that they do not accept the very last TLeft, and thus leave it
+    // to MCPrDestroyActivity or PRClientLeftActivity to accept and do the destruction for us?).
+    
+    // If Control Provider is present, send a TIdle message.
+    THROUGH_NODEACTIVITY_ENTRY(KNoClients, CoreNetStates::TSendDataClientIdle, TNoTag)
+    // If Control Provider is present, terminate the activity (KNoTag), as
+    // Control Provider will send us a TDestroy in response to the TIdle message. 
+    ROUTING_NODEACTIVITY_ENTRY(KNoTag, CDestroyOrphansActivity::TControlProviderNoTagOrNoClients)
+    LAST_NODEACTIVITY_ENTRY(KNoTag, MeshMachine::TDoNothing)
+
+    // No Control Provider - leave Service Providers (if any) and destroy the node.
+    ROUTING_NODEACTIVITY_ENTRY(KNoClients, CoreNetStates::TNoTagOrNoBearer)
+    THROUGH_NODEACTIVITY_ENTRY(KNoTag, CoreNetStates::TSendClientLeavingRequestToServiceProviders, TNoTag)
+    NODEACTIVITY_ENTRY(KNoTag, MeshMachine::TDoNothing, MeshMachine::TAwaitingLeaveComplete, CDestroyOrphansActivity::TNoTagOrNoTagBackwards)
+
+    ROUTING_NODEACTIVITY_ENTRY(KNoBearer, TNoTag)
+    LAST_NODEACTIVITY_ENTRY(KNoTag, CDestroyOrphansActivity::TMarkNodeForDestruction)
+    // Node will be destroyed in CDestroyOrphansActivity::Destroy() 
+NODEACTIVITY_END()
+}
+
 namespace PRClientLeaveActivity
 {//This activity will wait for ECFActivityBinderRequest to complete
-DEFINE_EXPORT_NODEACTIVITY(ECFActivityClientLeave, PRClientLeave, TNodeSignal::TNullMessageId) //May be waiting for both messages
-NODEACTIVITY_ENTRY(KNoTag, PRStates::TProcessClientLeave, CoreStates::TAwaitingClientLeave, MeshMachine::TNoTag)
+DEFINE_EXPORT_NODEACTIVITY(ECFActivityClientLeave, PRClientLeave, Messages::TEPeer::TLeaveRequest) 
+    NODEACTIVITY_ENTRY(KNoTag, PRStates::TProcessClientLeave, MeshMachine::TAwaitingMessageState<TEPeer::TLeaveRequest>, MeshMachine::TNoTag)
+NODEACTIVITY_END()
+}
+
+namespace PRClientLeftActivity
+{
+//This activity waits for TLeft which is a response to destroy, shouldn't really be needed
+DEFINE_EXPORT_NODEACTIVITY(ECFActivityClientLeft, PRClientLeft, Messages::TEChild::TLeft)
+    NODEACTIVITY_ENTRY(KNoTag, PRStates::TProcessClientLeft, MeshMachine::TAwaitingMessageState<Messages::TEChild::TLeft>, MeshMachine::TNoTag)
 NODEACTIVITY_END()
 }
 
@@ -135,12 +176,9 @@ namespace PRDestroyActivity
 DECLARE_DEFINE_CUSTOM_NODEACTIVITY(ECFActivityDestroy, PRDestroy, TEChild::TDestroy, CoreActivities::CDestroyActivity::New)
 	FIRST_NODEACTIVITY_ENTRY(MeshMachine::TAwaitingDestroy, CoreActivities::CDestroyActivity::TNoTagBlockedByActivitiesOrLeavingDataClient)
 
-    //Stop self first
-    NODEACTIVITY_ENTRY(KNoTag, CoreNetStates::TStopSelf, CoreNetStates::TAwaitingDataClientStopped, CoreStates::TNoTagOrNoClients)
-
-    //The node mustn't go out of scope with clients present. The node must get rid of them first.
-	NODEACTIVITY_ENTRY(KNoTag, CoreActivities::CDestroyActivity::TMakeClientsLeaveOrProcessClientLeave, CoreStates::TAwaitingClientLeave,  CDestroyActivity::TNoTagOrNoTagBackwards)
-	THROUGH_NODEACTIVITY_ENTRY(KNoTag, CoreActivities::CDestroyActivity::TProcessClientLeave, TTag<KNoClients>)
+    ROUTING_NODEACTIVITY_ENTRY(KNoTag, PRStates::TNonLeavingNoTagOrNoClients)
+    NODEACTIVITY_ENTRY(KNoTag, PRStates::TDestroyFirstClient, MeshMachine::TAwaitingMessageState<Messages::TEChild::TLeft>, MeshMachine::TTag<KContinue>)
+    THROUGH_NODEACTIVITY_ENTRY(KContinue, PRStates::TProcessClientLeft, PRStates::TNoTagBackwardsOrNoClients)
 
  	THROUGH_NODEACTIVITY_ENTRY(KNoClients, PRStates::TProcessDestroy, MeshMachine::TNoTag)
  	NODEACTIVITY_ENTRY(KNoTag, MeshMachine::TDoNothing, MeshMachine::TAwaitingLeaveComplete, CoreActivities::CDestroyActivity::TNoTagOrNoTagBackwards)
@@ -296,6 +334,8 @@ DECLARE_DEFINE_CUSTOM_NODEACTIVITY(ECFActivityStopDataClient, PRDataClientStop, 
 	THROUGH_NODEACTIVITY_ENTRY(KNoTag, MeshMachine::TDoNothing, CoreNetStates::TNoTagOrUnbindOnStop)
 
 	NODEACTIVITY_ENTRY(CoreNetStates::KUnbind, CoreNetStates::TSendClientLeavingRequestToServiceProvider, MeshMachine::TAwaitingLeaveComplete, MeshMachine::TNoTag)
+	// Note that if CMMCommsProviderBase::DestroyOrphanedDataClients() finds this activity running, it
+	// will do nothing and assume that destruction of orphans will be initiated below.
 	THROUGH_NODEACTIVITY_ENTRY(KNoTag, PRStates::TDestroyOrphanedDataClients, MeshMachine::TNoTag)
 	LAST_NODEACTIVITY_ENTRY(KNoTag, PRStates::TSendDataClientStopped)
 NODEACTIVITY_END()
@@ -543,6 +583,15 @@ EXPORT_C void CErrorActivity::TSendErrorRecoveryReq::DoL()
     	return;
         }
 
+    //Determine who TErrorRecoveryRequest should be sent to.
+    //If there is no ControlProvider we send a RecoveryRequest to ourselves to recover from the error,
+    //otherwise we sned the RecoveryRequest up to our ControlProvider.
+    //MCPrs typically put all of the error recovery function in a single error recovery activity therefore
+    //it makes sense even for MCPrs to send TErrorRecoveryRequest to their error recovery function. By
+    //posting a TErrorRecoveryRequest sub-classes of the MCPrs get a chance to override the default error
+    //recovery.
+    RNodeInterface*  errorRecoverer = iContext.Node().ControlProvider() ? iContext.Node().ControlProvider() : &iContext.Node().SelfInterface();
+
 	__ASSERT_DEBUG(iContext.iNodeActivity, User::Panic(KCorePrPanic, KPanicNoActivity));
     CoreActivities::CErrorActivity& activity = static_cast<CoreActivities::CErrorActivity&>(*iContext.iNodeActivity);
     __ASSERT_DEBUG(activity.iErroredActivityId==MeshMachine::KActivityNull, User::Panic(KSpecAssert_ESockCrStaCPRAC, 4));
@@ -557,7 +606,7 @@ EXPORT_C void CErrorActivity::TSendErrorRecoveryReq::DoL()
 	TEErrorRecovery::TErrorRecoveryRequest msg(ctx);
 
     activity.PostRequestTo(
-    	*iContext.Node().ControlProvider(),//ControlProvider() verified above
+    	*errorRecoverer,//ControlProvider() verified above
     	TCFSafeMessage::TRequestCarrierEast<TEErrorRecovery::TErrorRecoveryRequest>(msg).CRef()
     	);
 
@@ -632,7 +681,7 @@ CDestroyActivity::CDestroyActivity(const MeshMachine::TNodeActivity& aActivitySi
 :	CNodeRetryActivity(aActivitySig, aNode),
 	APreallocatedOriginators<1>(iOriginators)
 	{
-	//Mark the provider for deletion, so that it's not served by the factory from now on.
+    //Mark the provider for deletion, so that it's not served by the factory from now on.
     static_cast<ESock::CMMCommsProviderBase&>(iNode).MarkMeForDeletion();
 	}
 
@@ -644,16 +693,6 @@ void CDestroyActivity::Destroy()
 	//Delete the provider.
 	static_cast<ESock::CMMCommsProviderBase&>(iNode).DeleteMeNow();
 	}
-
-TBool CDestroyActivity::Next(TNodeContextBase& aContext)
-    {
-    if (aContext.iMessage.IsMessage<TEBase::TCancel>())
-        {  
-        return ETrue;
-        }
-    else
-        return CNodeActivityBase::Next(aContext);
-    }
 
 EXPORT_DEFINE_SMELEMENT(CDestroyActivity::TNoTagOrNoTagBackwards, NetStateMachine::MStateFork, PRStates::TContext)
 EXPORT_C TInt CDestroyActivity::TNoTagOrNoTagBackwards::TransitionTag()
@@ -703,13 +742,18 @@ void CDestroyActivity::TMakeClientsLeaveOrProcessClientLeave::MakeClientsLeaveL(
     __ASSERT_DEBUG(iContext.Node().GetFirstClient<TDefaultClientMatchPolicy>(TClientType(TCFClientType::EData, TCFClientType::EActive|TCFClientType::EActivating|TCFClientType::EStarting|TCFClientType::EStarted))==NULL,
     	User::Panic(KCorePrPanic, KPanicClientsStillPresent));
 
-   	TClientIter<TDefaultClientMatchPolicy> dciter = iContext.Node().GetClientIter<TDefaultClientMatchPolicy>(TClientType(TCFClientType::EData),	TClientType(0, TCFClientType::ELeaving));
-   	RNodeInterface* dc = NULL;
-    while ((dc = dciter[0]) != NULL) //always inspect the first elem as we're invalidating the iterator with each hit.
-        {
-		dc->PostMessage(iContext.NodeId(), TEChild::TDestroy().CRef());
-		dc->SetFlags(TCFClientType::ELeaving);
-        }
+	iContext.Node().PostToClients<TDefaultClientMatchPolicy>(iContext.NodeId(),
+		TEChild::TDestroy().CRef(),
+		TClientType(TCFClientType::EData),
+		TClientType(0, TCFClientType::ELeaving|TCFClientType::EDefault),
+		TClientType::ELeaving
+		);
+	iContext.Node().PostToClients<TDefaultClientMatchPolicy>(iContext.NodeId(),
+		TEChild::TDestroy().CRef(),
+		TClientType(TCFClientType::EData),
+		TClientType(0, TCFClientType::ELeaving),
+		TClientType::ELeaving
+		);
 	}
 
 void CDestroyActivity::TMakeClientsLeaveOrProcessClientLeave::ProcessClientLeaveL()
@@ -718,6 +762,114 @@ void CDestroyActivity::TMakeClientsLeaveOrProcessClientLeave::ProcessClientLeave
     processClientLeave.DoL();
     }
 
+//-=========================================================
+//
+// Destroy Orphan Activity - will delete the node when destructed
+// if TMarkNodeForDestruction tuple has been called.
+//
+//-=========================================================
+
+CNodeActivityBase* CDestroyOrphansActivity::New(const MeshMachine::TNodeActivity& aActivitySig, MeshMachine::AMMNodeBase& aNode)
+    {
+    TAny* space = BorrowPreallocatedSpace(aNode, sizeof(CDestroyOrphansActivity));
+    CDestroyOrphansActivity* self = new (space) CDestroyOrphansActivity(aActivitySig, aNode);
+    self->InsertPreallocatedDestroyActivity(); //Destructing preallocated activity
+    return self;
+    }
+
+CDestroyOrphansActivity::CDestroyOrphansActivity(const MeshMachine::TNodeActivity& aActivitySig, MeshMachine::AMMNodeBase& aNode)
+  : MeshMachine::CNodeActivityBase(aActivitySig, aNode),
+          MeshMachine::APreallocatedOriginators<1>(iOriginators)
+    {
+    }
+
+CDestroyOrphansActivity::~CDestroyOrphansActivity() 
+    {
+    }
+
+void CDestroyOrphansActivity::Destroy() 
+    {
+    ReturnPreallocatedSpace(this);
+    if (DestroyFlag() && iNode.CountActivities(ECFActivityDestroy) == 0)
+        {
+        static_cast<ESock::CMMCommsProviderBase&>(iNode).MarkMeForDeletion();
+        this->~CDestroyOrphansActivity(); //Run the destructor
+        static_cast<ESock::CMMCommsProviderBase&>(iNode).DeleteMeNow();
+        }
+    else
+        {
+        this->~CDestroyOrphansActivity(); //Run the destructor
+        }
+    }
+
+void CDestroyOrphansActivity::SetDestroyFlag()
+    {
+    iDestroyFlag = ETrue;
+    }
+
+TBool CDestroyOrphansActivity::DestroyFlag() const
+    {
+    return iDestroyFlag;
+    }
+
+DEFINE_SMELEMENT(CDestroyOrphansActivity::TMarkNodeForDestruction, NetStateMachine::MStateTransition, CDestroyOrphansActivity::TContext)
+void CDestroyOrphansActivity::TMarkNodeForDestruction::DoL()
+/**
+Flag that the node should be destroyed when the activity completes.
+*/
+    {
+    CDestroyOrphansActivity* act = static_cast<CDestroyOrphansActivity*>(iContext.Activity());
+    ASSERT(act);
+    act->SetDestroyFlag();
+    }
+
+// This is a copy from CDestroyActivity.
+DEFINE_SMELEMENT(CDestroyOrphansActivity::TNoTagOrNoTagBackwards, NetStateMachine::MStateFork, CDestroyOrphansActivity::TContext)
+TInt CDestroyOrphansActivity::TNoTagOrNoTagBackwards::TransitionTag()
+    {
+    if (iContext.iMessage.IsMessage<TEChild::TLeft>())
+        {
+        TClientIter<TDefaultClientMatchPolicy> iter = iContext.Node().GetClientIter<TDefaultClientMatchPolicy>(TClientType(TCFClientType::EData|TCFClientType::ECtrl));
+        __ASSERT_DEBUG(iter[0], User::Panic(KSpecAssert_ESockCrStaCPRAC, 7)); //One leaving client must still be there.
+        return iter[1] == NULL ?  MeshMachine::KNoTag : MeshMachine::KNoTag | NetStateMachine::EBackward;
+        }
+    else if (iContext.iMessage.IsMessage<TEPeer::TLeaveComplete>())
+        {
+        __ASSERT_DEBUG(iContext.Node().GetFirstClient<TDefaultClientMatchPolicy>(TClientType(TCFClientType::ECtrl|TCFClientType::EData))==NULL,
+        User::Panic(KCorePrPanic, KPanicClientsStillPresent));
+        if (iContext.Node().GetFirstClient<TDefaultClientMatchPolicy>(TClientType(TCFClientType::EServProvider))==NULL)
+            {
+            return NetStateMachine::EForward | MeshMachine::KNoTag;
+            }
+        return NetStateMachine::EBackward | MeshMachine::KNoTag; //Loop back to the same triple (& remove the peer)
+        }
+    __ASSERT_DEBUG(EFalse, User::Panic(KSpecAssert_ESockCrStaCPRAC, 8));
+    return KNoTag;
+    }
+
+DEFINE_SMELEMENT(CDestroyOrphansActivity::TNoTagOrNoClients, NetStateMachine::MStateFork, CDestroyOrphansActivity::TContext)
+TInt CDestroyOrphansActivity::TNoTagOrNoClients::TransitionTag()
+/**
+If the Destroy activity is not running and there are no data/control clients, return KNoClients, else return KNoTag.
+*/
+    {
+    if (iContext.Node().CountActivities(ECFActivityDestroy))
+        {
+        return KNoTag;
+        }
+    CoreStates::TNoTagOrNoClients fork(iContext);
+    return fork.TransitionTag();
+    }
+
+
+DEFINE_SMELEMENT(CDestroyOrphansActivity::TControlProviderNoTagOrNoClients, NetStateMachine::MStateFork, CDestroyOrphansActivity::TContext)
+TInt CDestroyOrphansActivity::TControlProviderNoTagOrNoClients::TransitionTag()
+/**
+If there is a Control Provider, return KNoTag, else return KNoClients
+*/
+    {
+    return iContext.Node().ControlProvider() ? KNoTag : KNoClients;
+    }
 
 //-=========================================================
 //
@@ -794,8 +946,10 @@ EXPORT_C void ABindingActivity::ReplyToOriginator(TInt aError)
     //If you are not providing a clean error handling solution for your activity,
     //please use IsBinding() before calling this API!
     __ASSERT_DEBUG(!iOriginator.IsNull(), User::Panic(KSpecAssert_ESockCrStaCPRAC, 10)); //The iOriginator must be set.
-    RClientInterface::OpenPostMessageClose(iOurNode, iOriginator, TCFDataClient::TBindToComplete(aError).CRef());
-    iOriginator.SetNull();
+    
+    RClientInterface::OpenPostMessageClose(iOurNode, iOriginator, TCFServiceProvider::TBindToComplete(aError).CRef());
+
+     iOriginator.SetNull();
     }
 
 EXPORT_DEFINE_SMELEMENT(ABindingActivity::TSendBindToComplete, NetStateMachine::MStateTransition, CoreStates::TContext)
@@ -805,18 +959,6 @@ EXPORT_C void ABindingActivity::TSendBindToComplete::DoL()
     __ASSERT_DEBUG(iContext.iNodeActivity->SupportsExtInterface(ABindingActivity::KInterfaceId), User::Panic(KSpecAssert_ESockCrStaCPRAC, 11));
     ABindingActivity* bindingActivity = reinterpret_cast<ABindingActivity*>(iContext.iNodeActivity->FetchExtInterfaceL(ABindingActivity::KInterfaceId));
     bindingActivity->ReplyToOriginator(iContext.iNodeActivity->Error());
-	}
-
-EXPORT_DEFINE_SMELEMENT(ABindingActivity::TSendBindToCompleteIfExpected, NetStateMachine::MStateTransition, CoreStates::TContext)
-EXPORT_C void ABindingActivity::TSendBindToCompleteIfExpected::DoL()
-	{
-    __ASSERT_DEBUG(iContext.iNodeActivity, User::Panic(KCorePrPanic, KPanicNoActivity));
-    __ASSERT_DEBUG(iContext.iNodeActivity->SupportsExtInterface(ABindingActivity::KInterfaceId), User::Panic(KSpecAssert_ESockCrStaCPRAC, 12));
-    ABindingActivity* bindingActivity = reinterpret_cast<ABindingActivity*>(iContext.iNodeActivity->FetchExtInterfaceL(ABindingActivity::KInterfaceId));
-    if (bindingActivity->IsBinding())
-	    {
-		bindingActivity->ReplyToOriginator(iContext.iNodeActivity->Error());
-	    }
 	}
 
 void ABindingActivity::FinalReplyToOriginator(TInt aError)
@@ -841,9 +983,13 @@ namespace PRActivities
 DECLARE_DEFINE_ACTIVITY_MAP(coreActivitiesPR)
 	ACTIVITY_MAP_ENTRY(PRDataClientJoinActivity, PRDataClientJoin)
 	ACTIVITY_MAP_ENTRY(PRControlClientJoinActivity, PRControlClientJoin)
-	ACTIVITY_MAP_ENTRY(PRClientLeaveActivity, PRClientLeave)
+	ACTIVITY_MAP_ENTRY(PRClientLeftActivity, PRClientLeft)
+    ACTIVITY_MAP_ENTRY(PRClientLeaveActivity, PRClientLeave)
 	ACTIVITY_MAP_ENTRY(PRForwardStateChangeActivity, PRForwardStateChange)
 	ACTIVITY_MAP_ENTRY(PRBindToActivity, PRBindTo)
+	ACTIVITY_MAP_ENTRY(PRDataClientStartActivity, PRDataClientStart)
+	ACTIVITY_MAP_ENTRY(PRDataClientStopActivity, PRDataClientStop)
+	ACTIVITY_MAP_ENTRY(PRDestroyOrphansActivity, PRDestroyOrphans)
 ACTIVITY_MAP_END_BASE(CoreActivities,coreActivitiesAll)
 
 //Activity Map provided by CorePr to be used by SCprs.
@@ -852,8 +998,6 @@ DEFINE_EXPORT_ACTIVITY_MAP(coreActivitiesSCpr)
 	ACTIVITY_MAP_ENTRY(PRProvisionActivity, PrProvision)
     ACTIVITY_MAP_ENTRY(PRStartActivity, PRStart)
     ACTIVITY_MAP_ENTRY(PRStopActivity, PRStop)
-	ACTIVITY_MAP_ENTRY(PRDataClientStartActivity, PRDataClientStart)
-	ACTIVITY_MAP_ENTRY(PRDataClientStopActivity, PRDataClientStop)
 	ACTIVITY_MAP_ENTRY(PRDataClientIdleActivity, PRDataClientIdle)
 	ACTIVITY_MAP_ENTRY(PRDataClientActiveActivity, PRDataClientActive)
 	ACTIVITY_MAP_ENTRY(PRDestroyActivity, PRDestroy)
@@ -872,8 +1016,6 @@ DEFINE_EXPORT_ACTIVITY_MAP(coreActivitiesCpr)
 	ACTIVITY_MAP_ENTRY(PRProvisionActivity, PrProvision)
     ACTIVITY_MAP_ENTRY(PRStartActivity, PRStart)
     ACTIVITY_MAP_ENTRY(PRStopActivity, PRStop)
-	ACTIVITY_MAP_ENTRY(PRDataClientStartActivity, PRDataClientStart)
-	ACTIVITY_MAP_ENTRY(PRDataClientStopActivity, PRDataClientStop)
 	ACTIVITY_MAP_ENTRY(PRDataClientIdleActivity, PRDataClientIdle)
 	ACTIVITY_MAP_ENTRY(PRDataClientActiveActivity, PRDataClientActive)
 	ACTIVITY_MAP_ENTRY(PRDestroyActivity, PRDestroy)
@@ -894,6 +1036,7 @@ DEFINE_EXPORT_ACTIVITY_MAP(coreActivitiesMCpr)
 	ACTIVITY_MAP_ENTRY(PRDataClientActiveActivity, PRDataClientActive)
     ACTIVITY_MAP_ENTRY(PRDataClientStatusChangeActivity, PRDataClientStatusChange)
     ACTIVITY_MAP_ENTRY(PRLegacyRMessage2HandlerActivity, PRLegacyRMessage2Handler)
+    ACTIVITY_MAP_ENTRY(PRDestroyActivity, PRDestroy)
 ACTIVITY_MAP_END_BASE(PRActivities,coreActivitiesPR)
 
 //Activity Map provided by CorePr to be used by TMs.
@@ -1319,18 +1462,20 @@ CRejoinDataClientActivity::~CRejoinDataClientActivity()
             //clients in at the current owner.
             for (TInt i = 0; i < iDataClients.Count(); i++)
                 {
-                if (!(iDataClients[i].iDataClient.Flags() & TCFClientType::EActive))
+                Messages::RNodeInterface& dataClient = iDataClients[i].iDataClient; 
+                if (!(dataClient.Flags() & TCFClientType::EActive))
                     {
 #ifndef __GCCXML__
-					//If the dataclient managed to report idle in the mean time, have him destroyed
-                    RClientInterface::OpenPostMessageClose(iNode.Id(), iDataClients[i].iDataClient.RecipientId(), TEChild::TDestroy().CRef());
+                    //If the dataclient managed to report idle in the mean time, have him destroyed
+                    RClientInterface::OpenPostMessageClose(iNode.Id(), dataClient.RecipientId(), TEChild::TDestroy().CRef());
+                    dataClient.SetFlags(TCFClientType::ELeaving);
 #endif
                     }
-                iDataClients[i].iDataClient.ClearFlags(TCFClientType::EActivating);
+                dataClient.ClearFlags(TCFClientType::EActivating);
 #ifndef __GCCXML__
                 //Simulate client leaving on the new owner.
-                RClientInterface::OpenPostMessageClose(iDataClients[i].iDataClient.RecipientId(), iDataClients[i].iNewOwner,
-                	TEChild::TLeft().CRef());
+                RClientInterface::OpenPostMessageClose(dataClient.RecipientId(), iDataClients[i].iNewOwner,
+                        TEChild::TLeft().CRef());
 #endif
                 }
             }
@@ -1711,19 +1856,23 @@ EXPORT_C void CCommsBinderActivity::TSendCustomFlowProvision::DoL()
 
     intf->SendCustomFlowProvision();
 	}
-
+    
 EXPORT_DEFINE_SMELEMENT(CCommsBinderActivity::TAwaitingBindToComplete, NetStateMachine::MState, PRStates::TContext)
 EXPORT_C TBool CCommsBinderActivity::TAwaitingBindToComplete::Accept()
-	{
-	CoreNetStates::TAwaitingBindToComplete awaitingBindToComplete(iContext);
-	if (awaitingBindToComplete.Accept())
-		{
+	{   
+	TCFServiceProvider::TBindToComplete* bindToComplete = message_cast<TCFServiceProvider::TBindToComplete>(&iContext.iMessage); 
+	if (bindToComplete) 
+	    { 
+	    __ASSERT_DEBUG(iContext.iNodeActivity, User::Panic(KCorePrPanic, KPanicNoActivity)); 
+	    iContext.iNodeActivity->SetError(bindToComplete->iValue); 
+	    
 	    CCommsBinderActivity* binderActivity = reinterpret_cast<CCommsBinderActivity*>(iContext.iNodeActivity->FetchExtInterface(CCommsBinderActivity::KInterfaceId));
 	    __ASSERT_DEBUG(binderActivity, User::Panic(KSpecAssert_ESockCrStaCPRAC, 30));
 	    binderActivity->BindToComplete();
-		iContext.Node().DestroyOrphanedDataClients();
-		return ETrue;
-		}
+	    iContext.Node().DestroyOrphanedDataClients();
+	    return ETrue; 
+	    }
+
 	return EFalse;
 	}
 
@@ -1894,7 +2043,7 @@ EXPORT_C CStartActivity::~CStartActivity()
     CMMCommsProviderBase& node(static_cast<CMMCommsProviderBase&>(iNode));
     const TProviderInfoExt* providerInfoExt = static_cast<const TProviderInfoExt*>(node.AccessPointConfig().FindExtension(
             STypeId::CreateSTypeId(TProviderInfoExt::EUid, TProviderInfoExt::ETypeId)));
-    
+
     __ASSERT_DEBUG(providerInfoExt, User::Panic(KSpecAssert_ESockCrStaCPRAC, 40));
 
     if (Error() != KErrNone)
@@ -1902,23 +2051,23 @@ EXPORT_C CStartActivity::~CStartActivity()
 		CNodeActivityBase* stopActivity = iNode.FindActivityById(ECFActivityStop);
 
 		// If the Stop activity is running we skip sending the GoneDown message. This is because the Stop
-		// activity will send GoneDown too. 
+		// activity will send GoneDown too.
 		if (!stopActivity)
 		    {
             TCFControlClient::TGoneDown goneDown(Error(), providerInfoExt->iProviderInfo.APId());
-        
+
             TClientIter<TDefaultClientMatchPolicy> iter = iNode.GetClientIter<TDefaultClientMatchPolicy>(
                     TClientType(TCFClientType::ECtrl), TClientType(0, TCFClientType::ELeaving));
             RNodeInterface* ctrlClient = NULL;
 
-            while ( (ctrlClient = iter++) )
+            while ( (ctrlClient = iter++) != NULL )
                 {
                 // Let control clients know the node has gone down, other than those that originated Start (they will be errored by ~CNodeActivityBase)...
                 if (FindOriginator(*ctrlClient) >= 0)
                     {
                     continue; // ControlClient is a Start originator
                     }
-                    
+
                 TNodeCtxId ctxId(ActivityId(), iNode.Id());
                 ctrlClient->PostMessage(ctxId, goneDown.CRef());
                 }
@@ -2062,6 +2211,3 @@ EXPORT_C TInt PRDataClientStopActivity::TNoTagOrProviderStopped::TransitionTag()
 		}
 	return CoreNetStates::KProviderStopped;
     }
-
-
-

@@ -24,6 +24,7 @@
 
 #include <comms-infras/ss_coreprstates.h>
 #include <comms-infras/ss_corepractivities.h>
+#include "ss_nodemessages_dataclient.h"
 
 #include "ss_flowrequest.h"
 
@@ -99,6 +100,9 @@ DECLARE_SMELEMENT_HEADER( TLeaveSubConnection, MeshMachine::TStateTransition<TCo
 	virtual void DoL();
 DECLARE_SMELEMENT_FOOTER( TLeaveSubConnection )
 
+DECLARE_SMELEMENT_HEADER( TSendClientLeavingAndRemoveControlProvider, MeshMachine::TStateTransition<TContext>, NetStateMachine::MStateTransition, TContext )
+	virtual void DoL();
+DECLARE_SMELEMENT_FOOTER( TSendClientLeavingAndRemoveControlProvider )
 
 
 //
@@ -146,6 +150,13 @@ protected:
 
 	virtual ~CFlowRequestActivity()
 		{
+		if( !iBindToSender.IsNull() )
+		    {
+		    TInt err = Error() ? Error() : KErrAbort;
+		    Messages::RNodeInterface::OpenPostMessageClose(Messages::TNodeCtxId(ActivityId(), iNode.Id()),
+		            iBindToSender, Messages::TEBase::TError(ESock::TCFDataClient::TBindToComplete::Id(), err).CRef());
+		    }
+		
 		static_cast<ESock::CFlowRequest&>(iNode).iFlowParameters.Close();
 		__ASSERT_DEBUG(iNode.CountAllActivities()==0, User::Panic(KSpecAssert_ESocksflwrqststs, 1));
 #ifndef __GCCXML__
@@ -153,12 +164,27 @@ protected:
 			iNode.Id(), Messages::TEChild::TDestroy().CRef());
 #endif
 		}
+	
+public:
+    /* A node that has sent TCFDataClient::TBindTo. The response TCFDataClient::TBindToComplete
+     * must be sent to this node. 
+     */ 
+    Messages::TNodeCtxId iBindToSender;
 
 public:
 	typedef MeshMachine::TNodeContext<ESock::CFlowRequest, CoreStates::TContext> TContext;
+	
+DECLARE_SMELEMENT_HEADER( TAwaitingBindTo, MeshMachine::TState<TContext>, NetStateMachine::MState, TContext )
+    virtual TBool Accept();
+DECLARE_SMELEMENT_FOOTER( TAwaitingBindTo )
+	
 DECLARE_SMELEMENT_HEADER( TStoreFlowParams, MeshMachine::TStateTransition<TContext>, NetStateMachine::MStateTransition, TContext )
 	virtual void DoL();
 DECLARE_SMELEMENT_FOOTER( TStoreFlowParams )
+
+DECLARE_SMELEMENT_HEADER( TSendBindToComplete, MeshMachine::TStateTransition<TContext>, NetStateMachine::MStateTransition, TContext )
+    virtual void DoL();
+DECLARE_SMELEMENT_FOOTER( TSendBindToComplete )
 	};
 
 class CFlowRequestDestroyActivity : public MeshMachine::CNodeActivityBase, protected MeshMachine::APreallocatedOriginators<1>

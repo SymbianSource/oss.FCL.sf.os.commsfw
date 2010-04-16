@@ -1007,6 +1007,8 @@ ENUM ServiceProvider_MessageID : UINT16
 	ECFDCStopped               	= 4
 	ECFCommsBinderRequest		= 5
 	ECFCommsBinderResponse		= 6
+	ECFCommsBindToComplete		= 7
+	
 END ENUM
 
 MESSAGE Start
@@ -1039,6 +1041,10 @@ MESSAGE CommsBinderResponse
     MESSAGEID = KServiceProviderRealmId:ECFCommsBinderResponse
 END MESSAGE
 
+MESSAGE CommsBindToComplete
+     SIGNATURE = TSigNumber
+     MESSAGEID = KServiceProviderRealmId:ECFCommsBindToComplete
+END MESSAGE
 
 // ss_nodemessages_subconn_controlclient.h
 CONST KSubConnCCRealmId = 0x10285F50

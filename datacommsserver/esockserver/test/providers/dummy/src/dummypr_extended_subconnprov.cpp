@@ -158,7 +158,7 @@ void TSendBindToComplete::DoL()
 	__ASSERT_DEBUG(iContext.iNodeActivity, User::Panic(KSpecAssert_ESockTestdmyprxt, 2));
 	CDummyBuildStackActivity* act = static_cast<CDummyBuildStackActivity*>(iContext.iNodeActivity);
 
-	RClientInterface::OpenPostMessageClose(iContext.Node().Id(), act->iBinderSource, TCFDataClient::TBindToComplete().CRef());
+	RClientInterface::OpenPostMessageClose(iContext.Node().Id(), act->iBinderSource, TCFServiceProvider::TBindToComplete().CRef());
 	}
 
 DEFINE_SMELEMENT(TCreateDataClient, NetStateMachine::MStateTransition, DummyExtendedSCPRStates::TContext)

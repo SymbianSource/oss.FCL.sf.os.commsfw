@@ -1602,29 +1602,24 @@ void CCDMapperIAPPrioritySelectionPolicyRecord::GenerateIPProtoAPL(CMDBRecordLin
     		}
     	}
     
-    CCDAccessPointRecord* ipprotoAP = NULL;
-        
-    if (!CommsDatMapperAndValidator::IsIPProtoAPAlreadyExistL(linkAPTagId, iSession.iOwner))
+    CCDAccessPointRecord* ipProtoAP = CommsDatMapperAndValidator::LoadIPProtoAccessPoint(linkAPTagId, iSession.iOwner);
+    
+    if (!ipProtoAP)
     	{
     	//The IPProto AP is not existing yet. Generate one.
-	    ipprotoAP = CommsDatMapperAndValidator::GenerateIPProtoAPL(IPProtoBaseTagId,
-	    														   linkAPTagId,
-	                                                               iSession.iOwner);
-	    
-	    CleanupStack::PushL(ipprotoAP);
+        ipProtoAP = CommsDatMapperAndValidator::GenerateIPProtoAPL(IPProtoBaseTagId, linkAPTagId, iSession.iOwner);
+	    CleanupStack::PushL(ipProtoAP);
 	    
 	    //save the generated AP record
-	    ipprotoAP->StoreL(iSession.iOwner);
+	    ipProtoAP->StoreL(iSession.iOwner);
     	}
     else
     	{
     	//The IPProto AP is already exsiting. Use that one.
-    	ipprotoAP = CommsDatMapperAndValidator::LoadTheAPL(linkAPTagId, iSession.iOwner);
-    	
-    	CleanupStack::PushL(ipprotoAP);
+    	CleanupStack::PushL(ipProtoAP);
     	}
     
-    TMDBElementId elemId = ipprotoAP->ElementId();
+    TMDBElementId elemId = ipProtoAP->ElementId();
     elemId &= KCDMaskHideAttrAndRes;
     TMDBElementId tableAndRecordBitMask = KCDMaskShowRecordType | KCDMaskShowRecordId;
     elemId &= tableAndRecordBitMask;
@@ -1642,7 +1637,7 @@ void CCDMapperIAPPrioritySelectionPolicyRecord::GenerateIPProtoAPL(CMDBRecordLin
         CommsDatMapperAndValidator::ModifyDefaultTierRecordL(elemId, iSession.iOwner);
         }
     
-    CleanupStack::PopAndDestroy(ipprotoAP);
+    CleanupStack::PopAndDestroy(ipProtoAP);
     }
 
 void CCDMapperIAPPrioritySelectionPolicyRecord::DeleteIPProtoAPL(CMDBRecordLink<CCDAccessPointRecord>*& aAPPriorityField)

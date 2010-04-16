@@ -14,7 +14,6 @@
 // Core PR Activities
 //
 //
-
 /**
  @file
  @internalComponent
@@ -27,11 +26,11 @@
 #include <comms-infras/ss_mmnode.h>
 #include <comms-infras/ss_nodemessages_internal.h>
 #include <comms-infras/ss_nodemessages_legacy.h>
+#include <comms-infras/ss_internal_activities.h>
 
 #include <elements/mm_states.h>
 #include <comms-infras/ss_parameterfamilybundle.h>
 #include <elements/nm_messages_internal.h>
-
 
 namespace CoreErrorActivity
 { //If found in node activity map is ran by the MM whenewer an error is received
@@ -52,6 +51,11 @@ namespace PRDataClientJoinActivity
 namespace PRClientLeaveActivity
 { //This activity does not need the activity object
 	DECLARE_EXPORT_NODEACTIVITY(PRClientLeave)
+}
+
+namespace PRClientLeftActivity
+{ //This activity does not need the activity object
+	DECLARE_EXPORT_NODEACTIVITY(PRClientLeft)
 }
 
 namespace PRDataClientIdleActivity
@@ -172,9 +176,8 @@ public:
     IMPORT_C static MeshMachine::CNodeActivityBase* New(const MeshMachine::TNodeActivity& aActivitySig, MeshMachine::AMMNodeBase& aNode);
 
 protected:
-	CDestroyActivity(const MeshMachine::TNodeActivity& aActivitySig, MeshMachine::AMMNodeBase& aNode);
-	virtual void Destroy();
-	virtual TBool Next(MeshMachine::TNodeContextBase& aContext);
+    CDestroyActivity(const MeshMachine::TNodeActivity& aActivitySig, MeshMachine::AMMNodeBase& aNode);
+    virtual void Destroy();
 
 //States, StateForks & StateTransitions
 protected:
@@ -197,7 +200,7 @@ public:
 		CoreNetStates::TSendLeaveCompleteIfRequest
 		)
 
-	typedef MeshMachine::TActivitiesIdMutex<ESock::ECFActivityStop, ESock::ECFActivityStopDataClient, ESock::ECFActivityDataClientGoneDown, ESock::ECFActivityGoneDown> TAllStopActivityMutex;
+	typedef MeshMachine::TActivitiesIdMutex<ESock::ECFActivityStop, ESock::ECFActivityStopDataClient, ESock::ECFActivityDataClientGoneDown, ESock::ECFActivityGoneDown, ESock::ECFActivityDestroyOrphans> TAllStopActivityMutex;
 	typedef MeshMachine::TActivityIdMutex<ESock::ECFActivityClientLeave> TClientLeaveMutex;
     typedef MeshMachine::TClientMutex<Messages::TDefaultClientMatchPolicy, ESock::TCFClientType::EData, ESock::TCFClientType::ELeaving> TLeavingDataClientMutex;
 	typedef MeshMachine::TAggregatedMutex_OR<TAllStopActivityMutex, TLeavingDataClientMutex> TAllStopActivityOrLeavingDataClientMutex;
@@ -216,6 +219,47 @@ private:
     static MeshMachine::CNodeActivityBase* NewL(const MeshMachine::TNodeActivity& aActivitySig, MeshMachine::AMMNodeBase& aNode);
 	};
 
+//-=========================================================
+//
+// DestroyOrphans Activity - will delete the node when destructed
+// if TMarkNodeForDestruction tuple has been called.
+//
+//-=========================================================
+
+NONSHARABLE_CLASS(CDestroyOrphansActivity) : public MeshMachine::CNodeActivityBase, protected MeshMachine::APreallocatedOriginators<1>
+    {
+public:
+    typedef PRStates::TContext TContext;
+
+    static CNodeActivityBase* New( const MeshMachine::TNodeActivity& aActivitySig, MeshMachine::AMMNodeBase& aNode );
+    void SetDestroyFlag();
+    TBool DestroyFlag() const;
+
+    DECLARE_SMELEMENT_HEADER( TMarkNodeForDestruction, MeshMachine::TStateTransition<TContext>, NetStateMachine::MStateTransition, TContext )
+        virtual void DoL();
+    DECLARE_SMELEMENT_FOOTER( TMarkNodeForDestruction )
+
+    DECLARE_SMELEMENT_HEADER( TNoTagOrNoTagBackwards, MeshMachine::TStateFork<TContext>, NetStateMachine::MStateFork, TContext )
+        virtual TInt TransitionTag();
+    DECLARE_SMELEMENT_FOOTER( TNoTagOrNoTagBackwards )
+
+    DECLARE_SMELEMENT_HEADER( TNoTagOrNoClients, MeshMachine::TStateFork<TContext>, NetStateMachine::MStateFork, TContext )
+        virtual TInt TransitionTag();
+    DECLARE_SMELEMENT_FOOTER( TNoTagOrNoClients )
+
+    DECLARE_SMELEMENT_HEADER( TControlProviderNoTagOrNoClients, MeshMachine::TStateFork<TContext>, NetStateMachine::MStateFork, TContext )
+        virtual TInt TransitionTag();
+    DECLARE_SMELEMENT_FOOTER( TControlProviderNoTagOrNoClients )
+
+    ~CDestroyOrphansActivity();
+
+protected:
+    explicit CDestroyOrphansActivity(const MeshMachine::TNodeActivity& aActivitySig, MeshMachine::AMMNodeBase& aNode);
+    virtual void Destroy();
+
+private:
+    TBool iDestroyFlag;         // whether to destroy node on destruction of activity
+    };
 
 //-=========================================================
 //
@@ -287,9 +331,13 @@ protected:
 //-=========================================================
 class ABindingActivity
 /*
-The interface must be implemented by activities featuring (using) PRStates::TSendBindToComplete.
-ABindingActivity can store the activityId and the originator expecting intermediate
-TBindToComplete. The originator might have sent either a TBindTo or TCommsBinderResponse.
+ABindingActivity is a helper class for activities requesting binders (sending TCFServiceProvider::TCommsBinderRequest) and, 
+following consumption of the binder, needing to respond to the recipient of TCFServiceProvider::TCommsBinderRequest with 
+TCFServiceProvider::TBindToComplete as implied by the TCFServiceProvider::TCommsBinderRequest protocol. Such activities, 
+after they receive TCFServiceProvider::TCommsBinderResponse need to remember the TNodeCtxId of the sender in order to 
+correctly respond with TCFServiceProvider::TBindToComplete. They can remember the sender of 
+TCFServiceProvider::TCommsBinderResponse by calling ABindingActivity::StoreOriginator and subsequently respond by using 
+ABindingActivity::TSendBindToComplete.
 */
 	{
 public:
@@ -323,16 +371,7 @@ public:
     EXPORT_DECLARE_SMELEMENT_HEADER( TSendBindToComplete, MeshMachine::TStateTransition<TContext>, NetStateMachine::MStateTransition, TContext )
     	IMPORT_C virtual void DoL();
     DECLARE_SMELEMENT_FOOTER( TSendBindToComplete )
-
-    EXPORT_DECLARE_SMELEMENT_HEADER( TSendBindToCompleteIfExpected, MeshMachine::TStateTransition<TContext>, NetStateMachine::MStateTransition, TContext )
-    	IMPORT_C virtual void DoL();
-    DECLARE_SMELEMENT_FOOTER( TSendBindToCompleteIfExpected )
-
-    DECLARE_AGGREGATED_TRANSITION2(
-        TSendBindToCompleteAndRequestCommsBinder,
-        TSendBindToComplete,
-        CoreNetStates::TRequestCommsBinder
-        )
+    
 	};
 
 } //namespace CoreActivities

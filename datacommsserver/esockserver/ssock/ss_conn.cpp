@@ -146,6 +146,10 @@ DECLARE_DEFINE_CUSTOM_NODEACTIVITY(ECFActivityStart, ConnectionStart, TCFInterna
 #ifdef SYMBIAN_NETWORKING_UPS
 	THROUGH_NODEACTIVITY_ENTRY(CStartAttachActivity::KUpsErrorTag, TDoNothing, MeshMachine::TErrorTag)
 #endif
+
+	// If there is a stop activity outstanding (it should be waiting for this activity to complete) then we will leave that to decide the fate of our service providers
+	THROUGH_NODEACTIVITY_ENTRY(KErrorTag, ConnActivities::CStartAttachActivity::TSetIdleIfStopOutstanding, MeshMachine::TErrorTag)
+
 	NODEACTIVITY_ENTRY(KErrorTag, CoreNetStates::TSendClientLeavingRequestToServiceProviders, MeshMachine::TAwaitingLeaveComplete, MeshMachine::TNoTag)
 	NODEACTIVITY_ENTRY(KNoTag, CoreNetStates::TSetIdleIfNoServiceProviders, MeshMachine::TAwaitingLeaveComplete, ConnectionCleanupActivities::TNoTagOrNoTagBackwards)
 	LAST_NODEACTIVITY_ENTRY(KNoTag, MeshMachine::TDoNothing)
@@ -194,7 +198,7 @@ DECLARE_DEFINE_CUSTOM_NODEACTIVITY(ECFActivityStop, ConnectionStop, TCFInternalE
 	// complete the message upon return from the blocked activity.
 	THROUGH_NODEACTIVITY_ENTRY(KNoTag, SubSessStates::TAcquireMessageOwnership, CoreNetStates::TActiveOrNoTagBlockedByGoneDown)
 	THROUGH_NODEACTIVITY_ENTRY(KActiveTag, ConnStates::TCancelStartOrAttachConnection, ConnStates::TNoTagOrNoBearerBlockedByStartOrAttach)
-	THROUGH_NODEACTIVITY_ENTRY(KNoTag, CoreNetStates::TCancelAndCloseZone0ClientExtIfaces, MeshMachine::TNoTag)
+	THROUGH_NODEACTIVITY_ENTRY(KNoTag, SubSessStates::TCancelAndCloseClientExtIfaces, MeshMachine::TNoTag)
     THROUGH_NODEACTIVITY_ENTRY(KNoTag, ConnStates::TCancelAllLegacyRMessage2Activities, ConnStates::TNoTagBlockedByLegacyRMessage2Activities)
 	NODEACTIVITY_ENTRY(KNoTag, ConnStates::TSendStopConnection, TECABState<CoreNetStates::TAwaitingStopped>, MeshMachine::TNoTag)
     THROUGH_NODEACTIVITY_ENTRY(KNoTag, ConnStates::TGenerateConnectionDownProgress, MeshMachine::TNoTag)
@@ -523,28 +527,6 @@ Main body of CConnection::NewL(CSockSession* aSession, const CConnection& aExist
 	iLastProgressError = aExistingConnection.iLastProgressError;
 	iProgressQueue = aExistingConnection.iProgressQueue;
 
-	/**
-	   The first commented in section of code here is incorrect. It only clones one of the service providers and not them
-	   all. This means that certain calls, GetIntSetting being one, does not work on cloned connections. Unfortunately,
-	   some code now relies on this being broken (browser). This code needs to be fixed before the first section of code
-	   is removed and the proper code reinstated.
-	*/
-#if 1   // BAD CODE
-	RNodeInterface* sp = aExistingConnection.ServiceProvider();
-	if (sp)
-		{
-	    AddClientL(sp->RecipientId(), TClientType(TCFClientType::EServProvider, TCFClientType::EActive));
-
-		// TODO IK: This is the wrong message to be using here, should use JoinRequest/Complete handshake
-	    sp->PostMessage(Id(), TCFFactory::TPeerFoundOrCreated(Id(), 0).CRef());
-        }
-	else
-		{
-		LOG( ESockLog::Printf(KESockConnectionTag, _L8("CConnection %08x CloneL KErrNotReady"), this) );
-		User::Leave(KErrNotReady);
-		}
-
-#else   // PROPER CODE
 	/*
 	  This function looks like it'd be better to do in one loop. dont do this though. All fallible parts need to be done before
 	  sending the messages to ourselves, otherwise the mesh machine will panic.
@@ -595,7 +577,6 @@ Main body of CConnection::NewL(CSockSession* aSession, const CConnection& aExist
 			sp = iter++;
 			}
 		}
-#endif
 	}
 
 

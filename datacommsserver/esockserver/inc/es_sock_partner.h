@@ -89,7 +89,11 @@ a previous KCoEnableCloneOpen option.
 */
 const TUint KCoDisableCloneOpen				= 6 | (KConnReadUserDataBit);
 
-
+/**
+Error code to force a KErrDisconnected from a layer in the stack if sent from an mcpr.
+@publishedPartner
+*/
+const TInt KErrForceDisconnected = -17215;
 
 class RParameterFamilyBundle;
 class CSubConParameterBundle : public CObject

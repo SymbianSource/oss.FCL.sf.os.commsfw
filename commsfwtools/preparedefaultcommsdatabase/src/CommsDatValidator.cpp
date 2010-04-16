@@ -1927,7 +1927,7 @@ CCDBearerTypeRecord* CCDValidatorIAPRecord::NewBearerTypeRecordL(CMDBSession& aS
     else
     	{
     	//The IPProto AP is already exsiting. Use that one.
-    	ipprotoAP = CommsDatMapperAndValidator::LoadTheAPL(iLinkAPTagId, iSession.iOwner);
+    	ipprotoAP = CommsDatMapperAndValidator::LoadIPProtoAccessPointL(iLinkAPTagId, iSession.iOwner);
     	
     	CleanupStack::PushL(ipprotoAP);
     	}
@@ -2044,7 +2044,8 @@ CCDBearerTypeRecord* CCDValidatorIAPRecord::NewBearerTypeRecordL(CMDBSession& aS
     	 * a new one should be generated.
     	 */
     	
-    	if (!CommsDatMapperAndValidator::IsIPProtoAPAlreadyExistL(iLinkAPTagId, iSession.iOwner))
+        apRecordToBeModified = CommsDatMapperAndValidator::LoadIPProtoAccessPoint(iLinkAPTagId, iSession.iOwner);
+    	if (!apRecordToBeModified)
     		{
     		//ok, there is no AP with the given customSelPol field
 	        apRecordToBeModified = static_cast<CCDAccessPointRecord*>(CCDRecordBase::RecordFactoryL(KCDTIdAccessPointRecord));
@@ -2058,8 +2059,6 @@ CCDBearerTypeRecord* CCDValidatorIAPRecord::NewBearerTypeRecordL(CMDBSession& aS
     		{
     		//there is already an AP with the given customSelPol field
     		//delete the currently used IPProto AP
-    		apRecordToBeModified = CommsDatMapperAndValidator::LoadTheAPL(iLinkAPTagId, iSession.iOwner);
-        	
         	CleanupStack::PushL(apRecordToBeModified);
         	
     		CCDAccessPointRecord* apRecordToBeDeleted = static_cast<CCDAccessPointRecord*>(CCDRecordBase::RecordFactoryL(KCDTIdAccessPointRecord));
@@ -2119,7 +2118,7 @@ CCDBearerTypeRecord* CCDValidatorIAPRecord::NewBearerTypeRecordL(CMDBSession& aS
     		{
     		//the given IPProto is already existing with the received Link TagId (and cprConfig
     		//field if the connpref is prompting). Let's use that one
-    		apRecordToBeModified = CommsDatMapperAndValidator::LoadTheAPL(iLinkAPTagId, iSession.iOwner);
+    		apRecordToBeModified = CommsDatMapperAndValidator::LoadIPProtoAccessPointL(iLinkAPTagId, iSession.iOwner);
         	
         	CleanupStack::PushL(apRecordToBeModified);
     		

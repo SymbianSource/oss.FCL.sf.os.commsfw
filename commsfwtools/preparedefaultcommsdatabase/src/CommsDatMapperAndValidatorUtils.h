@@ -29,6 +29,7 @@
 
 #ifdef SYMBIAN_NON_SEAMLESS_NETWORK_BEARER_MOBILITY
 
+#include <metadatabase.h>
 #include <cdbcols.h>
 #include <in_sock.h> //KAfInet
 //forward declarations
@@ -127,7 +128,8 @@ are not exported.
     
     static TBool IsIPProtoAPAlreadyExistL(TInt aLinkLevelTagId, TInt aConnPrefElementId, CommsDat::CMDBSession& aSession);
     
-    static CommsDat::CCDAccessPointRecord* LoadTheAPL(TInt aLinkLevelTagId, CommsDat::CMDBSession& aSession);
+    static inline CommsDat::CCDAccessPointRecord* LoadIPProtoAccessPointL(TInt aLinkLevelTagId, CommsDat::CMDBSession& aSession);
+    static CommsDat::CCDAccessPointRecord* LoadIPProtoAccessPoint(TInt aLinkLevelTagId, CommsDat::CMDBSession& aSession);
     
     static TInt CountReferenceToThisIPProtoAPL(TUint aElementId, CommsDat::CMDBSession& aSession);
     
@@ -151,11 +153,23 @@ are not exported.
     CommsDatMapperAndValidator& operator=(const CommsDatMapperAndValidator&);
     
     static void CheckTheAPPrioritySelPolFromConnPrefModL(CommsDat::CCDAPPrioritySelectionPolicyRecord*& aAPSelPolRec);
+    static TBool FindIPProtoAccessPointRecordL(CommsDat::CCDAccessPointRecord& aAccessPoints, CommsDat::CMDBSession& aSession);
     
     }; //CommsDatMapperAndValidator
     
+inline CommsDat::CCDAccessPointRecord* CommsDatMapperAndValidator::LoadIPProtoAccessPointL(TInt aLinkLevelTagId, CommsDat::CMDBSession& aSession)
+    {
+    CommsDat::CCDAccessPointRecord* ap = LoadIPProtoAccessPoint(aLinkLevelTagId, aSession);
+    if (!ap)
+        {
+        User::Leave(KErrNotFound);
+        }
+    return ap;
+    }
+
 } //end of namespace CommsDatInternal
 
 #endif //SYMBIAN_NON_SEAMLESS_NETWORK_BEARER_MOBILITY
 
 #endif //COMMSDATMAPPERANDVALIDATORUTILS_H
+

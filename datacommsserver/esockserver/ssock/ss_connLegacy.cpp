@@ -168,6 +168,9 @@ void AConnectionLegacy::CompleteAttachL(ESock::TSelectionPrefs& aPrefs)
 		User::Leave(error);
 		}
 
+	// Make sure the MCPR knows that the CPR has a new control client
+	ipProtoCpr->ControlProvider()->PostMessage(ipProtoCpr->Id(), TCFControlProvider::TActive().CRef());
+
 	iConnection.ServiceProvider()->SetFlags(TCFClientType::EStarted);
 	}
 

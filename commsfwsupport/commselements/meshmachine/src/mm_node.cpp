@@ -438,6 +438,13 @@ EXPORT_C void AMMNodeBase::AbortActivitiesOriginatedBy(TNodeContextBase& aContex
     for (TInt i = iActivities.Count() - 1; i>=0; i--)
         {
         aContext.iNodeActivity = iActivities[i];
+		
+		// We dont want to abort already idle activities or they may error.		
+		if(aContext.iNodeActivity->IsIdle())
+			{
+			continue;
+			}
+		
         if (caller != aContext.iNodeActivity)
             {
         	if (abortAll)

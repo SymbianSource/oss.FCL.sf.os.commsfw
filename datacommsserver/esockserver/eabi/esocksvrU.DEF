@@ -330,7 +330,7 @@ EXPORTS
 	_ZTVN14CoreActivities16CDestroyActivity37TMakeClientsLeaveOrProcessClientLeaveE @ 329 NONAME
 	_ZTVN14CoreActivities16CDestroyActivity22TNoTagOrNoTagBackwardsE @ 330 NONAME
 	_ZTVN14CoreActivities16ABindingActivityE @ 331 NONAME
-	_ZTVN14CoreActivities16ABindingActivity29TSendBindToCompleteIfExpectedE @ 332 NONAME
+	_ZTVN14CoreActivities16ABindingActivity29TSendBindToCompleteIfExpectedE @ 332 NONAME ABSENT
 	_ZN21CCommsMobilitySrvResp16NewCarrierActiveERPS_16TAccessPointInfoi @ 333 NONAME
 	_ZN21CCommsMobilitySrvResp25PreferredCarrierAvailableERPS_16TAccessPointInfoS2_ii @ 334 NONAME
 	_ZTVN14CoreActivities16ABindingActivity19TSendBindToCompleteE @ 335 NONAME
@@ -607,8 +607,8 @@ EXPORTS
 	_ZN14CoreActivities16ABindingActivity17ReplyToOriginatorEi @ 606 NONAME
 	_ZN14CoreActivities16ABindingActivity19TSendBindToComplete12GetVTablePtrER6TDesC8Pv @ 607 NONAME
 	_ZN14CoreActivities16ABindingActivity19TSendBindToComplete3DoLEv @ 608 NONAME
-	_ZN14CoreActivities16ABindingActivity29TSendBindToCompleteIfExpected12GetVTablePtrER6TDesC8Pv @ 609 NONAME
-	_ZN14CoreActivities16ABindingActivity29TSendBindToCompleteIfExpected3DoLEv @ 610 NONAME
+	_ZN14CoreActivities16ABindingActivity29TSendBindToCompleteIfExpected12GetVTablePtrER6TDesC8Pv @ 609 NONAME ABSENT
+	_ZN14CoreActivities16ABindingActivity29TSendBindToCompleteIfExpected3DoLEv @ 610 NONAME ABSENT
 	_ZN14CoreActivities16ABindingActivityD0Ev @ 611 NONAME
 	_ZN14CoreActivities16ABindingActivityD1Ev @ 612 NONAME
 	_ZN14CoreActivities16ABindingActivityD2Ev @ 613 NONAME
@@ -1374,7 +1374,7 @@ EXPORTS
 	_ZTIN14CoreActivities14CErrorActivity21TSendErrorRecoveryReqE @ 1373 NONAME
 	_ZTIN14CoreActivities14CErrorActivityE @ 1374 NONAME
 	_ZTIN14CoreActivities16ABindingActivity19TSendBindToCompleteE @ 1375 NONAME
-	_ZTIN14CoreActivities16ABindingActivity29TSendBindToCompleteIfExpectedE @ 1376 NONAME
+	_ZTIN14CoreActivities16ABindingActivity29TSendBindToCompleteIfExpectedE @ 1376 NONAME ABSENT
 	_ZTIN14CoreActivities16ABindingActivityE @ 1377 NONAME
 	_ZTIN14CoreActivities16CDestroyActivity22TNoTagOrNoTagBackwardsE @ 1378 NONAME
 	_ZTIN14CoreActivities16CDestroyActivity37TMakeClientsLeaveOrProcessClientLeaveE @ 1379 NONAME
@@ -1945,6 +1945,6 @@ EXPORTS
 	_ZTVN13CoreNetStates12TCancelStartE @ 1944 NONAME
 	_ZN10CoreStates37TNoTagOrRecoverableErrorTagOrErrorTag13TransitionTagEv @ 1945 NONAME
 	_ZNK5ESock25RCFParameterFamilyBundleC18CountParameterSetsEv @ 1946 NONAME
-
-
-
+	_ZN20PRClientLeftActivity12PRClientLeft11FirstTripleEv @ 1947 NONAME
+	_ZN20PRClientLeftActivity12PRClientLeft4SelfEv @ 1948 NONAME
+	_ZN13CoreNetStates13TAwaitingStop6AcceptEv @ 1949 NONAME

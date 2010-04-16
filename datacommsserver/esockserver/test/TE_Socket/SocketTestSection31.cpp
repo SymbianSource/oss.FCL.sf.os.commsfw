@@ -634,3 +634,85 @@ enum TVerdict CSocketTest31_4::InternalDoTestStepL( void )
     return TestStepResult();
     }
 
+
+// Test step 31.5
+// Using fixed async request slot pool and system free request pool connections
+// 
+const TDesC& CSocketTest31_5::GetTestName()
+    {
+    _LIT(ret,"Test31.5");
+    return ret;
+    }
+
+
+CSocketTest31_5::CSockReq* CSocketTest31_5::CSockReq::NewLC()
+    {
+    CSockReq* sockReq = new(ELeave) CSockReq;
+    CleanupStack::PushL(sockReq);
+    return sockReq;
+    }
+
+CSocketTest31_5::CSockReq::~CSockReq()
+    {
+    TInt ret = iReq.Int();
+    iSock.Close();
+    if(ret == KRequestPending)
+        {
+        User::WaitForRequest(iReq);
+        }
+    }
+
+TInt CSocketTest31_5::MakePendingRequestL()
+    {
+    CSockReq* req = CSockReq::NewLC();
+    iSocks.AppendL(req);
+    CleanupStack::Pop(req);
+    
+    TInt idx = iSocks.Count() - 1;
+    TInt ret = req->iSock.Open(iSess, KDummyAddrFamily, KSockDatagram, KDummyOne);
+    Logger().WriteFormat(_L("sock[%d].Open() returned %S"), idx, &EpocErrorToText(ret));
+    TESTL(KErrNone == ret);
+    req->iSock.Read(req->iData, req->iReq);
+    User::After(250 * 1000);    // short delay to allow for almost-instant failure
+    Logger().WriteFormat(_L("sock[%d].Read() status %S"), idx, &EpocErrorToText(req->iReq.Int()));
+    return req->iReq.Int();
+    }
+
+enum TVerdict CSocketTest31_5::InternalDoTestStepL( void )
+    {
+    TVerdict verdict = EPass;
+
+    Logger().WriteFormat(_L("Test Purpose: Test bounded and unbounded (default) async request slot pool."));
+
+    Logger().WriteFormat(_L("Trying %d pending requests against default (unbounded pool) connection"), KESockDefaultMessageSlots + 1);
+    TInt ret = iSess.Connect();
+    CleanupClosePushL(iSess);
+    Logger().WriteFormat(_L("Connect returned %S"), &EpocErrorToText(ret));
+    TESTL(KErrNone == ret);
+    for(TInt sockNum = 0; sockNum <= KESockDefaultMessageSlots; ++sockNum)
+        {
+        ret = MakePendingRequestL();
+        TESTL(ret == KRequestPending);
+        }
+    iSocks.ResetAndDestroy();
+    CleanupStack::PopAndDestroy(&iSess);
+
+    Logger().WriteFormat(_L("Trying %d pending requests against old default (KESockDefaultMessageSlots pool) connection"), KESockDefaultMessageSlots + 1);
+    ret = iSess.Connect(KESockDefaultMessageSlots);
+    CleanupClosePushL(iSess);
+    Logger().WriteFormat(_L("Connect returned %S"), &EpocErrorToText(ret));
+    TESTL(KErrNone == ret);
+    for(TInt sockNum = 0; sockNum < KESockDefaultMessageSlots; ++sockNum)
+        {
+        ret = MakePendingRequestL();
+        TESTL(ret == KRequestPending);
+        }
+    ret = MakePendingRequestL();
+    TESTL(ret == KErrServerBusy);
+    iSocks.ResetAndDestroy();
+    CleanupStack::PopAndDestroy(&iSess);
+
+    SetTestStepResult(EPass);
+    return TestStepResult();
+    }
+

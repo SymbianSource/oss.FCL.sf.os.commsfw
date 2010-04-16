@@ -162,10 +162,16 @@ void CHostResolver::ReceivedL(const TRuntimeCtxId& aSender, const TNodeId& aReci
 			TRAP(err,BindToL(bindToMsg));
 			}
 
-		TCFDataClient::TBindToComplete bindCompleteMsg(err);
-		RClientInterface::OpenPostMessageClose(Id(), aSender,
-			bindCompleteMsg);
+        if(err == KErrNone)
+            {
+            RClientInterface::OpenPostMessageClose(Id(), aSender, TCFDataClient::TBindToComplete().CRef());
+            }
+        else
+            {
+            RClientInterface::OpenPostMessageClose(Id(), aSender, TEBase::TError(aMessage.MessageId(), err).CRef());
+            }
 
+        
 		CompleteFlowRequestMessage(err);
 
 		if (IsClosing())
