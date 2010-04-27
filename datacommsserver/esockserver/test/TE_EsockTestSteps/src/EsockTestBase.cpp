@@ -1232,6 +1232,23 @@ TInt CCEsockTestBase::StartConnection(RConnection& aConn, TConnPref& aPrefs, TRe
 	return KErrNone;
 	}
 
+TInt CCEsockTestBase::GetParameters(TPtrC aConnectionName, ESock::CCommsDataObjectBase& aDataObject)
+    {
+    RConnection* c = iConns.Find(aConnectionName);
+    if (c==NULL)
+        return KErrNotFound;
+    return c->GetParameters(aDataObject);
+    }
+
+TInt CCEsockTestBase::GetIntSetting(TPtrC aConnectionName, const TDesC& aSettingName, TUint32& aValue)
+    {
+    RConnection* c = iConns.Find(aConnectionName);
+    if (c==NULL)
+        return KErrNotFound;
+    return c->GetIntSetting(aSettingName, aValue);
+    }
+
+
 TInt CCEsockTestBase::StartConnection(TRConnectionParams& aParams)
 	{
     RConnection* c = iConns.Find(aParams.iConnectionName);
@@ -2234,6 +2251,8 @@ TInt CCEsockTestBase::ReceiveMobilityNotification(TDesC8*& aBufferPtr, const TEv
     aBufferPtr = (ec->iEventReceived.Int()==KErrNone)? &ec->iEventNotifBuf : NULL;
     return ec->iEventReceived.Int();
     }
+
+
 
 //
 //cleanup

@@ -422,6 +422,7 @@ CTestStep* CTe_esockteststepsSuite::CreateTestStep(const TDesC& aStepName)
 	NEW_ESOCK_TESTSTEP(RegisterProgressNotificationStep)
 	NEW_ESOCK_TESTSTEP(CheckProgressNotificationStep)
 	NEW_ESOCK_TESTSTEP(CheckNegativeProgressNotificationStep)
+	NEW_ESOCK_TESTSTEP(GetParameters_IntStep)	
 	return testStep;
 	}
 

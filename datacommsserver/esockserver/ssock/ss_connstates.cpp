@@ -637,23 +637,22 @@ TBool ConnStates::TAwaitingStateChange::Accept()
         {
         TStateChange& progress = progressMsg->iStateChange;
         
-        if (iContext.iSender != iContext.Node().Id())
-            {
-            //CConnection trusts that locally generated progresses are to be trusted,
-            //but some of the legacy progresses coming from the stack need some filtering.
-            //Here's the filtering.
+		// Check whether KDataTransferUnblocked is received and if yes, then traslate it to KConnectionUp (== KLinkLayerOpen)
+		// the log only sees the translated version, this goes into the queue, so it alright I suppose.
+		if (progress.iStage == KDataTransferUnblocked )
+			{
+			progress.iStage = KConnectionUp;    // KLinkLayerOpen
+			}
+		if (progress.iError == KErrForceDisconnected)
+			{
+			progress.iError = KErrDisconnected;
+			}
         
-            // Check whether KDataTransferUnblocked is received and if yes, then traslate it to KConnectionUp (== KLinkLayerOpen)
-            // the log only sees the translated version, this goes into the queue, so it alright I suppose.
-            if (progress.iStage == KDataTransferUnblocked )
-                {
-                progress.iStage = KConnectionUp;    // KLinkLayerOpen
-                }
-            if (progress.iError == KErrForceDisconnected)
-                {
-                progress.iError = KErrDisconnected;
-                }
-            
+		// CConnection trusts that locally generated progresses are to be trusted,
+		// but some of the legacy progresses coming from the stack need some filtering.
+		// Here's the filtering.
+		if (iContext.iSender != iContext.Node().Id())
+            {
             if (progress.iStage == KConnectionUninitialised)
                 {
                 //KConnectionUninitialised has been deprecated in the stack and it will be ignored

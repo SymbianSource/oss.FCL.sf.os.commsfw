@@ -23,6 +23,7 @@ PRINT RCommsMobilityApiExt::RegisterForMobilityNotification(),
 PRINT Simulate current AP going down,
 PRINT Receive PreferredCarierAvailable but no KLinkLayerClosed,
 PRINT Migration to the new AP,
+PRINT RConnection::GetParameters(IAP) to check the reported IAP is expected
 PRINT New AP goes down, reception of KLinkLayerClosed ,
 PRINT RCommsMobilityApiExt::Close()
 
@@ -83,6 +84,10 @@ RUN_TEST_STEP 150 te_esockteststepsSuite acceptcarrierrcommsmobilityapiextStep z
 
 //Check we did not receive the Klinklayerclosed event
 RUN_TEST_STEP 100 te_esockteststepsSuite CheckNegativeProgressNotificationStep z:\testdata\configs\BearerMobility\Mobility_760645.ini CheckNegativeProgressNotificationEvent1 
+
+//Check IAP
+RUN_TEST_STEP 150 te_esockteststepsSuite GetParameters_IntStep z:\testdata\configs\BearerMobility\Mobility_760645.ini CheckNewIAP
+
 
 //Simulate the new access point going down and receive 
 RUN_TEST_STEP 150 te_esockteststepsSuite SetAccessPointAvailabilityStep z:\testdata\configs\BearerMobility\Mobility_760645.ini ChangeAvailabilityDownAp5

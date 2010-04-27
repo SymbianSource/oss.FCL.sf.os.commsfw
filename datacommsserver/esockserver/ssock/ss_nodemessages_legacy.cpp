@@ -103,18 +103,8 @@ void TCFSigLegacyRMessage2Ext::ForwardRequestL(MeshMachine::TNodeContextBase& aC
 	ASSERT(aContext.Activity() != NULL);
 	RNodeInterface* rcpt = NULL;
 
-	/* At the connection level we want to go down active serviceprovider, as there are multiple
-	   and the first one is usually an scpr */
-	if (aContext.Activity()->ActivitySigId() == ECFActivityConnectionLegacyRMessage2Handler)
-		{
-		rcpt = aContext.Node().GetFirstClient<TDefaultClientMatchPolicy>(TClientType(TCFClientType::EServProvider, TCFClientType::EActive),
+	rcpt = aContext.Node().GetFirstClient<TDefaultClientMatchPolicy>(TClientType(TCFClientType::EServProvider, TCFClientType::EActive),
 			Messages::TClientType(0, Messages::TClientType::ELeaving));
-		}
-	else
-		{
-		rcpt = aContext.Node().GetFirstClient<TDefaultClientMatchPolicy>(TClientType(TCFClientType::EServProvider),
-			Messages::TClientType(0, Messages::TClientType::ELeaving));
-		}
 
     if(rcpt)
     	{

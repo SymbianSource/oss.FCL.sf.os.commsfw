@@ -464,26 +464,29 @@ EXPORT_C CWorkerSession::~CWorkerSession()
 	iProcess.Close();
 
 	const CCommonServer* s = static_cast<const CCommonServer*>(Server());
-	__ASSERT_DEBUG(s->iNumSessions>0, User::Panic(KDenFaultPanic, ECommonNegativeSessionCount));
-	s->iNumSessions--;
-	COMMONLOG((WorkerId(), KECommonSessDetailTag, _L8("CWorkerSession(%08x):\t~CWorkerSession() iNumSessions=%d (remaining)"), this, s->iNumSessions));
-
-	CCommonWorkerThread& selfWorker = WorkerThread();
-	if (selfWorker.ShuttingDown())
-		{
-		COMMONLOG((WorkerId(), KECommonSessDetailTag, _L8("Shutdown requested: %d sessions"), s->iNumSessions));
-		if (s->iNumSessions <= 0)
-			{
-			if(selfWorker.IsMainThread())
-				{
-				selfWorker.PitBoss().SessionShutdownComplete();
-				}
-			else
-				{
-				selfWorker.MaybeTriggerThreadShutdownCallback();
-				}
-			}
-		}
+	if (s)     // guard against leave during construction (e.g. a leave from CWorkerSession::ConstructL()).
+	    {
+        __ASSERT_DEBUG(s->iNumSessions>0, User::Panic(KDenFaultPanic, ECommonNegativeSessionCount));
+        s->iNumSessions--;
+        COMMONLOG((WorkerId(), KECommonSessDetailTag, _L8("CWorkerSession(%08x):\t~CWorkerSession() iNumSessions=%d (remaining)"), this, s->iNumSessions));
+    
+        CCommonWorkerThread& selfWorker = WorkerThread();
+        if (selfWorker.ShuttingDown())
+            {
+            COMMONLOG((WorkerId(), KECommonSessDetailTag, _L8("Shutdown requested: %d sessions"), s->iNumSessions));
+            if (s->iNumSessions <= 0)
+                {
+                if(selfWorker.IsMainThread())
+                    {
+                    selfWorker.PitBoss().SessionShutdownComplete();
+                    }
+                else
+                    {
+                    selfWorker.MaybeTriggerThreadShutdownCallback();
+                    }
+                }
+            }
+	    }
 	}
 
 EXPORT_C void CWorkerSession::ProcessSubSessions(TWorkerId aPeerId, TSubSessionProcessor aSubSessionProcessor, TAny* aArg)
