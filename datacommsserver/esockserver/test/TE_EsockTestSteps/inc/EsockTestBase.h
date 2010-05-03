@@ -517,6 +517,8 @@ public:
     TInt CreateAvailabilityExtension(const TDesC& aAvailabilityExtensionName);
     TInt RegisterForProgressNotificationEvent(const TEventContainerParams& aParams);
     TInt ReceiveProgressNotificationEvent(TNifProgress*& aNifProgress, const TDesC& aEventName, TUint aTimeoutInMiliSec = 0);
+    TInt GetParameters(TPtrC aConnectionName, ESock::CCommsDataObjectBase& aDataObject);
+    TInt GetIntSetting(TPtrC aConnectionName, const TDesC& aSettingName, TUint32& aValue);
 
     //mobility extensions
     RCommsMobilityApiExt* FindMobilityExtension(const TDesC& aMobilityExtensionName);

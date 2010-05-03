@@ -26,6 +26,7 @@
 #include <inet6err.h>
 #include <in6_opt.h>
 
+
 /**
  * Subconnection Management API extensions
  * 
@@ -7267,6 +7268,446 @@ enum TVerdict TE_RConnectionTest319::doTestStepL(void)
 	CleanupStack::PopAndDestroy();
     return TestStepResult();
 } // TE_RConnectionTest319
+
+
+
+enum TVerdict TE_RConnectionTest481::doTestStepL(void)
+/**
+ * Test 481
+ * Test DataSentNotificationRequest() cancellation
+ * Added for defect ou1cimx1#305124.
+ * Tests that cancellation of the request does indeed cancel the request
+ * Defect summary: was the case that the first cancel cancelled the request but left
+ * a notification structure in existence. The second cancel would see the structure
+ * and think that the cancellation had already been done leaving the request outstanding.
+ * @return enum TVerdict Indicates status of test run. See INFO_PRINTF1.h for possible values
+ */
+{
+    TInt err;
+    TRequestStatus status1;
+
+    RSocketServ ss;
+    err = OpenSocketServer(ss);
+    TESTEL(KErrNone == err, err);
+    CleanupClosePushL(ss);
+
+    //********** connection creation ***********
+    RConnection conn1;
+    err = OpenConnection(conn1, ss);
+    TESTEL(KErrNone == err, err);
+    CleanupClosePushL(conn1);
+
+    // start the dummynif
+    err = StartConnectionWithOverrides(conn1, iDummyNifLongTimeoutIap);
+    TESTEL(KErrNone == err, err);
+    err = conn1.SetOpt(KCOLProvider, KConnDisableTimers, ETrue);
+    TESTEL(KErrNone == err, err);
+
+    RSocket sock1;
+    err = OpenUdpSocketExplicitL(sock1, ss, conn1);
+    TESTEL(KErrNone == err, err);
+    CleanupClosePushL(sock1);
+
+    INFO_PRINTF1(_L("First DataSentNotificationRequest"));
+    // Request DataSentNotificationRequest
+    TUint volume1(0); 
+    TPckg<TUint> volume1Des(volume1);
+    TUint threshold1(KLowThresholdSize);
+    conn1.DataSentNotificationRequest(threshold1, volume1Des, status1);
+
+    // Send some data but not enough to trigger the notification 
+    TUint currentVol(0);
+    while (currentVol < threshold1 / 2)
+        {
+        err = TestUdpDataPathL(sock1, iDummyNifSendAddr, KSmallBufferLength);
+        TESTEL(KErrNone == err, err);
+        TESTEL(KRequestPending == status1.Int(), status1.Int());
+        currentVol += KSmallBufferUdpTestPacketSize;
+        }
+
+    INFO_PRINTF1(_L("First DataSentNotificationRequest still outstanding (as expected) - now cancelling"));
+
+    // Cancel the request and expect the completion
+    conn1.DataSentNotificationCancel();
+    User::WaitForRequest(status1);
+    TESTEL(status1.Int() == KErrCancel, status1.Int());
+
+    INFO_PRINTF1(_L("First DataSentNotificationRequest completed with KErrCancel"));
+    
+    // The first cancellation has worked, repeat the above steps for the second cancellation
+    INFO_PRINTF1(_L("Second DataSentNotificationRequest"));
+    conn1.DataSentNotificationRequest(threshold1, volume1Des, status1);
+
+    // NOTE: It is a deliberate that no data is transfered this time.
+	//       Transmitting data and crossing the threshold for the first (cancelled) notification
+	//       would cause the object to be cleaned up and therefore mask this issue
+    
+    // Cancel the request and expect the completion
+    conn1.DataSentNotificationCancel();
+    User::WaitForRequest(status1);
+    TESTEL(status1.Int() == KErrCancel, status1.Int());
+    INFO_PRINTF1(_L("Second DataSentNotificationRequest completed with KErrCancel"));
+    
+    // NOTE: Reaching here successfully does NOT mean the test has passed. If the data monitoring structures
+    //       have been left behind esock will panic when the connection is stopped  
+    
+    
+    //********** turn the idle timers back on now we are finished ***********
+    err = conn1.SetOpt(KCOLProvider, KConnDisableTimers, EFalse);
+    TESTEL(KErrNone == err, err);
+
+    //********** clean up ***********
+    DestroyUdpSocket(sock1);
+    CleanupStack::Pop(&sock1);
+
+    err = conn1.Stop();
+    TESTEL(KErrNone == err, err);
+
+    CloseConnection(conn1);
+    CleanupStack::Pop(&conn1);
+
+    CloseSocketServer(ss);
+    CleanupStack::Pop(&ss);
+
+    return TestStepResult();
+
+} // TE_RConnectionTest481
+
+
+
+enum TVerdict TE_RConnectionTest482::doTestStepL(void)
+/**
+ * Test 482
+ * Test DataReceivedNotificationRequest() cancellation
+ * Added for defect ou1cimx1#305124.
+ * Tests that cancellation of the request does indeed cancel the request
+ * Defect summary: was the case that the first cancel cancelled the request but left
+ * a notification structure in existence. The second cancel would see the structure
+ * and think that the cancellation had already been done leaving the request outstanding.
+ * @return enum TVerdict Indicates status of test run. See INFO_PRINTF1.h for possible values
+ */
+{
+    TInt err;
+    TRequestStatus status1;
+
+    RSocketServ ss;
+    err = OpenSocketServer(ss);
+    TESTEL(KErrNone == err, err);
+    CleanupClosePushL(ss);
+
+    //********** connection creation ***********
+    RConnection conn1;
+    err = OpenConnection(conn1, ss);
+    TESTEL(KErrNone == err, err);
+    CleanupClosePushL(conn1);
+
+    // start the dummynif
+    err = StartConnectionWithOverrides(conn1, iDummyNifLongTimeoutIap);
+    TESTEL(KErrNone == err, err);
+    err = conn1.SetOpt(KCOLProvider, KConnDisableTimers, ETrue);
+    TESTEL(KErrNone == err, err);
+
+    RSocket sock1;
+    err = OpenUdpSocketExplicitL(sock1, ss, conn1);
+    TESTEL(KErrNone == err, err);
+    CleanupClosePushL(sock1);
+
+    INFO_PRINTF1(_L("First DataReceivedNotificationRequest"));
+    // Request DataSentNotificationRequest
+    TUint volume1(0); 
+    TPckg<TUint> volume1Des(volume1);
+    TUint threshold1(KLowThresholdSize);
+    conn1.DataReceivedNotificationRequest(threshold1, volume1Des, status1);
+
+    // Send some data but not enough to trigger the notification 
+    TUint currentVol(0);
+    while (currentVol < threshold1 / 2)
+        {
+        err = TestUdpDataPathL(sock1, iDummyNifSendAddr, KSmallBufferLength);
+        TESTEL(KErrNone == err, err);
+        TESTEL(KRequestPending == status1.Int(), status1.Int());
+        currentVol += KSmallBufferUdpTestPacketSize;
+        }
+
+    INFO_PRINTF1(_L("First DataReceivedNotificationRequest still outstanding (as expected) - now cancelling"));
+
+    // Cancel the request and expect the completion
+    conn1.DataReceivedNotificationCancel();
+    User::WaitForRequest(status1);
+    TESTEL(status1.Int() == KErrCancel, status1.Int());
+
+    INFO_PRINTF1(_L("First DataReceivedNotificationRequest completed with KErrCancel"));
+    
+    // The first cancellation has worked, repeat the above steps for the second cancellation
+    INFO_PRINTF1(_L("Second DataReceivedNotificationRequest"));
+    conn1.DataReceivedNotificationRequest(threshold1, volume1Des, status1);
+
+    // NOTE: It is a deliberate that no data is transfered this time.
+	//       Transmitting data and crossing the threshold for the first (cancelled) notification
+	//       would cause the object to be cleaned up and therefore mask this issue
+    
+    // Cancel the request and expect the completion
+    conn1.DataReceivedNotificationCancel();
+    User::WaitForRequest(status1);
+    TESTEL(status1.Int() == KErrCancel, status1.Int());
+    INFO_PRINTF1(_L("Second DataReceivedNotificationRequest completed with KErrCancel"));
+
+    // NOTE: Reaching here successfully does NOT mean the test has passed. If the data monitoring structures
+    //       have been left behind esock will panic when the connection is stopped  
+
+    
+    //********** turn the idle timers back on now we are finished ***********
+    err = conn1.SetOpt(KCOLProvider, KConnDisableTimers, EFalse);
+    TESTEL(KErrNone == err, err);
+
+    //********** clean up ***********
+    DestroyUdpSocket(sock1);
+    CleanupStack::Pop(&sock1);
+
+    err = conn1.Stop();
+    TESTEL(KErrNone == err, err);
+
+    CloseConnection(conn1);
+    CleanupStack::Pop(&conn1);
+
+    CloseSocketServer(ss);
+    CleanupStack::Pop(&ss);
+
+    return TestStepResult();
+
+} // TE_RConnectionTest482
+
+
+
+enum TVerdict TE_RConnectionTest483::doTestStepL(void)
+/**
+ * Test 483
+ * Test DataSentNotificationRequest() cancellation
+ * Added for defect ou1cimx1#305124.
+ * Tests that cancellation of the request does indeed cancel the request
+ * Defect summary: If the state described in Test481 occurs, it would have been possible to
+ * request more than one DataSentNotificationRequest per RConnection. This should not be possible.
+ * @return enum TVerdict Indicates status of test run. See INFO_PRINTF1.h for possible values
+ */
+{
+    TInt err;
+    TRequestStatus status1;
+
+    RSocketServ ss;
+    err = OpenSocketServer(ss);
+    TESTEL(KErrNone == err, err);
+    CleanupClosePushL(ss);
+
+    //********** connection creation ***********
+    RConnection conn1;
+    err = OpenConnection(conn1, ss);
+    TESTEL(KErrNone == err, err);
+    CleanupClosePushL(conn1);
+
+    // start the dummynif
+    err = StartConnectionWithOverrides(conn1, iDummyNifLongTimeoutIap);
+    TESTEL(KErrNone == err, err);
+    err = conn1.SetOpt(KCOLProvider, KConnDisableTimers, ETrue);
+    TESTEL(KErrNone == err, err);
+
+    RSocket sock1;
+    err = OpenUdpSocketExplicitL(sock1, ss, conn1);
+    TESTEL(KErrNone == err, err);
+    CleanupClosePushL(sock1);
+
+    INFO_PRINTF1(_L("First DataSentNotificationRequest"));
+    // Request DataSentNotificationRequest
+    TUint volume1(0); 
+    TPckg<TUint> volume1Des(volume1);
+    TUint threshold1(KLowThresholdSize);
+    conn1.DataSentNotificationRequest(threshold1, volume1Des, status1);
+
+    // Send some data but not enough to trigger the notification 
+    TUint currentVol(0);
+    while (currentVol < threshold1 / 2)
+        {
+        err = TestUdpDataPathL(sock1, iDummyNifSendAddr, KSmallBufferLength);
+        TESTEL(KErrNone == err, err);
+        TESTEL(KRequestPending == status1.Int(), status1.Int());
+        currentVol += KSmallBufferUdpTestPacketSize;
+        }
+
+    INFO_PRINTF1(_L("First DataSentNotificationRequest still outstanding (as expected) - now cancelling"));
+
+    // Cancel the request and expect the completion
+    conn1.DataSentNotificationCancel();
+    User::WaitForRequest(status1);
+    TESTEL(status1.Int() == KErrCancel, status1.Int());
+
+    INFO_PRINTF1(_L("First DataSentNotificationRequest completed with KErrCancel"));
+    
+    // The first cancellation has worked, repeat the above steps for the second cancellation
+    INFO_PRINTF1(_L("Second DataSentNotificationRequest"));
+    conn1.DataSentNotificationRequest(threshold1, volume1Des, status1);
+
+    // NOTE: It is a deliberate that no data is transfered this time.
+	//       Transmitting data and crossing the threshold for the first (cancelled) notification
+	//       would cause the object to be cleaned up and therefore mask this issue
+    
+    // Cancel the request and expect the completion
+    conn1.DataSentNotificationCancel();
+    User::WaitForRequest(status1);
+    TESTEL(status1.Int() == KErrCancel, status1.Int());
+    INFO_PRINTF1(_L("Second DataSentNotificationRequest completed with KErrCancel"));
+    
+    
+    INFO_PRINTF1(_L("Third DataSentNotificationRequest"));
+    conn1.DataSentNotificationRequest(threshold1, volume1Des, status1);
+    
+
+    INFO_PRINTF1(_L("Fourth DataSentNotificationRequest"));
+    TRequestStatus status2;
+    conn1.DataSentNotificationRequest(threshold1, volume1Des, status2);
+    TBool requestCompleted = WaitForRequestOrTimeOutL(status2, KOneSecondDelay);
+    TESTL(requestCompleted);
+    TESTEL(status2.Int() == KErrInUse, status2.Int());
+    INFO_PRINTF1(_L("Fourth DataSentNotificationRequest failed with KErrInUse as expected"));
+    
+    conn1.DataSentNotificationCancel();
+    User::WaitForRequest(status1);
+    TESTEL(status1.Int() == KErrCancel, status1.Int());
+    INFO_PRINTF1(_L("Third DataSentNotificationRequest completed with KErrCancel"));
+    
+    //********** turn the idle timers back on now we are finished ***********
+    err = conn1.SetOpt(KCOLProvider, KConnDisableTimers, EFalse);
+    TESTEL(KErrNone == err, err);
+
+    //********** clean up ***********
+    DestroyUdpSocket(sock1);
+    CleanupStack::Pop(&sock1);
+
+    err = conn1.Stop();
+    TESTEL(KErrNone == err, err);
+
+    CloseConnection(conn1);
+    CleanupStack::Pop(&conn1);
+
+    CloseSocketServer(ss);
+    CleanupStack::Pop(&ss);
+
+    return TestStepResult();
+
+} // TE_RConnectionTest483
+
+
+enum TVerdict TE_RConnectionTest484::doTestStepL(void)
+/**
+ * Test 484
+ * Test DataReceivedNotificationRequest() cancellation
+ * Added for defect ou1cimx1#305124.
+ * Tests that cancellation of the request does indeed cancel the request
+ * Defect summary: If the state described in Test482 occurs, it would have been possible to
+ * request more than one DataReceivedNotificationRequest per RConnection. This should not be possible.
+ * @return enum TVerdict Indicates status of test run. See INFO_PRINTF1.h for possible values
+ */
+{
+    TInt err;
+    TRequestStatus status1;
+
+    RSocketServ ss;
+    err = OpenSocketServer(ss);
+    TESTEL(KErrNone == err, err);
+    CleanupClosePushL(ss);
+
+    //********** connection creation ***********
+    RConnection conn1;
+    err = OpenConnection(conn1, ss);
+    TESTEL(KErrNone == err, err);
+    CleanupClosePushL(conn1);
+
+    // start the dummynif
+    err = StartConnectionWithOverrides(conn1, iDummyNifLongTimeoutIap);
+    TESTEL(KErrNone == err, err);
+    err = conn1.SetOpt(KCOLProvider, KConnDisableTimers, ETrue);
+    TESTEL(KErrNone == err, err);
+
+    RSocket sock1;
+    err = OpenUdpSocketExplicitL(sock1, ss, conn1);
+    TESTEL(KErrNone == err, err);
+    CleanupClosePushL(sock1);
+
+    INFO_PRINTF1(_L("First DataReceivedNotificationRequest"));
+    // Request DataReceivedNotificationRequest
+    TUint volume1(0); 
+    TPckg<TUint> volume1Des(volume1);
+    TUint threshold1(KLowThresholdSize);
+    conn1.DataReceivedNotificationRequest(threshold1, volume1Des, status1);
+
+    // Send some data but not enough to trigger the notification 
+    TUint currentVol(0);
+    while (currentVol < threshold1 / 2)
+        {
+        err = TestUdpDataPathL(sock1, iDummyNifSendAddr, KSmallBufferLength);
+        TESTEL(KErrNone == err, err);
+        TESTEL(KRequestPending == status1.Int(), status1.Int());
+        currentVol += KSmallBufferUdpTestPacketSize;
+        }
+
+    INFO_PRINTF1(_L("First DataReceivedNotificationRequest still outstanding (as expected) - now cancelling"));
+
+    // Cancel the request and expect the completion
+    conn1.DataReceivedNotificationCancel();
+    User::WaitForRequest(status1);
+    TESTEL(status1.Int() == KErrCancel, status1.Int());
+
+    INFO_PRINTF1(_L("First DataReceivedNotificationRequest completed with KErrCancel"));
+    
+    // The first cancellation has worked, repeat the above steps for the second cancellation
+    INFO_PRINTF1(_L("Second DataReceivedNotificationRequest"));
+    conn1.DataReceivedNotificationRequest(threshold1, volume1Des, status1);
+
+    // NOTE: It is a deliberate that no data is transfered this time.
+	//       Transmitting data and crossing the threshold for the first (cancelled) notification
+	//       would cause the object to be cleaned up and therefore mask this issue
+    
+    // Cancel the request and expect the completion
+    conn1.DataReceivedNotificationCancel();
+    User::WaitForRequest(status1);
+    TESTEL(status1.Int() == KErrCancel, status1.Int());
+    INFO_PRINTF1(_L("Second DataReceivedNotificationRequest completed with KErrCancel"));
+    
+    
+    INFO_PRINTF1(_L("Third DataReceivedNotificationRequest"));
+    conn1.DataReceivedNotificationRequest(threshold1, volume1Des, status1);
+
+    INFO_PRINTF1(_L("Fourth DataReceivedNotificationRequest"));
+    TRequestStatus status2;
+    conn1.DataReceivedNotificationRequest(threshold1, volume1Des, status2);
+    TBool requestCompleted = WaitForRequestOrTimeOutL(status2, KOneSecondDelay);
+    TESTL(requestCompleted);
+    TESTEL(status2.Int() == KErrInUse, status2.Int());
+    INFO_PRINTF1(_L("Fourth DataReceivedNotificationRequest failed with KErrInUse as expected"));
+    
+    conn1.DataReceivedNotificationCancel();
+    User::WaitForRequest(status1);
+    TESTEL(status1.Int() == KErrCancel, status1.Int());
+    INFO_PRINTF1(_L("Third DataReceivedNotificationRequest completed with KErrCancel"));
+    
+    //********** turn the idle timers back on now we are finished ***********
+    err = conn1.SetOpt(KCOLProvider, KConnDisableTimers, EFalse);
+    TESTEL(KErrNone == err, err);
+
+    //********** clean up ***********
+    DestroyUdpSocket(sock1);
+    CleanupStack::Pop(&sock1);
+
+    err = conn1.Stop();
+    TESTEL(KErrNone == err, err);
+
+    CloseConnection(conn1);
+    CleanupStack::Pop(&conn1);
+
+    CloseSocketServer(ss);
+    CleanupStack::Pop(&ss);
+
+    return TestStepResult();
+
+} // TE_RConnectionTest484
 
 
 // EOF TE_RConnectionCMM.cpp

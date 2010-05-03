@@ -22,6 +22,9 @@
 #include "SocketServer.TestSteps.h"
 #include "Sockets.TestSteps.h"
 #include <cdbcols.h>
+#include <commsdattypeinfov1_1.h>
+#include <comms-infras/es_commsdataobject.h>
+#include <comms-infras/connectionqueryset.h>
 
 
 #ifdef _DEBUG
@@ -1205,4 +1208,103 @@ TVerdict CCheckNegativeProgressNotificationStep::doSingleTestStep()
 	}
 
 
+// GetParameters_Int
+//-------------------------------
+
+CGetParameters_IntStep::CGetParameters_IntStep(CCEsockTestBase*& aEsockTest)
+:   CTe_EsockStepBase(aEsockTest)
+    {
+    SetTestStepName(KGetParameters_IntStep);
+    }
+
+TInt CGetParameters_IntStep::ConfigureFromIni()
+    {
+    // Read in appropriate fields
+    if((GetStringFromConfig(iSection, KTe_ConnectionName, iConnectionName) != 1)
+        || (iConnectionName.Length() == 0))
+        {
+        INFO_PRINTF1(_L("Couldn't find appropriate field in config file"));
+        return KErrNotFound;
+        }
+
+    if((GetStringFromConfig(iSection, KTe_ParameterType, iFieldName) != 1)
+        || (iFieldName.Length() == 0))
+        {
+        INFO_PRINTF1(_L("Couldn't find appropriate field in config file"));
+        return KErrNotFound;
+        }
+    _LIT(KIapTableIdDes, "IAP\\Id" );
+    if (iFieldName.Compare(KIapTableIdDes) == 0)
+        {
+        iRecordTypeId = CommsDat::KCDTIdIAPRecord | CommsDat::KCDTIdRecordTag;
+        }
+    /*else
+     * Don't get too angry, but so far, this generic looking test step only does IAP
+     * There are nice arrays in CED that can be used to address any field. If you're
+     * desperate, please pull them in and modify this test step to be able to retrieve
+     * any field 
+     */
+
+    if(!GetIntFromConfig(iSection, KTe_ParameterExpectedValue, iExpectedValue))
+        {
+        INFO_PRINTF1(_L("Couldn't find appropriate field in config file"));
+        return KErrNotFound;
+        }
+    
+    return KErrNone;
+    }
+
+
+TVerdict CGetParameters_IntStep::doSingleTestStep()
+    {
+    TInt ret = KErrNone;
+    ESock::XConnectionQuerySet* querySet = NULL;
+    TRAP(ret, querySet = ESock::XConnectionQuerySet::NewL() );
+   
+    if ( ret == KErrNone )
+        {
+        TRAP(ret, ESock::XUintQuery::NewL(iRecordTypeId, *querySet) );
+        }
+    ESock::CConnectionQuerySet* connectionQuerySet = NULL;
+    if ( ret == KErrNone )
+        {
+        TRAP(ret, connectionQuerySet = ESock::CConnectionQuerySet::NewL(querySet) );
+        }    
+    
+    if( (ret = iEsockTest->GetParameters(iConnectionName, *connectionQuerySet)) != KErrNone)
+        {
+        INFO_PRINTF2(_L("RConnection::GetParameters returned %d"), ret);
+        SetTestStepError(ret);
+        return EFail;
+        }
+
+    ESock::XConnectionQuerySet& outputQuerySet = connectionQuerySet->DataObject();
+    ESock::XUintQuery* iapTableIdQuery = static_cast<ESock::XUintQuery*>(outputQuerySet.FindQuery( iRecordTypeId ));
+    __ASSERT_DEBUG(iapTableIdQuery, User::Panic(KSpecAssert_ESockTestCnctnsT, 2));
+    if (iapTableIdQuery->Error() != KErrNone)
+        {
+        INFO_PRINTF2(_L("RConnection::GetParameters Int query returned (%d)"), iapTableIdQuery->Error());
+        SetTestStepError(KErrCorrupt);
+        return EFail;        
+        }
+    
+    if (iapTableIdQuery->Data() != iExpectedValue)
+        {
+        INFO_PRINTF3(_L("RConnection::GetParameters Int query returned (%d) something else than expected (%d)"), iapTableIdQuery->Data(), iExpectedValue);
+        SetTestStepError(KErrCorrupt);
+        return EFail;        
+        }
+    
+    /*Just out of justified paranoia, we're extracting the same field using RConnection::GetIntSetting*/
+    TUint32 aValue;
+    iEsockTest->GetIntSetting(iConnectionName, iFieldName, aValue);
+    if (aValue != iExpectedValue)
+        {
+        INFO_PRINTF3(_L("RConnection::GetIntSetting returned (%d) something else than expected (%d)"), aValue, iExpectedValue);
+        SetTestStepError(KErrCorrupt);
+        return EFail;        
+        }
+           
+    return EPass;
+    }
 

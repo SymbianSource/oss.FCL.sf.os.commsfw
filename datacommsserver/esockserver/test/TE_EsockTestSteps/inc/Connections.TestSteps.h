@@ -25,6 +25,7 @@
 #define CONNECTIONS_TESTSTEPS_H
 
 #include <test/testexecutestepbase.h>
+#include <metadatabase.h>
 #include "Te_EsockStepBase.h"
 
 _LIT(KTe_ConnectionName,"ConnName");
@@ -41,6 +42,9 @@ _LIT(KTe_ConnAttachTypeMonitor,"EAttachTypeMonitor");
 _LIT(KTe_CommDbBearerCSD,"KCommDbBearerCSD");
 _LIT(KTe_CommDbBearerWcdma,"KCommDbBearerWcdma");
 _LIT(KTe_CommDbBearerLAN,"KCommDbBearerLAN");
+_LIT(KTe_ParameterType, "ParameterType");
+_LIT(KTe_ParameterExpectedValue,"ParameterExpectedValue");
+
 
 //mobility api
 _LIT(KTe_MobilityAPIName,"MobilityExtName");
@@ -422,6 +426,22 @@ private:
 	};
 
 _LIT(KCheckNegativeProgressNotificationStep,"CheckNegativeProgressNotificationStep");
+
+
+class CGetParameters_IntStep : public CTe_EsockStepBase
+    {
+public:
+    CGetParameters_IntStep(CCEsockTestBase*& aEsockTest);
+    TVerdict doSingleTestStep();
+    TInt ConfigureFromIni();
+private:
+    TPtrC iConnectionName;
+    TPtrC iFieldName;    
+    CommsDat::TMDBElementId iRecordTypeId;
+    TInt  iExpectedValue;
+    };
+
+_LIT(KGetParameters_IntStep,"GetParameters_IntStep");
 
 
 #endif // CONNECTIONS_TESTSTEPS_H

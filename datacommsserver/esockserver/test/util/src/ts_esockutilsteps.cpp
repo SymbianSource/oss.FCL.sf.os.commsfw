@@ -14,6 +14,7 @@
 //
 
 // EPOC includes
+#include <e32property.h>
 #include <e32base.h>
 
 // Test system includes
@@ -24,6 +25,7 @@
 #include "ts_esockutilsteps.h"
 #include "esockloader.h"
 #include "esocktestutils.h"
+#include <comms-infras/es_availability.h>
 
 class TTruncateOverflow16 : public TDes16Overflow
 	{
@@ -155,6 +157,17 @@ enum TVerdict CTestStepUnloadESockBase::doTestStepL(void)
 			INFO_PRINTF2(_L("UnloadESock returned error %d"), err);
 			}
 		}
+
+	// Explicitly reset pubsub keys used for controlling bearer availability during testing
+	const TInt KMaxLikelyAvailabilityAccessPoints = 32;
+	const TInt KDummyNifTestingPubSubUid = 0x10272F42;
+	INFO_PRINTF1(_L("Resetting availability pubsub keys"));
+	for(TInt i = 0; i < KMaxLikelyAvailabilityAccessPoints; i++)
+		{
+		// Harmless if the key doesn't exist - so we can ignore the return code
+		RProperty::Set(TUid::Uid(KDummyNifTestingPubSubUid), i, ESock::TAvailabilityStatus::EMaxAvailabilityScore);
+		}
+	
 	return verdict;
 	}
 

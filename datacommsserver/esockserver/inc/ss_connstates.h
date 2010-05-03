@@ -235,9 +235,17 @@ DECLARE_AGGREGATED_TRANSITION2(
 
 //
 //Progress & Progress Request
+DECLARE_SMELEMENT_HEADER( TAwaitingStateChange, MeshMachine::TState<TContext>, NetStateMachine::MState, TContext )
+    virtual TBool Accept();
+DECLARE_SMELEMENT_FOOTER( TAwaitingStateChange )
+
 DECLARE_SMELEMENT_HEADER( TProcessStateChange, MeshMachine::TStateTransition<TContext>, NetStateMachine::MStateTransition, TContext ) //From the framework
 	virtual void DoL();
 DECLARE_SMELEMENT_FOOTER( TProcessStateChange )
+
+DECLARE_SMELEMENT_HEADER( TEnqueueStateChange, MeshMachine::TStateTransition<TContext>, NetStateMachine::MStateTransition, TContext ) //From the framework
+    virtual void DoL();
+DECLARE_SMELEMENT_FOOTER( TEnqueueStateChange )
 
 DECLARE_SMELEMENT_HEADER( TProcessProgressRequest, SubSessStates::TECABStateTransitionBase<TContext>, NetStateMachine::MStateTransition, TContext ) //From the client
 	virtual void DoL();
@@ -258,7 +266,9 @@ DECLARE_SMELEMENT_HEADER( TGenerateConnectionDownProgress,  MeshMachine::TStateT
 	virtual void DoL();
 DECLARE_SMELEMENT_FOOTER( TGenerateConnectionDownProgress )
 	
-
+DECLARE_SMELEMENT_HEADER( TGenerateConnectionUninitialisedProgress,  MeshMachine::TStateTransition<TContext>, NetStateMachine::MStateTransition, TContext ) //From the framework
+    virtual void DoL();
+DECLARE_SMELEMENT_FOOTER( TGenerateConnectionUninitialisedProgress )
 
 
 

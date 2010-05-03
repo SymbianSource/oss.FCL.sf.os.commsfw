@@ -212,13 +212,13 @@ else
 $zDrive = $release . $cedPlatfrom . '/' . $cedVariant . '/z';
 $zDriveCre = $zDrive . $cccccc00Root . $cccccc00NameCre;
 $CdbEmpty = $zDrive . $cccccc00Root . $cccccc00Nametxt;
+$romCdb = $epocRoot . 'epoc32/' . 'data/z' . $cccccc00Root . $cccccc00NameCre; 
 
 if ($::command eq 'build') 
 {
 	$ced = $release . $cedPlatfrom . '/' . $cedVariant . '/ced.exe';
 	$emulatorstore = $epocRoot . 'epoc32/' . $cedPlatfrom . $cdbIn;
 	$winsCdb = $epocRoot . 'epoc32/' . $cedPlatfrom . '/c' . $cccccc00Root . "persists/" . $cccccc00NameCre;
-	$romCdb = $epocRoot . 'epoc32/' . 'data/z' . $cccccc00Root . $cccccc00NameCre; 
 	
 	if ($platType =~ 'emulator')
 	{
@@ -317,7 +317,10 @@ sub Build
 		else 
 		{
 			print("$data->{$platType}->{sourceCfg} older than $data->{$platType}->{destinationCdb}\n");
-			print("Construction aborted.\n");
+			print("Construction aborted. Copy-younger of resource CRE only\n");
+			#copy to z drive
+			print("CopyIfYounger $winsCdb to $zDriveCre\n");
+			CopyIfYounger($winsCdb, $zDriveCre);
 		}
 	}
 	else 
@@ -347,6 +350,14 @@ sub Releasables
 {
 	print("$data->{$platType}->{destinationCdb}\n");
 	print("$CdbEmpty\n");
+	if($::platform =~ /wins/i)
+	{
+		print("$zDriveCre \n");
+	}
+	else
+	{
+		print("$romCdb\n");
+	}
 }
 
 sub RunCed 

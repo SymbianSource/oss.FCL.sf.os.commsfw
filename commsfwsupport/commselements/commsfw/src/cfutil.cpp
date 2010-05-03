@@ -438,6 +438,7 @@ EXPORT_C void COwnEntryList::WildScanAcrossDrivesL(const TDesC& aDir, const TDes
 		{
 		do 
 			{
+			CleanupStack::PushL(dir);
 			const TInt cnt = dir->Count();
 			for(TInt i = 0; i < cnt; ++i)
 				{
@@ -445,7 +446,7 @@ EXPORT_C void COwnEntryList::WildScanAcrossDrivesL(const TDesC& aDir, const TDes
 				fullEntry.Set(entry.iName, &ff.File(), NULL);      
 				AddL(TOwnEntry(fullEntry, entry));
 				}
-			delete dir;
+			CleanupStack::PopAndDestroy(dir);
 			}
 		while(ff.FindWild(dir) == KErrNone);
 		}	
@@ -469,46 +470,46 @@ EXPORT_C void COwnEntryList::UniqueWildScanAcrossDrivesL(const TDesC& aDir, cons
 	TParse fullEntry;
 	CDir* dir;
 	RArray<TEntry> files;
+	CleanupClosePushL(files);
 	TBool found;
 	if(ff.FindWildByDir(aFileMask, aDir, dir) == KErrNone)
 		{
 		do 
 			{
+			CleanupStack::PushL(dir);
 			const TInt cnt = dir->Count();
 			for(TInt i = 0; i < cnt; ++i)
 				{
 				const TEntry& entry = (*dir)[i];
-		               if(files.Count()!=0)
-				      {
+				if(files.Count()!=0)
+					{
 					found = EFalse;
 					for( TInt Index=0;Index<files.Count();Index++)
-			    	           {
+						{
 						if(files[Index].iName.CompareF(entry.iName)==0)
-						     {
+							{
 							found = ETrue;
-					             }
-				             }
-	                            if(!found)
-	    	                         {
-				    	   files.Append(entry);
-					   fullEntry.Set(entry.iName, &ff.File(), NULL);      
-					   AddL(TOwnEntry(fullEntry, entry));
-				    	     }
-				       }
-		        	else
-			          {
-			           files.Append(entry);
+							}
+						}
+					if(!found)
+						{
+						files.Append(entry);
+						fullEntry.Set(entry.iName, &ff.File(), NULL);      
+						AddL(TOwnEntry(fullEntry, entry));
+						}
+					}
+				else
+					{
+					files.Append(entry);
 				    fullEntry.Set(entry.iName, &ff.File(), NULL);      
 				    AddL(TOwnEntry(fullEntry, entry));
-				    }		
-							
-		         }
-		     delete dir;
-			
-	           }
-	           while(ff.FindWild(dir) == KErrNone);
-        	}	
-	files.Close();	
+				    }
+				}
+				CleanupStack::PopAndDestroy(dir);
+			}
+		while(ff.FindWild(dir) == KErrNone);
+		}	
+	CleanupStack::PopAndDestroy(&files);
 	fs.Pop();
 	}
 

@@ -238,6 +238,13 @@ protected:
 	
 	
 	void WaitForRelevantProgress(RConnection& aConn, TNifProgressBuf& aProgress, TInt aRelevantProgress);
+	
+	/**
+	@param aStatus The TRequestStatus you want to wait on
+	@param aTimeOut The time in microseconds to wait for the request to complete before returning
+	@return ETrue if the request completed, EFalse if the timeout happened first 
+	*/
+	TBool WaitForRequestOrTimeOutL(TRequestStatus& aStatus, TInt aTimeOut);
 
 protected:
 	// this is the config data read from the .ini file in ReadIniFile().

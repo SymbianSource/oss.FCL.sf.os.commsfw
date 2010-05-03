@@ -1732,6 +1732,27 @@ TUint32 TE_RConnectionStep::GetInterfaceIndexL(RSocket& sock,const TDesC& aFName
 }
 
 
+TBool TE_RConnectionStep::WaitForRequestOrTimeOutL(TRequestStatus& aStatus, TInt aTimeOut)
+    {
+    RTimer timer;
+    User::LeaveIfError(timer.CreateLocal());
+
+    TRequestStatus timerStatus;
+    timer.After(timerStatus, aTimeOut);
+    User::WaitForRequest(aStatus, timerStatus);
+    TBool requestCompleted = EFalse;
+    
+    if (timerStatus == KRequestPending)
+        {
+        timer.Cancel();
+        User::WaitForRequest(timerStatus);
+        requestCompleted = ETrue;
+        }
+    
+    timer.Close();
+    return requestCompleted;
+    }
+
 
 /*
  * Now the stuff for the peculiar tests that need to use QoS

@@ -103,18 +103,8 @@ void TCFSigLegacyRMessage2Ext::ForwardRequestL(MeshMachine::TNodeContextBase& aC
 	ASSERT(aContext.Activity() != NULL);
 	RNodeInterface* rcpt = NULL;
 
-	/* At the connection level we want to go down active serviceprovider, as there are multiple
-	   and the first one is usually an scpr */
-	if (aContext.Activity()->ActivitySigId() == ECFActivityConnectionLegacyRMessage2Handler)
-		{
-		rcpt = aContext.Node().GetFirstClient<TDefaultClientMatchPolicy>(TClientType(TCFClientType::EServProvider, TCFClientType::EActive),
+	rcpt = aContext.Node().GetFirstClient<TDefaultClientMatchPolicy>(TClientType(TCFClientType::EServProvider, TCFClientType::EActive),
 			Messages::TClientType(0, Messages::TClientType::ELeaving));
-		}
-	else
-		{
-		rcpt = aContext.Node().GetFirstClient<TDefaultClientMatchPolicy>(TClientType(TCFClientType::EServProvider),
-			Messages::TClientType(0, Messages::TClientType::ELeaving));
-		}
 
     if(rcpt)
     	{
@@ -508,6 +498,11 @@ void TCprAllSubConnectionNotificationEnable::Error(const TRuntimeCtxId& /*aSende
     }
 
 
+void CLegacyDataMonitoringResponder::DoComplete(TInt aError)
+    {
+    iLegacyResponseMsg.Complete(aError);
+    }
+
 void CLegacyDataMonitoringResponder::DoCancelRequest()
 	{
 	iLegacyResponseMsg.Complete(KErrCancel);
@@ -731,9 +726,9 @@ void TLegacyDataMonitoringNotificationRequest::ProcessL(MeshMachine::TNodeContex
 	RLegacyResponseMsg responseMsg(aContext, iMessage, iMessage.Int0());
 	CDataMonitoringResponder* responder = CLegacyDataMonitoringResponder::NewL(responseMsg);
 
-    	ADataMonitoringProtocolReq& dataMonItf = *static_cast<ADataMonitoringProtocolReq*>(interface);
-    	switch(iDirection)
-    		{
+    ADataMonitoringProtocolReq& dataMonItf = *static_cast<ADataMonitoringProtocolReq*>(interface);
+    switch(iDirection)
+        {
 		case ESent:
 			dataMonItf.RequestDataSentNotification(responder, delta, volume, iClientId);
 			break;
@@ -741,19 +736,20 @@ void TLegacyDataMonitoringNotificationRequest::ProcessL(MeshMachine::TNodeContex
 		case EReceived:
 			dataMonItf.RequestDataReceivedNotification(responder, delta, volume, iClientId);
 			break;
+		
 		default:
 			delete responder;
-    		}
+        }
 	// coverity [leaked_storage] - responder is owned by dataMonItf.RequestDataSentNotification, dataMonItf.RequestDataReceivedNotification
 	// therefore we don't need to push them onto the cleanup stack.
-    	}
+	}
 
 void TLegacyDataMonitoringNotificationRequest::Cancel(MeshMachine::TNodeContextBase& aContext)
 	{
 	TAny* interface = FetchInterfaceL(aContext.Node(), EDataMonitoringApiExt);
 	ASSERT(interface);
 	
-	if (interface)
+    if (interface)
     	{
     	ADataMonitoringProtocolReq& dataMonItf = *static_cast<ADataMonitoringProtocolReq*>(interface);
 		

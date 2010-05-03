@@ -1365,18 +1365,11 @@ up and running and that we should bind to a Flow below.
 		}
 	else if (iHostResolverNotify)
 	    {//workaroud to indicate to CHostResolver we've got connection info
-	    if (aBindTo.iNodeId.Ptr())
-	        {
-    	    iHostResolverNotify->StartSending();
-	        }
-	    else
+	    if (!aBindTo.iNodeId.Ptr())
 	        {
             iHostResolverNotify->Error(KErrDisconnected);
 	        }
 	    }
-
-
-
 	}
 
 
@@ -1415,6 +1408,13 @@ void CTransportFlowShim::StartFlowL(const TRuntimeCtxId& aSender)
 		iStartRequest.Close();
 		SetStarted();
 		ClearStopped();
+
+        // A held-over resolution request will now work (if it ever will)
+        if (iHostResolverNotify)
+	        {
+    	    iHostResolverNotify->StartSending();
+	        }
+
 		return;
 		}
 

@@ -1948,3 +1948,15 @@ EXPORTS
 	_ZN20PRClientLeftActivity12PRClientLeft11FirstTripleEv @ 1947 NONAME
 	_ZN20PRClientLeftActivity12PRClientLeft4SelfEv @ 1948 NONAME
 	_ZN13CoreNetStates13TAwaitingStop6AcceptEv @ 1949 NONAME
+	_ZN5ESock23TTierTypeIdFactoryQuery19GetVDataTableStaticEv @ 1950 NONAME
+	_ZN5ESock23TTierTypeIdFactoryQuery5MatchERN9Factories18TFactoryObjectInfoE @ 1951 NONAME
+	_ZN5ESock23TTierTypeIdFactoryQueryC1E4TUid @ 1952 NONAME
+	_ZN5ESock23TTierTypeIdFactoryQueryC1Ev @ 1953 NONAME
+	_ZN5ESock23TTierTypeIdFactoryQueryC2E4TUid @ 1954 NONAME
+	_ZN5ESock23TTierTypeIdFactoryQueryC2Ev @ 1955 NONAME
+	_ZNK5ESock23TTierTypeIdFactoryQuery12GetAttribPtrEi @ 1956 NONAME
+	_ZNK5ESock23TTierTypeIdFactoryQuery13GetVDataTableEv @ 1957 NONAME
+	_ZTIN5ESock23TTierTypeIdFactoryQueryE @ 1958 NONAME
+	_ZTVN5ESock23TTierTypeIdFactoryQueryE @ 1959 NONAME
+	_ZThn4_N5ESock23TTierTypeIdFactoryQuery5MatchERN9Factories18TFactoryObjectInfoE @ 1960 NONAME
+

@@ -1797,7 +1797,6 @@ TInt CPitBoss::DoCreateRedShirt(RThread& aRedShirt, CommsFW::TWorkerId aWorkerId
 	else
 		{
     	err = KErrNoMemory;
-    	CleanupStack::Pop(startupInfo);
    		}
 
    	return err;

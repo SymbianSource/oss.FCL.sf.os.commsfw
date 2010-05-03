@@ -738,27 +738,25 @@ EXPORT_C  void TierManagerUtils::GetPrefsFromConnPrefRecL(TUint aConnPrefRecElem
 EXPORT_C TUid TierManagerUtils::MapTierIdtoTierImplIdL(TUid aTierUid,CommsDat::CMDBSession& aDbs )
 /** mapping TM Id to TM ImplId in Commsdat */
 	{
-	TUid ImplUid;
-	// if it does not exist, it returns tier id
-	ImplUid = aTierUid;
+    TUid ImplUid;
+    // if it does not exist, it returns tier id
+    ImplUid = aTierUid;
 
-	CMDBRecordSet<CCDTierRecord>* recSet = new (ELeave) CMDBRecordSet<CCDTierRecord>(KCDTIdTierRecord);
-	CleanupStack::PushL(recSet);
-	recSet->LoadL(aDbs);
-	const TInt recCnt = recSet->iRecords.Count();
-	
-	for(TInt i = 0; i < recCnt; i++)
-		{
-		CCDTierRecord* rec = static_cast<CCDTierRecord*>(recSet->iRecords[i]);
-		if(rec->iRecordTag == aTierUid.iUid)
-			{
-			ImplUid.iUid = rec->iTierImplUid;
-			}
-		}
-	
-	CleanupStack::PopAndDestroy(recSet);	
-	return ImplUid;
-	}
+    CCDTierRecord* tierRec = static_cast<CCDTierRecord*>(CCDRecordBase::RecordFactoryL(KCDTIdTierRecord));
+    CleanupStack::PushL(tierRec);
+    tierRec->iRecordTag = aTierUid.iUid;
+
+    TBool found = tierRec->FindL(aDbs);
+
+    if (found)
+        {
+        ImplUid.iUid = tierRec->iTierImplUid;
+        }
+
+    CleanupStack::PopAndDestroy(tierRec);   
+    return ImplUid;
+
+    }
 //
 // CCommsDatIapView
 //

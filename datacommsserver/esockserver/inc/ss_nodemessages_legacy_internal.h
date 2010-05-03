@@ -319,6 +319,10 @@ public:
 	virtual void DoDataSentNotification(TUint32 aSentBytes);
 	virtual void DoDataReceivedNotification(TUint32 aReceivedBytes);
 
+protected:
+   virtual void DoComplete(TInt aError);
+
+
 private:
 	IMPORT_C static CLegacyDataMonitoringResponder* NewL(ESock::RLegacyResponseMsg& aResponseMsg);
 	CLegacyDataMonitoringResponder(ESock::RLegacyResponseMsg& aResponseMsg);

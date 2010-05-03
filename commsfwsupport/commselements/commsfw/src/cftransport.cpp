@@ -1108,7 +1108,7 @@ void CCommsTransportImpl::RegisterAddress(TRuntimeCtxId& aCookie)
 	TRuntimeCtxIdOp op(nodeId);
 	op.Set(iPointerSalt, iThreadRegister.SelfWorkerId());
 //TODO - it would be better to print the whole address (aCookie.Size() bytes starting from &aCookie == aCookie.Printable();)
-	__CFLOG_VAR(( KLogCommsFw, KLogFwTransport, _L8("RegisterItf(%08x) => %08x:%08x"), nodeId.Ptr(), *reinterpret_cast<TUint*>(&aCookie), *(reinterpret_cast<TUint*>(&aCookie) + 1)));
+	__CFLOG_VAR(( KLogCommsFw, KLogFwTransport, _L8("RegisterItf(%08x) => %08x %08x"), nodeId.Ptr(), *reinterpret_cast<TUint*>(&aCookie), *(reinterpret_cast<TUint*>(&aCookie) + 1)));
 
 #ifdef SYMBIAN_TRACE_ENABLE
 	__ASSERT_ALWAYS(!iIntfRegister.Find(TIntPtr(nodeId.Ptr())), Panic(ECFTransBadRegistration));
@@ -1135,7 +1135,7 @@ void CCommsTransportImpl::DeregisterAddress(TRuntimeCtxId& aCookie)
 	{
 	//This transport implementation currently only registers TNodeId
 //TODO - it would be better to print the whole address (aCookie.Size() bytes starting from &aCookie == aCookie.Printable();)
-	__CFLOG_VAR(( KLogCommsFw, KLogFwTransport, _L8("DeregisterItf(%08x => %08x:%08x"), address_cast<TNodeId>(aCookie).Ptr(), *reinterpret_cast<const TUint*>(&aCookie), *(reinterpret_cast<const TUint*>(&aCookie) + 1)));
+	__CFLOG_VAR(( KLogCommsFw, KLogFwTransport, _L8("DeregisterItf(%08x) => %08x %08x"), address_cast<TNodeId>(aCookie).Ptr(), *reinterpret_cast<const TUint*>(&aCookie), *(reinterpret_cast<const TUint*>(&aCookie) + 1)));
 	--iRegisteredCount;
 	__ASSERT_ALWAYS(iRegisteredCount >= 0, Panic(ECFExcessInterfaceDeregistration));
 	aCookie.SetNull();

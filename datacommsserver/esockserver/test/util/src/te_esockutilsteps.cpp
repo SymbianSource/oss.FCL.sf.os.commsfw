@@ -17,6 +17,7 @@
 #include <test/testexecutelog.h>
 #include "esocktestutils.h"
 #include <es_sock.h>
+#include <comms-infras/es_availability.h>
 
 #include <e32base.h>
 #include <cinidata.h>
@@ -149,6 +150,16 @@ CTestStepLoadESock::CTestStepLoadESock()
 		}
 #endif
 		
+	// Explicitly reset pubsub keys used for controlling bearer availability during testing
+	const TInt KMaxLikelyAvailabilityAccessPoints = 32;
+	const TInt KDummyNifTestingPubSubUid = 0x10272F42;
+	INFO_PRINTF1(_L("Resetting availability pubsub keys"));
+	for(TInt i = 0; i < KMaxLikelyAvailabilityAccessPoints; i++)
+		{
+		// Harmless if the key doesn't exist - so we can ignore the return code
+		RProperty::Set(TUid::Uid(KDummyNifTestingPubSubUid), i, ESock::TAvailabilityStatus::EMaxAvailabilityScore);
+		}
+	
 	return TestStepResult();
 	}
 
