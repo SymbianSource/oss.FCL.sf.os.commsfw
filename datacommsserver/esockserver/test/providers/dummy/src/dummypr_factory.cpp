@@ -61,8 +61,10 @@ const TImplementationProxy ImplementationTable[] =
 	IMPLEMENTATION_PROXY_ENTRY(CDummyTierManagerFactory::iUid, CDummyTierManagerFactory::NewL),
 	IMPLEMENTATION_PROXY_ENTRY(CDummyMetaConnectionProviderFactory::iUid, CDummyMetaConnectionProviderFactory::NewL),
 	IMPLEMENTATION_PROXY_ENTRY(CDummyConnectionProviderFactory::iUid, CDummyConnectionProviderFactory::NewL),
-	IMPLEMENTATION_PROXY_ENTRY(CDummyHangingConnectionProviderFactory::iUid, CDummyHangingConnectionProviderFactory::NewL),	
+	IMPLEMENTATION_PROXY_ENTRY(CDummyHangingConnectionProviderFactory::iUid, CDummyHangingConnectionProviderFactory::NewL),
+    IMPLEMENTATION_PROXY_ENTRY(CDummyVanillaConnectionProviderFactory::iUid, CDummyVanillaConnectionProviderFactory::NewL), 	
 	IMPLEMENTATION_PROXY_ENTRY(CDummySubConnectionProviderFactory::iUid, CDummySubConnectionProviderFactory::NewL),
+    IMPLEMENTATION_PROXY_ENTRY(CDummyVanillaSubConnectionProviderFactory::iUid, CDummyVanillaSubConnectionProviderFactory::NewL),	
 	IMPLEMENTATION_PROXY_ENTRY(CDummyExtendedSubConnectionProviderFactory::iUid, CDummyExtendedSubConnectionProviderFactory::NewL),
 
 	// Flow and flow description
@@ -166,6 +168,26 @@ ACommsFactoryNodeId* CDummyHangingConnectionProviderFactory::DoCreateObjectL(TFa
     return provider;
     }
 
+CDummyVanillaConnectionProviderFactory* CDummyVanillaConnectionProviderFactory::NewL(TAny* aParentContainer)
+    {
+    return new (ELeave) CDummyVanillaConnectionProviderFactory(TUid::Uid(CDummyVanillaConnectionProviderFactory::iUid), *reinterpret_cast<ESock::CConnectionFactoryContainer*>(aParentContainer));
+    }
+    
+CDummyVanillaConnectionProviderFactory::CDummyVanillaConnectionProviderFactory(TUid aFactoryId, ESock::CConnectionFactoryContainer& aParentContainer)
+    : ESock::CConnectionProviderFactoryBase(aFactoryId, aParentContainer)
+    {
+    //LOG_NODE_CREATE(KDummyCPRTag, CDummyHangingConnectionProviderFactory);
+    }
+
+ACommsFactoryNodeId* CDummyVanillaConnectionProviderFactory::DoCreateObjectL(TFactoryQueryBase& /* aQuery */)
+    {    
+    CConnectionProviderBase* provider = CDummyConnectionProvider::NewVanillaL(*this );
+    
+    ESOCK_DEBUG_REGISTER_GENERAL_NODE(iUid, provider);
+
+    return provider;
+    }
+
 //-=========================================================
 //
 // CDummySubConnectionProviderFactory methods
@@ -209,8 +231,7 @@ ACommsFactoryNodeId* CDummySubConnectionProviderFactory::DoCreateObjectL(TFactor
 // CDummyExtendedSubConnectionProviderFactory methods
 //
 //-=========================================================	
-namespace ESock
-{
+
 CDummyExtendedSubConnectionProviderFactory* CDummyExtendedSubConnectionProviderFactory::NewL(TAny* aParentContainer)
     {
     return new (ELeave) CDummyExtendedSubConnectionProviderFactory(TUid::Uid(CDummyExtendedSubConnectionProviderFactory::iUid), 
@@ -230,7 +251,7 @@ ACommsFactoryNodeId* CDummyExtendedSubConnectionProviderFactory::DoCreateObjectL
 
     if ((query.iSCPRType == RSubConnection::EAttachToDefault) || (query.iSCPRType == RSubConnection::ECreateNew))
         {
-        provider = ESock::CDummyExtendedSubConnectionProvider::NewL(*this);
+        provider = CDummyExtendedSubConnectionProvider::NewL(*this);
 		ESOCK_DEBUG_REGISTER_GENERAL_NODE(iUid, provider);
         }
     else
@@ -239,15 +260,48 @@ ACommsFactoryNodeId* CDummyExtendedSubConnectionProviderFactory::DoCreateObjectL
         }
     return provider;
     }
-}
+
+
+
+//-=========================================================
+//
+// CDummyExtendedSubConnectionProviderFactory methods
+//
+//-=========================================================    
+CDummyVanillaSubConnectionProviderFactory* CDummyVanillaSubConnectionProviderFactory::NewL(TAny* aParentContainer)
+    {
+    return new (ELeave) CDummyVanillaSubConnectionProviderFactory(TUid::Uid(CDummyVanillaSubConnectionProviderFactory::iUid), 
+                                            *reinterpret_cast<ESock::CSubConnectionFactoryContainer*>(aParentContainer));
+    }
+    
+CDummyVanillaSubConnectionProviderFactory::CDummyVanillaSubConnectionProviderFactory(TUid aFactoryId, ESock::CSubConnectionFactoryContainer& aParentContainer)
+    : CSubConnectionProviderFactoryBase(aFactoryId, aParentContainer)
+    {
+    //LOG_NODE_CREATE(KDummyExtendedSCPRTag, CDummyExtendedSubConnectionProviderFactory);
+    }
+
+ACommsFactoryNodeId* CDummyVanillaSubConnectionProviderFactory::DoCreateObjectL(TFactoryQueryBase& aQuery)
+    {
+    const TDefaultSCPRFactoryQuery& query = static_cast<const TDefaultSCPRFactoryQuery&>(aQuery);    
+    CSubConnectionProviderBase* provider = NULL;
+
+    if ((query.iSCPRType == RSubConnection::EAttachToDefault) || (query.iSCPRType == RSubConnection::ECreateNew))
+        {
+        provider = CDummySubConnectionProvider::NewVanillaL(*this);
+        ESOCK_DEBUG_REGISTER_GENERAL_NODE(iUid, provider);
+        }
+    else
+        {
+        User::Leave(KErrNotSupported);
+        }
+    return provider;
+    }
 
 //-=========================================================
 //
 // CDummyNetworkFlowFactory methods
 //
 //-=========================================================	
-namespace ESock
-{
 CDummyNetworkFlowFactory* CDummyNetworkFlowFactory::NewL(TAny* aConstructionParameters)
 	{
 	CDummyNetworkFlowFactory* fact = new (ELeave) CDummyNetworkFlowFactory(
@@ -357,5 +411,4 @@ TServerProtocolDesc* CDummyNetworkFlowFactory::DoCreateFlowDescriptionL(TInt aPr
 
 	return protocolDescription;
 	}
-}
 

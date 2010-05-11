@@ -197,7 +197,8 @@ TInt CMobilityActivity::TNoTagBackwardsOrRecoverableErrorOrError::TransitionTag(
 		TErrResponse& resp = message_cast<TEErrorRecovery::TErrorRecoveryResponse>(iContext.iMessage).iErrResponse;
 		if (resp.iAction == TErrResponse::ERetry)
 			{
-		    return KNoTag | NetStateMachine::EBackward;
+			iContext.Activity()->SetError(KErrNone);
+      		return KNoTag | NetStateMachine::EBackward;
 			}
 		else if  (resp.iAction == TErrResponse::EPropagate || resp.iError == KErrCancel)
 			{

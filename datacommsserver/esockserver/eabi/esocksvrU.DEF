@@ -1712,7 +1712,7 @@ EXPORTS
 	_ZN13CoreNetStates15TAwaitingBindTo6AcceptEv @ 1711 NONAME
 	_ZN13CoreNetStates15TLayerCompleted13TransitionTagEv @ 1712 NONAME ABSENT
 	_ZN13CoreNetStates18TAwaitingProvision6AcceptEv @ 1713 NONAME
-	_ZN13CoreNetStates18TDataClientPresent13TransitionTagEv @ 1714 NONAME ABSENT
+	_ZN12PRActivities20CCommsBinderActivity6CancelERN11MeshMachine16TNodeContextBaseE @ 1714 NONAME
 	_ZN13CoreNetStates21TNoTagOrNoDataClients13TransitionTagEv @ 1715 NONAME
 	_ZN13CoreNetStates25TNoTagOrDataClientPresent13TransitionTagEv @ 1716 NONAME
 	_ZN13CoreNetStates25TNoTagOrDataClientsToStop13TransitionTagEv @ 1717 NONAME

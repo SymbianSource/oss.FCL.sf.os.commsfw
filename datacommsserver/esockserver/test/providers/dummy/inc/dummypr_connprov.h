@@ -59,7 +59,10 @@ public:
          };
 
     static CDummyConnectionProvider* NewL(ESock::CConnectionProviderFactoryBase& aFactory, TConnType aConnStatus);
-    CDummyConnectionProvider(ESock::CConnectionProviderFactoryBase& aFactory, TConnType aConnStatus);
+    static CDummyConnectionProvider* NewVanillaL(ESock::CConnectionProviderFactoryBase& aFactory);
+    
+    CDummyConnectionProvider(ESock::CConnectionProviderFactoryBase& aFactory, const MeshMachine::TNodeActivityMap& aActivityMap, TConnType aConnStatus);
+    
 public:
 	TConnType iConnStatus;
     };

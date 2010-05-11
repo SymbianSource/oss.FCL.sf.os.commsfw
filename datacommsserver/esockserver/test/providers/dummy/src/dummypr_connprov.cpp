@@ -27,6 +27,7 @@
 #include "dummypr_metaconnprov.h"
 #include "dummypr_connprov.h"
 #include "dummypr_subconnprov.h"
+#include "activityTest.h"
 
 #include <elements/sd_mintercept.h>
 
@@ -136,7 +137,7 @@ DECLARE_DEFINE_CUSTOM_NODEACTIVITY(ECFActivityStart, DummyCPrStart, TCFServicePr
 NODEACTIVITY_END()
 }
 
-// Activity Map
+// Activity Map For test-code ridden cpr
 namespace DummyCPRStates
 {
 DECLARE_DEFINE_ACTIVITY_MAP(stateMap)
@@ -145,9 +146,26 @@ DECLARE_DEFINE_ACTIVITY_MAP(stateMap)
 ACTIVITY_MAP_END_BASE(MobilityCprActivities, mobilityCprActivities)
 }
 
+// Activity Map For vanilla cpr
+namespace VanillaDummyCPRStates
+{
+DECLARE_DEFINE_ACTIVITY_MAP(stateMap)
+   ACTIVITY_MAP_ENTRY(CancelTestBindToActivity, CancelBindTo)   
+ACTIVITY_MAP_END_BASE(MobilityCprActivities, mobilityCprActivities)
+}
+
 CDummyConnectionProvider* CDummyConnectionProvider::NewL(ESock::CConnectionProviderFactoryBase& aFactory, TConnType aConnStatus)
     {
-    CDummyConnectionProvider* self = new (ELeave) CDummyConnectionProvider(aFactory, aConnStatus);
+    CDummyConnectionProvider* self = new (ELeave) CDummyConnectionProvider(aFactory, DummyCPRStates::stateMap::Self(), aConnStatus);
+    CleanupStack::PushL(self);
+    self->ConstructL(KDummyCPRPreallocatedActivityBufferSize);
+    CleanupStack::Pop(self);
+    return self;
+    }
+
+CDummyConnectionProvider* CDummyConnectionProvider::NewVanillaL(ESock::CConnectionProviderFactoryBase& aFactory)
+    {
+    CDummyConnectionProvider* self = new (ELeave) CDummyConnectionProvider(aFactory, VanillaDummyCPRStates::stateMap::Self(), CDummyConnectionProvider::EConnNoIncoming);
     CleanupStack::PushL(self);
     self->ConstructL(KDummyCPRPreallocatedActivityBufferSize);
     CleanupStack::Pop(self);
@@ -155,8 +173,8 @@ CDummyConnectionProvider* CDummyConnectionProvider::NewL(ESock::CConnectionProvi
     }
 
 
-CDummyConnectionProvider::CDummyConnectionProvider(CConnectionProviderFactoryBase& aFactory, TConnType aConnStatus)
-:	CMobilityConnectionProvider(aFactory, DummyCPRStates::stateMap::Self()),
+CDummyConnectionProvider::CDummyConnectionProvider(CConnectionProviderFactoryBase& aFactory, const MeshMachine::TNodeActivityMap& aActivityMap, TConnType aConnStatus)
+:	CMobilityConnectionProvider(aFactory, aActivityMap),
 	TIfStaticFetcherNearestInHierarchy(this),
     iConnStatus(aConnStatus)
 	{
@@ -186,6 +204,8 @@ void CDummyConnectionProvider::ReturnInterfacePtrL(ESock::MLegacyControlApiExt*&
     {
     aInterface = this;
     }
+
+
 
 
 

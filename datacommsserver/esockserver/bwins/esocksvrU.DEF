@@ -903,7 +903,7 @@ EXPORTS
 	?TransitionTag@TBearerPresent@CoreNetStates@@UAEHXZ @ 902 NONAME ; int CoreNetStates::TBearerPresent::TransitionTag(void)
 	?TransitionTag@TBearerReady@CoreNetStates@@UAEHXZ @ 903 NONAME ABSENT ; int CoreNetStates::TBearerReady::TransitionTag(void)
 	?TransitionTag@TDataClientPresent@CoreNetStates@@UAEHXZ @ 904 NONAME ABSENT ; int CoreNetStates::TDataClientPresent::TransitionTag(void)
-	?TransitionTag@TLayerCompleted@CoreNetStates@@UAEHXZ @ 905 NONAME ABSENT ; int CoreNetStates::TLayerCompleted::TransitionTag(void)
+	?Cancel@CCommsBinderActivity@PRActivities@@UAEXAAVTNodeContextBase@MeshMachine@@@Z @ 905 NONAME ; void PRActivities::CCommsBinderActivity::Cancel(class MeshMachine::TNodeContextBase &)
 	?TransitionTag@TNoTagBackwardsOrProviderStopped@CoreNetStates@@UAEHXZ @ 906 NONAME ; int CoreNetStates::TNoTagBackwardsOrProviderStopped::TransitionTag(void)
 	?TransitionTag@TNoTagOrBearerPresent@CNoBearer@PRActivities@@UAEHXZ @ 907 NONAME ; int PRActivities::CNoBearer::TNoTagOrBearerPresent::TransitionTag(void)
 	?FetchNodeInterfaceControlL@CTierManagerBase@ESock@@MAEPAVTInterfaceControl@NetInterfaces@@H@Z @ 908 NONAME ; class NetInterfaces::TInterfaceControl * ESock::CTierManagerBase::FetchNodeInterfaceControlL(int)
