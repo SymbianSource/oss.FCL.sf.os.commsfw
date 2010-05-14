@@ -952,8 +952,12 @@ TInt CRegisterProgressNotificationStep::ConfigureFromIni()
 		}
 
 	TPtrC eventName;
-
-	if (GetStringFromConfig(iSection,KTe_SelectedProgress,eventName)==1)
+    TInt event;
+    if (GetIntFromConfig(iSection,KTe_SelectedProgress, event)==1)
+        {
+        iParams.iEventMask = event;
+        }
+    else if (GetStringFromConfig(iSection,KTe_SelectedProgress,eventName)==1)
 		{
 		if (eventName.Compare(KTe_LinkLayerOpen)==0)
 			{ iParams.iEventMask = KLinkLayerOpen; }
@@ -1009,8 +1013,12 @@ TInt CCheckProgressNotificationStep::ConfigureFromIni()
 		return KErrNotFound;
 
 	TPtrC eventName;
-
-	if (GetStringFromConfig(iSection,KTe_SelectedProgress,eventName)==1)
+    TInt event;
+    if (GetIntFromConfig(iSection,KTe_SelectedProgress, event)==1)
+        {
+        iParams.iEventMask = event;
+        }
+    else if (GetStringFromConfig(iSection,KTe_SelectedProgress,eventName)==1)
 		{
 		if (eventName.Compare(KTe_LinkLayerOpen)==0)
 			{ iParams.iEventMask = KLinkLayerOpen; }
@@ -1111,24 +1119,28 @@ TInt CCheckNegativeProgressNotificationStep::ConfigureFromIni()
 		return KErrNotFound;
 
 	TPtrC eventName;
-
-	if (GetStringFromConfig(iSection,KTe_SelectedProgress,eventName)==1)
-		{
-		if (eventName.Compare(KTe_LinkLayerOpen)==0)
-			{ iParams.iEventMask = KLinkLayerOpen; }
-		else if (eventName.Compare(KTe_LinkLayerClosed)==0)
-			{ iParams.iEventMask = KLinkLayerClosed; }
-		else
-			{
-			INFO_PRINTF3(_L("%S: Event type (%S) not recognised."),&iParams.iEventName,&eventName);
-			return KErrNotFound;
-			}
-		}
-	else
-		{
-		INFO_PRINTF1(_L("Event type missing."));
-		return KErrNotFound;
-		}
+	TInt event;
+	if (GetIntFromConfig(iSection,KTe_SelectedProgress, event)==1)
+	    {
+        iParams.iEventMask = event;
+	    }
+	else if (GetStringFromConfig(iSection,KTe_SelectedProgress,eventName)==1)
+	    {
+        if (eventName.Compare(KTe_LinkLayerOpen)==0)
+            { iParams.iEventMask = KLinkLayerOpen; }
+        else if (eventName.Compare(KTe_LinkLayerClosed)==0)
+            { iParams.iEventMask = KLinkLayerClosed; }
+        else
+            {
+            INFO_PRINTF3(_L("%S: Event type (%S) not recognised."),&iParams.iEventName,&eventName);
+            return KErrNotFound;
+            }
+        }
+    else
+        {
+        INFO_PRINTF1(_L("Event type missing."));
+        return KErrNotFound;
+        }	
 
 	if (!GetIntFromConfig(iSection, KExpectedError, iExpectedError))
 		{
@@ -1157,18 +1169,17 @@ TVerdict CCheckNegativeProgressNotificationStep::doSingleTestStep()
 	TNifProgress* event = NULL;
 	TInt err = iEsockTest->ReceiveProgressNotificationEvent(event, iParams.iEventName, iParams.iTimeoutMiliSecs);
 
-	if (event == NULL || err == KErrNone)
+	if (event == NULL && err == KErrNone)
 		{
 		INFO_PRINTF2(_L("%S: Did not receive any event."),&iParams.iEventName);
-
 		return EPass;
 		}
-		else if (event == NULL || err != KErrNone)
-		{
-		INFO_PRINTF2(_L("%S: Did not receive any event but error condiction detected !"),&iParams.iEventName);
-		INFO_PRINTF2(_L("The error code returned was %d."),err);
-		return EFail;
-		}
+    else if (event == NULL || err != KErrNone)
+        {
+        INFO_PRINTF2(_L("%S: Did not receive any event but error condiction detected !"),&iParams.iEventName);
+        INFO_PRINTF2(_L("The error code returned was %d."),err);
+        return EFail;
+        }
 
 
 	TInt eventId = event->iStage;

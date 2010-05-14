@@ -48,9 +48,9 @@ using namespace MeshMachine;
 
 //We reserve space for two preallocated activities that may start concurrently on the CPR
 //node: destroy and data client stop.
-static const TUint KDefaultMaxPreallocatedActivityCount = 2;
+static const TUint KMobilityCPRDefaultMaxPreallocatedActivityCount = 2;
 static const TUint KMaxPreallocatedActivitySize = sizeof(MeshMachine::CNodeRetryParallelActivity) + sizeof(MeshMachine::APreallocatedOriginators<4>);
-static const TUint KMobilityCPRPreallocatedActivityBufferSize = KDefaultMaxPreallocatedActivityCount * KMaxPreallocatedActivitySize;
+static const TUint KMobilityCPRPreallocatedActivityBufferSize = KMobilityCPRDefaultMaxPreallocatedActivityCount * KMaxPreallocatedActivitySize;
 
 //-=========================================================
 //

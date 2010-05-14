@@ -1483,7 +1483,7 @@ TInt CCEsockTestBase::ReceiveProgressNotificationEvent(TNifProgress*&aNifProgres
 	    User::WaitForRequest(ec->iEventReceived);
 	    }
 	aNifProgress = (ec->iEventReceived.Int()==KErrNone)? &ec->iProgressBuf() : NULL;
-	return ec->iEventReceived.Int();
+	return ec->iEventReceived.Int() == KRequestPending ? KErrNone : ec->iEventReceived.Int();
 	}
 
 

@@ -316,7 +316,7 @@ namespace ConnectionGoingDownActivity
 DECLARE_DEFINE_CUSTOM_NODEACTIVITY(ECFActivityGoneDown, ConnectionGoingDown, TCFControlClient::TGoneDown, PRActivities::CGoneDownActivity::NewL)
 	FIRST_NODEACTIVITY_ENTRY(ConnStates::TAwaitingGoneDown, MeshMachine::TNoTag)
 	THROUGH_NODEACTIVITY_ENTRY(KNoTag, ConnectionGoingDownActivity::TStoreGoneDownError, MeshMachine::TNoTag)
-	THROUGH_NODEACTIVITY_ENTRY(KNoTag, CoreNetStates::TCancelAndCloseZone0ClientExtIfaces, MeshMachine::TNoTag)
+	THROUGH_NODEACTIVITY_ENTRY(KNoTag, SubSessStates::TCancelAndCloseClientExtIfaces, MeshMachine::TNoTag)
     THROUGH_NODEACTIVITY_ENTRY(KNoTag, ConnStates::TCancelAllLegacyRMessage2Activities, ConnStates::TNoTagBlockedByLegacyRMessage2Activities)
     THROUGH_NODEACTIVITY_ENTRY(KNoTag, ConnStates::TGenerateConnectionDownProgress, MeshMachine::TNoTag)
 	NODEACTIVITY_ENTRY(KNoTag, CoreNetStates::TSendClientLeavingRequestToServiceProviders, MeshMachine::TAwaitingLeaveComplete, MeshMachine::TNoTag)

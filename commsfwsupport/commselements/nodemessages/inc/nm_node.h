@@ -127,7 +127,7 @@ public:
 
 public:
     IMPORT_C virtual RNodeInterface* NewClientInterfaceL(const TClientType& aClientType, TAny* aClientInfo = NULL);
-    IMPORT_C RNodeInterface* AddClientL(const TNodeId& aClientId, const TClientType& aClientType, TAny* aClientInfo = NULL);
+    IMPORT_C virtual RNodeInterface* AddClientL(const TNodeId& aClientId, const TClientType& aClientType, TAny* aClientInfo = NULL);
     IMPORT_C void RemoveClient(RNodeInterface& aClient);
     IMPORT_C void RemoveClient(TInt aIndex);
     inline const TNodeId& Id() const

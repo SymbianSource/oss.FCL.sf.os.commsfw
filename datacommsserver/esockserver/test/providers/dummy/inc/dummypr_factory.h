@@ -30,6 +30,9 @@
 #include <comms-infras/ss_connprov.h>
 #include <comms-infras/ss_tiermanager.h>
 #include <comms-infras/ss_nodemessages.h>
+
+using namespace ESock;
+
 //-=========================================================
 //
 // CDummyTierManagerFactory
@@ -88,6 +91,17 @@ protected:
 	CDummyHangingConnectionProviderFactory(TUid aFactoryId, ESock::CConnectionFactoryContainer& aParentContainer);
 	virtual ESock::ACommsFactoryNodeId* DoCreateObjectL(ESock::TFactoryQueryBase& aQuery);
 	};
+
+class CDummyVanillaConnectionProviderFactory : public ESock::CConnectionProviderFactoryBase
+    {
+public:
+    enum { iUid = 0x10283030 };
+    static CDummyVanillaConnectionProviderFactory* NewL(TAny* aParentContainer);
+
+protected:
+    CDummyVanillaConnectionProviderFactory(TUid aFactoryId, ESock::CConnectionFactoryContainer& aParentContainer);
+    virtual ESock::ACommsFactoryNodeId* DoCreateObjectL(ESock::TFactoryQueryBase& aQuery);
+    };
 	
 //-=========================================================
 //
@@ -111,8 +125,6 @@ protected:
 // CDummyExtendedSubConnectionProviderFactory
 //
 //-=========================================================
-namespace ESock
-{
 class CDummyExtendedSubConnectionProviderFactory : public ESock::CSubConnectionProviderFactoryBase
 	{
 public:
@@ -123,15 +135,31 @@ protected:
 	CDummyExtendedSubConnectionProviderFactory(TUid aFactoryId, ESock::CSubConnectionFactoryContainer& aParentContainer);
 	virtual ESock::ACommsFactoryNodeId* DoCreateObjectL(ESock::TFactoryQueryBase& aQuery);
 	};
-}
+
+
+//-=========================================================
+//
+// CDummyVanillaSubConnectionProviderFactory
+//
+//-=========================================================
+class CDummyVanillaSubConnectionProviderFactory : public ESock::CSubConnectionProviderFactoryBase
+    {
+public:
+    enum { iUid = 0x10283031 };
+    static CDummyVanillaSubConnectionProviderFactory* NewL(TAny* aParentContainer);
+
+protected:
+    CDummyVanillaSubConnectionProviderFactory(TUid aFactoryId, ESock::CSubConnectionFactoryContainer& aParentContainer);
+    virtual ESock::ACommsFactoryNodeId* DoCreateObjectL(ESock::TFactoryQueryBase& aQuery);
+    };
+
+
 
 //-=========================================================
 //
 // CDummyNetworkFlowFactory
 //
 //-=========================================================
-namespace ESock
-{
 class CDummyNetworkFlowFactory : public ESock::CSubConnectionFlowFactoryBase
 	{
 public:
@@ -147,7 +175,6 @@ protected:
 	virtual ESock::ACommsFactoryNodeId* DoFindOrCreateObjectL(ESock::TFactoryQueryBase& aQuery);
 	virtual TServerProtocolDesc* DoCreateFlowDescriptionL(TInt aProtocol);
 	};
-}
 
 
 #endif	// __DummyPR_FACTORY_H__

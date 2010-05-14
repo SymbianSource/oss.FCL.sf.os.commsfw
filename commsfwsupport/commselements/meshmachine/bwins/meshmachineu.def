@@ -45,7 +45,7 @@ EXPORTS
 	?FindOriginator@CNodeActivityBase@MeshMachine@@QBEHABVTRuntimeCtxId@Messages@@@Z @ 44 NONAME ; int MeshMachine::CNodeActivityBase::FindOriginator(class Messages::TRuntimeCtxId const &) const
 	?FindOriginator@CNodeActivityBase@MeshMachine@@QBEHABVTNodePeerId@Messages@@@Z @ 45 NONAME ; int MeshMachine::CNodeActivityBase::FindOriginator(class Messages::TNodePeerId const &) const
 	?FindOriginator@CNodeActivityBase@MeshMachine@@QBEHABVRNodeInterface@Messages@@@Z @ 46 NONAME ; int MeshMachine::CNodeActivityBase::FindOriginator(class Messages::RNodeInterface const &) const
-	?GetNextActivityCountL@CNodeParallelActivityBase@MeshMachine@@KAIABUTNodeActivity@2@ABVAMMNodeBase@2@@Z @ 47 NONAME ; unsigned int MeshMachine::CNodeParallelActivityBase::GetNextActivityCountL(struct MeshMachine::TNodeActivity const &, class MeshMachine::AMMNodeBase const &)
+	?GetNextActivityCount@CNodeParallelActivityBase@MeshMachine@@KAIABUTNodeActivity@2@ABVAMMNodeBase@2@@Z @ 47 NONAME ; unsigned int MeshMachine::CNodeParallelActivityBase::GetNextActivityCount(struct MeshMachine::TNodeActivity const &, class MeshMachine::AMMNodeBase const &)
 	?GetVTablePtr@TAwaitingAny@MeshMachine@@SAPAVMState@NetStateMachine@@AAVTDesC8@@PAX@Z @ 48 NONAME ; class NetStateMachine::MState * MeshMachine::TAwaitingAny::GetVTablePtr(class TDesC8 &, void *)
 	?GetVTablePtr@TAwaitingCancel@MeshMachine@@SAPAVMState@NetStateMachine@@AAVTDesC8@@PAX@Z @ 49 NONAME ; class NetStateMachine::MState * MeshMachine::TAwaitingCancel::GetVTablePtr(class TDesC8 &, void *)
 	?GetVTablePtr@TAwaitingClientLeavingRequest@MeshMachine@@SAPAVMState@NetStateMachine@@AAVTDesC8@@PAX@Z @ 50 NONAME ; class NetStateMachine::MState * MeshMachine::TAwaitingClientLeavingRequest::GetVTablePtr(class TDesC8 &, void *)
@@ -135,5 +135,4 @@ EXPORTS
 	??1CNodeParallelMessageStoreActivityBase@MeshMachine@@UAE@XZ @ 134 NONAME ; MeshMachine::CNodeParallelMessageStoreActivityBase::~CNodeParallelMessageStoreActivityBase(void)
 	??0CNodeParallelMessageStoreActivityBase@MeshMachine@@IAE@ABUTNodeActivity@1@AAVAMMNodeBase@1@I@Z @ 135 NONAME ; MeshMachine::CNodeParallelMessageStoreActivityBase::CNodeParallelMessageStoreActivityBase(struct MeshMachine::TNodeActivity const &, class MeshMachine::AMMNodeBase &, unsigned int)
 	?StartL@CNodeParallelMessageStoreActivityBase@MeshMachine@@MAEXAAVTNodeContextBase@2@ABVXNodePeerId@Messages@@ABUTStateTriple@NetStateMachine@@@Z @ 136 NONAME ; void MeshMachine::CNodeParallelMessageStoreActivityBase::StartL(class MeshMachine::TNodeContextBase &, class Messages::XNodePeerId const &, struct NetStateMachine::TStateTriple const &)
-
 

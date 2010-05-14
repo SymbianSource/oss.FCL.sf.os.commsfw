@@ -89,6 +89,21 @@ interfaces =
         },
     INTERFACE_INFO
         {
+        interface_uid =  0x102070EE;
+        implementations = 
+            {
+           IMPLEMENTATION_INFO
+                {
+                implementation_uid = 0x10283030;
+                version_no = 1;
+                display_name = "Dummy Vanilla Connection Provider Factory";
+                default_data = "DummyVanillaConnectionProviderFactory";
+                opaque_data = "";
+                }
+            };
+        },        
+    INTERFACE_INFO
+        {
         interface_uid = 0x10204301;
         implementations = 
             {
@@ -116,7 +131,22 @@ interfaces =
                 opaque_data = "";
                 }
             };
-        },    
+        },   
+    INTERFACE_INFO
+        {
+        interface_uid = 0x10204301;
+        implementations = 
+            {
+           IMPLEMENTATION_INFO
+                {
+                implementation_uid = 0x10283031;
+                version_no = 1;
+                display_name = "Dummy Vanilla SCPR Factory";
+                default_data = "DummyVanillaSCPRFactory";
+                opaque_data = "";
+                }
+            };
+        },            
     INTERFACE_INFO
         {
         interface_uid = 0x10281C33;

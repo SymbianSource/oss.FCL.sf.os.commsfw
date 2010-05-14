@@ -45,7 +45,9 @@ _LIT (KMMActivityPanic,"MMActivityPanic");
 enum
 	{
 	EPanicCorruptedContext = 1,
-	EPanicNoPreallocatedSpace = 2
+	EPanicNoPreallocatedSpace = 2,
+	EPanicOutOfActivities = 3,
+	EPanicOutOfBounds
 	};
 
 //-=========================================================
@@ -352,8 +354,8 @@ EXPORT_C TInt CNodeActivityBase::PostToOriginators(const TSignalBase& aMessage, 
 		if (PostToOriginator(iOriginators[n], aMessage))
 			{
 			++msgSendCount;
-	    	iOriginators[n].Peer().SetFlags(aFlagsToSet);
-	    	iOriginators[n].Peer().ClearFlags(aFlagsToClear);
+	    	iOriginators[n].SetFlags(aFlagsToSet);
+	    	iOriginators[n].ClearFlags(aFlagsToClear);
 			};
 		}
 	return msgSendCount;
@@ -461,20 +463,80 @@ EXPORT_C void CNodeRetryActivity::ReturnInterfacePtrL(AActivitySemaphore*& aInte
     aInterface = this;
     }
 
+// BitMap utility used only by CNodeParallelActivityBase::GetNextActivityCount
+template<TInt SIZE>
+class TBitmap {
+public:
+    static const TInt iSize = sizeof(TUint32) * 8;
+    static const TUint32 iSizeMask = iSize - 1;
+    static const TUint32 iFull = ~0;
+    static const TInt iCount = (SIZE + iSizeMask) / iSize;
+    TBitmap();
+    void SetBit(TUint aBitNum);
+    TInt GetFreeBit() const;
+
+private:
+    TUint32 iBits[iCount];
+};
+
+template<TInt SIZE>
+TBitmap<SIZE>::TBitmap()
+{
+    for (TInt i = 0 ; i < iCount ; ++i)
+        {
+        iBits[i] = 0;
+        }
+}
+
+template<TInt SIZE>
+void TBitmap<SIZE>::SetBit(TUint aBitNum)
+    {
+    const TInt index = aBitNum / iSize;
+	__ASSERT_ALWAYS(index < iCount,User::Panic(KMMActivityPanic,EPanicOutOfBounds));
+
+    iBits[index] |= 1 << (aBitNum & iSizeMask);
+    }
+
+template<TInt SIZE>
+TInt TBitmap<SIZE>::GetFreeBit() const
+    {
+    for (TInt i = 0 ; i < iCount ; ++i)
+        {
+        const TUint32 bits = iBits[i];
+        if (bits != iFull)
+            {
+			// Bitmap represents list of activity IDs. Activity ID 1 is a reserved value.
+			// In order to mirror this fact the first bit of the bitmap is also always reserved
+            TUint32 mask = 2;
+            for (TInt bitIndex = 1 ; bitIndex < iSize ; ++bitIndex)
+                {
+                if ((bits & mask) == 0)
+                    {
+                    return (i * iSize) + bitIndex;
+                    }
+                mask <<= 1;
+                }
+            }
+        }
+    return KErrNotFound;
+    }
+
+
 //-=========================================================
 //
 //CNodeParallelActivityBase
 //
 //-=========================================================
-// For custom activities to implement NewL
-EXPORT_C TUint CNodeParallelActivityBase::GetNextActivityCountL( const TNodeActivity& aActivitySig, const AMMNodeBase& aNode )
+
+
+// For custom activities to implement New
+EXPORT_C TUint CNodeParallelActivityBase::GetNextActivityCount( const TNodeActivity& aActivitySig, const AMMNodeBase& aNode )
 	{
-	TInt c = 1, i = 0;
+	TInt c = 1;
 	
 	const RPointerArray<CNodeActivityBase>& activities = aNode.Activities();
-	RArray<TInt> activityids;
-	CleanupClosePushL(activityids);
-
+	
+	TBitmap<256> activityids;
 	// collect the currently used ids
 	for (TInt i = 0; i < activities.Count(); i++)
 		{
@@ -482,23 +544,12 @@ EXPORT_C TUint CNodeParallelActivityBase::GetNextActivityCountL( const TNodeActi
 		if ((id&0xff) == aActivitySig.iId)
 			{
 			TInt8 uniqueid = id >> 8;
-			activityids.InsertInOrderL(uniqueid);
+			activityids.SetBit(uniqueid);
 			}
 		}
-
-	// find first available.
-	while (i < activityids.Count()
-          && activityids[i] == c)
-		{
-		++i;
-		++c;
-		}
-	CleanupStack::PopAndDestroy(&activityids);
-
-	if(c > KActivityParallelRangeMax>>8)
-		{
-		User::Leave(KErrInUse);
-		}
+	c = activityids.GetFreeBit();
+	
+	__ASSERT_ALWAYS(c>=0,User::Panic(KMMActivityPanic,EPanicOutOfActivities));
     return c;
 	}
 

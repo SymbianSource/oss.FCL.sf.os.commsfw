@@ -193,7 +193,7 @@ EXPORTS
 	?TransitionTag@TAddClientOrUpdatePriority@CControlClientJoinActivity@CprControlClientJoinActivity@@UAEHXZ @ 192 NONAME ; int CprControlClientJoinActivity::CControlClientJoinActivity::TAddClientOrUpdatePriority::TransitionTag(void)
 	?DoL@TSendLeaveCompleteIfRequest@CClientLeaveActivity@CprClientLeaveActivity@@UAEXXZ @ 193 NONAME ; void CprClientLeaveActivity::CClientLeaveActivity::TSendLeaveCompleteIfRequest::DoL(void)
 	?DoL@TAddControlClient@CprStates@@UAEXXZ @ 194 NONAME ; void CprStates::TAddControlClient::DoL(void)
-	?NewL@CClientLeaveActivity@CprClientLeaveActivity@@SAPAVCNodeActivityBase@MeshMachine@@ABUTNodeActivity@4@AAVAMMNodeBase@4@@Z @ 195 NONAME ; class MeshMachine::CNodeActivityBase * CprClientLeaveActivity::CClientLeaveActivity::NewL(struct MeshMachine::TNodeActivity const &, class MeshMachine::AMMNodeBase &)
+	?New@CClientLeaveActivity@CprClientLeaveActivity@@SAPAVCNodeActivityBase@MeshMachine@@ABUTNodeActivity@4@AAVTNodeContextBase@4@@Z @ 195  NONAME ; class MeshMachine::CNodeActivityBase * CprClientLeaveActivity::CClientLeaveActivity::New(struct MeshMachine::TNodeActivity const &, class MeshMachine::TNodeContextBase &)
 	??1CControlClientJoinActivity@CprControlClientJoinActivity@@UAE@XZ @ 196 NONAME ; CprControlClientJoinActivity::CControlClientJoinActivity::~CControlClientJoinActivity(void)
 	?GetVTablePtr@TProcessDataClientRejoin@MCprStates@@SAPAVMStateTransition@NetStateMachine@@AAVTDesC8@@PAX@Z @ 197 NONAME ; class NetStateMachine::MStateTransition * MCprStates::TProcessDataClientRejoin::GetVTablePtr(class TDesC8 &, void *)
 	??0CContentionManager@@QAE@ABVCTierManagerBase@ESock@@@Z @ 198 NONAME ; CContentionManager::CContentionManager(class ESock::CTierManagerBase const &)

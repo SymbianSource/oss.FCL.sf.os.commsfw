@@ -27,6 +27,7 @@
 
 #include "dummypr_subconnprov.h"
 #include "dummypr_metaconnprov.h"
+#include "activityTest.h"
 
 #include <elements/sd_mintercept.h>
 
@@ -133,7 +134,7 @@ DECLARE_DEFINE_CUSTOM_NODEACTIVITY(ECFActivityStart, dummySCPrStart, TCFServiceP
 NODEACTIVITY_END()
 }
 
-// Activity Map
+// Activity Map For test-code ridden scpr
 namespace DummySCPRStates
 {
 DEFINE_ACTIVITY_MAP(stateMap)
@@ -144,9 +145,26 @@ DEFINE_ACTIVITY_MAP(stateMap)
 ACTIVITY_MAP_END_BASE(SCprActivities, coreSCprActivities)
 }
 
+// Activity Map For vanilla cpr
+namespace VanillaDummySCPRStates
+{
+DECLARE_DEFINE_ACTIVITY_MAP(stateMap)
+        ACTIVITY_MAP_ENTRY(CancelTestBindToActivity, CancelBindTo)   
+ACTIVITY_MAP_END_BASE(SCprActivities, coreSCprActivities)
+}
+
 CDummySubConnectionProvider* CDummySubConnectionProvider::NewL(ESock::CSubConnectionProviderFactoryBase& aFactory)
     {
-    CDummySubConnectionProvider* self = new (ELeave) CDummySubConnectionProvider(aFactory);
+    CDummySubConnectionProvider* self = new (ELeave) CDummySubConnectionProvider(aFactory, DummySCPRStates::stateMap::Self());
+    CleanupStack::PushL(self);
+    self->ConstructL(KDummySCPRPreallocatedActivityBufferSize);
+    CleanupStack::Pop(self);
+    return self;
+    }
+
+CDummySubConnectionProvider* CDummySubConnectionProvider::NewVanillaL(ESock::CSubConnectionProviderFactoryBase& aFactory)
+    {
+    CDummySubConnectionProvider* self = new (ELeave) CDummySubConnectionProvider(aFactory, VanillaDummySCPRStates::stateMap::Self());
     CleanupStack::PushL(self);
     self->ConstructL(KDummySCPRPreallocatedActivityBufferSize);
     CleanupStack::Pop(self);
@@ -154,8 +172,8 @@ CDummySubConnectionProvider* CDummySubConnectionProvider::NewL(ESock::CSubConnec
     }
 
 
-CDummySubConnectionProvider::CDummySubConnectionProvider(CSubConnectionProviderFactoryBase& aFactory)
-:CCoreSubConnectionProvider(aFactory,DummySCPRStates::stateMap::Self())
+CDummySubConnectionProvider::CDummySubConnectionProvider(CSubConnectionProviderFactoryBase& aFactory, const MeshMachine::TNodeActivityMap& aActivityMap)
+:CCoreSubConnectionProvider(aFactory, aActivityMap)
 	{
 	LOG_NODE_CREATE(KDummySCPRTag, CDummySubConnectionProvider);
 	}

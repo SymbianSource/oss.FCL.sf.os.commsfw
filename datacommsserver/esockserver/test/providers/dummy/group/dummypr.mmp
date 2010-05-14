@@ -35,7 +35,8 @@ SOURCE			dummypr_extended_subconnprov.cpp
 SOURCE			dummypr_mcprpubsubsubscriber.cpp
 SOURCE			dummypr_metaconnprov.cpp
 SOURCE			dummypr_tiermanager.cpp
-SOURCE			dummypr_network_flow.cpp
+SOURCE			dummypr_network_flow.cpp 
+SOURCE			activityTest.cpp
 
 
 USERINCLUDE     ../inc

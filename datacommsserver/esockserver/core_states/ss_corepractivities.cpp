@@ -1701,6 +1701,27 @@ in iOriginatorsCountSnapshot.  See comment in ProcessBindToComplete().
 	iPendingBinder->SetFlags(TCFClientType::EActivating);
     }
 
+EXPORT_C void CCommsBinderActivity::Cancel(TNodeContextBase& aContext)
+    {
+    if (iPendingBinder)
+        {
+        //iPendingBinder is set when CCommsBinderActivity decides which of its dataclients it 
+        //wishes to send along with its TCommsBinderResponse and promptly (on the same stack) as
+        //this response is sent. After TCommsBinderResponse, the error handling of CCommsBinderActivity
+        //changes in that it should not flag any errors back to the recpient of TCommsBinderResponse.
+        //Such response may be when:
+        //(1) the recipient responds to TCommsBinderResponse with TError - the activity is finished, the recipients doesn't wait for anything (certainly not for an error)
+        //(2) the recipients explicitly cancels (or implicitly cancells by leaving the local node) - the activity is finished, the recipient doesn't wait for anything (certainly not for an error) 
+        SetError(KErrNone);
+        BindToComplete();
+        SetIdle();
+        }
+    else
+        {
+        CNodeRetryParallelActivity::Cancel(aContext);
+        }
+    }
+
 void CCommsBinderActivity::BindToComplete()
     {
     __ASSERT_DEBUG(iPendingBinder, User::Panic(KSpecAssert_ESockCrStaCPRAC, 23));

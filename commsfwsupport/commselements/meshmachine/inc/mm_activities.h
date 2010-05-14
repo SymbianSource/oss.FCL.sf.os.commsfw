@@ -91,7 +91,7 @@ Define and export a custom node activity.
 	#define DEFINE_EXPORT_CUSTOM_NODEACTIVITY( id, name, msgtype, ctor ) \
 		EXPORT_C const MeshMachine::TNodeActivity& name :: Self() {return iSelf;} \
 		EXPORT_C const NetStateMachine::TStateTriple& name :: FirstTriple() {return iData[1];} \
-		const MeshMachine::TNodeActivity name :: iSelf = {id, msgtype::EId, msgtype::ERealm, name :: iData[1], &ctor, _S8(#name)}; \
+		const MeshMachine::TNodeActivity name :: iSelf = {id, 0, msgtype::EId, msgtype::ERealm, name :: iData[1], (TAny*)&ctor, _S8(#name)}; \
 		DEFINE_TRIPLES_TABLE( name :: iData )
 
 /**
@@ -110,7 +110,7 @@ Node activity class must derive from CNodeActivityBase.
 @see CNodeActivityBase
 */
 	#define DEFINE_CUSTOM_NODEACTIVITY( id, name, msgtype, ctor ) \
-		const MeshMachine::TNodeActivity name :: iSelf = {id, msgtype::EId, msgtype::ERealm, name :: iData[1], &ctor, _S8(#name)}; \
+		const MeshMachine::TNodeActivity name :: iSelf = {id, 0, msgtype::EId, msgtype::ERealm, name :: iData[1], (TAny*)&ctor, _S8(#name)}; \
 		DEFINE_TRIPLES_TABLE( name :: iData )
 
 #else
@@ -128,7 +128,7 @@ Define and export a custom node activity.
 	#define DEFINE_EXPORT_CUSTOM_NODEACTIVITY( id, name, msgtype, ctor ) \
 		EXPORT_C const MeshMachine::TNodeActivity& name :: Self() {return iSelf;} \
 		EXPORT_C const NetStateMachine::TStateTriple& name :: FirstTriple() {return iData[1];} \
-		const MeshMachine::TNodeActivity name :: iSelf = {id, msgtype::EId, msgtype::ERealm, name :: iData[1], &ctor, NULL}; \
+		const MeshMachine::TNodeActivity name :: iSelf = {id, 0, msgtype::EId, msgtype::ERealm, name :: iData[1], (TAny*)&ctor, NULL}; \
 		DEFINE_TRIPLES_TABLE( name :: iData )
 
 /**
@@ -147,7 +147,7 @@ Node activity class must derive from CNodeActivityBase.
 @see CNodeActivityBase
 */
 	#define DEFINE_CUSTOM_NODEACTIVITY( id, name, msgtype, ctor ) \
-		const MeshMachine::TNodeActivity name :: iSelf = {id, msgtype::EId, msgtype::ERealm, name :: iData[1], &ctor, NULL}; \
+		const MeshMachine::TNodeActivity name :: iSelf = {id, 0, msgtype::EId, msgtype::ERealm, name :: iData[1], (TAny*)&ctor, NULL}; \
 		DEFINE_TRIPLES_TABLE( name :: iData )
 
 #endif
@@ -417,6 +417,126 @@ maps.
 	};
 
 /**
+RESERVED MACROS NOT TO BE USED.
+The following are new macro definitions allowing the context to be passed as a parameter rather than the node.
+In time the ability to pass context rather than node will be placed in the original macros. For the meantime,
+only critical commsFw activities which must have the context passed instead of the node should use these macros.
+All other activities should continue to use original macros declared above.
+*/
+/**
+Declare and export a node activity.
+
+@param name  The name of the activity, which will be used to put it into the node's activity map
+
+@see DECLARE_NODEACTIVITY
+*/
+#define DECLARE_RESERVED_EXPORT_NODEACTIVITY( name ) \
+	struct name \
+		{ \
+		IMPORT_C static const MeshMachine::TNodeActivity& Self(); \
+		IMPORT_C static const NetStateMachine::TStateTriple& FirstTriple(); \
+		static const MeshMachine::TNodeActivity iSelf; \
+		static const NetStateMachine::TStateTriple iData[]; \
+		};
+
+/**
+Declares a node activity. A node activity is a state machine. It contains multiple nodeactivity
+entries, which respresent the states, transitions and forks of the state machine.
+
+@param name  The name of the activity, which will be used to put it into the node's activity map
+
+@see DEFINE_NODEACTIVITY
+@see NODEACTIVITY_ENTRY
+*/
+#define DECLARE_RESERVED_NODEACTIVITY( name ) \
+	struct name \
+		{ \
+		inline static const MeshMachine::TNodeActivity& Self() {return iSelf;} \
+		inline static const NetStateMachine::TStateTriple& FirstTriple() {return iData[1];} \
+		static const MeshMachine::TNodeActivity iSelf; \
+		static const NetStateMachine::TStateTriple iData[]; \
+		};
+
+#ifdef SYMBIAN_TRACE_ENABLE
+
+/**
+Define a custom node activity. A custom node activity is a node activity which defines its own
+node activity class. This is used, for example, if the activity wishes to share some custom context
+information between the states and transition in the activity.
+
+Node activity class must derive from CNodeActivityBase.
+
+@param id        Identifier for the activity
+@param name      The name of the activity
+@param msgtype   Message which will kickoff this activity
+@param ctor      Constructor for the custom activity class
+
+@see DEFINE_RESERVED_NODEACTIVITY
+@see CNodeActivityBase
+	
+*/
+	#define DEFINE_RESERVED_CUSTOM_NODEACTIVITY( id, name, msgtype, ctor ) \
+		const MeshMachine::TNodeActivity name :: iSelf = {id, 1, msgtype::EId, msgtype::ERealm, name :: iData[1], (TAny*)&ctor, _S8(#name)}; \
+		DEFINE_TRIPLES_TABLE( name :: iData )
+
+#else
+
+/**
+Define and export a custom node activity.
+
+@param id        Identifier for the activity
+@param name      The name of the activity
+@param msgtype   Message which will kickoff this activity
+@param ctor      Constructor for the custom activity class
+
+@see DEFINE_RESERVED_CUSTOM_NODEACTIVITY
+*/
+	#define DEFINE_RESERVED_EXPORT_CUSTOM_NODEACTIVITY( id, name, msgtype, ctor ) \
+		EXPORT_C const MeshMachine::TNodeActivity& name :: Self() {return iSelf;} \
+		EXPORT_C const NetStateMachine::TStateTriple& name :: FirstTriple() {return iData[1];} \
+		const MeshMachine::TNodeActivity name :: iSelf = {id, 1, msgtype::EId, msgtype::ERealm, name :: iData[1], (TAny*)&ctor, NULL}; \
+		DEFINE_TRIPLES_TABLE( name :: iData )
+
+/**
+Define a custom node activity. A custom node activity is a node activity which defines its own
+node activity class. This is used, for example, if the activity wishes to share some custom context
+information between the states and transition in the activity.
+
+Node activity class must derive from CNodeActivityBase.
+
+@param id        Identifier for the activity
+@param name      The name of the activity
+@param msgtype   Message which will kickoff this activity
+@param ctor      Constructor for the custom activity class
+
+@see DEFINE_RESERVED_NODEACTIVITY
+@see CNodeActivityBase
+*/
+	#define DEFINE_RESERVED_CUSTOM_NODEACTIVITY( id, name, msgtype, ctor ) \
+		const MeshMachine::TNodeActivity name :: iSelf = {id, 1, msgtype::EId, msgtype::ERealm, name :: iData[1], (TAny*)&ctor, NULL}; \
+		DEFINE_TRIPLES_TABLE( name :: iData )
+
+#endif
+
+/**
+Define and declare a custom node activity
+
+@param id        Identifier for the activity
+@param name      The name of the activity
+@param msgtype   Message which will kickoff this activity
+@param ctor      Constructor for the custom activity class
+
+@see DEFINE_RESERVED_CUSTOM_NODEACTIVITY
+*/
+#define DECLARE_DEFINE_RESERVED_CUSTOM_NODEACTIVITY( id, name, msgtype, ctor ) \
+	DECLARE_RESERVED_NODEACTIVITY( name ) \
+	DEFINE_RESERVED_CUSTOM_NODEACTIVITY( id, name, msgtype, ctor )
+
+/**
+END OF RESERVED MACROS
+*/
+
+/**
 Mark the end of an activity map. This macro should be used for an activity map based
 on other activity maps.
 
@@ -432,6 +552,7 @@ on other activity maps.
 
 namespace MeshMachine
 {
+
 /**
 Base class for all node activity objects. Non custom node activities will use this by default.
 **/
@@ -846,7 +967,14 @@ protected:
 	@param aNode        The node to which this activity will belong.
 	@return Generated unique component of activity id
 	*/
-	IMPORT_C static TUint GetNextActivityCountL( const TNodeActivity& aActivitySig, const AMMNodeBase& aNode );
+	static TUint GetNextActivityCountL( const TNodeActivity& aActivitySig, const AMMNodeBase& aNode );
+	/**
+	For use by custom activity News to generate the unique part of the activity id.
+	@param aActivitySig Context information about how the activity is to be started
+	@param aNode        The node to which this activity will belong.
+	@return Generated unique component of activity id
+	*/
+	IMPORT_C static TUint GetNextActivityCount( const TNodeActivity& aActivitySig, const AMMNodeBase& aNode );
 
 	/**
 	Constructor for CNodeParallelActivityBase
@@ -1386,6 +1514,13 @@ private:
 	Creation of preallocated activities doesn't fail and hence a non-leaving ::New should be used instead*/
     static MeshMachine::CNodeActivityBase* NewL(const MeshMachine::TNodeActivity& aActivitySig, MeshMachine::AMMNodeBase& aNode);
 	};
+
+
+inline TUint CNodeParallelActivityBase::GetNextActivityCountL( const TNodeActivity& aActivitySig, const AMMNodeBase& aNode )
+    {
+    //Historical. Method ceased to leave, but must keep the old, L-ending overload.
+    return GetNextActivityCount(aActivitySig, aNode);
+    }
 
 } //namespace MeshMachine
 

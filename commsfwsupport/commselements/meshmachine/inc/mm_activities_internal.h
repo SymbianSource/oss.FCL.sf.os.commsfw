@@ -46,15 +46,29 @@ struct TNodeActivity
 /**
 */
 	{
+	enum TNodeActivityFlags
+	{
+	EContextCtor = 1
+	};
+	
+	/*There are now two types of activity c'tors (hence TAny iCtor supported:
+	(1) The legacy ctor based on AMMNodeBase that must be supported for source backwards compatibility
+	(2) The new ctor based on TNodeContextBase that is desired because TNodeContextBase gives access to AMMNodeBase as well as the message 
+	    and peer and it is therefore more powerful. This new ctor has been introduced to aid leave activities to be infallible
+		by allowing access to the peer, which stores the space preallocated for the activity
+	Ideally this once fixed to only leave (2) especially since differentiating (1) from (2) is rather obscure. iCtor is a pointer
+	to a pointer to a ctor function and the distinction is based on where iCtor points (see AMMNodeBase::StartActivityL) */
 	typedef CNodeActivityBase* (*TStaticActivityCtor)(const TNodeActivity& aActivitySig, AMMNodeBase& aNode);
+	typedef CNodeActivityBase* (*TStaticActivityContextCtor)(const TNodeActivity& aActivitySig, TNodeContextBase& aCtx);
 	const TUint8 iId;
+	const TUint8 iFlags;
 	//Message starting the activity (state in iFirstTriple is waiting for),
 	//used by error handling, could be NULL for "single triple" activities because
 	//than the current message associated with context is used.
     const TUint16 iKickOffMessageId;
     const TUint32 iKickOffMessageRealm;
 	const NetStateMachine::TStateTriple& iFirstTriple;
-	const TStaticActivityCtor iCtor;
+	const TAny* iCtor;
 	const TText8* iName;
 	};
 

@@ -1333,28 +1333,42 @@ EXPORT_C void TSendStoppedAndGoneDown::DoL()
 
 EXPORT_DEFINE_SMELEMENT(TAwaitingStarted, NetStateMachine::MState, CoreNetStates::TContext)
 EXPORT_C TBool TAwaitingStarted::Accept()
-	{
+    {
     if (iContext.iMessage.IsMessage<TCFServiceProvider::TStarted>())
         {
-	    if (iContext.iPeer)
-	        {
-			iContext.iPeer->ClearFlags(TCFClientType::EStarting);
-	        iContext.iPeer->SetFlags(TCFClientType::EStarted);
-	        }
-	    return ETrue;
+        if (iContext.iPeer)
+            {
+            iContext.iPeer->ClearFlags(TCFClientType::EStarting);
+            iContext.iPeer->SetFlags(TCFClientType::EStarted);
+            }
+        if (iContext.iNodeActivity)
+            {//The node has responded. Core providers doesn't support the notion of multiple service providers,
+             //therefore this code has been written to expect that TCFServiceProvider::TStart would only ever be
+             //sent to one service provider as a simple request<>response handshake. The client has now responded
+             //and its job is now done. ClearPostedTo so that TCancels aren't forwarded.
+            iContext.iNodeActivity->ClearPostedTo();
+            }
+        return ETrue;
         }
 
-	//If this is TError, clean the EStarting flag but do not accept, clean or otherwise process
-	if (iContext.iMessage.IsMessage<TEBase::TError>())
-    	{
-	    if (iContext.iPeer)
-	        {
-	        iContext.iPeer->ClearFlags(TCFClientType::EStarting);
-	        }
-    	}
+    //If this is TError, clean the EStarting flag but do not accept, clean or otherwise process
+    if (iContext.iMessage.IsMessage<TEBase::TError>())
+        {
+        if (iContext.iPeer)
+            {
+            iContext.iPeer->ClearFlags(TCFClientType::EStarting);
+            }
+        if (iContext.iNodeActivity)
+            {//The node has responded. Core providers doesn't support the notion of multiple service providers,
+             //therefore this code has been written to expect that TCFServiceProvider::TStart would only ever be
+             //sent to one service provider as a simple request<>response handshake. The client has now responded
+             //and its job is now done. ClearPostedTo so that TCancels aren't forwarded.
+            iContext.iNodeActivity->ClearPostedTo();
+            }
+        }
 
-	return EFalse;
-	}
+    return EFalse;
+    }
 
 EXPORT_DEFINE_SMELEMENT(TSendBindToComplete, NetStateMachine::MStateTransition, CoreNetStates::TContext)
 EXPORT_C void TSendBindToComplete::DoL()
@@ -1891,7 +1905,16 @@ EXPORT_C TInt TNoTagOrUnbindOnStop::TransitionTag()
 EXPORT_DEFINE_SMELEMENT(TForwardStateChange, NetStateMachine::MStateTransition, PRStates::TContext)
 EXPORT_C void TForwardStateChange::DoL()
 	{
-	//Forward to control clients if there are any
+    //In some cirumstances a node can have more than one TCFClientType::EServProvider peer (for instance MCPRs can have more than one potential service provider), 
+    //but within the coreprovider code there is no concept of multiple service providers per-se. There is only one service provider and it is the TCFClientType::EServProvider 
+    //with TCFClientType::EActive flag set. If a progress comes from a TCFClientType::EServProvider that is not a service provider, the progress will be ignored here.
+
+    if (iContext.iPeer && 
+        iContext.iPeer->Type() == TCFClientType::EServProvider && 
+        !(iContext.iPeer->Flags() & TCFClientType::EActive) )
+        {
+        return;
+        }
 	TInt ctrlClientCount = iContext.Node().PostToClients<TDefaultClientMatchPolicy>(TNodeCtxId(iContext.ActivityId(), iContext.NodeId()), iContext.iMessage, TClientType(TCFClientType::ECtrl));
 	if (0==ctrlClientCount)
 		{ //If there are no control clients any more, forward to the control provider
