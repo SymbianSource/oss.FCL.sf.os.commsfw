@@ -637,10 +637,13 @@ public:
 	Get the id of the node that the last request from this activity was sent to.
 	   @return Node id of the last node the activity has posted a request to
 	*/
-	const Messages::TNodeId PostedToId() const
-		{
-		return iPostedToId;
-		}
+	IMPORT_C const Messages::TNodeId& PostedToNodeId() const;
+	
+    /**
+    Get the id of the node that the last request from this activity was sent to.
+       @return Node id of the last node the activity has posted a request to
+    */
+	IMPORT_C const Messages::RNodeInterface* PostedToPeer() const;
 
 	/**
 	Get the id of the message that started this activity.
@@ -697,6 +700,13 @@ public:
 	   @param aNodeId Node id to set the postedTo id to
 	*/
 	IMPORT_C void SetPostedTo(const Messages::TNodeId& aNodeId);
+	
+    /**
+       Manually set the postedTo id
+
+       @param aNodeId Node id to set the postedTo id to
+    */
+	IMPORT_C void SetPostedTo(const Messages::RNodeInterface& aRecipient);
 
 	/**
 	   Clear the postedTo id
@@ -930,8 +940,60 @@ private: //Shouldn't be accessed directly
 
 	const TNodeActivity& iActivitySig;
 
-	// Last node a message was sent to
-	Messages::TNodeId iPostedToId;
+	class RPostedToNodeOrPeer
+	/*
+	 * Class is used to store the recipient of the last request sent from the 'this' 
+	 * (the activity). This recipient can be represented either by its TNodeId address 
+	 * or, if it's a peer of the local node, by RNodeInterface. 
+     * The implementation may seem awkward or overengineered. This is to protect binary
+     * compatibility (it used to be TNodeId here and sizeof TNodeId was all there was at hand).
+     * 
+     * Rules of the game are that RPostedToNodeOrPeer:iBuf is a shared dwelling for either:
+     * - address of an RNodeInterface (in case posted to is a peer)
+     * - TNodeId (in case posted to is not a peer)
+     * Inspecting the content of iBuf and the assumptions around it are a little fragile 
+     * (based on TNodeId class layout a bit), so the code must be viligent. 
+     * _Node and _Peer perform arbitral happy conversion, so there can be 3 reasons why _Node()->Ptr() is NULL:
+     * (1) iBuf stores a 4 byte ptr to RNodeInterface and what Ptr normally returns is beyond these 4 bytes in a land hopefully zeroed by ::Close
+     * (2) iBuf stores nothing. 
+     * (3) iBuf stores a TNodeId pointing a NULL node (effectivelly TNodeId::NullId()). (3) is only theoretical as Open(TNodeId) prevens Ptr be NULL
+     * Therefore it is safe to assume that if Ptr() is NULL, it is either a valid pointer to a peer or NULL.
+     * Happily _Peer() will return that pointer or NULL respectivelly.* 
+	 */
+	    {
+	private:
+	    typedef Messages::RNodeInterface* TPeerType;
+    public:
+	    RPostedToNodeOrPeer();
+	    void Open(const Messages::RNodeInterface& aPeer);
+	    void Open(const Messages::TNodeId& aNode);
+	    void Close();
+	    
+	    const Messages::RNodeInterface* Peer() const;
+	    const Messages::TNodeId& NodeId() const;
+	    
+	private:
+	    TPeerType* _Peer() 
+	        {
+            return reinterpret_cast<TPeerType*>(&iBuf[0]);
+	        }
+        
+	    const TPeerType* _Peer() const 
+            {
+            return reinterpret_cast<const TPeerType*>(&iBuf[0]);
+            }	    
+	    
+	    Messages::TNodeId* _Node()
+	        {
+	        return reinterpret_cast<Messages::TNodeId*>(&iBuf[0]);
+	        }
+	    
+        const Messages::TNodeId* _Node() const
+            {
+            return reinterpret_cast<const Messages::TNodeId*>(&iBuf[0]);
+            }
+        TUint8 iBuf[__Align8(sizeof(Messages::TNodeId))];	    
+	    } iPostedToId;
 	};
 
 

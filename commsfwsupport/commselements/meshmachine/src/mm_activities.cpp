@@ -169,8 +169,8 @@ EXPORT_C TBool CNodeActivityBase::MatchSender(const TNodeContextBase& aContext) 
     //what's set as iPostedToId or from one of the orginators. 
     //if the message's recipient specifies the activity id, then that
     //activity must much that of 'this'.
-    TBool sender = iPostedToId.IsNull() || 
-    			   aContext.iSender == iPostedToId || 
+    TBool sender = PostedToNodeId().IsNull() || 
+    			   aContext.iSender == PostedToNodeId() || 
     			   FindOriginator(aContext.iSender) != KErrNotFound;
     const TNodeCtxId* recipient = address_cast<const TNodeCtxId>(&aContext.iRecipient);
     TBool activity = (recipient == NULL || ActivityId() == recipient->NodeCtx());
@@ -183,7 +183,7 @@ EXPORT_C TBool CNodeActivityBase::MatchSender(const TNodeContextBase& aContext) 
 		if(!sender)
 			{
 			MESH_LOG((KMeshMachineSubTag(), _L8("CNodeActivityBase %08x:\tiPostedToId mismatch:"), this));
-			NM_LOG_ADDRESS(KMeshMachineSubTag(), iPostedToId);
+			NM_LOG_ADDRESS(KMeshMachineSubTag(), PostedToNodeId());
 			NM_LOG_ADDRESS(KMeshMachineSubTag(), aContext.iSender);
 			MESH_LOG((KMeshMachineSubTag(), _L8("CNodeActivityBase %08x:\toriginators' mismatch:"), this));
 			for (TInt i = iOriginators.Count() - 1; i>=0; i--)
@@ -319,11 +319,12 @@ EXPORT_C TBool CNodeActivityBase::Next(TNodeContextBase& aContext)
 
 EXPORT_C void CNodeActivityBase::Cancel(TNodeContextBase& aContext)
 	{//we expect KErrCancel be set as a result of the state cancelation
-    MESH_LOG((KMeshMachineSubTag, _L8("CNodeActivityBase %08x:\tCancel(), iPostedToId %08x"), this, iPostedToId.Ptr() ? &iPostedToId.Node() : NULL));
+    MESH_LOG((KMeshMachineSubTag, _L8("CNodeActivityBase %08x:\tCancel(), PostedToNodeId %08x"), this, PostedToNodeId().Ptr()));
 
-	if (!iPostedToId.IsNull())
-		{
-		RClientInterface::OpenPostMessageClose(TNodeCtxId(ActivityId(), iNode.Id()), iPostedToId, TEBase::TCancel().CRef());
+	if ((PostedToPeer() && !(PostedToPeer()->Flags() & TClientType::ELeaving)) ||
+	     PostedToNodeId() == aContext.Node().Id())
+		{//only safe to forward TCancels to non-leavers or self. There is an underlying assumption that a node won't dissapear in presence of activities (see AMMNodeBase::~AMMNodeBase)
+		RClientInterface::OpenPostMessageClose(TNodeCtxId(ActivityId(), iNode.Id()), PostedToNodeId(), TEBase::TCancel().CRef());
 		}
     else
         {
@@ -363,12 +364,44 @@ EXPORT_C TInt CNodeActivityBase::PostToOriginators(const TSignalBase& aMessage, 
 
 EXPORT_C void CNodeActivityBase::SetPostedTo(const TNodeId& aNodeId)
     {
-    iPostedToId = aNodeId;
+    //You are being punished for storing a postedto TNodeId that you also know as your peer.
+    //the Messages::RNodeInterface& overload of CNodeActivityBase::SetPostedTo
+    //It is dangerous to use this overload for peers when the relation with these peers
+    //is being terminated. the PostedTo facility is also used to forward TCancel in
+    //the automatic calencallation handling. No message can be posted to a leaving peer
+    //but only peers (Messages::RNodeInterfaces) can be recognised as leaving. 
+    //
+    //ASSERT temporarily commened out as it is a behavioural break. A Polonium BR
+    //has been drafted and will be raised when the RNodeInterface overloads end up in the
+    //codeline. http://polonium.ext.nokia.com/changerequests/cr/601/
+    //__ASSERT_DEBUG(iNode.FindClient(aNodeId) == NULL, User::Panic(KSpecAssert_ElemMeshMachActC, 14));     
+    
+    if (aNodeId == Messages::TNodeId::NullId())
+        {
+        ClearPostedTo();
+        return;
+        }
+    iPostedToId.Open(aNodeId);
+    }
+
+EXPORT_C void CNodeActivityBase::SetPostedTo(const Messages::RNodeInterface& aRecepient)
+    {
+    iPostedToId.Open(aRecepient);
     }
 
 EXPORT_C void CNodeActivityBase::ClearPostedTo()
     {
-    iPostedToId.SetNull();
+    iPostedToId.Close();
+    }
+
+EXPORT_C const Messages::TNodeId& CNodeActivityBase::PostedToNodeId() const
+    {
+    return iPostedToId.NodeId();
+    }
+
+EXPORT_C const Messages::RNodeInterface* CNodeActivityBase::PostedToPeer() const
+    {
+    return iPostedToId.Peer();
     }
 
 EXPORT_C void CNodeActivityBase::PostRequestTo(const RNodeInterface& aRecipient, const TSignalBase& aMessage, const TBool aRecipientIdCritical)
@@ -376,7 +409,11 @@ EXPORT_C void CNodeActivityBase::PostRequestTo(const RNodeInterface& aRecipient,
 	aRecipient.PostMessage(TNodeCtxId(ActivityId(), iNode.Id()), aMessage);
 
 	// Provide the option for the identity of the receipient to be unimportant when the response arrives
-	iPostedToId = aRecipientIdCritical ? aRecipient.RecipientId() : TNodeId::NullId();
+	ClearPostedTo();
+    if (aRecipientIdCritical)
+        {
+        SetPostedTo(aRecipient);
+        }
 	}
 
 //Avoid using this function, always prefer PostRequestTo(const RNodeInterface& aRecipient, const TNodeSignal& aMessage)
@@ -385,7 +422,11 @@ EXPORT_C void CNodeActivityBase::PostRequestTo(const TNodeId& aRecipient, const 
 	RClientInterface::OpenPostMessageClose(TNodeCtxId(ActivityId(), iNode.Id()), aRecipient, aMessage);
 
 	// Provide the option for the identity of the receipient to be unimportant when the response arrives
-	iPostedToId = aRecipientIdCritical ? aRecipient : TNodeId::NullId();
+	ClearPostedTo();
+	if (aRecipientIdCritical)
+	    {
+        SetPostedTo(aRecipient);
+	    }
 	}
 
 EXPORT_C TBool CNodeActivityBase::IsIdle() const
@@ -418,6 +459,49 @@ EXPORT_C void CNodeActivityBase::Abort(TNodeContextBase& aContext, TBool aIsNode
 			}
         }
     }
+
+
+
+
+//-=========================================================
+//
+//CNodeActivityBase::RPostedToNodeOrPeer
+//
+//-=========================================================
+CNodeActivityBase::RPostedToNodeOrPeer::RPostedToNodeOrPeer() 
+    {
+    Close();
+    }
+
+void CNodeActivityBase::RPostedToNodeOrPeer::Open(const Messages::RNodeInterface& aPeer)
+    {
+    Close();
+    *_Peer() = const_cast<Messages::RNodeInterface*>(&aPeer);
+    }
+
+void CNodeActivityBase::RPostedToNodeOrPeer::Open(const Messages::TNodeId& aNode)
+    {
+    __ASSERT_DEBUG(aNode.Ptr(), User::Panic(KSpecAssert_ElemMeshMachActC, 15));    
+    //see Messages::TNodeId::operator= (snapping size is essential in case aNode is more than just plain TNodeId).
+    *_Node() = Messages::TNodeId(); 
+    
+    //normal assigment
+    *_Node() = aNode;
+    }
+void CNodeActivityBase::RPostedToNodeOrPeer::Close()
+    {
+    Mem::FillZ(iBuf, sizeof(iBuf));
+    }
+
+const Messages::RNodeInterface* CNodeActivityBase::RPostedToNodeOrPeer::Peer() const
+    {
+    return _Node()->Ptr() ? NULL : *_Peer();
+    }
+const Messages::TNodeId& CNodeActivityBase::RPostedToNodeOrPeer::NodeId() const
+    {
+    return (_Node()->Ptr() ? *_Node() : (*_Peer() ? (*_Peer())->RecipientId() : Messages::TNodeId::NullId()));
+    }
+
 
 //-=========================================================
 //

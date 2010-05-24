@@ -135,4 +135,7 @@ EXPORTS
 	??1CNodeParallelMessageStoreActivityBase@MeshMachine@@UAE@XZ @ 134 NONAME ; MeshMachine::CNodeParallelMessageStoreActivityBase::~CNodeParallelMessageStoreActivityBase(void)
 	??0CNodeParallelMessageStoreActivityBase@MeshMachine@@IAE@ABUTNodeActivity@1@AAVAMMNodeBase@1@I@Z @ 135 NONAME ; MeshMachine::CNodeParallelMessageStoreActivityBase::CNodeParallelMessageStoreActivityBase(struct MeshMachine::TNodeActivity const &, class MeshMachine::AMMNodeBase &, unsigned int)
 	?StartL@CNodeParallelMessageStoreActivityBase@MeshMachine@@MAEXAAVTNodeContextBase@2@ABVXNodePeerId@Messages@@ABUTStateTriple@NetStateMachine@@@Z @ 136 NONAME ; void MeshMachine::CNodeParallelMessageStoreActivityBase::StartL(class MeshMachine::TNodeContextBase &, class Messages::XNodePeerId const &, struct NetStateMachine::TStateTriple const &)
+	?SetPostedTo@CNodeActivityBase@MeshMachine@@QAEXABVRNodeInterface@Messages@@@Z @ 137 NONAME ; void MeshMachine::CNodeActivityBase::SetPostedTo(class Messages::RNodeInterface const &)
+	?PostedToNodeId@CNodeActivityBase@MeshMachine@@QBEABVTNodeId@Messages@@XZ @ 138 NONAME ; class Messages::TNodeId const & MeshMachine::CNodeActivityBase::PostedToNodeId(void) const
+	?PostedToPeer@CNodeActivityBase@MeshMachine@@QBEPBVRNodeInterface@Messages@@XZ @ 139 NONAME ; class Messages::RNodeInterface const * MeshMachine::CNodeActivityBase::PostedToPeer(void) const
 

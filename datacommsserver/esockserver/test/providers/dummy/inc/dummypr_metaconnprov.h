@@ -43,6 +43,7 @@ struct TCprConfigModifier
 		ESCPRHangOnRebind = 1,			  //when lit on CprConfig, the SCPR will hang on rebind
 		ESCPRHangOnStart  = 2,			  //when lit on CprConfig, the SCPR will hang on start
 		ESCPRFailOnRebind = 3,            //when lit on CprConfig, the SCPR will fail on rebind
+		ECPRWaitOnThreeSecDestroy = 4,   //when lit on CprConfig, the CPR will wait for 3 sec on destroy before resuming
 		};
 
 	static TBool Is(TInt aValue, TInt aFlags)

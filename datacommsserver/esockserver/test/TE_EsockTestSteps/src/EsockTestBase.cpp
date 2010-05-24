@@ -835,7 +835,7 @@ TInt CCEsockTestBase::OpenSocket(const TRSocketParams& aParams)
 		RConnection* c = iConns.Find(aParams.iConnectionName);
 		if (c==NULL)
 			return KErrNotFound;
-		error = s->Open(*ss, KAfInet, aParams.iSocketType, aParams.iProtocol, *c);
+		error = s->Open(*ss, aParams.iAddrFamily, aParams.iSocketType, aParams.iProtocol, *c);
 		}
 	else if (aParams.iSubconnectionName.Length()>0)
     	{
@@ -844,7 +844,7 @@ TInt CCEsockTestBase::OpenSocket(const TRSocketParams& aParams)
 			{
 			return KErrNotFound;
 			}
-		error = s->Open(*ss, KAfInet, aParams.iSocketType, aParams.iProtocol, *sc);
+		error = s->Open(*ss, aParams.iAddrFamily, aParams.iSocketType, aParams.iProtocol, *sc);
 		}
 	else if (aParams.iProtocolName.Length()>0)
 		{
@@ -852,17 +852,15 @@ TInt CCEsockTestBase::OpenSocket(const TRSocketParams& aParams)
 		}
 	else
 		{
-		error = s->Open(*ss, KAfInet, aParams.iSocketType, aParams.iProtocol);
+		error = s->Open(*ss, aParams.iAddrFamily, aParams.iSocketType, aParams.iProtocol);
 		}
 
 
 	return error;
 	}
 
-TInt CCEsockTestBase::BindSocket(const TRSocketParams& /*aParams*/)
+TInt CCEsockTestBase::BindSocket(TRSocketParams& aSockeSParams)
 	{
-    return KErrNotSupported;
-    /*
     RSocket* s = iSocks.Find(aSockeSParams.iSocketName);
 	if (s==NULL)
 		return KErrNotFound;
@@ -874,8 +872,8 @@ TInt CCEsockTestBase::BindSocket(const TRSocketParams& /*aParams*/)
 		return error;
 
 	//bind to Local address for TCP or UDP
+	
 	return s->Bind(aSockeSParams.iLocalIP);
-	*/
 	}
 
 TInt CCEsockTestBase::ConnectSocket(TRSocketParams& aParams, TRequestStatus& aRequestStatus)

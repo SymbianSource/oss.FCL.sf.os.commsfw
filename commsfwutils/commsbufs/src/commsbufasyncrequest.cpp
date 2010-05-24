@@ -76,7 +76,8 @@ Allocate a RCommsBuf chain asynhronously.
 @param  aAllocator      The handle to the allocator
 */
     {
-    iAsyncReqImpl->Alloc(aChain, aSize, aMinSize, aMaxSize, aStatus);
+    __ASSERT_ALWAYS(iAsyncReqImpl != NULL, CommsBuf::Panic(EMBuf_InvalidAsyncReqImpl));
+	iAsyncReqImpl->Alloc(aChain, aSize, aMinSize, aMaxSize, aStatus);
     }
 
 
@@ -85,7 +86,10 @@ EXPORT_C void RCommsBufAsyncRequest::Cancel()
 Cancel the asynchronous request
 */
 	{
-	iAsyncReqImpl->Cancel();
+	if (iAsyncReqImpl)
+		{
+		iAsyncReqImpl->Cancel();
+		}
 	}
 
 EXPORT_C void RCommsBufAsyncRequest::Complete(TInt aCode)
@@ -95,5 +99,6 @@ Complete the request.
 @param	aCode	The request completion code
 */
 	{
+	__ASSERT_ALWAYS(iAsyncReqImpl != NULL, CommsBuf::Panic(EMBuf_InvalidAsyncReqImpl));
 	iAsyncReqImpl->Complete(aCode);
 	}

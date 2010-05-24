@@ -25,7 +25,7 @@
 
 #include <test/testexecutestepbase.h>
 #include "Te_EsockStepBase.h"
-
+#include "Connections.TestSteps.h"
 
 // General constants
 //------------------
@@ -34,6 +34,9 @@ _LIT(KTe_Protocol,"Protocol");
 _LIT(KTe_ProtocolName,"ProtocolName");
 _LIT(KTe_SourceAddressName,"SrcAddr");
 _LIT(KTe_SourcePortName,"SrcPort");
+_LIT(KTe_SocketType,"SocketType");
+_LIT(KTe_SocketDatagram,"SockDatagram");
+_LIT(KTe_SocketStream,"SockStream");
 _LIT(KTe_DestinationAddressName,"DstAddr");
 _LIT(KTe_DestinationPortName,"DstPort");
 _LIT(KTe_PacketSizeName,"PacketSize");
@@ -55,9 +58,12 @@ _LIT(KTe_ShutdownImmediate,"EImmediate");
 // Protocol types
 _LIT(KTe_TCPName,"TCP");
 _LIT(KTe_UDPName,"UDP");
-_LIT(KDummyProtocolName,"Dummy");
+_LIT(KTe_DummyNetworkProtocolName,"DummyNetworkProtocol");
+_LIT(KTe_DummyProtocolName,"DummyProtocol");
 
-static const TInt KProtocolInetDummy = 253;
+
+static const TInt KDummyNetworkProtocol = 253;
+static const TInt KDummyProtocol = 254;
 
 _LIT(KSocketDataCheckTransformType, "SocketDataCheckTransformType");
 
@@ -74,11 +80,29 @@ public:
 	TInt ConfigureFromIni();
 
 private:
-    TBool iCancelFlag;
+    TBool iCancelFlag;	
     TRSocketParams iParams; //current params (.ini)
 	};
 
 _LIT(KConnectRSocketStep,"ConnectRSocketStep");
+
+/**
+Class implementing BindRSocketStep
+
+@internalComponent
+*/
+class CBindRSocketStep : public CTe_EsockStepBase
+    {
+public:
+    CBindRSocketStep(CCEsockTestBase*& aEsockTest);
+    TVerdict doSingleTestStep();
+    TInt ConfigureFromIni();
+
+private:
+    TRSocketParams iParams; //current params (.ini)
+    };
+
+_LIT(KBindRSocketStep,"BindRSocketStep");
 
 
 /**

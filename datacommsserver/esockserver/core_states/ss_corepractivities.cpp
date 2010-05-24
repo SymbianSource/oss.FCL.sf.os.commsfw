@@ -1604,12 +1604,20 @@ EXPORT_C CCommsBinderActivity::CCommsBinderActivity(const MeshMachine::TNodeActi
 // CommsBinderActivity and CCommsBinderCombiningActivity.
 //
 //-=========================================================
-
+// When I node need to create the data client, this mutex block if the dataclient is leaving.
+// A scenario can arise when a connection is being started, stopped and started again in succession.
+// the stop might interfere with the second start and ccause the second start to fail.
+// this mutex will ensure that the leaving DC is completely destroyed, and then the second start is continued
+// - when any of the data clients is being destroyed 
+// - when a non-leaving data client is present or the activity is already running
+//
 EXPORT_C TBool CCommsBinderActivity::TDataClientMutex::IsBlocked(MeshMachine::TNodeContextBase& aContext)
   	{
   	TInt c = aContext.Node().CountActivities(aContext.iNodeActivity->ActivitySigId());
   	__ASSERT_DEBUG(c>0, User::Panic(KSpecAssert_ESockCrStaCPRAC, 17)); //Diagnostic
-  	if (c == 1 || CCommsBinderActivity::IsDataClientPresent(aContext))
+    TInt numOfLeavingDataClients = aContext.Node().CountClients<TDefaultClientMatchPolicy>(
+                                   /*include*/TClientType(TCFClientType::EData, TCFClientType::ELeaving));
+  	if (numOfLeavingDataClients == 0 && (c == 1 || CCommsBinderActivity::IsDataClientPresent(aContext)))
   		{
   		return EFalse;
   		}
@@ -1620,7 +1628,9 @@ EXPORT_C TBool CCommsBinderActivity::TDefaultDataClientMutex::IsBlocked(MeshMach
   	{
   	TInt c = aContext.Node().CountActivities(aContext.iNodeActivity->ActivitySigId());
   	__ASSERT_DEBUG(c>0, User::Panic(KSpecAssert_ESockCrStaCPRAC, 18)); //Diagnostic
-  	if (c == 1 || CCommsBinderActivity::IsDataClientPresent(aContext, TCFClientType::EDefault))
+    TInt numOfLeavingDataClients = aContext.Node().CountClients<TDefaultClientMatchPolicy>(
+                                   /*include*/TClientType(TCFClientType::EData, TCFClientType::ELeaving));
+  	if (numOfLeavingDataClients == 0 && (c == 1 || CCommsBinderActivity::IsDataClientPresent(aContext, TCFClientType::EDefault)))
   		{
   		return EFalse;
   		}
@@ -1700,6 +1710,7 @@ in iOriginatorsCountSnapshot.  See comment in ProcessBindToComplete().
 
 	iPendingBinder->SetFlags(TCFClientType::EActivating);
     }
+
 
 EXPORT_C void CCommsBinderActivity::Cancel(TNodeContextBase& aContext)
     {

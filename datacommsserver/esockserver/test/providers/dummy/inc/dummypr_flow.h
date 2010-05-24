@@ -20,8 +20,8 @@
  @internalComponent
 */
 
-#if !defined(__DUMMYPR_NETWORK_FLOW_H__)
-#define __DUMMYPR_NETWORK_FLOW_H__
+#if !defined(__DUMMYPR_FLOW_H__)
+#define __DUMMYPR_FLOW_H__
 
 #include "dummypr_factory.h"
 #include <comms-infras/ss_protflow.h>
@@ -32,10 +32,12 @@
 #include <comms-infras/ss_nodemessages_dataclient.h>
 #include <comms-infras/ss_nodemessages_flow.h>
 
+
 namespace ESock
 {
 
-class CDummyNetworkFlow : public CSubConnectionFlowBase,
+
+class CDummyFlow : public CSubConnectionFlowBase,
 	public MSessionData,
 	public MSessionControl,
 	public MFlowBinderControl,
@@ -46,20 +48,19 @@ class CDummyNetworkFlow : public CSubConnectionFlowBase,
 @released since v9.6
  */
 	{
-    friend class CSocket;
 public:
-    enum {EProtocolId = 253};
+    enum {EProtocolId = 254};
     typedef CDummyFlowFactory FactoryType; //for factoryobject_cast to work
 
-	static CDummyNetworkFlow* NewL(CSubConnectionFlowFactoryBase& aFactory, const Messages::TNodeId& aSubConn, CProtocolIntfBase* aProtocolIntf);
+	static CDummyFlow* NewL(CSubConnectionFlowFactoryBase& aFactory, const Messages::TNodeId& aSubConn, CProtocolIntfBase* aProtocolIntf);
 	void SetSSP(CServProviderBase& aSSP);
 
 	inline CServProviderBase* Provider();
 
 protected:
 	// Lifetime
-	CDummyNetworkFlow(CSubConnectionFlowFactoryBase& aFactory, const Messages::TNodeId& aSubConn, CProtocolIntfBase* aProtocolIntf);
-	virtual ~CDummyNetworkFlow();
+	CDummyFlow(CSubConnectionFlowFactoryBase& aFactory, const Messages::TNodeId& aSubConn, CProtocolIntfBase* aProtocolIntf);
+	virtual ~CDummyFlow();
 	void SetSockType(TUint aSockType);
 	TInt LockToConnectionInfo();
 
@@ -127,66 +128,26 @@ protected:
 		Messages::TSignatureBase& aMessage
 		);
 
-    // Local methods
-    void SubConnectionError(
-		const Messages::TEBase::TError& errorMsg,
-		TUint anOperationMask = (MSocketNotify::EErrorSend | MSocketNotify::EErrorConnect));
 	void BindToL(TCFDataClient::TBindTo& aBindTo);
-	void Rejoin(const TCFFlow::TRejoin& aRejoinMessage);
-	void StartFlow();
-	void StopFlow(TCFDataClient::TStop& aMessage);
-	void ProcessDCIdleState();
-	void CompleteStart(TInt aError);
-	void Destroy();
-	void PostNoBearer();
-
-	// Inline methods
-	TBool NoBearerGuard() const { return iNoBearerRunning; }
-	void SetNoBearerGuard() { iNoBearerRunning = ETrue; }
-	void ClearNoBearerGuard() { iNoBearerRunning = EFalse; }
-	void ClearUseBearerErrors() { iUseBearerErrors = EFalse; }
-	TBool IsStopped() { return iIsStopped; }
-	TBool IsHostResolver() const { return EFalse; }
-	void SetIfInfo(const TSoIfConnectionInfo& aInfo) { iIfInfo = aInfo; }
-    TBool IsBoundToSession() const {return  iSessionControlNotify || iSessionDataNotify; }
-	TBool ActivityRunning()	{return NoBearerGuard();}
 
 
 private:
 	// Flow binders
-	MFlowBinderControl* iLowerFlow;
-	MLowerControl* iLowerControl; //just to keep the lower flow up
+	MFlowBinderControl* iLowerFlowBinderControl;
 
 	// Lower session binding
-	MSessionControl* iFlowShim;
-	MSessionData* iFlowShimData;
+	MSessionControl* iLowerFlowControl;
+	MSessionData* iLowerFlowData;
 
 	// Upper session binding
 	MSessionControlNotify* iSessionControlNotify;
 	MSessionDataNotify* iSessionDataNotify;
 
-	Messages::RRequestOriginator iStartRequest;
-
-	// Local properties
-	TSoIfConnectionInfo iIfInfo;
-	TUint iUseBearerErrors:1;		// error the socket on Error() upcalls from bearer rather than StopFlow() calls from SCPR
-	TUint iIsStopped:1;				// DataClientStop has been received.
-	TUint iIsStarting:1;
-	TBool iNoBearerRunning:1;		// NoBearer message has been issued to SCPR
-	TUint iStartActivityId:16;		// If iIsStarting is set, iStartActivityId contains activity id that opened the TCFDataClient::TStarted channel
-	TBool iIsStarted:1;
-
-	enum TDCIdleState
-		{
-		EClientsPresent = 0, // presumption is we're always created for a client (ie HR or socket)
-		EIdle = 1,
-		EIdleSent = 2
-		};
-	TDCIdleState iDCIdle:2;
+	RCFParameterFamilyBundleC iParamBundle;
 	};
 
 }
 
 
-#endif	// __DUMMYPR_NETWORK_FLOW_H__
+#endif	// __DUMMYPR_FLOW_H__
 

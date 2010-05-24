@@ -30,6 +30,7 @@
 #include "dummypr_metaconnprov.h"
 #include "dummypr_tiermanager.h"
 #include "dummypr_network_flow.h"
+#include "dummypr_flow.h"
 
 #include <comms-infras/ss_msgintercept.h>
 
@@ -43,8 +44,6 @@
 
 using namespace ESock;
 
-
-const TInt KProtocolInetDummy = 253;
 
 const TInt KDummyMajorVersionNumber = 0;
 const TInt KDummyMinorVersionNumber = 1;
@@ -68,7 +67,7 @@ const TImplementationProxy ImplementationTable[] =
 	IMPLEMENTATION_PROXY_ENTRY(CDummyExtendedSubConnectionProviderFactory::iUid, CDummyExtendedSubConnectionProviderFactory::NewL),
 
 	// Flow and flow description
-	IMPLEMENTATION_PROXY_ENTRY(CDummyNetworkFlowFactory::iUid, CDummyNetworkFlowFactory::NewL),
+	IMPLEMENTATION_PROXY_ENTRY(CDummyFlowFactory::iUid, CDummyFlowFactory::NewL),
 	};
 
 /**
@@ -299,35 +298,35 @@ ACommsFactoryNodeId* CDummyVanillaSubConnectionProviderFactory::DoCreateObjectL(
 
 //-=========================================================
 //
-// CDummyNetworkFlowFactory methods
+// CDummyFlowFactory methods
 //
 //-=========================================================	
-CDummyNetworkFlowFactory* CDummyNetworkFlowFactory::NewL(TAny* aConstructionParameters)
+CDummyFlowFactory* CDummyFlowFactory::NewL(TAny* aConstructionParameters)
 	{
-	CDummyNetworkFlowFactory* fact = new (ELeave) CDummyNetworkFlowFactory(
+	CDummyFlowFactory* fact = new (ELeave) CDummyFlowFactory(
 			TUid::Uid(iUid),
 			*(reinterpret_cast<CSubConnectionFlowFactoryContainer*>(aConstructionParameters)));
 	return fact;
 	}
 
-CDummyNetworkFlowFactory::CDummyNetworkFlowFactory(TUid aFactoryId, CSubConnectionFlowFactoryContainer& aParentContainer)
+CDummyFlowFactory::CDummyFlowFactory(TUid aFactoryId, CSubConnectionFlowFactoryContainer& aParentContainer)
  : CSubConnectionFlowFactoryBase(aFactoryId, aParentContainer)
  	{
-	//LOG_NODE_CREATE(KESockDataFactTag, CDummyNetworkFlowFactory)
+	//LOG_NODE_CREATE(KESockDataFactTag, CDummyFlowFactory)
  	}
 
-CDummyNetworkFlowFactory::~CDummyNetworkFlowFactory()
+CDummyFlowFactory::~CDummyFlowFactory()
 	{
-	//LOG_NODE_DESTROY(KESockDataFactTag, CDummyNetworkFlowFactory)
+	//LOG_NODE_DESTROY(KESockDataFactTag, CDummyFlowFactory)
  	}
 
-CSubConnectionFlowBase* CDummyNetworkFlowFactory::DoCreateFlowL(CProtocolIntfBase* aProtocolIntf, TFactoryQueryBase& aQuery)
+CSubConnectionFlowBase* CDummyFlowFactory::DoCreateFlowL(CProtocolIntfBase* aProtocolIntf, TFactoryQueryBase& aQuery)
 	{
 	const TDefaultFlowFactoryQuery& query = static_cast<const TDefaultFlowFactoryQuery&>(aQuery);
 	return CDummyNetworkFlow::NewL(*this, query.iSCprId, aProtocolIntf);
 	}
 
-ACommsFactoryNodeId* CDummyNetworkFlowFactory::DoFindOrCreateObjectL(TFactoryQueryBase& aQuery)
+ACommsFactoryNodeId* CDummyFlowFactory::DoFindOrCreateObjectL(TFactoryQueryBase& aQuery)
 	{
 	const TDefaultFlowFactoryQuery& query = static_cast<const TDefaultFlowFactoryQuery&>(aQuery);
 	if(query.iMessageId != TCFServiceProvider::TCommsBinderRequest::Id())
@@ -341,7 +340,7 @@ ACommsFactoryNodeId* CDummyNetworkFlowFactory::DoFindOrCreateObjectL(TFactoryQue
 	CProtocolIntfBase* protocolInterface = SockManGlobals::Get()->iProtocolIntfFactories->FindOrCreateProtocolIntfL(Uid(), queryProto);
 	if (protocolInterface == NULL)
     	{
-    	LOG( ESockLog::Printf(KESockDataFactTag, _L8("CDummyNetworkFlowFactory %08x:\tCreateFlowL(protocolId '%08x') Cannot find protocol interface, bailing out"), this, Uid()) );
+    	LOG( ESockLog::Printf(KESockDataFactTag, _L8("CDummyFlowFactory %08x:\tCreateFlowL(protocolId '%08x') Cannot find protocol interface, bailing out"), this, Uid()) );
     	User::Leave(KErrNotFound);
     	}
 
@@ -349,10 +348,14 @@ ACommsFactoryNodeId* CDummyNetworkFlowFactory::DoFindOrCreateObjectL(TFactoryQue
 	CSubConnectionFlowBase* flow = NULL;
 	switch(query.iProtocolType)
 		{
-		case KProtocolInetDummy:
+		case CDummyNetworkFlow::EProtocolId:
 			flow = CDummyNetworkFlow::NewL(*this, query.iSCprId, protocolInterface);
 			break;
 
+        case CDummyFlow::EProtocolId:
+            flow = CDummyFlow::NewL(*this, query.iSCprId, protocolInterface);
+            break;
+            
 		default:
 			User::Leave(KErrNotFound);
 			break;
@@ -360,7 +363,7 @@ ACommsFactoryNodeId* CDummyNetworkFlowFactory::DoFindOrCreateObjectL(TFactoryQue
 	
 	LOG( ESockLog::Printf(
 		KESockDataFactTag,
-		_L8("CDummyNetworkFlowFactory %08x:\tCreateFlowL(protocolId '%08x'): flow %08x"),
+		_L8("CDummyFlowFactory %08x:\tCreateFlowL(protocolId '%08x'): flow %08x"),
 		this,
 		Uid(),
 		&flow));
@@ -376,32 +379,53 @@ ACommsFactoryNodeId* CDummyNetworkFlowFactory::DoFindOrCreateObjectL(TFactoryQue
 /**
 Description of the protocol this factory creates
 */
-TServerProtocolDesc* CDummyNetworkFlowFactory::DoCreateFlowDescriptionL(TInt aProtocol)
+TServerProtocolDesc* CDummyFlowFactory::DoCreateFlowDescriptionL(TInt aProtocol)
 	{
 	TServerProtocolDesc* protocolDescription = new(ELeave) TServerProtocolDesc();
 
 	// Poached from udp and modified to represent an rtp like protocol
 	switch(aProtocol)
 		{
-		case KProtocolInetDummy:
-			protocolDescription->iName		  = KDummyProtocolName;
-			protocolDescription->iAddrFamily	  = KAfInet;
-			protocolDescription->iSockType	  = KSockDatagram;
-			protocolDescription->iProtocol	  = KProtocolInetDummy;
-			protocolDescription->iVersion	  = TVersion(KDummyMajorVersionNumber,
-										KDummyMinorVersionNumber,
-										KDummyBuildVersionNumber);
-			protocolDescription->iByteOrder	  = EBigEndian;
-			protocolDescription->iServiceInfo	  = KSIConnectionLess | KSIDatagram |
-									KSIGracefulClose | KSIPeekData |
-									KSIRequiresOwnerInfo;
-			protocolDescription->iNamingServices	  = KNSNameResolution | KNSRequiresConnectionStartup;
-			protocolDescription->iSecurity	  = KSocketNoSecurity;
-			protocolDescription->iMessageSize	  = 65536-128; /*KSocketMessageSizeUndefined;*/
-			protocolDescription->iServiceTypeInfo  = ESocketSupport | ETransport |
-									EPreferMBufChains | ENeedMBufs |
-									EUseCanSend;
-			protocolDescription->iNumSockets	  = KUnlimitedSockets;
+        case CDummyNetworkFlow::EProtocolId:
+            protocolDescription->iName          = KDummyProtocolName;
+            protocolDescription->iAddrFamily    = KAfInet;
+            protocolDescription->iSockType      = KSockDatagram;
+            protocolDescription->iProtocol      = CDummyNetworkFlow::EProtocolId;
+            protocolDescription->iVersion       = TVersion(KDummyMajorVersionNumber,
+                                                         KDummyMinorVersionNumber,
+                                                         KDummyBuildVersionNumber);
+            protocolDescription->iByteOrder     = EBigEndian;
+            protocolDescription->iServiceInfo   = KSIConnectionLess | KSIDatagram |
+                                                  KSIGracefulClose | KSIPeekData |
+                                                  KSIRequiresOwnerInfo;
+            protocolDescription->iNamingServices= KNSNameResolution | KNSRequiresConnectionStartup;
+            protocolDescription->iSecurity      = KSocketNoSecurity;
+            protocolDescription->iMessageSize   = 65536-128; /*KSocketMessageSizeUndefined;*/
+            protocolDescription->iServiceTypeInfo= ESocketSupport | ETransport |
+                                                      EPreferMBufChains | ENeedMBufs |
+                                                      EUseCanSend;
+            protocolDescription->iNumSockets     = KUnlimitedSockets;
+            break;
+	    
+		case CDummyFlow::EProtocolId:
+			protocolDescription->iName		     = KDummyProtocolName;
+			protocolDescription->iAddrFamily     = CDummyTierManagerFactory::iUid;
+			protocolDescription->iSockType	     = KSockDatagram;
+			protocolDescription->iProtocol	     = CDummyFlow::EProtocolId;
+			protocolDescription->iVersion	     = TVersion(KDummyMajorVersionNumber,
+                                                         KDummyMinorVersionNumber,
+                                                         KDummyBuildVersionNumber);
+			protocolDescription->iByteOrder	     = EBigEndian;
+			protocolDescription->iServiceInfo	 = KSIConnectionLess | KSIDatagram |
+                                                   KSIGracefulClose | KSIPeekData |
+                                                   KSIRequiresOwnerInfo;
+			protocolDescription->iNamingServices = KNSNameResolution | KNSRequiresConnectionStartup;
+			protocolDescription->iSecurity	     = KSocketNoSecurity;
+			protocolDescription->iMessageSize	 = 65536-128; /*KSocketMessageSizeUndefined;*/
+			protocolDescription->iServiceTypeInfo= ESocketSupport | ETransport |
+                                                    EPreferMBufChains | ENeedMBufs |
+                                                    EUseCanSend;
+			protocolDescription->iNumSockets	 = KUnlimitedSockets;
 			break;
 		
 		default:

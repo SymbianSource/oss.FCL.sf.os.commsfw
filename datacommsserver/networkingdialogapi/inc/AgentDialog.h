@@ -1,5 +1,5 @@
 /**
-* Copyright (c) 1997-2009 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 1997-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -22,7 +22,7 @@
 /**
  @file
  @publishedAll
- @released
+ @deprecated
 */
 
 #ifndef __AGENTDIALOG_H__
@@ -37,7 +37,7 @@
 /**
 Server name in EKA2 case
 @publishedAll
-@released
+@deprecated
 */
 _LIT(KCommsDialogServerName, "!NetDialDialogServer");
 
@@ -50,7 +50,7 @@ class TConnectionPrefs
 Specifies the rank and desired direction of the connection and bearer.
 
 @publishedAll
-@released
+@deprecated
 */
 	{
 public:
@@ -64,7 +64,7 @@ class TIspConnectionNames
 Specifies the Connection Names for ISP.
 
 @publishedAll
-@released
+@deprecated
 */
 	{
 public:
@@ -80,7 +80,7 @@ class TAuthenticationPair
 Specifies the Authentication for the User Name and Password.
 
 @publishedAll
-@released
+@deprecated
 */
 	{
 public:
@@ -93,7 +93,7 @@ class TPctResponse
 Allows the user to see the login script running, see what is sent and received, and allows the user to type responses.
 
 @publishedAll
-@released
+@deprecated
 */
 	{
 public:
@@ -105,7 +105,7 @@ class TNewIapConnectionPrefs
 Specifies Connection Preference for the New IAP.
 
 @publishedAll
-@released
+@deprecated
 */
 	{
 public:
@@ -123,7 +123,7 @@ in order to implement the PCT functionality.  This is not used at all by the tes
 implementation.
 
 @publishedAll
-@released
+@deprecated
 */
 	{
 public :
@@ -139,7 +139,7 @@ NOTE! Although the class inherits from RSessionBase this does not mean you
 have to implement the API as a client server mechanism.
 
 @publishedAll
-@released
+@deprecated
 */
 	{
 public:

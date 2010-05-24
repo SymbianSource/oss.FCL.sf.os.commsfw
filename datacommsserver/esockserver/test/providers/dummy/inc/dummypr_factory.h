@@ -33,6 +33,9 @@
 
 using namespace ESock;
 
+_LIT(KDummyProtocolName, "dummy");
+_LIT(KDumberProtocolName, "dumber");
+
 //-=========================================================
 //
 // CDummyTierManagerFactory
@@ -157,18 +160,18 @@ protected:
 
 //-=========================================================
 //
-// CDummyNetworkFlowFactory
+// CDummyFlowFactory
 //
 //-=========================================================
-class CDummyNetworkFlowFactory : public ESock::CSubConnectionFlowFactoryBase
+class CDummyFlowFactory : public ESock::CSubConnectionFlowFactoryBase
 	{
 public:
 	enum { iUid = 0x10285D8F };
-	static CDummyNetworkFlowFactory* NewL(TAny* aConstructionParameters);
-	~CDummyNetworkFlowFactory();
+	static CDummyFlowFactory* NewL(TAny* aConstructionParameters);
+	~CDummyFlowFactory();
 
 protected:
-	CDummyNetworkFlowFactory(TUid aFactoryId, ESock::CSubConnectionFlowFactoryContainer& aParentContainer);
+	CDummyFlowFactory(TUid aFactoryId, ESock::CSubConnectionFlowFactoryContainer& aParentContainer);
 
 	// from CSubConnectionFlowFactoryBase
 	virtual ESock::CSubConnectionFlowBase* DoCreateFlowL(CProtocolIntfBase* aProtocolIntf, ESock::TFactoryQueryBase& aQuery);
