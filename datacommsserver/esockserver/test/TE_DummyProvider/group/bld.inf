@@ -28,6 +28,8 @@ PRJ_TESTEXPORTS
 ../scripts/te_dummyprovider_004.script	z:/testdata/scripts/te_dummyprovider_004.script
 ../scripts/te_dummyprovider_005.script	z:/testdata/scripts/te_dummyprovider_005.script
 ../scripts/te_dummyprovider_006.script	z:/testdata/scripts/te_dummyprovider_006.script
+../scripts/te_dummyprovider_009.script	z:/testdata/scripts/te_dummyprovider_009.script
+
 
 ../scripts/te_dummyprovider_008.script	z:/testdata/scripts/te_dummyprovider_008.script
 
@@ -39,6 +41,8 @@ PRJ_TESTEXPORTS
 ../configs/te_dummyprovider_004.ini	z:/testdata/configs/te_dummyprovider_004.ini
 ../configs/te_dummyprovider_005.ini	z:/testdata/configs/te_dummyprovider_005.ini
 ../configs/te_dummyprovider_006.ini	z:/testdata/configs/te_dummyprovider_006.ini
+../configs/te_dummyprovider_009.ini	z:/testdata/configs/te_dummyprovider_009.ini
+../configs/TE_DummyProvider_ip.tcpip.esk z:/testdata/configs/TE_DummyProvider_ip.tcpip.esk
 
 
 ../configs/te_dummyprovider_008.ini	z:/testdata/configs/te_dummyprovider_008.ini
