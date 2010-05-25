@@ -58,6 +58,7 @@ ENUM ActivityId : UINT8
 	ImplicitFlow				= 112
 	ConnectionFlow				= 113
 	SubConnectionFlow			= 114
+	ActivityDestroyOrphans           		= 115
 	GetParamLength				= 116
 	GetParam					= 117
 	ActivitySubConnectionCreate = 118
@@ -405,27 +406,28 @@ ENUM EMessageTypeInternal : UINT32
 //	EGetOrSetParameters				= 100
 	EMCprGetConnectionSetting       = 101
 
-	ECprRetrieveProgress			= 102
-	ECprRetrieveLastProgressError	= 103
-//	ECprRequestServiceNotification	= 104
+	ECprRetrieveProgress			= 201
+	ECprRetrieveLastProgressError	= 202
+//	ECprRequestServiceNotification	= 203
 
-//	ECprSendIoctl					= 105
-//	ECprAllSubConnectionNotificationEnable		= 106
-//	ECprEnumerateConnections		= 107
+//	ECprSendIoctl					= 204
+//	ECprAllSubConnectionNotificationEnable		= 205
+//	ECprEnumerateConnections		= 206
 
-//	ELegacyDataMonitoringTransferredRequest		= 108
-	ELegacyDataMonitoringNotificationRequest	= 109
+	ELegacyDataMonitoringTransferredRequest		= 207
+	ELegacyDataMonitoringNotificationRequest	= 208
 
-    ELegacySubConnectionActiveRequest			= 110
+    ELegacySubConnectionActiveRequest			= 209
 
-	ELegacyEnumerateSubConnections				= 111
+	ELegacyEnumerateSubConnections				= 210
 
-	ELegacyControlMessage           = 112
-	ELegacyConnEnumMessage          = 113
+	ELegacyControlMessage           = 211
+	ELegacyConnEnumMessage          = 212
 
-	ESignatureRMessage2Response     = 114
+	ESignatureRMessage2Response     = 213
 
-	ELegacyGetSubConnectionInfo     = 115
+	ELegacyGetSubConnectionInfo     = 214
+	
 END ENUM
 
 ENUM TDataMonitoringDirection : UINT32
@@ -437,6 +439,16 @@ SIGNATURE TCFSigLegacyRMessage2Ext : TSignatureBase
 	TYPEID = 0:0			// derived from
 	RMessage2 iMessage
 END SIGNATURE
+
+SIGNATURE TLegacyDataMonitoringTransferredRequest : TCFSigLegacyRMessage2Ext
+    TYPEID = KTCFLegacyMessageRealmId:ELegacyDataMonitoringTransferredRequest
+	UINT32 iClientId
+END SIGNATURE
+
+MESSAGE LegacyDataMonitoringTransferredRequest
+    SIGNATURE = TLegacyDataMonitoringTransferredRequest
+    MESSAGEID = KTCFLegacyMessageRealmId:ELegacyDataMonitoringTransferredRequest
+END MESSAGE
 
 SIGNATURE TLegacyDataMonitoringNotificationRequest : TCFSigLegacyRMessage2Ext
 	TYPEID = KTCFLegacyMessageRealmId:ELegacyDataMonitoringNotificationRequest
@@ -519,6 +531,17 @@ MESSAGE MCprGetConnectionSetting
     MESSAGEID = KTCFLegacyMessageRealmId:EMCprGetConnectionSetting
 END MESSAGE
 
+SIGNATURE TLegacyConnectionEnumRequest : TSignalBase
+	TYPEID = KTCFLegacyMessageRealmId:ELegacyConnEnumMessage
+	UINT32 iSCPRCandidates
+	UINT32 iClientType
+END SIGNATURE
+
+MESSAGE LegacyConnectionEnumRequest
+    SIGNATURE = TLegacyConnectionEnumRequest
+    MESSAGEID = KTCFLegacyMessageRealmId:ELegacyConnEnumMessage
+END MESSAGE
+
 SIGNATURE TLegacyControlMessage : TCFSigLegacyRMessage2Ext
 	TYPEID = KTCFLegacyMessageRealmId:ELegacyControlMessage
 END SIGNATURE
@@ -530,6 +553,7 @@ END MESSAGE
 
 SIGNATURE TLegacyGetSubConnectionInfo : TCFSigLegacyRMessage2Ext
 	TYPEID = KTCFLegacyMessageRealmId:ELegacyGetSubConnectionInfo
+	UINT32 iClientId					// TSubSessionUniqueId
 	TSubConnectionInfo iSubConnectionInfo
 END SIGNATURE
 
@@ -544,6 +568,7 @@ ENUM TCF_MessageId : UINT16
      	ECFSubConnDataTransferred		= 94
 		EStateChange = 95
 		ECFTransportNotification		= 100
+		ECFDestroyOrphans               = 102
 END ENUM
 
 MESSAGE SubConnDataTransferred 
@@ -559,6 +584,11 @@ END MESSAGE
 MESSAGE TransportNotification 
 	SIGNATURE = TSigVoid
 	MESSAGEID = KTCFMessageRealmId:ECFTransportNotification
+END MESSAGE
+
+MESSAGE DestroyOrphans
+	SIGNATURE = TSigVoid
+	MESSAGEID = KTCFMessageRealmId:ECFDestroyOrphans
 END MESSAGE
 
 // ss_nodemessages_availability_control_client.h
@@ -604,11 +634,17 @@ END MESSAGE
 CONST KControlClientRealmId = 0x10285F3F
 ENUM ControlClient_MessageID : UINT16
      ECFGoneDown = 1
+     ECFGoneUp = 2
 END ENUM
 
 MESSAGE GoneDown
      SIGNATURE = TSigNumberNumber     // TSigNumberDefaultNumberDefault
      MESSAGEID = KControlClientRealmId:ECFGoneDown
+END MESSAGE
+
+MESSAGE TGoneUp
+	SIGNATURE = TSigVoid
+	MESSAGEID = KControlClientRealmId:ECFGoneUp
 END MESSAGE
 
 // ss_nodemessages_controlprovider.h
@@ -1217,3 +1253,32 @@ MESSAGE TDataMonitoringNotification
 	SIGNATURE = TSigNumberNumber
 	MESSAGEID = TCFDataMonitoringNotificationRealmId:ECFDataMonitoringNotification
 END MESSAGE
+
+// ss_apiext_messages.h
+
+CONST KExtItfMsgImplementationUid = 0x102822F7
+
+ENUM EExtItfMessageId : UINT32
+	EApiExtMsgDispatcher				= 0
+	EOpenExtensionInterface				= 1
+	ECloseExtensionInterface			= 2
+	ECancelAndCloseAllClientExtItf		= 3
+END ENUM
+
+SIGNATURE TApiExtMsgDispatcher : TSignalBase
+	TYPEID = KExtItfMsgImplementationUid:EApiExtMsgDispatcher
+	UINT32 iClientId
+	RResponseMsg iResponseMsg
+END SIGNATURE
+
+SIGNATURE TOpenExtensionInterface : TCFSigRMessage2Ext
+    TYPEID = KExtItfMsgImplementationUid:EOpenExtensionInterface
+	UINT32 iClientId
+    UINT32 iInterfaceId
+END SIGNATURE
+
+SIGNATURE TCancelAndCloseAllClientExtItf : TSignalBase
+	TYPEID = KExtItfMsgImplementationUid:ECancelAndCloseAllClientExtItf
+	UINT32 iClientId
+END SIGNATURE
+

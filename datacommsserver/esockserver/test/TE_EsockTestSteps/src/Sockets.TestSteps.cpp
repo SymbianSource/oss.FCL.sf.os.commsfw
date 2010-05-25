@@ -73,28 +73,58 @@ TInt COpenRSocketStep::ConfigureFromIni()
         }
 	else
 		{
-	    TPtrC protocol;
-	    if (GetStringFromConfig(iSection,KTe_Protocol,protocol)!=1)
+        TInt protocolInt = 0;
+        //Try obtaining protocol type as int, failing that, go to predefined types
+        if (GetIntFromConfig(iSection, KTe_Protocol, protocolInt)!=1)
+            {
+            TPtrC protocolStr;
+            if (GetStringFromConfig(iSection, KTe_Protocol,protocolStr)!=1 )
+                {
+                INFO_PRINTF2(_L("%S: Protocol missing."),&iParams.iSocketName);
+                return KErrNotFound;        
+                }
+            if (protocolStr.Compare(KTe_TCPName)==0)
+                { protocolInt = KProtocolInetTcp; iParams.iSocketType = KSockStream;}
+            else if (protocolStr.Compare(KTe_UDPName)==0)
+                { protocolInt = KProtocolInetUdp; iParams.iSocketType = KSockDatagram;}
+            else if (protocolStr.Compare(KTe_DummyNetworkProtocolName)==0)
+                { protocolInt = KDummyNetworkProtocol; iParams.iSocketType = KSockDatagram;} 
+            else if (protocolStr.Compare(KTe_DummyProtocolName)==0)
+                { protocolInt = KDummyProtocol; iParams.iSocketType = KSockDatagram;} 
+            else
+                {
+                INFO_PRINTF3(_L("%S: Protocol (%S) not recognised."),&iParams.iSocketName,&protocolStr);
+                return KErrNotFound;
+                }
+            }
+        iParams.iProtocol = protocolInt;
+        }
+    
+	TPtrC socketTypeStr;	
+    if (GetStringFromConfig(iSection, KTe_SocketType,socketTypeStr)!=1 )
         {
-	        INFO_PRINTF2(_L("%S: Protocol missing."),&iParams.iSocketName);
-        	return KErrNotFound;
+        INFO_PRINTF2(_L("%S: Socket type missing, defaulting based on specified protocol"),&iParams.iSocketName);
         }
-
-	    if (protocol.Compare(KTe_TCPName)==0)
-		    { iParams.iProtocol = KProtocolInetTcp; iParams.iSocketType = KSockStream; }
-	    else if (protocol.Compare(KTe_UDPName)==0)
-		    { iParams.iProtocol = KProtocolInetUdp; iParams.iSocketType = KSockDatagram; }
-	    else if (protocol.Compare(KDummyProtocolName)==0)
-		    {
-			iParams.iProtocol = KProtocolInetDummy;
-			iParams.iSocketType = KSockDatagram;
-			}
-	    else
-	        {
-	        INFO_PRINTF3(_L("%S: Protocol (%S) not recognised."),&iParams.iSocketName,&protocol);
-	        return KErrNotFound;
-	        }
+    else
+        {
+        if (socketTypeStr.Compare(KTe_SocketDatagram)==0)
+             { iParams.iSocketType = KSockDatagram;}
+        else if (socketTypeStr.Compare(KTe_SocketStream)==0)
+             { iParams.iSocketType = KSockStream; }
+        else
+            {
+            INFO_PRINTF3(_L("%S: Socket type (%S) not recognised."),&iParams.iSocketName,&socketTypeStr);
+            return KErrNotFound;
+            }
         }
+    
+    
+    TInt protocolInt = KAfInet;
+    if (GetIntFromConfig(iSection, KTe_ConnectionType, protocolInt)!=1 )
+        {
+        INFO_PRINTF2(_L("%S: Address Family (ConnType) missing, defaulting to KAfInet"),&iParams.iSocketName);
+        }
+    iParams.iAddrFamily = protocolInt;
 
     // All ok if we got this far
     return KErrNone;
@@ -199,6 +229,71 @@ TVerdict CCreateRSocketStep::doSingleTestStep()
 	return EPass;
     }
 
+// Bind Socket
+//---------------
+
+CBindRSocketStep::CBindRSocketStep(CCEsockTestBase*& aEsockTest)
+:   CTe_EsockStepBase(aEsockTest)
+    {
+    SetTestStepName(KBindRSocketStep);
+    }
+
+TInt CBindRSocketStep::ConfigureFromIni()
+    {
+    // Read in appropriate fields
+    if((GetStringFromConfig(iSection, KTe_SocketName, iParams.iSocketName) != 1)
+        || (iParams.iSocketName.Length() == 0))
+        {
+        INFO_PRINTF1(_L("Couldn't find appropriate field in config file"));
+        return KErrNotFound;
+        }
+        
+    TInt protocolInt = 0;
+    if (GetIntFromConfig(iSection, KTe_Protocol, protocolInt)!=1)
+        {
+        TPtrC protocolStr;
+        if (GetStringFromConfig(iSection, KTe_Protocol,protocolStr)!=1 )
+            {
+            INFO_PRINTF2(_L("%S: Protocol missing."),&iParams.iSocketName);
+            return KErrNotFound;        
+            }
+        if (protocolStr.Compare(KTe_TCPName)==0)
+            { protocolInt = KProtocolInetTcp; }
+        else if (protocolStr.Compare(KTe_UDPName)==0)
+            { protocolInt = KProtocolInetUdp; }
+        else if (protocolStr.Compare(KTe_DummyNetworkProtocolName)==0)
+            { protocolInt = KDummyNetworkProtocol; }
+        else if (protocolStr.Compare(KTe_DummyProtocolName)==0)
+            { protocolInt = KDummyProtocol; }
+        else
+            {
+            INFO_PRINTF3(_L("%S: Protocol (%S) not recognised."),&iParams.iSocketName,&protocolStr);
+            return KErrNotFound;
+            }
+        }
+    iParams.iProtocol = protocolInt;
+    
+    // IP Address Local
+    if (GetIpAddressFromConfig(iSection,KTe_SourceAddressName,iParams.iLocalIP)!=1)
+        {
+        INFO_PRINTF2(_L("%S: Local address missing."),&iParams.iSocketName);
+        }    
+    
+    // All ok if we got this far
+    return KErrNone;
+    }
+
+TVerdict CBindRSocketStep::doSingleTestStep()
+    {
+    TInt error = iEsockTest->BindSocket(iParams/*,reqStat*/);
+    if (error!=KErrNone)
+        {
+        INFO_PRINTF2(_L("Could not bind socket (%S)."),&iParams.iSocketName);
+        INFO_PRINTF2(_L("Error: %d."),error);
+        SetTestStepResult(EFail);
+        }
+    return TestStepResult();
+    }
 
 // Connect Socket
 //---------------
@@ -232,10 +327,10 @@ TInt CConnectRSocketStep::ConfigureFromIni()
 	    { iParams.iProtocol = KProtocolInetTcp; }
     else if (protocol.Compare(KTe_UDPName)==0)
 	    { iParams.iProtocol = KProtocolInetUdp; }
-	else if (protocol.Compare(KDummyProtocolName)==0)
-		{
-		iParams.iProtocol = KProtocolInetDummy;
-		}
+	else if (protocol.Compare(KTe_DummyNetworkProtocolName)==0)
+		{ iParams.iProtocol = KDummyNetworkProtocol; }
+    else if (protocol.Compare(KTe_DummyProtocolName)==0)
+        { iParams.iProtocol = KDummyProtocol; }    
     else
         {
         INFO_PRINTF3(_L("%S: Protocol (%S) not recognised."),&iParams.iSocketName,&protocol);
@@ -363,10 +458,10 @@ TInt CSendReceiveRSocketStep::ConfigureFromIni()
 	    { iParams.iProtocol = KProtocolInetTcp; }
     else if (protocol.Compare(KTe_UDPName)==0)
 	    { iParams.iProtocol = KProtocolInetUdp; }
-	else if (protocol.Compare(KDummyProtocolName)==0)
-		{
-		iParams.iProtocol = KProtocolInetDummy;
-		}
+	else if (protocol.Compare(KTe_DummyNetworkProtocolName)==0)
+		{ iParams.iProtocol = KDummyNetworkProtocol; }
+    else if (protocol.Compare(KTe_DummyProtocolName)==0)
+        { iParams.iProtocol = KDummyProtocol; }    
     else
         {
         INFO_PRINTF3(_L("%S: Protocol (%S) not recognised."),&iParams.iSocketName,&protocol);

@@ -272,7 +272,23 @@ subsequent prepending without further allocation (typically used for protocol he
 		len = Min(aLen, len);	
 		}		
 
-	TInt err = newChain.Alloc(len + aHdrReserve, *this);
+// Suppress the "follow-the-leader" behaviour of preserving the buffer sizing of the
+// existing chain. The goal of preserving buffer characteristics remains desirable but
+// not at the cost of having TCP use unnecessarily small buffers - this area needs 
+// rework once the Comms stack really adopts buffer pools and zero copy  	
+//	TInt err = newChain.Alloc(len + aHdrReserve, *this);
+	TInt err;
+    if(First())
+        {
+        newChain.iNext = First()->Pool()->Pond().Alloc(len + aHdrReserve, 0, KMaxTInt);
+        err = iNext ? KErrNone : KErrNoMBufs;      
+        }
+    else
+        {
+        RMBufAllocator allocator;
+        err = newChain.Alloc(aLen + aHdrReserve, allocator);  
+        }
+	
 	if(err != KErrNone)
 		{
 		return err;
@@ -532,10 +548,10 @@ newChain gets the other half.
 @param newChain The result chain
 */
 	{
-	User::LeaveIfError(RCommsBufChain::Split(anOffset, newChain));
+	User::LeaveIfError(Split(anOffset, newChain));
 	}
 
-EXPORT_C TInt RMBufChain::Split(TInt anOffset, RMBufChain& newChain)
+EXPORT_C TInt RMBufChain::Split(TInt aOffset, RMBufChain& aNewChain)
 /** 	  	 
 Split a chain into two new chains Original chain gets the 1st half 	  	 
 newChain gets the other half. 	  	 
@@ -544,8 +560,63 @@ newChain gets the other half.
 @param newChain The result chain 	  	 
 */
 	{
-	return RCommsBufChain::Split(anOffset, newChain);		
-	}
+    // RCommsBuf::Split() will not allocate a smaller buffer size than the current, as part of its approach of (trying to)
+    // support zero-copy transfer by respecting the buffer pool in use. This work is incomplete (needs support throughout
+    // the stack and probably a cleverer idea of what constitutes an acceptable buffer than simply size), so in the meantime
+    // having MBufMgr reflect this behaviour by refusing to Split() a big buf into smaller bufs is unnecessarily purist.
+    // Hence the functionality is implemented directly here
+    
+    __ASSERT_ALWAYS(iNext!=NULL, CommsBuf::Panic(EMBuf_EmptyChain));
+    __ASSERT_ALWAYS(aOffset>=0, CommsBuf::Panic(EMBuf_NegativeOffset));
+    
+    // For testing post-conditions
+#ifdef _DEBUG
+    TInt origLen = Length();
+#endif
+    TInt splitBufOffset;
+    TInt splitBufRemainder;
+    RMBuf* splitBuf;
+    RMBuf* splitBufPrev;
+    
+    if(!Goto(aOffset, splitBuf, splitBufOffset, splitBufRemainder, splitBufPrev))
+        {
+        aNewChain.Init();
+        return KErrNone;
+        }
+    
+    if(splitBufOffset != splitBuf->Offset()) // Not on an mbuf boundary
+        {
+        // Copy tail of splitBuf out to a new chain (hopefully a single buf, but needn't be)
+        TInt splitDataOffset = splitBufOffset - splitBuf->Offset();
+        TInt err = RMBufChain(splitBuf).Copy(aNewChain, splitDataOffset, splitBufRemainder);
+        if(err != KErrNone)
+            {
+            return err;
+            }
+        splitBuf->AdjustDataEnd(-splitBufRemainder);
+        RMBufChain splitTail(splitBuf->Next());
+        aNewChain.Append(splitTail);
+        splitBuf->SetNext(NULL);
+        }
+    else
+        {
+        // Split cleaves chain between bufs
+        aNewChain = splitBuf;
+        if(splitBufPrev)
+            {
+            splitBufPrev->Unlink();
+            }
+        }
+    
+    // Check post-conditions
+#ifdef _DEBUG
+    TInt frag1Len = Length(); 
+    TInt frag2Len = aNewChain.Length();
+    ASSERT(origLen == frag1Len + frag2Len);
+    ASSERT(frag1Len == aOffset);
+#endif
+    return KErrNone;
+	}           
 
 // overloading for TLS
 EXPORT_C TInt RMBufChain::Split(TInt anOffset, RMBufChain& newChain, RMBufAllocator& /* aRMBufAllocator */)

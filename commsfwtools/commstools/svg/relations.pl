@@ -154,9 +154,12 @@ my $tabLabel = "a";
 my $tabToFontAdjustTopY = 2;
 my $tabToFontAdjustBottomY = 1;
 my $tabLineLengthY = 5;
+my $outputPath = "";		# output path as specified by "-o <path>" argument
+our($opt_x,$opt_v,$opt_V, $opt_o);
+Getopts("x:vVo:");
 
-our($opt_x,$opt_v,$opt_V);
-Getopts("x:vV");
+$outputPath = processPathArgument($opt_o);
+
 readRelationshipFile();
 
 print "Reading sequences\n" if ($opt_V);
@@ -225,9 +228,15 @@ closeOutputFile();
 outputRelationsHTMLEmbedder($width, $height);
 
 sub createOutputFile()
-	{
-		open SVG, ">relations.svg" || die "Cannot open relations.svg for writing\n";
+{
+	# Have already created the directory $outputPath, just create the "html" subdirectory
+	my $path = $outputPath . "html";
+	if (! -d $path) {
+		mkdir $path;
 	}
+	$path .= "/relations.svg";
+	open SVG, ">$path" || die "Cannot open $path for writing\n";
+}
 
 sub closeOutputFile()
 	{
@@ -835,7 +844,9 @@ EOT
 sub outputRelationsHTMLEmbedder($$)
 	{
 	my ($width,$height) = @_;
-	open HTML, ">relations.html" || die "Cannot open relations.html for writing\n";
+	# Should have already created $outputPath/html directory.
+	my $path = $outputPath . "html/relations.html";
+	open HTML, ">$path" || die "Cannot open $path for writing\n";
 	print HTML qq{<html>\n<body onLoad="resize()">\n};
 	print HTML qq{<embed src="relations.svg" width="$width" height="$height" type="image/svg+xml" pluginspage="http://www.adobe.com/svg/viewer/install/" name="embedder">\n};
 	print HTML qq{<input type="button" value="Animate..." onclick="popupAnimate()">\n};
@@ -875,7 +886,13 @@ EOT
 #
 sub outputAnimateHTML()
 {
-	open HTML, ">animate.html" || die "Cannot open animate.html for writing\n";
+	# Should have already created $outputPath directory, create html/ subdirectory.
+	my $path = $outputPath . "html";
+	if (! -d $path) {
+		mkdir $path;
+	}
+	$path .= "/animate.html";
+	open HTML, ">$path" || die "Cannot open $path for writing\n";
 #################################
 #  Begin Interpolated Text...   #
 #################################
@@ -2095,4 +2112,32 @@ END
 sub AnimateSequencerPart2()
 {
 	print SVG ");\n\n";
+}
+
+sub processPathArgument($)
+{
+	my $path = $_[0];
+	if ($path) {
+		# ensure "/" at the end
+		if ($path !~ /\/$/) {
+			$path .= "/";
+		}
+		mkdirp($path);
+		return $path;
+	} else {
+		return "";
+	}
+}
+
+sub mkdirp($) 
+{ 
+    my $dirName = @_[0]; 
+    if ($dirName =~ m/^(.*)\//i) { 
+        if ($1 ne "") { 
+            mkdirp($1); 
+        } 
+    }
+	if (! -d $dirName) {
+		mkdir($dirName); 
+	}
 }

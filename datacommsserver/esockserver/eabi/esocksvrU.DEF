@@ -1031,7 +1031,7 @@ EXPORTS
 	_ZN5ESock25RCFParameterFamilyBundleC4OpenEv @ 1030 NONAME
 	_ZN17CConnDataTransfer31DataReceivedNotificationRequestEjj @ 1031 NONAME
 	_ZThn20_N5ESock22CSubConnectionFlowBase26FetchNodeInterfaceControlLEi @ 1032 NONAME
-	_ZThn136_NK5ESock20CMMCommsProviderBase20GetAccessPointConfigEv @ 1033 NONAME
+	_ZThn140_NK5ESock20CMMCommsProviderBase20GetAccessPointConfigEv @ 1033 NONAME
 	_ZN5ESock30TDefaultConnectionFactoryQuery19GetVDataTableStaticEv @ 1034 NONAME
 	_ZN5ESock30TDefaultConnectionFactoryQuery5MatchERN9Factories18TFactoryObjectInfoE @ 1035 NONAME
 	_ZN5ESock30TDefaultConnectionFactoryQueryC1ERKN8Messages7TNodeIdE @ 1036 NONAME
@@ -1959,4 +1959,6 @@ EXPORTS
 	_ZTIN5ESock23TTierTypeIdFactoryQueryE @ 1958 NONAME
 	_ZTVN5ESock23TTierTypeIdFactoryQueryE @ 1959 NONAME
 	_ZThn4_N5ESock23TTierTypeIdFactoryQuery5MatchERN9Factories18TFactoryObjectInfoE @ 1960 NONAME
+	_ZN5ESock20CMMCommsProviderBase10AddClientLERKN8Messages7TNodeIdERKNS1_11TClientTypeEPv @ 1961 NONAME
+	_ZThn36_N5ESock20CMMCommsProviderBase10AddClientLERKN8Messages7TNodeIdERKNS1_11TClientTypeEPv @ 1962 NONAME
 

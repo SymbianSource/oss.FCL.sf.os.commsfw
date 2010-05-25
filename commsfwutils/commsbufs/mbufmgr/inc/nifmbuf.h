@@ -46,7 +46,6 @@ Support to use single MBufs for containing C++ objects
 */
 	{
 public:
-	IMPORT_C RMBufCell(RMBufCell* aPktHdr);
 	IMPORT_C static TAny* operator new(TUint aSize, TLeave aLeave, TUint aExtra);
 	IMPORT_C static TAny* operator new(TUint aSize, TUint aExtra) __NO_THROW;
 	IMPORT_C static void operator delete(TAny*);

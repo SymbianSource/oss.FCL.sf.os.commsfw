@@ -262,9 +262,6 @@ public:
 	IMPORT_C void RegisterAddress(Messages::TRuntimeCtxId& aCookie);
 	IMPORT_C void DeregisterAddress(Messages::TRuntimeCtxId& aCookie);
 
-	// From MTransportSender
-	IMPORT_C void PostMessage(const Messages::TRuntimeCtxId& aPostFrom, const Messages::TRuntimeCtxId& aPostTo, const Meta::SMetaData& aMessage);
-
 	// TCFMessage + legacy
 	IMPORT_C void RegisterLegacyInterface(MLegacyMessageReceiver* aLegacyInterface);
 	IMPORT_C void PostMessage(const TCFMessage& aMessage);

@@ -71,7 +71,7 @@ ENUM CprLink_Signatures : UINT32
 
     ECprGetConnectionSetting			= 10
 
-    ELegacyDataMonitoringTransferredRequest	= 11
+//    ELegacyDataMonitoringTransferredRequest	= 11
 //  ELegacyDataMonitoringNotificationRequest	= 12
     ELegacyDataMonitoringNotificationCancel	= 13
 
@@ -146,16 +146,6 @@ MESSAGE CprEnumerateConnections
     MESSAGEID = KESockCprLinkExtMessages:ECprEnumerateConnections
 END MESSAGE
 
-SIGNATURE TLegacyDataMonitoringTransferredRequest : TCFSigRMessage2Ext
-    TYPEID = KESockCprLinkExtMessages:ELegacyDataMonitoringTransferredRequest
-	UINT32 iClientId
-END SIGNATURE
-
-MESSAGE LegacyDataMonitoringTransferredRequest
-    SIGNATURE = TLegacyDataMonitoringTransferredRequest
-    MESSAGEID = KESockCprLinkExtMessages:ELegacyDataMonitoringTransferredRequest
-END MESSAGE
-
 MESSAGE LegacyDataMonitoringNotificationRequest
     SIGNATURE = TLegacyDataMonitoringNotificationRequest
     MESSAGEID = KESockCprLinkExtMessages:ELegacyDataMonitoringNotificationRequest
@@ -185,19 +175,6 @@ MESSAGE LegacyCancelSubConnectionActive
     SIGNATURE = TLegacyCancelSubConnectionActive
     MESSAGEID = KESockCprLinkExtMessages:ELegacyCancelSubConnectionActive
 END MESSAGE
-
-//
-
-CONST KExtItfMsgImplementationUid = 0x102822F7
-
-ENUM EExtItfMessageId : UINT32
-	ECancelAndCloseAllClientExtItf = 3
-END ENUM
-
-SIGNATURE TCancelAndCloseAllClientExtItf : TSignalBase
-	TYPEID = KExtItfMsgImplementationUid:ECancelAndCloseAllClientExtItf
-	UINT32 iClientId
-END SIGNATURE
 
 CONST KQoSIpSCprMessagesRealmId = 0x10204307
 

@@ -165,7 +165,7 @@ namespace CprClientLeaveActivity
 class CClientLeaveActivity : public CprPriorityUpdateActivity::CPriorityUpdateActivity
 	{
 public:
-	IMPORT_C static MeshMachine::CNodeActivityBase* NewL(const MeshMachine::TNodeActivity& aActivitySig, MeshMachine::AMMNodeBase& aNode);
+	IMPORT_C static MeshMachine::CNodeActivityBase* New(const MeshMachine::TNodeActivity& aActivitySig, MeshMachine::TNodeContextBase& aContext);
 	IMPORT_C virtual ~CClientLeaveActivity();
 
 public:

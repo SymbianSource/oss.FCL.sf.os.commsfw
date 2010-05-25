@@ -105,6 +105,7 @@ struct TRSocketParams
 
     TUint iSocketType;
    	TUint iProtocol;
+   	TUint iAddrFamily;
 	TInt iPacketSize;
 	TInt iNrOfPackets;
    	TInetAddr iLocalIP;
@@ -482,7 +483,7 @@ public:
     RSocket* FindSocket(const TDesC& aSocketName);
     TInt CreateSocket(const TDesC& aSocketName);
     TInt OpenSocket(const TRSocketParams& aParams);
-    TInt BindSocket(const TRSocketParams& aParams);
+    TInt BindSocket(TRSocketParams& aParams);
     TInt ConnectSocket(TRSocketParams& aParams, TRequestStatus& aRequestStatus);
     TInt CancelConnectSocket(const TRSocketParams& aParams);
     void SendAndReceiveDataL(const TRSocketParams& aParams);

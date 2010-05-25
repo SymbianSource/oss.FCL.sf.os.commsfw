@@ -158,6 +158,64 @@ DECLARE_SMELEMENT_HEADER( TAwaitingBrokenStart, MeshMachine::TState<TContext>, N
 	virtual TBool Accept();
 DECLARE_SMELEMENT_FOOTER( TAwaitingBrokenStart )
 
+DECLARE_SMELEMENT_HEADER( TRebindSelf, MeshMachine::TStateTransition<TContext>, NetStateMachine::MStateTransition, DummySCPRStates::TContext )
+    virtual void DoL();
+DECLARE_SMELEMENT_FOOTER( TRebindSelf )
+
+
+
+
+
+struct TWaitForBindToMutex
+    {
+    static TBool IsBlocked(const MeshMachine::TNodeContextBase& aContext)
+        {
+        return aContext.iNode.CountActivities(ESock::ECFActivityBindTo) == 0;
+        }
+    };
+
+struct TWaitForNoDataClients
+    {
+    static TBool IsBlocked(const MeshMachine::TNodeContextBase& aContext)
+        {
+        return aContext.iNode.GetFirstClient<Messages::TDefaultClientMatchPolicy>(Messages::TClientType(ESock::TCFClientType::EData)) != NULL;
+        }
+    };
+
+DECLARE_SERIALIZABLE_STATE(
+    TNoTagWaitForBindTo,
+    TWaitForBindToMutex,
+    MeshMachine::TNoTag
+    )
+
+DECLARE_SERIALIZABLE_STATE(
+    TNoTagWaitNoDataClients,
+    TWaitForNoDataClients,
+    MeshMachine::TNoTag
+    )
+
+
+
+DECLARE_SMELEMENT_HEADER( TCancelPreviousSelfRequest, MeshMachine::TStateTransition<TContext>, NetStateMachine::MStateTransition, DummySCPRStates::TContext )
+    virtual void DoL();
+DECLARE_SMELEMENT_FOOTER( TCancelPreviousSelfRequest )
+
+class CrazyIdle : public MeshMachine::CNodeRetryActivity
+    {
+public:
+    DECLARE_SMELEMENT_HEADER( TAwaitingCancelled, MeshMachine::TState<TContext>, NetStateMachine::MState, TContext )
+        virtual TBool Accept();
+    DECLARE_SMELEMENT_FOOTER( TAwaitingCancelled )
+
+    static MeshMachine::CNodeActivityBase* CrazyIdle::NewL( const MeshMachine::TNodeActivity& aActivitySig, MeshMachine::AMMNodeBase& aNode );
+protected:
+    CrazyIdle( const MeshMachine::TNodeActivity& aActivitySig, MeshMachine::AMMNodeBase& aNode )
+    :MeshMachine::CNodeRetryActivity(aActivitySig, aNode) 
+     {};
+private:
+    ~CrazyIdle();
+    };
+
 DECLARE_ACTIVITY_MAP(stateMap)
 } // namespace DummyCPRStates
 
@@ -238,6 +296,7 @@ private:
 
 	ESock::RCFParameterFamilyBundleC iFlowParameters;
 	};
+
 
 #endif	// __DummySCPR_SUBCONNPROV_H__
 

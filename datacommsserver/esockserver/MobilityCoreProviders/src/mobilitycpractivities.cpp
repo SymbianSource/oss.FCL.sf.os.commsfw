@@ -179,7 +179,7 @@ void CMobilityActivity::Cancel(TNodeContextBase& aContext)
 	__ASSERT_DEBUG(cp, User::Panic(KSpecAssert_ESockMbCrCPRAct, 4)); //We are a Cpr, must exist.
 
 	//PostedTo() could be our service provider or possibly other peer
-	if (PostedToId() != cp->RecipientId())
+	if (PostedToPeer() != cp)
 		{
 		cp->PostMessage(TNodeCtxId(ActivityId(), iNode.Id()),
 			TEBase::TCancel().CRef());

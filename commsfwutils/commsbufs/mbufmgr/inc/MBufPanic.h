@@ -85,7 +85,8 @@ enum TMBufPanic
 	EMBuf_IndexOutofRange =43,
 	EMBuf_InvalidLengthOrOffset =44,
 	EMBuf_AsyncAllocInvalidState =45,
-	EMBuf_InsufficientSpaceToStorePond = 45
+	EMBuf_InsufficientSpaceToStorePond = 46,
+	EMBuf_InvalidAsyncReqImpl = 47
 	};
 
 #endif // __MBufPanic_h__

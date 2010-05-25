@@ -33,6 +33,17 @@
 _LIT(KSpecAssert_ElemNodeMessIntH, "ElemNodeMessIntH");
 #endif
 
+// Forward declarations to be used with RNodeInterface to allow for friend assignment
+namespace ESock
+	{
+	class CMMCommsProviderBase;
+	}
+
+namespace CprClientLeaveActivity
+	{
+	class CClientLeaveActivity;
+	}
+
 namespace Messages
 {
 
@@ -288,7 +299,16 @@ by declaring RNodeInterface as members.
 	{
 	friend class TClientIterBase;
 
+	// Friend classes needed to allow access to memory preallocation functionality
+	// This friend funtionality is to be removed when the preallocation functionality is revisited
+	// These friends are not to be used for any further functionality
+	friend class ESock::CMMCommsProviderBase;
+	friend class CprClientLeaveActivity::CClientLeaveActivity;
+
 public:
+	IMPORT_C RNodeInterface();
+	IMPORT_C virtual ~RNodeInterface();
+
 	IMPORT_C void Open(TNodeId aPostTo, const TClientType& aClientType = TClientType::NullType(), MTransportSender* aSender = NULL);
 	IMPORT_C void Close();
 	IMPORT_C TBool operator==(const RNodeInterface& aRHS) const;
@@ -367,8 +387,40 @@ public:
 #endif
 	    }
 
+// Handling of preallocating memory to be used by the Leave activity
+private:
+	IMPORT_C void PreAllocL(TUint aAllocSize);
+
+	/**
+	Claim some preallocated memory from the RNodeInterface. This preallocated memory is used for activities that
+	absolutely cannot fail in any scenario, such as for Leaving the node. For this reason, when the
+	RNodeInterface is created, some memory is allocated so that a leaving activity can't even fail in an out
+	of memory situation.
+
+	This method is static as the memory must be claimed before the activity object is constructed.
+
+	@param aNode The node that owns the preallocated space. This must be the node that the activity runs on.
+	@param aSize Size of buffer to allocate.
+
+	@return A pointer to the allocated block of memory
+	*/
+	IMPORT_C TAny* ClaimPreallocatedSpace(TUint aSize);
+
 protected:
 	TClientType iClientType;
+private:
+	struct TPreAllocStore
+		{
+		TPreAllocStore()
+			{
+			iPreAllocSize=0;
+			iPreAllocatedActivityChunk=NULL;
+			}
+		TUint iPreAllocSize;
+		TAny* iPreAllocatedActivityChunk;
+		};
+
+	TPreAllocStore* iPreAlloc;
 	};
 
 class RRequestOriginator

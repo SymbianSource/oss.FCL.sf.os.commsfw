@@ -37,7 +37,7 @@ EXPORTS
 	??8TNodeIdRemainder@Messages@@QBEHABVTRuntimeCtxId@1@@Z @ 36 NONAME ; int Messages::TNodeIdRemainder::operator==(class Messages::TRuntimeCtxId const &) const
 	??8TRuntimeCtxId@Messages@@QBEHABV01@@Z @ 37 NONAME ; int Messages::TRuntimeCtxId::operator==(class Messages::TRuntimeCtxId const &) const
 	??ATClientIterBase@Messages@@QAEPAVRNodeInterface@1@H@Z @ 38 NONAME ; class Messages::RNodeInterface * Messages::TClientIterBase::operator[](int)
-	?AddClientL@ANodeBase@Messages@@QAEPAVRNodeInterface@2@ABVTNodeId@2@ABVTClientType@2@PAX@Z @ 39 NONAME ; class Messages::RNodeInterface * Messages::ANodeBase::AddClientL(class Messages::TNodeId const &, class Messages::TClientType const &, void *)
+	?AddClientL@ANodeBase@Messages@@UAEPAVRNodeInterface@2@ABVTNodeId@2@ABVTClientType@2@PAX@Z @ 39 NONAME ; class Messages::RNodeInterface * Messages::ANodeBase::AddClientL(class Messages::TNodeId const &, class Messages::TClientType const &, void *)
 	?AddPersistentItf@CGlobals@Messages@@QAEXABVTNodeId@2@@Z @ 40 NONAME ABSENT ; void Messages::CGlobals::AddPersistentItf(class Messages::TNodeId const &)
 	?Close@RClientInterface@Messages@@QAEXXZ @ 41 NONAME ; void Messages::RClientInterface::Close(void)
 	?Close@RNodeInterface@Messages@@QAEXXZ @ 42 NONAME ; void Messages::RNodeInterface::Close(void)
@@ -201,5 +201,8 @@ EXPORTS
 	?GetVDataTableStatic@TSigNodeIdNumberNumberNumber@Messages@@SAPBUSVDataTableEntry@Meta@@XZ @ 200 NONAME ; struct Meta::SVDataTableEntry const * Messages::TSigNodeIdNumberNumberNumber::GetVDataTableStatic(void)
 	?GetVDataTableStatic@TSigTypeId@Messages@@SAPBUSVDataTableEntry@Meta@@XZ @ 201 NONAME ; struct Meta::SVDataTableEntry const * Messages::TSigTypeId::GetVDataTableStatic(void)
 	?GetVDataTableStatic@TSigTypeIdAnyNumber@Messages@@SAPBUSVDataTableEntry@Meta@@XZ @ 202 NONAME ; struct Meta::SVDataTableEntry const * Messages::TSigTypeIdAnyNumber::GetVDataTableStatic(void)
-
+	??1RNodeInterface@Messages@@UAE@XZ @ 203 NONAME ; Messages::RNodeInterface::~RNodeInterface(void)
+	?PreAllocL@RNodeInterface@Messages@@AAEXI@Z @ 204 NONAME ; void Messages::RNodeInterface::PreAllocL(unsigned int)
+	??0RNodeInterface@Messages@@QAE@XZ @ 205 NONAME ; Messages::RNodeInterface::RNodeInterface(void)
+	?ClaimPreallocatedSpace@RNodeInterface@Messages@@AAEPAXI@Z @ 206 NONAME ; void * Messages::RNodeInterface::ClaimPreallocatedSpace(unsigned int)
 

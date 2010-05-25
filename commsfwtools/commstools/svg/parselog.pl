@@ -38,12 +38,13 @@
 # 4	include ESOCK session creation
 # 8 display activity name along with each tuple line (e.g. "(IpCprNoBearer) (CoreNetStates::TSendBindTo, CoreNetStates::TAwaitingBindToComplete)")
 # 16 display AddClient/RemoveClient operations
+# -o <path>			Write HTML and SVG output files into directory <path>
 
 use strict;
 
 require 'getopts.pl';
 
-my $version = "2.1 (24/02/09)";
+my $version = "2.2 (16/04/10)";
 
 #
 # Internal Options
@@ -53,12 +54,13 @@ my $fastCount = 0;	# Add fast count delta on lefthand side.
 
 my $globalIndex = 1;
 my $lifeStage = 0;	# 0 = not running or shutting down, 1 = during boot, 2 = main phase
+my $outputPath = "";			# path to output directory specified by "-o"
 
+our($opt_p,$opt_s,$opt_x,$opt_X, $opt_o);
 
-our($opt_p,$opt_s,$opt_x,$opt_X);
+Getopts("ps:x:X:o:");
 
-Getopts("ps:x:X:");
-
+$outputPath = processPathArgument($opt_o);
 
 ### to get 1st line of latest log: type log.txt | perl -e "while(<>){if(/^#Logging started/){$a=$.;print $a.' '}};print $a"
 
@@ -83,7 +85,8 @@ my @objectNameParse;
 
 use constant ArgumentSignedDecimal => 0;
 use constant ArgumentNode => 1;
-my %argumentFormatToConstant = ( "node" => ArgumentNode );	# used to have several other options
+use constant ArgumentHex => 2;
+my %argumentFormatToConstant = ( "node" => ArgumentNode, "x" => ArgumentHex );	# used to have several other options
 my %arguments;
 
 # Support for AddClient/RemoveClient
@@ -317,13 +320,14 @@ while (<>) {
 			}
 		elsif (($opt_s & 2) &&
 			(/CWorkerSubSession\(.{8}\):\s*CompleteMessage\((.{8})\) with (.+), session .{8}/ ||
-#			 /ProcessMessageL, session=.{8}, RMessage2::Complete \((.{8})\) with ([-\d]+)\./ ||
 			 /~CESockClientActivityBase..{8}.\s*RMessage2::Complete \((.{8})\) with ([-\d]+)\./ ||
-			 /RSafeMessage\((.{8})\)::Complete\((\d+)\) - session .{8}/))
+			 /RSafeMessage\(.{8}\)::Complete\((.{8})\) with ([-\d]+)/))
 			{
+#			 /ProcessMessageL, session=.{8}, RMessage2::Complete \((.{8})\) with ([-\d]+)\./ ||
 			# W6: CPlayer:	ProcessMessageL, session=0be839a8, RMessage2::Complete (00de5538) with 0.
 			# W0: CWorkerSubSession(0c941bc4):	CompleteMessage(00de1a6c) with -3, session 0be839a8.
 			# W6: ~CESockClientActivityBase=0c941f8c, RMessage2::Complete (00de5538) with 0.
+			# RSafeMessage(00e01590)::Complete(cd21cb80) with -36
 
 			my $msgAddr = $1;
 			my $ret = $2;
@@ -792,7 +796,11 @@ sub formatArguments($$)
 			if ($value =~ m/^0x/) {
 				$value = hex($value);
 			}
-			$buf .= sprintf "%d", $value;
+			if ($format == ArgumentHex) {
+				$buf .= sprintf "0x%x", $value;
+			} else {
+				$buf .= sprintf "%d", $value;
+			}
 		} else {
 			$buf .= $value;
 		}
@@ -934,12 +942,19 @@ sub truncateExeName($)
 	my ($exeName) = @_;
 	$exeName =~ s/\.exe$//;
 	$exeName =~ s/\.EXE$//;
+	$exeName =~ s/ /_/g;
 	return $exeName;
 	}
 
 sub outputSymbols()
 	{
-	open SYM, ">logsym.html" || die "Cannot open logsym.html for writing\n";
+	# Should have already created $outputPath directory, create html/ subdirectory.
+	my $path = $outputPath . "html";
+	if (! -d $path) {
+		mkdir $path;
+	}
+	$path .= "/logsym.html";
+	open SYM, ">$path" || die "Cannot open $path for writing\n";
 	print SYM "<html>\n<body><code>\n";
 	my @keys = sort keys %symtab;
 	for my $i (@keys) {
@@ -1144,5 +1159,33 @@ sub ClearActivity($)
 	}
 	if (defined $activityName{$actAddr}) {
 		delete $activityName{$actAddr};
+	}
+}
+
+sub processPathArgument($)
+{
+	my $path = $_[0];
+	if ($path) {
+		# ensure "/" at the end
+		if ($path !~ /\/$/) {
+			$path .= "/";
+		}
+		mkdirp($path);
+		return $path;
+	} else {
+		return "";
+	}
+}
+
+sub mkdirp($) 
+{ 
+    my $dirName = @_[0]; 
+    if ($dirName =~ m/^(.*)\//i) { 
+        if ($1 ne "") { 
+            mkdirp($1); 
+        } 
+    }
+	if (! -d $dirName) {
+		mkdir($dirName); 
 	}
 }

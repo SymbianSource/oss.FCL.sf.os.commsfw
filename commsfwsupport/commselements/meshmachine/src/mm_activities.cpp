@@ -45,7 +45,9 @@ _LIT (KMMActivityPanic,"MMActivityPanic");
 enum
 	{
 	EPanicCorruptedContext = 1,
-	EPanicNoPreallocatedSpace = 2
+	EPanicNoPreallocatedSpace = 2,
+	EPanicOutOfActivities = 3,
+	EPanicOutOfBounds
 	};
 
 //-=========================================================
@@ -167,8 +169,8 @@ EXPORT_C TBool CNodeActivityBase::MatchSender(const TNodeContextBase& aContext) 
     //what's set as iPostedToId or from one of the orginators. 
     //if the message's recipient specifies the activity id, then that
     //activity must much that of 'this'.
-    TBool sender = iPostedToId.IsNull() || 
-    			   aContext.iSender == iPostedToId || 
+    TBool sender = PostedToNodeId().IsNull() || 
+    			   aContext.iSender == PostedToNodeId() || 
     			   FindOriginator(aContext.iSender) != KErrNotFound;
     const TNodeCtxId* recipient = address_cast<const TNodeCtxId>(&aContext.iRecipient);
     TBool activity = (recipient == NULL || ActivityId() == recipient->NodeCtx());
@@ -181,7 +183,7 @@ EXPORT_C TBool CNodeActivityBase::MatchSender(const TNodeContextBase& aContext) 
 		if(!sender)
 			{
 			MESH_LOG((KMeshMachineSubTag(), _L8("CNodeActivityBase %08x:\tiPostedToId mismatch:"), this));
-			NM_LOG_ADDRESS(KMeshMachineSubTag(), iPostedToId);
+			NM_LOG_ADDRESS(KMeshMachineSubTag(), PostedToNodeId());
 			NM_LOG_ADDRESS(KMeshMachineSubTag(), aContext.iSender);
 			MESH_LOG((KMeshMachineSubTag(), _L8("CNodeActivityBase %08x:\toriginators' mismatch:"), this));
 			for (TInt i = iOriginators.Count() - 1; i>=0; i--)
@@ -317,11 +319,12 @@ EXPORT_C TBool CNodeActivityBase::Next(TNodeContextBase& aContext)
 
 EXPORT_C void CNodeActivityBase::Cancel(TNodeContextBase& aContext)
 	{//we expect KErrCancel be set as a result of the state cancelation
-    MESH_LOG((KMeshMachineSubTag, _L8("CNodeActivityBase %08x:\tCancel(), iPostedToId %08x"), this, iPostedToId.Ptr() ? &iPostedToId.Node() : NULL));
+    MESH_LOG((KMeshMachineSubTag, _L8("CNodeActivityBase %08x:\tCancel(), PostedToNodeId %08x"), this, PostedToNodeId().Ptr()));
 
-	if (!iPostedToId.IsNull())
-		{
-		RClientInterface::OpenPostMessageClose(TNodeCtxId(ActivityId(), iNode.Id()), iPostedToId, TEBase::TCancel().CRef());
+	if ((PostedToPeer() && !(PostedToPeer()->Flags() & TClientType::ELeaving)) ||
+	     PostedToNodeId() == aContext.Node().Id())
+		{//only safe to forward TCancels to non-leavers or self. There is an underlying assumption that a node won't dissapear in presence of activities (see AMMNodeBase::~AMMNodeBase)
+		RClientInterface::OpenPostMessageClose(TNodeCtxId(ActivityId(), iNode.Id()), PostedToNodeId(), TEBase::TCancel().CRef());
 		}
     else
         {
@@ -352,8 +355,8 @@ EXPORT_C TInt CNodeActivityBase::PostToOriginators(const TSignalBase& aMessage, 
 		if (PostToOriginator(iOriginators[n], aMessage))
 			{
 			++msgSendCount;
-	    	iOriginators[n].Peer().SetFlags(aFlagsToSet);
-	    	iOriginators[n].Peer().ClearFlags(aFlagsToClear);
+	    	iOriginators[n].SetFlags(aFlagsToSet);
+	    	iOriginators[n].ClearFlags(aFlagsToClear);
 			};
 		}
 	return msgSendCount;
@@ -361,12 +364,44 @@ EXPORT_C TInt CNodeActivityBase::PostToOriginators(const TSignalBase& aMessage, 
 
 EXPORT_C void CNodeActivityBase::SetPostedTo(const TNodeId& aNodeId)
     {
-    iPostedToId = aNodeId;
+    //You are being punished for storing a postedto TNodeId that you also know as your peer.
+    //the Messages::RNodeInterface& overload of CNodeActivityBase::SetPostedTo
+    //It is dangerous to use this overload for peers when the relation with these peers
+    //is being terminated. the PostedTo facility is also used to forward TCancel in
+    //the automatic calencallation handling. No message can be posted to a leaving peer
+    //but only peers (Messages::RNodeInterfaces) can be recognised as leaving. 
+    //
+    //ASSERT temporarily commened out as it is a behavioural break. A Polonium BR
+    //has been drafted and will be raised when the RNodeInterface overloads end up in the
+    //codeline. http://polonium.ext.nokia.com/changerequests/cr/601/
+    //__ASSERT_DEBUG(iNode.FindClient(aNodeId) == NULL, User::Panic(KSpecAssert_ElemMeshMachActC, 14));     
+    
+    if (aNodeId == Messages::TNodeId::NullId())
+        {
+        ClearPostedTo();
+        return;
+        }
+    iPostedToId.Open(aNodeId);
+    }
+
+EXPORT_C void CNodeActivityBase::SetPostedTo(const Messages::RNodeInterface& aRecepient)
+    {
+    iPostedToId.Open(aRecepient);
     }
 
 EXPORT_C void CNodeActivityBase::ClearPostedTo()
     {
-    iPostedToId.SetNull();
+    iPostedToId.Close();
+    }
+
+EXPORT_C const Messages::TNodeId& CNodeActivityBase::PostedToNodeId() const
+    {
+    return iPostedToId.NodeId();
+    }
+
+EXPORT_C const Messages::RNodeInterface* CNodeActivityBase::PostedToPeer() const
+    {
+    return iPostedToId.Peer();
     }
 
 EXPORT_C void CNodeActivityBase::PostRequestTo(const RNodeInterface& aRecipient, const TSignalBase& aMessage, const TBool aRecipientIdCritical)
@@ -374,7 +409,11 @@ EXPORT_C void CNodeActivityBase::PostRequestTo(const RNodeInterface& aRecipient,
 	aRecipient.PostMessage(TNodeCtxId(ActivityId(), iNode.Id()), aMessage);
 
 	// Provide the option for the identity of the receipient to be unimportant when the response arrives
-	iPostedToId = aRecipientIdCritical ? aRecipient.RecipientId() : TNodeId::NullId();
+	ClearPostedTo();
+    if (aRecipientIdCritical)
+        {
+        SetPostedTo(aRecipient);
+        }
 	}
 
 //Avoid using this function, always prefer PostRequestTo(const RNodeInterface& aRecipient, const TNodeSignal& aMessage)
@@ -383,7 +422,11 @@ EXPORT_C void CNodeActivityBase::PostRequestTo(const TNodeId& aRecipient, const 
 	RClientInterface::OpenPostMessageClose(TNodeCtxId(ActivityId(), iNode.Id()), aRecipient, aMessage);
 
 	// Provide the option for the identity of the receipient to be unimportant when the response arrives
-	iPostedToId = aRecipientIdCritical ? aRecipient : TNodeId::NullId();
+	ClearPostedTo();
+	if (aRecipientIdCritical)
+	    {
+        SetPostedTo(aRecipient);
+	    }
 	}
 
 EXPORT_C TBool CNodeActivityBase::IsIdle() const
@@ -416,6 +459,49 @@ EXPORT_C void CNodeActivityBase::Abort(TNodeContextBase& aContext, TBool aIsNode
 			}
         }
     }
+
+
+
+
+//-=========================================================
+//
+//CNodeActivityBase::RPostedToNodeOrPeer
+//
+//-=========================================================
+CNodeActivityBase::RPostedToNodeOrPeer::RPostedToNodeOrPeer() 
+    {
+    Close();
+    }
+
+void CNodeActivityBase::RPostedToNodeOrPeer::Open(const Messages::RNodeInterface& aPeer)
+    {
+    Close();
+    *_Peer() = const_cast<Messages::RNodeInterface*>(&aPeer);
+    }
+
+void CNodeActivityBase::RPostedToNodeOrPeer::Open(const Messages::TNodeId& aNode)
+    {
+    __ASSERT_DEBUG(aNode.Ptr(), User::Panic(KSpecAssert_ElemMeshMachActC, 15));    
+    //see Messages::TNodeId::operator= (snapping size is essential in case aNode is more than just plain TNodeId).
+    *_Node() = Messages::TNodeId(); 
+    
+    //normal assigment
+    *_Node() = aNode;
+    }
+void CNodeActivityBase::RPostedToNodeOrPeer::Close()
+    {
+    Mem::FillZ(iBuf, sizeof(iBuf));
+    }
+
+const Messages::RNodeInterface* CNodeActivityBase::RPostedToNodeOrPeer::Peer() const
+    {
+    return _Node()->Ptr() ? NULL : *_Peer();
+    }
+const Messages::TNodeId& CNodeActivityBase::RPostedToNodeOrPeer::NodeId() const
+    {
+    return (_Node()->Ptr() ? *_Node() : (*_Peer() ? (*_Peer())->RecipientId() : Messages::TNodeId::NullId()));
+    }
+
 
 //-=========================================================
 //
@@ -461,20 +547,80 @@ EXPORT_C void CNodeRetryActivity::ReturnInterfacePtrL(AActivitySemaphore*& aInte
     aInterface = this;
     }
 
+// BitMap utility used only by CNodeParallelActivityBase::GetNextActivityCount
+template<TInt SIZE>
+class TBitmap {
+public:
+    static const TInt iSize = sizeof(TUint32) * 8;
+    static const TUint32 iSizeMask = iSize - 1;
+    static const TUint32 iFull = ~0;
+    static const TInt iCount = (SIZE + iSizeMask) / iSize;
+    TBitmap();
+    void SetBit(TUint aBitNum);
+    TInt GetFreeBit() const;
+
+private:
+    TUint32 iBits[iCount];
+};
+
+template<TInt SIZE>
+TBitmap<SIZE>::TBitmap()
+{
+    for (TInt i = 0 ; i < iCount ; ++i)
+        {
+        iBits[i] = 0;
+        }
+}
+
+template<TInt SIZE>
+void TBitmap<SIZE>::SetBit(TUint aBitNum)
+    {
+    const TInt index = aBitNum / iSize;
+	__ASSERT_ALWAYS(index < iCount,User::Panic(KMMActivityPanic,EPanicOutOfBounds));
+
+    iBits[index] |= 1 << (aBitNum & iSizeMask);
+    }
+
+template<TInt SIZE>
+TInt TBitmap<SIZE>::GetFreeBit() const
+    {
+    for (TInt i = 0 ; i < iCount ; ++i)
+        {
+        const TUint32 bits = iBits[i];
+        if (bits != iFull)
+            {
+			// Bitmap represents list of activity IDs. Activity ID 1 is a reserved value.
+			// In order to mirror this fact the first bit of the bitmap is also always reserved
+            TUint32 mask = 2;
+            for (TInt bitIndex = 1 ; bitIndex < iSize ; ++bitIndex)
+                {
+                if ((bits & mask) == 0)
+                    {
+                    return (i * iSize) + bitIndex;
+                    }
+                mask <<= 1;
+                }
+            }
+        }
+    return KErrNotFound;
+    }
+
+
 //-=========================================================
 //
 //CNodeParallelActivityBase
 //
 //-=========================================================
-// For custom activities to implement NewL
-EXPORT_C TUint CNodeParallelActivityBase::GetNextActivityCountL( const TNodeActivity& aActivitySig, const AMMNodeBase& aNode )
+
+
+// For custom activities to implement New
+EXPORT_C TUint CNodeParallelActivityBase::GetNextActivityCount( const TNodeActivity& aActivitySig, const AMMNodeBase& aNode )
 	{
-	TInt c = 1, i = 0;
+	TInt c = 1;
 	
 	const RPointerArray<CNodeActivityBase>& activities = aNode.Activities();
-	RArray<TInt> activityids;
-	CleanupClosePushL(activityids);
-
+	
+	TBitmap<256> activityids;
 	// collect the currently used ids
 	for (TInt i = 0; i < activities.Count(); i++)
 		{
@@ -482,23 +628,12 @@ EXPORT_C TUint CNodeParallelActivityBase::GetNextActivityCountL( const TNodeActi
 		if ((id&0xff) == aActivitySig.iId)
 			{
 			TInt8 uniqueid = id >> 8;
-			activityids.InsertInOrderL(uniqueid);
+			activityids.SetBit(uniqueid);
 			}
 		}
-
-	// find first available.
-	while (i < activityids.Count()
-          && activityids[i] == c)
-		{
-		++i;
-		++c;
-		}
-	CleanupStack::PopAndDestroy(&activityids);
-
-	if(c > KActivityParallelRangeMax>>8)
-		{
-		User::Leave(KErrInUse);
-		}
+	c = activityids.GetFreeBit();
+	
+	__ASSERT_ALWAYS(c>=0,User::Panic(KMMActivityPanic,EPanicOutOfActivities));
     return c;
 	}
 

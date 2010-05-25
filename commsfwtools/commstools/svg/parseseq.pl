@@ -56,8 +56,10 @@ use Cwd;
 
 my $version = "2.2 (27/02/08)";
 
-getopts("MHpx:N:A:vVr:R:hnf");
-our($opt_M, $opt_H, $opt_p, $opt_x, $opt_N, $opt_A, $opt_v, $opt_V, $opt_r, $opt_R, $opt_h, $opt_n, $opt_f);
+getopts("MHpx:N:A:vVr:R:hnfo:");
+our($opt_M, $opt_H, $opt_p, $opt_x, $opt_N, $opt_A, $opt_v, $opt_V, $opt_r, $opt_R, $opt_h, $opt_n, $opt_f, $opt_o);
+
+my $outputPath = processPathArgument($opt_o);
 
 if ($opt_h)
 {
@@ -122,8 +124,10 @@ Usage:
                             [6] AgentSCPr :: AgentSCprStart
                             Select activity to draw:
                             ...
-			    
- -h                         This help message
+
+-o <path>					Place all output files into <path>/html/ directory (including log.html).
+
+-h                         This help message
 HELP
     exit (0);
 }
@@ -307,6 +311,7 @@ if ($totalRows <= $maxRowsToDisplay) {
 	my $rowsPerView = int(($rowsToDisplay + $viewsToDisplay - 1) / $viewsToDisplay);
 	my $viewNumber = 0;
 	createViewMap();
+	createIpcMap();
 	while ($beginRow < $totalRows) {
 		$endRow = $beginRow + $rowsPerView - 1;
 		if ($endRow >= $totalRows) {
@@ -318,6 +323,7 @@ if ($totalRows <= $maxRowsToDisplay) {
 		$beginRow = $endRow + 1;
 	}
 	closeViewMap($viewNumber);
+	closeIpcMap($viewNumber);
 }
 
 print "\n" if ($opt_V);
@@ -353,19 +359,22 @@ sub drawView($$$$) {
 		$fileName .= $viewNumber;
 		}
 
-	open SVG, ">html/${fileName}.svg" || die "Cannot open html/${fileName}.svg for writing\n";
+	my $path = $outputPath . "html/${fileName}.svg";
+	open SVG, ">$path" || die "Cannot open $path for writing\n";
 	#open RTTTL, ">html/${fileName}.rtttlpre" || die "Cannot open html/${fileName}.rttlpre for writing\n";
 
 	outputDocHeader($screenWidth, $screenHeight);
-	drawObjectNames(0);
 	updateObjectViewList($viewNumber);
 	drawObjectLifelines($beginRow, $endRow, $screenHeight);
+	drawObjectNames(0);
 	drawActivities($beginRow, $endRow, $screenHeight, $viewNumber);
 	my @labelsOnPage = ();
 	my @objectsDestroyed = ();
 	my @objectsCreated = ();
-	drawSequences($beginRow, $endRow, 1, \@labelsOnPage, \@objectsCreated, \@objectsDestroyed);
+	my @ipc = ();
+	drawSequences($beginRow, $endRow, 1, \@labelsOnPage, \@objectsCreated, \@objectsDestroyed, \@ipc);
 	outputViewMap($viewNumber, $lastViewNumber, \@labelsOnPage, \@objectsCreated, \@objectsDestroyed);
+	outputIpcMap($viewNumber, $lastViewNumber, \@ipc);
 	outputDocFooter();
 
 	close SVG;
@@ -379,9 +388,11 @@ sub drawView($$$$) {
 	resetForNextView();
 }
 
-sub createSubDir() {
-	if (! -d html) {
-		mkdir "html" || die "Cannot create 'html' subdirectory\n";
+sub createSubDir()
+{
+	my $path = $outputPath . "html"; 
+	if (! -d $path) {
+		mkdir $path || die "Cannot create $path subdirectory\n";
 	}
 }
 sub resetForNextView() {
@@ -946,11 +957,12 @@ sub drawObjectNames($)
 			{
 			if ($i->{Order} == 0)
 				{
-				$colour = "";
+				$colour = "!";
 				}
 			else
 				{
 				$colour = (($i->{Order} % 2) == 0) ? $objectNameColour1 : $objectNameColour2;
+				$colour = "!" . $colour;
 				}
 			}
 		my $name = $i->{Name};
@@ -967,10 +979,11 @@ sub drawObjectNames($)
 		    }
 		else
 		    {
-		    outputText($i->{X}, $name, $currentY, "middle", $colour, qq{id="$name" onclick="debugEvent(evt)"});
+			my $stagger = ($i->{colno} & 1);
+		    outputText($i->{X}, $name, $currentY + ($stagger * $incrementY), "middle", $colour, qq{id="$name" onclick="debugEvent(evt)"});
 		    }
 		} 
-	incrementY();
+	incrementY(2);
 	}
 
 #
@@ -1137,7 +1150,7 @@ sub closeActivity($$$)
 
 sub drawSequences($$$$$$)
 	{
-	my ($startRow, $endRow, $drawFlag, $labelsOnPageRef, $objectsCreatedRef, $objectsDestroyedRef) = @_;
+	my ($startRow, $endRow, $drawFlag, $labelsOnPageRef, $objectsCreatedRef, $objectsDestroyedRef, $ipcRef) = @_;
 	my $nextLabel = "";
 
 	# startRow/endRow = start/end row of displayed area (inclusive)
@@ -1150,7 +1163,6 @@ sub drawSequences($$$$$$)
 	my $drawDone = 0;
 	my $inRange = 0;
 	my $lastPopupText = "";		# text of last "pn" action
-
 	foreach my $ref (@sequences) {
 		my $action = $ref->{Action};
 
@@ -1169,7 +1181,8 @@ sub drawSequences($$$$$$)
 						$colour .= "rgb($1)";
 						$text = $2;
 					}
-					my $attrs = generatePopupAttrs(\$lastPopupText, qq{id="$ref->{Object}->{Name}"});
+					my $name = $ref->{Object}->{Name};
+					my $attrs = generatePopupAttrs(\$lastPopupText, qq{id="$name"});
 					outputText($objX + $lifelineTextLeftMargin, $text, $currentY, "begin", $colour, $attrs);
 					$drawDone = 1;
 					# support for putting threads into the view map
@@ -1180,6 +1193,9 @@ sub drawSequences($$$$$$)
 						} elsif ($2 eq "Destroyed") {
 							push @{$objectsDestroyedRef}, $1;
 						}
+					}
+					if ($name =~ s/^!//) {
+						push @{$ipcRef}, $ref;
 					}
 				} else {
 					fakeUpCreationDeletionIfRequired($ref->{Object}, $absoluteRow);
@@ -1384,16 +1400,16 @@ sub drawSequences($$$$$$)
 			$inRange = IsInRangeInclusive($absoluteRow, $startRow, $endRow);
 			if ($inRange)
 				{
-				# drawObjectNames() increments Y once, and we increment Y once for
-				# spacing, so we occupy two rows here.
-				$rows += 2;
+				# drawObjectNames() increments Y twice (for stagger), and we increment Y once for
+				# spacing, so we occupy three rows here.
+				$rows += 3;
 				if ($drawFlag == 1)
 					{
 					drawObjectNames(1);
 					incrementY();
 					}
 				}
-			$absoluteRow += 2;
+			$absoluteRow += 3;		# 2 + 1 for stagger
 			}
 		}
 	return $rows;
@@ -1699,7 +1715,8 @@ sub readIniFile()
 
 sub createViewMap()
 {
-	open MAP, ">logmap.html" || die "Cannot open logmap.html for writing\n";
+	my $path = $outputPath . "html/logmap.html";
+	open MAP, ">$path" || die "Cannot open $path for writing\n";
 	print MAP "<html>\n<body>\n";
 	
 	# Begin page label/time table
@@ -1830,6 +1847,84 @@ sub updateObjectViewList($)
 	}
 }
 
+sub createIpcMap()
+{
+	my $path = $outputPath . "html/ipcmap.html";
+	open IPC, ">$path" || die "Cannot open $path for writing\n";
+	print IPC "<html><head>\n";
+	print IPC qq{<style type="text/css">};
+	print IPC "td,th { text-align: left; font-family: courier new; white-space: nowrap ; font-size: smaller}\n";
+	print IPC "</style></head><body>\n";
+	
+	# Begin page label/time table
+	print IPC qq { <table border="1" >\n };
+	print IPC qq { <tr><th style="text-align: center">Page</th><th style="text-align: center">EXEs...</th></tr>\n };
+}
+
+sub closeIpcMap()
+{
+	print IPC "</table></body></html>\n";
+	close IPC;
+}
+
+my @IpcExeColumns = ();
+
+sub addToArrayUniquely($$)
+{
+	my ($arrRef, $element) = @_;
+	foreach my $i ( @{$arrRef} ) {
+		if ($i eq $element) {
+			return;
+		}
+	}
+	push @{$arrRef}, $element;
+}
+
+sub outputIpcMap($$$)
+{
+	my ($viewNumber, $lastViewNumber, $ipcRef) = @_;
+	my %ipcExeUsed = ();
+	my $exe;
+	my $ipc;
+	foreach $ipc (@{$ipcRef}) {
+		$exe = $ipc->{Object}->{Name};
+		addToArrayUniquely(\@IpcExeColumns, $exe);
+		$ipcExeUsed{$exe} = 1;
+	}
+	
+	# Page number in first column (two rows)
+	#my $style = qq{style="text-align: left; font-family: courier new; white-space: nowrap ; font-size: smaller"};
+	print IPC qq {<tr><td rowspan="2" style="text-align: center">$viewNumber</td>\n};
+	
+	# Second and subsequent columns showing the exe names
+	foreach $exe ( @IpcExeColumns ) {
+		my $exe2 = $exe;			# why do things go wrong if I operate directly on $exe???
+		$exe2 =~ s/^!//;
+		if (!defined($ipcExeUsed{$exe})) {
+			print IPC qq{<td style="text-align: center ; color: gray">$exe2</td>};
+		} else {
+			print IPC qq{<td style="text-align: center">$exe2</td>};
+		}
+	}
+
+	# next row
+	print IPC qq{</tr>\n<tr>};
+	# for each exe there is column...
+	my $rr;
+	foreach $rr ( @IpcExeColumns ) {
+		print IPC qq{<td>};
+		# ...showing the IPCs
+		foreach my $ref ( @{$ipcRef} ) {
+			if ($ref->{Object}->{Name} eq $rr) {
+				print IPC qq{$ref->{Text}<br>};
+			} else {
+				print IPC qq{<br>};
+			}
+		}
+		print IPC qq{</td>};
+	}
+	print IPC qq {</tr>\n};
+}
 
 #
 # Output the "0 1 2 3 4 ..." anchors representing the different views
@@ -1847,6 +1942,34 @@ sub outputHTMLPageLinks($$$$) {
 				print HTML qq{&nbsp;<a href="${htmlPathLastView}log.html">$i</a>\n};
 			}
 		}
+	}
+}
+
+sub processPathArgument($)
+{
+	my $path = $_[0];
+	if ($path) {
+		# ensure "/" at the end
+		if ($path !~ /\/$/) {
+			$path .= "/";
+		}
+		mkdirp($path);
+		return $path;
+	} else {
+		return "";
+	}
+}
+
+sub mkdirp($) 
+{ 
+    my $dirName = @_[0]; 
+    if ($dirName =~ m/^(.*)\//i) { 
+        if ($1 ne "") { 
+            mkdirp($1); 
+        } 
+    } 
+	if (! -d $dirName) {
+		mkdir($dirName); 
 	}
 }
 
@@ -1874,7 +1997,8 @@ sub outputHTMLEmbedder($$$$$)
 		$svgPathInHtmlFile = "html/" . $fileName;
 		$mainPath = "";
 	}
-	open HTML, ">${htmlPath}.html" || die "Cannot open ${htmlPath}.html for writing\n";
+	my $path = $outputPath . $htmlPath . ".html";
+	open HTML, ">$path" || die "Cannot open $path for writing\n";
 
 	if (! $opt_f) {
 		# DOCTYPE needed for "position: fixed" to work in IE 
@@ -1917,6 +2041,7 @@ sub outputHTMLEmbedder($$$$$)
 	print HTML qq{<input type="button" value="Symbols" onclick="popupSymbols()">\n};
 	print HTML qq{<input type="button" value="Relations" onclick="popupRelations()">\n};
 	print HTML qq{<input type="button" value="Map" onclick="popupMap()">\n};
+	print HTML qq{<input type="button" value="IPC Map" onclick="popupIpcMap()">\n};
 	print HTML qq{&nbsp;Zoom%\n<input type="text" size=3 maxlength=3 onkeypress="zoom(this,event)" />\n};
 
 	if ($opt_f) {
@@ -2010,16 +2135,20 @@ function loadPosition() {
 //
 
 function popupSymbols() {
-	symbols = window.open(mainPath + "logsym.html", "_blank", "width=400,resizable=yes,scrollbars=yes");
+	symbols = window.open(mainPath + "html/logsym.html", "_blank", "width=400,resizable=yes,scrollbars=yes");
 }
 
 function popupRelations() {
-	relations = window.open(mainPath + "relations.html", "_blank", "resizable=yes,scrollbars=yes,status=yes");
+	relations = window.open(mainPath + "html/relations.html", "_blank", "resizable=yes,scrollbars=yes,status=yes");
 	relationsDefined = 1;
 }
 
 function popupMap() {
-	relations = window.open(mainPath + "logmap.html", "_blank", "resizable=yes,scrollbars=yes,status=yes");
+	relations = window.open(mainPath + "html/logmap.html", "_blank", "resizable=yes,scrollbars=yes,status=yes");
+}
+
+function popupIpcMap() {
+	relations = window.open(mainPath + "html/ipcmap.html", "_blank", "resizable=yes,scrollbars=yes,status=yes");
 }
 
 //

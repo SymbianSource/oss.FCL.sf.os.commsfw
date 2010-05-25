@@ -43,7 +43,16 @@ using namespace CoreNetStates;
 using namespace MeshMachine;
 using namespace Messages;
 
-
+//-=========================================================
+//
+//Panics
+//
+//-=========================================================
+_LIT (KCoreCPRActivityPanic,"CoreCPRActivityPanic");
+enum
+	{
+	EPanicNoPrealloc = 1
+	};
 
 //-=========================================================
 //
@@ -202,8 +211,8 @@ NODEACTIVITY_END()
 
 namespace CprClientLeaveActivity
 {
-DECLARE_DEFINE_CUSTOM_NODEACTIVITY(ECFActivityClientLeave, CprClientLeave, TNodeSignal::TNullMessageId, CClientLeaveActivity::NewL)
-	FIRST_NODEACTIVITY_ENTRY(CoreStates::TAwaitingClientLeave, MeshMachine::TNoTag)
+DECLARE_DEFINE_RESERVED_CUSTOM_NODEACTIVITY(ECFActivityClientLeave, CprClientLeave, TCFServiceProvider::TLeaveRequest, CClientLeaveActivity::New)
+	FIRST_NODEACTIVITY_ENTRY(MeshMachine::TAwaitingMessageState<TCFServiceProvider::TLeaveRequest>, MeshMachine::TNoTag)
 	THROUGH_NODEACTIVITY_ENTRY(KNoTag, CClientLeaveActivity::TRemoveClientAndDestroyOrphanedDataClients, CClientLeaveActivity::TNoTagOrSendPriorityToCtrlProvider)
 	NODEACTIVITY_ENTRY(CprStates::KSendPriorityToCtrlProvider, CClientLeaveActivity::TUpdatePriorityForControlProvider, CoreStates::TAwaitingJoinComplete, CClientLeaveActivity::TNoTagOrSendPriorityToServProvider)
 	NODEACTIVITY_ENTRY(CprStates::KSendPriorityToServProvider, CClientLeaveActivity::TUpdatePriorityForServiceProviders, CoreStates::TAwaitingJoinComplete, MeshMachine::TNoTag)
@@ -286,10 +295,16 @@ EXPORT_C CControlClientJoinActivity::~CControlClientJoinActivity()
 
 namespace CprClientLeaveActivity
 {
-EXPORT_C MeshMachine::CNodeActivityBase* CClientLeaveActivity::NewL(  const MeshMachine::TNodeActivity& aActivitySig, MeshMachine::AMMNodeBase& aNode )
+EXPORT_C MeshMachine::CNodeActivityBase* CClientLeaveActivity::New(  const MeshMachine::TNodeActivity& aActivitySig, MeshMachine::TNodeContextBase& aContext )
 	{
-	TUint c = GetNextActivityCountL(aActivitySig,aNode);
-	return new(ELeave)CClientLeaveActivity(aActivitySig, aNode, c);
+	TUint c = GetNextActivityCount(aActivitySig,aContext.Node());
+	
+	// Instantiate using memory preallocated and stored in the RCFNodeInterface
+	TAny* preallocatedSpace = aContext.iPeer->ClaimPreallocatedSpace(sizeof(CClientLeaveActivity));
+	__ASSERT_ALWAYS(preallocatedSpace != NULL,User::Panic(KCoreCPRActivityPanic,EPanicNoPrealloc));
+
+	CClientLeaveActivity* self = new(preallocatedSpace)CClientLeaveActivity(aActivitySig, aContext.Node(), c);
+	return self;
 	}
 
 CClientLeaveActivity::CClientLeaveActivity(const MeshMachine::TNodeActivity& aActivitySig, MeshMachine::AMMNodeBase& aNode, TUint aActivitiesCount)

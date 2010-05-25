@@ -71,10 +71,13 @@ class CMMCommsProviderBase : public CCommsProviderBase,
 	friend class IpCprStates::TSendParamsToSelf;
 	friend class IpCprStates::TUpdateNetMCPR;
 	friend class PRStates::TRespondWithRetrievedParams;
-
+	
 public:
 	typedef ITFHIERARCHY_LINK_1(CMMCommsProviderBase, MeshMachine::AMMNodeBase, MAccessPointConfigApi) TIfStaticFetcherNearestInHierarchy;
 	IMPORT_C void ReturnInterfacePtrL(MAccessPointConfigApi*& aInterface);
+
+	IMPORT_C virtual Messages::RNodeInterface* AddClientL(const Messages::TNodeId& aClientId, const Messages::TClientType& aClientType, TAny* aClientInfo = NULL);
+
 	void DestroyOrphanedDataClients();
 
 	IMPORT_C void SetParametersL(const RCFParameterFamilyBundleC& aParameterBundle);
