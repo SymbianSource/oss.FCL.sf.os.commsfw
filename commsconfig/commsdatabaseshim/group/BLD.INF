@@ -19,7 +19,7 @@
  @file
 */
 
-#include "../commdbshim/group/BLD.INF"
+#include "../commdbshim/group/bld.inf"
 
 PRJ_PLATFORMS
 

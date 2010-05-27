@@ -26,8 +26,8 @@ DEFAULT
 
 
 PRJ_TESTEXPORTS
-../scripts/TE_StateMachine.script	z:/testdata/scripts/StateMachine/TE_StateMachine.script
-../configs/StateMachine.ini			z:/testdata/configs/StateMachine/StateMachine.ini
+../scripts/TE_StateMachine.script	z:/testdata/scripts/statemachine/te_statemachine.script
+../configs/StateMachine.ini			z:/testdata/configs/statemachine/statemachine.ini
 ./Te_ElementServer.iby				/epoc32/rom/include/te_elementserver.iby
 
 PRJ_TESTMMPFILES
