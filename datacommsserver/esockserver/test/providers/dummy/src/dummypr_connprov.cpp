@@ -27,6 +27,7 @@
 #include "dummypr_metaconnprov.h"
 #include "dummypr_connprov.h"
 #include "dummypr_subconnprov.h"
+#include "activityTest.h"
 
 #include <elements/sd_mintercept.h>
 
@@ -51,12 +52,63 @@ using namespace PRActivities;
 static const TUint KDefaultMaxPreallocatedActivityCount = 2;
 static const TUint KMaxPreallocatedActivitySize = sizeof(MeshMachine::CNodeRetryParallelActivity) + sizeof(MeshMachine::APreallocatedOriginators<4>);
 static const TUint KDummyCPRPreallocatedActivityBufferSize = KDefaultMaxPreallocatedActivityCount * KMaxPreallocatedActivitySize;
-
+static const TUint KDestroyDelay = 3;
+static const TUint KMillion = 1000000;
 //-================================================
 //
 // States and Transitions
 //
 //-================================================
+CDelayTimer* CDelayTimer::NewL( Messages::RNodeInterface* aSender, const Messages::TNodeId& aRecipient, const Messages::TNodeSignal::TMessageId& aMessageId )
+    {
+    CDelayTimer* timer = new(ELeave) CDelayTimer( aSender, aRecipient, aMessageId );
+    CleanupStack::PushL( timer );
+    timer->ConstructL();
+    CleanupStack::Pop();
+    return timer;
+    }
+
+CDelayTimer::~CDelayTimer()
+    { 
+    Cancel();
+    }
+    
+CDelayTimer::CDelayTimer( Messages::RNodeInterface* aSender, const Messages::TNodeId& aRecipient, const Messages::TNodeSignal::TMessageId& aMessageId ) :
+    CTimer( EPriorityStandard ),
+    iSender(aSender),
+    iRecipient(aRecipient),
+    iMessageId(aMessageId)
+    {
+    CActiveScheduler::Add( this );
+    }
+    
+void CDelayTimer::ConstructL()
+    {
+    CTimer::ConstructL();
+    }
+    
+void CDelayTimer::RunL()
+    {
+    CDelayTimer::TDelayMessage msg(iMessageId);
+    Messages::RClientInterface::OpenPostMessageClose(iSender->RecipientId() , iRecipient, msg );
+    delete this;
+    }
+
+void CDelayTimer::Start( TInt aIntervalInSecs )
+    {
+    After( TTimeIntervalMicroSeconds32( aIntervalInSecs * KMillion ) );
+    }
+
+CDelayTimer::TDelayMessage::TDelayMessage()
+    {
+    }
+
+CDelayTimer::TDelayMessage::TDelayMessage(const TNodeSignal::TMessageId& aMessageId)
+:   TSignatureBase(aMessageId)
+    {
+    }
+
+
 namespace DummyCPRStates
 {
 DEFINE_SMELEMENT(TSetClientAsIncoming, NetStateMachine::MStateTransition, DummyCPRStates::TContext)
@@ -86,6 +138,13 @@ void TCreateIncomingSCPR::DoL()
 	createSCPR.DoL();
 	}
 
+DEFINE_SMELEMENT(TThreeSecDelayAndPostToSelf, NetStateMachine::MStateTransition, DummyCPRStates::TContext)
+void TThreeSecDelayAndPostToSelf::DoL()
+    {
+    CDelayTimer* delay = CDelayTimer::NewL(iContext.Node().ControlProvider(), iContext.NodeId(), iContext.iMessage.MessageId() );
+    delay->Start(KDestroyDelay);
+    }
+
 DEFINE_SMELEMENT(TAwaitingStart, NetStateMachine::MState, DummyCPRStates::TContext)
 TBool TAwaitingStart::Accept()
 	{
@@ -100,6 +159,24 @@ TBool TAwaitingStart::Accept()
     	}
     return EFalse;
 	}
+
+DEFINE_SMELEMENT(TAwaitingDestroy, NetStateMachine::MState, DummyCPRStates::TContext)
+TBool TAwaitingDestroy::Accept()
+    {
+    const TLayerSelectionInfo* selectionInfo = static_cast<const TLayerSelectionInfo*>(
+        iContext.Node().AccessPointConfig().FindExtension(TLayerSelectionInfo::TypeId()));
+    ASSERT(selectionInfo); // should always be there
+
+    if (iContext.iMessage.IsMessage<TEChild::TDestroy>() && 
+            TCprConfigModifier::Is(selectionInfo->CprConfig(), TCprConfigModifier::ECPRWaitOnThreeSecDestroy)
+            && iContext.iNode.CountActivities(ECFActivityDummyCprDestroy) == 0 ) // only accept the first destroy which will subsequently be reposted to self after 3 second
+        {
+        static_cast<ESock::CMMCommsProviderBase&>(iContext.iNode).MarkMeForDeletion();
+        return ETrue;
+        }
+    return EFalse;
+    }
+
 }
 
 //-================================================
@@ -136,18 +213,47 @@ DECLARE_DEFINE_CUSTOM_NODEACTIVITY(ECFActivityStart, DummyCPrStart, TCFServicePr
 NODEACTIVITY_END()
 }
 
+// Activity Map For test-code ridden cpr
+namespace DummyCprDestroyActivity
+{
+DECLARE_DEFINE_NODEACTIVITY(ECFActivityDummyCprDestroy, DummyCprDestroy, TEChild::TDestroy)
+    FIRST_NODEACTIVITY_ENTRY(DummyCPRStates::TAwaitingDestroy, MeshMachine::TNoTag)
+    NODEACTIVITY_ENTRY(KNoTag, DummyCPRStates::TThreeSecDelayAndPostToSelf, MeshMachine::TAwaitingMessageState<Messages::TEChild::TLeft>, MeshMachine::TTag<PRStates::KContinue>)
+    LAST_NODEACTIVITY_ENTRY(PRStates::KContinue, MeshMachine::TDoNothing)
+NODEACTIVITY_END()
+}
+
 // Activity Map
 namespace DummyCPRStates
 {
 DECLARE_DEFINE_ACTIVITY_MAP(stateMap)
    ACTIVITY_MAP_ENTRY(DummyCprBinderRequestActivity, DummyCprBinderRequest)
    ACTIVITY_MAP_ENTRY(DummyCprStartActivity, DummyCPrStart)
+   ACTIVITY_MAP_ENTRY(DummyCprDestroyActivity, DummyCprDestroy)
+ACTIVITY_MAP_END_BASE(MobilityCprActivities, mobilityCprActivities)
+}
+
+
+// Activity Map For vanilla cpr
+namespace VanillaDummyCPRStates
+{
+DECLARE_DEFINE_ACTIVITY_MAP(stateMap)
+   ACTIVITY_MAP_ENTRY(CancelTestBindToActivity, CancelBindTo)   
 ACTIVITY_MAP_END_BASE(MobilityCprActivities, mobilityCprActivities)
 }
 
 CDummyConnectionProvider* CDummyConnectionProvider::NewL(ESock::CConnectionProviderFactoryBase& aFactory, TConnType aConnStatus)
     {
-    CDummyConnectionProvider* self = new (ELeave) CDummyConnectionProvider(aFactory, aConnStatus);
+    CDummyConnectionProvider* self = new (ELeave) CDummyConnectionProvider(aFactory, DummyCPRStates::stateMap::Self(), aConnStatus);
+    CleanupStack::PushL(self);
+    self->ConstructL(KDummyCPRPreallocatedActivityBufferSize);
+    CleanupStack::Pop(self);
+    return self;
+    }
+
+CDummyConnectionProvider* CDummyConnectionProvider::NewVanillaL(ESock::CConnectionProviderFactoryBase& aFactory)
+    {
+    CDummyConnectionProvider* self = new (ELeave) CDummyConnectionProvider(aFactory, VanillaDummyCPRStates::stateMap::Self(), CDummyConnectionProvider::EConnNoIncoming);
     CleanupStack::PushL(self);
     self->ConstructL(KDummyCPRPreallocatedActivityBufferSize);
     CleanupStack::Pop(self);
@@ -155,8 +261,8 @@ CDummyConnectionProvider* CDummyConnectionProvider::NewL(ESock::CConnectionProvi
     }
 
 
-CDummyConnectionProvider::CDummyConnectionProvider(CConnectionProviderFactoryBase& aFactory, TConnType aConnStatus)
-:	CMobilityConnectionProvider(aFactory, DummyCPRStates::stateMap::Self()),
+CDummyConnectionProvider::CDummyConnectionProvider(CConnectionProviderFactoryBase& aFactory, const MeshMachine::TNodeActivityMap& aActivityMap, TConnType aConnStatus)
+:	CMobilityConnectionProvider(aFactory, aActivityMap),
 	TIfStaticFetcherNearestInHierarchy(this),
     iConnStatus(aConnStatus)
 	{
@@ -186,6 +292,8 @@ void CDummyConnectionProvider::ReturnInterfacePtrL(ESock::MLegacyControlApiExt*&
     {
     aInterface = this;
     }
+
+
 
 
 

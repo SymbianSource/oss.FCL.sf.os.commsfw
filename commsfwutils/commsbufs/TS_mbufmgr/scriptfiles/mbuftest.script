@@ -125,6 +125,17 @@ PRINT ------------------------------
 PRINT
 END_TESTCASE			COMINF-MBUFMGR-0602
 
+START_TESTCASE			COMINF-MBUFMGR-0603
+//! @SYMTestCaseID		COMINF-MBUFMGR-0603
+PRINT Test 06: Split a chain of big bufs when only small reamaining
+HANDLES_MARK
+RUN_TEST_STEP 10000, TS_CTMBufMgr, MBufMgrTest06 ,z:\testdata\configs\MBufTest06-4th.ini
+TEST_COMPLETE
+HANDLES_CHECK
+PRINT ------------------------------
+PRINT
+END_TESTCASE			COMINF-MBUFMGR-0603
+
 START_TESTCASE			COMINF-MBUFMGR-0700
 //! @SYMTestCaseID		COMINF-MBUFMGR-0700
 PRINT Test 07: TrimStart the chain on the first and only RMBuf

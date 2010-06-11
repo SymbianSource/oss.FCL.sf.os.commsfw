@@ -26,13 +26,19 @@
 
 #include <comms-infras/mobilitycpr.h>
 #include <comms-infras/mobilitycprstates.h>
-
+#include <elements/mm_activities_internal.h> 
 
 #ifdef __FLOG_ACTIVE
 // CommsDebugUtility logging tags. Use them to enable tracing for DummyCPR
 _LIT8(KTestDummyLogTag1,"TestDummyConnProv");
 _LIT8(KTestDummyLogTag2,"TestDummyRef");
 #endif
+
+enum TCFNodeActivityId
+    {
+    ECFActivityDummyCprDestroy                 = ESock::ECFActivityCustom +1,
+    };
+
 
 class CDummyConnectionProvider : public CMobilityConnectionProvider, public ESock::MLegacyControlApiExt,
                                  public ITFHIERARCHY_LINK_1(CDummyConnectionProvider, CMobilityConnectionProvider, ESock::MLegacyControlApiExt)
@@ -59,10 +65,44 @@ public:
          };
 
     static CDummyConnectionProvider* NewL(ESock::CConnectionProviderFactoryBase& aFactory, TConnType aConnStatus);
-    CDummyConnectionProvider(ESock::CConnectionProviderFactoryBase& aFactory, TConnType aConnStatus);
+    static CDummyConnectionProvider* NewVanillaL(ESock::CConnectionProviderFactoryBase& aFactory);
+    
+    CDummyConnectionProvider(ESock::CConnectionProviderFactoryBase& aFactory, const MeshMachine::TNodeActivityMap& aActivityMap, TConnType aConnStatus);
+    
 public:
 	TConnType iConnStatus;
     };
+
+
+class CDelayTimer: public CTimer
+    {
+public:
+    static CDelayTimer* NewL( Messages::RNodeInterface* aSender, const Messages::TNodeId& aRecipient, const Messages::TNodeSignal::TMessageId& aMessageId );
+
+    virtual ~CDelayTimer();
+    void Start( TInt aIntervalInSecs );    
+
+public:
+class TDelayMessage : public Messages::TSignatureBase
+    {
+public:
+    TDelayMessage();
+    TDelayMessage(const TNodeSignal::TMessageId& aMessageId);
+    };
+
+private:
+    CDelayTimer( Messages::RNodeInterface* aSender, const Messages::TNodeId& aRecipient, const Messages::TNodeSignal::TMessageId& aMessageId );
+    void ConstructL();
+    
+protected: // From CTimer (CActive)
+    void RunL();
+        
+private:
+    Messages::RNodeInterface* iSender;
+    Messages::TNodeId iRecipient;
+    Messages::TNodeSignal::TMessageId iMessageId;
+    };
+
 
 //-================================================
 //
@@ -85,6 +125,13 @@ DECLARE_SMELEMENT_HEADER( TAwaitingStart, MeshMachine::TState<TContext>, NetStat
 	virtual TBool Accept();
 DECLARE_SMELEMENT_FOOTER( TAwaitingStart )
 
+DECLARE_SMELEMENT_HEADER( TAwaitingDestroy, MeshMachine::TState<TContext>, NetStateMachine::MState, DummyCPRStates::TContext )
+    virtual TBool Accept();
+DECLARE_SMELEMENT_FOOTER( TAwaitingDestroy )
+
+DECLARE_SMELEMENT_HEADER( TThreeSecDelayAndPostToSelf, MeshMachine::TStateTransition<TContext>, NetStateMachine::MStateTransition, DummyCPRStates::TContext )
+    virtual void DoL();
+DECLARE_SMELEMENT_FOOTER( TThreeSecDelayAndPostToSelf )
 
 } // namespace DummyCPRStates
 

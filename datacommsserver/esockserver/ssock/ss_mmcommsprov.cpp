@@ -19,7 +19,8 @@
 
 #include "ss_mmcommsprov.h"
 #include <elements/nm_messages_child.h>
-#include <elements/mm_activities.h> 
+#include <elements/mm_activities.h>
+#include <comms-infras/corecpractivities.h> 
 #include "ss_nodemessages_internal.h"
 #include "ss_internal_activities.h"
 
@@ -31,6 +32,10 @@ _LIT(KSpecAssert_ESockSSocksmcmsp, "ESockSSocksmcmsp");
 
 using namespace ESock;
 using namespace Messages;
+
+//We reserve space for two preallocated activities that may start concurrently on the connection
+//node: destroy (connection close) and connection stop.
+static const TUint KMaxPreallocatedActivitySize = sizeof(MeshMachine::CNodeRetryParallelActivity) + sizeof(MeshMachine::APreallocatedOriginators<4>);
 
 CMMCommsProviderBase::CMMCommsProviderBase(CCommsFactoryBase& aFactory,
                                     const MeshMachine::TNodeActivityMap& aActivityMap)
@@ -110,6 +115,23 @@ EXPORT_C const RMetaExtensionContainerC& CMMCommsProviderBase::GetAccessPointCon
 EXPORT_C void CMMCommsProviderBase::ReturnInterfacePtrL(MAccessPointConfigApi*& aInterface)
 	{
 	aInterface = this;
+	}
+
+EXPORT_C RNodeInterface* CMMCommsProviderBase::AddClientL(const Messages::TNodeId& aClientId, const Messages::TClientType& aClientType, TAny* aClientInfo)
+	{
+	RNodeInterface* nodeInterface = ANodeBase::AddClientL(aClientId, aClientType, aClientInfo);
+
+	if(aClientType.Type() == TCFClientType::ECtrl)
+		{
+		TRAPD(err, nodeInterface->PreAllocL(KMaxPreallocatedActivitySize));
+		if(err!=KErrNone)
+			{
+			RemoveClient(nodeInterface->RecipientId());
+			User::Leave(err);
+			}
+		}
+
+	return nodeInterface;
 	}
 
 void CMMCommsProviderBase::DestroyOrphanedDataClients()

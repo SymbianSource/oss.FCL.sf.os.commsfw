@@ -1369,6 +1369,17 @@ up and running and that we should bind to a Flow below.
 	        {
             iHostResolverNotify->Error(KErrDisconnected);
 	        }
+	    else
+	    if (iFlowParams.iFlowRequestType == TFlowParams::EExplicitConnection)
+	        {
+            // Re-issue explicit host resolver requests here rather than later on in StartFlowL().  This is
+            // to accomodate the HotSpot server and Internet Connectivity Test (ICT).  The ICT hooks into the
+            // NetCfgExtensionBase mechanism, blocks the interface startup at 8400 and performs a host resolver
+            // request.  However, the TransportFlowShim will only receive StartFlowL() after the interface has
+            // fully come up, so chicken and egg.  Implicit host resolver requests must still be re-issued in
+            // StartFlowL().
+            iHostResolverNotify->StartSending();
+	        }
 	    }
 	}
 
@@ -1409,8 +1420,9 @@ void CTransportFlowShim::StartFlowL(const TRuntimeCtxId& aSender)
 		SetStarted();
 		ClearStopped();
 
-        // A held-over resolution request will now work (if it ever will)
-        if (iHostResolverNotify)
+        // A held-over implicit resolution request will now work (if it ever will).
+		// Explicit host resolver requests have already been re-issued in BindToL().
+        if (iHostResolverNotify && (iFlowParams.iFlowRequestType != TFlowParams::EExplicitConnection))
 	        {
     	    iHostResolverNotify->StartSending();
 	        }

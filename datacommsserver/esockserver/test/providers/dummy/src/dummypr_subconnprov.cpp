@@ -27,6 +27,7 @@
 
 #include "dummypr_subconnprov.h"
 #include "dummypr_metaconnprov.h"
+#include "activityTest.h"
 
 #include <elements/sd_mintercept.h>
 
@@ -92,7 +93,45 @@ TBool TAwaitingBrokenStart::Accept()
 	return (iContext.iMessage.IsMessage<TCFDataClient::TStart>() && 
 			TCprConfigModifier::Is(selectionInfo->CprConfig(), TCprConfigModifier::ESCPRHangOnStart));
 	}
+
+DEFINE_SMELEMENT(TCancelPreviousSelfRequest, NetStateMachine::MStateTransition, DummySCPRStates::TContext)
+void TCancelPreviousSelfRequest::DoL()
+    {
+    iContext.iNodeActivity->PostRequestTo(iContext.Node().Id(), Messages::TEBase::TCancel().CRef());
+    }
+
+DEFINE_SMELEMENT(TRebindSelf, NetStateMachine::MStateTransition, DummySCPRStates::TContext)
+void TRebindSelf::DoL()
+    {
+    iContext.iNodeActivity->PostRequestTo(iContext.Node().Id(), TCFDataClient::TBindTo(Messages::TNodeId::NullId()).CRef());
+    }
+
+
+
+
+CrazyIdle::~CrazyIdle()
+    {
+    ASSERT(PostedToNodeId()==Messages::TNodeId::NullId());
+    }
+
+MeshMachine::CNodeActivityBase* CrazyIdle::NewL(const MeshMachine::TNodeActivity& aActivitySig, MeshMachine::AMMNodeBase& aNode)
+    {
+    return new(ELeave)CrazyIdle(aActivitySig, aNode);
+    }
+
+DEFINE_SMELEMENT(CrazyIdle::TAwaitingCancelled, NetStateMachine::MState, DummySCPRStates::TContext)
+TBool CrazyIdle::TAwaitingCancelled::Accept()
+    {
+    if (iContext.iMessage.IsMessage<Messages::TEBase::TError>())
+        {
+        ASSERT(iContext.iNodeActivity);
+        iContext.iNodeActivity->SetPostedTo(iContext.iNodeActivity->SoleOriginator().Peer().RecipientId());
+        }
+    return EFalse;
+    }
 }
+
+
 
 namespace DummySCprParamsRequest
 {
@@ -133,20 +172,73 @@ DECLARE_DEFINE_CUSTOM_NODEACTIVITY(ECFActivityStart, dummySCPrStart, TCFServiceP
 NODEACTIVITY_END()
 }
 
-// Activity Map
+namespace CrazyIdleActivity
+{
+//CrazyIdleActivity is used to test yet another angle of the meshmachine cancelling behaviour.
+//What it does is:
+//(1) responds to TIdle with an attempt to bind the sender, then, without waiting for the bind to complete
+//(2) responds to TIdle normally (by deleting the sender)
+//(3) cancells the bind request
+//What it tests is:
+//For two related nodes and upon the teardown of their relation there is an obligation to synchronise the activities
+//running on the nodes and awaiting responses from each other. This obligation is put on the requestee, i.e.: a node that perfomes
+//an activity on behalf of a leaving node should gracefully terminate that activity (by having the activity respond to the requestor. 
+//That obligation therefore doesn't rest on the requestor (someone, but not everyone, needs to do something).
+//There's trivial race condition arising from this distribution of responsibility, i.e.: the requestor activity may decide to 
+//cancel when the relation is being terminated and TCancel may hit void. Activities must be resilient to this and not send
+//TCancels to disappearing nodes. CrazyIdleActivity tests precislely this: it initaites an activity (TBindTo), then tears down the
+//relation and cancels the previously initiated activity (TBindTo). CrazyIdleActivity must wrap up gracefully. 
+DECLARE_DEFINE_CUSTOM_NODEACTIVITY(ECFActivityDataClientIdle, crazyIdle, TCFControlProvider::TIdle, DummySCPRStates::CrazyIdle::NewL)
+    FIRST_NODEACTIVITY_ENTRY(CoreNetStates::TAwaitingDataClientIdle, MeshMachine::TNoTag)
+    //Issue TBindTo to self (this will then bind the data client reporting TIdle). Wait for BindTo activity to start before 
+    //telling the dataclient to go away (TDestroy) as otherwise TBindTo won't make it in sending TBindTo to the dataclient.
+    THROUGH_NODEACTIVITY_ENTRY(KNoTag, DummySCPRStates::TRebindSelf, DummySCPRStates::TNoTagWaitForBindTo)
+    THROUGH_NODEACTIVITY_ENTRY(KNoTag, CoreNetStates::THandleDataClientIdle, MeshMachine::TNoTag)
+    //There's an additional test peformed by DummySCPRStates::CrazyIdle::TAwaitingCancelled. The state sets the postedto of CrazyIdle
+    //to point at the dataclient and CrazyIdle::~CrazyIdle asserts that that postedto is cleared. Currently PostedTo isn't cleared automatically - some people
+    //argued that it shouldn't and that activities should clear postedto whenever it's good for them. Unfortunatelly some activities are
+    //a bit lousy doing this and in result they can store a postedto pointing a node that has responded to the request a long time ago
+    //and above all a node that may have a long time ago left. A facility has been added to meshmachine to clear postedto when the node pointed
+    //at it actually leaves. This facility is tested collectivelly by DummySCPRStates::CrazyIdle::TAwaitingCancelled and CrazyIdle::~CrazyIdle
+    NODEACTIVITY_ENTRY(KNoTag, DummySCPRStates::TCancelPreviousSelfRequest, DummySCPRStates::CrazyIdle::TAwaitingCancelled, DummySCPRStates::TNoTagWaitNoDataClients)
+    LAST_NODEACTIVITY_ENTRY(KNoTag, MeshMachine::TDoNothing)
+NODEACTIVITY_END()
+}
+
+
+
+// Activity Map For test-code ridden scpr
 namespace DummySCPRStates
 {
 DEFINE_ACTIVITY_MAP(stateMap)
    ACTIVITY_MAP_ENTRY(DummySCprParamsRequest, dummySCprParamRequest)
    ACTIVITY_MAP_ENTRY(DummyBindToActivity, dummyBindTo)
    ACTIVITY_MAP_ENTRY(DummyBreakStartActivity, dummyBreakSCPrStart)   
-   ACTIVITY_MAP_ENTRY(DummyStartActivity, dummySCPrStart)   
+   ACTIVITY_MAP_ENTRY(DummyStartActivity, dummySCPrStart)
+   ACTIVITY_MAP_ENTRY(CrazyIdleActivity, crazyIdle)     
+ACTIVITY_MAP_END_BASE(SCprActivities, coreSCprActivities)
+}
+
+// Activity Map For vanilla cpr
+namespace VanillaDummySCPRStates
+{
+DECLARE_DEFINE_ACTIVITY_MAP(stateMap)
+        ACTIVITY_MAP_ENTRY(CancelTestBindToActivity, CancelBindTo)   
 ACTIVITY_MAP_END_BASE(SCprActivities, coreSCprActivities)
 }
 
 CDummySubConnectionProvider* CDummySubConnectionProvider::NewL(ESock::CSubConnectionProviderFactoryBase& aFactory)
     {
-    CDummySubConnectionProvider* self = new (ELeave) CDummySubConnectionProvider(aFactory);
+    CDummySubConnectionProvider* self = new (ELeave) CDummySubConnectionProvider(aFactory, DummySCPRStates::stateMap::Self());
+    CleanupStack::PushL(self);
+    self->ConstructL(KDummySCPRPreallocatedActivityBufferSize);
+    CleanupStack::Pop(self);
+    return self;
+    }
+
+CDummySubConnectionProvider* CDummySubConnectionProvider::NewVanillaL(ESock::CSubConnectionProviderFactoryBase& aFactory)
+    {
+    CDummySubConnectionProvider* self = new (ELeave) CDummySubConnectionProvider(aFactory, VanillaDummySCPRStates::stateMap::Self());
     CleanupStack::PushL(self);
     self->ConstructL(KDummySCPRPreallocatedActivityBufferSize);
     CleanupStack::Pop(self);
@@ -154,8 +246,8 @@ CDummySubConnectionProvider* CDummySubConnectionProvider::NewL(ESock::CSubConnec
     }
 
 
-CDummySubConnectionProvider::CDummySubConnectionProvider(CSubConnectionProviderFactoryBase& aFactory)
-:CCoreSubConnectionProvider(aFactory,DummySCPRStates::stateMap::Self())
+CDummySubConnectionProvider::CDummySubConnectionProvider(CSubConnectionProviderFactoryBase& aFactory, const MeshMachine::TNodeActivityMap& aActivityMap)
+:CCoreSubConnectionProvider(aFactory, aActivityMap)
 	{
 	LOG_NODE_CREATE(KDummySCPRTag, CDummySubConnectionProvider);
 	}
@@ -204,6 +296,8 @@ void CDummySubConnectionProvider::SetToIncomingL()
 
  	incomingStatus = ETrue;
 	}
+
+
 
 
 

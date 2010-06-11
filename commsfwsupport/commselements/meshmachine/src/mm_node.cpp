@@ -26,7 +26,6 @@
 #include <elements/nm_messages_base.h>
 #include <elements/nm_messages_child.h>
 
-
 #ifdef _DEBUG
 // Panic category for "absolutely impossible!" vanilla ASSERT()-type panics from this module
 // (if it could happen through user error then you should give it an explicit, documented, category + code)
@@ -232,7 +231,7 @@ EXPORT_C CNodeActivityBase* AMMNodeBase::FindAddressedActivity(const TNodeContex
 	for (TInt i = iActivities.Count() - 1; i>=0 && a==NULL; i--)
 		{
 		CNodeActivityBase* act = iActivities[i];
-		const TNodeId& postedTo = act->iPostedToId;
+		const TNodeId& postedTo = act->PostedToNodeId();
 		if (!act->IsIdle()
 			&& (postedTo.IsNull() || aContext.iSender == postedTo)
 				&& (recipient->NodeCtx() == act->ActivityId()))
@@ -430,6 +429,7 @@ void AMMNodeBase::SignalActivities()
 		}
 	}
 
+
 EXPORT_C void AMMNodeBase::AbortActivitiesOriginatedBy(TNodeContextBase& aContext, const TNodeId& aCommsId, TBool aIsNodeBeingDestroyed)
     {
     CNodeActivityBase* caller = aContext.iNodeActivity;
@@ -438,6 +438,20 @@ EXPORT_C void AMMNodeBase::AbortActivitiesOriginatedBy(TNodeContextBase& aContex
     for (TInt i = iActivities.Count() - 1; i>=0; i--)
         {
         aContext.iNodeActivity = iActivities[i];
+        
+        if (!abortAll && aContext.iNodeActivity->PostedToNodeId() == aCommsId)
+            {//clear postedto if a leaver has been set as a postedto at any of the running activities.
+             //No other messages will ever come from the leaver and it is not gonna be safe to forward TCancels
+             //to the leaver, so at least postedto must be cleared to avoid the crash. It could be speculated that
+             //if the postedto is still set, then either the postedto node failed to respond or the local activity failed to
+             //clear postedto when it had responded. Worth putting a speculative ASSERT here to catch misdeeds. 
+        
+             //clearing postedto shouldn't be done in here (AbortActivitiesOriginatedBy), but I (RZ) have expressed my disrespect to the
+             //this method before and the suggestion that it should go (replaced by a CancelActivitiesOriginatedBy).
+             //So instead of introducing another method that  loops through activities i decided to piggyback the function in an 
+             //existing method. Note that the final logic should be based on RNodeInterfaces and not TNodeIds.
+            aContext.iNodeActivity->ClearPostedTo();
+            }
 		
 		// We dont want to abort already idle activities or they may error.		
 		if(aContext.iNodeActivity->IsIdle())
@@ -458,25 +472,31 @@ EXPORT_C void AMMNodeBase::AbortActivitiesOriginatedBy(TNodeContextBase& aContex
       	        TInt idx = aContext.iNodeActivity->FindOriginator(aCommsId);
       	        if (KErrNotFound!=idx)
       	        	{
+                    TBool canSend = ETrue;
 					if(aContext.iNodeActivity->iOriginators.Count() == 1) // only if this is the final originator
 						{
 						aContext.iNodeActivity->SetError(KErrAbort);
            	        	aContext.iNodeActivity->Cancel(aContext);
+           	        	//This is a workaround for CCommsBinderRequest. The proper fix is to abolish the concept of aborting activities.
+                        //Aborting activities is a bad idea as an aborted activity isn't given a chance to perform graceful cleanup.
+           	        	//Today activities get aborted because their orinators urgently leave. I.e.: they are trully leaving now! Last orders!
+           	        	//It is then incorrect to leave the activity d'tor to finish the wrap up - because the node will be gone by then.
+           	        	//So whether and when to send an error must be decided here, by this generic code that has no clue on the subtleties
+           	        	//of individual activities. If there is no abort - there is urgent leavers. They send TLeaveRequest and they politely
+           	        	//wait for the completion and all this code is unnecessary.
+           	        	canSend = (aContext.iNodeActivity->Error() != KErrNone);
 						}
-					
-    					
+                    
                     //In the "quiet mode", when the hosting node is being destroyed, we can not afford sending
                     //an error to the node as it would hit void.
                     TNodePeerId& originator = aContext.iNodeActivity->iOriginators[idx];
-                    TBool canSend = !((aIsNodeBeingDestroyed && originator == aContext.NodeId())
-                        || aContext.iMessage.IsMessage<TEChild::TLeft>());
+                    canSend &= !((aIsNodeBeingDestroyed && originator == aContext.NodeId())
+                        || aContext.iMessage.IsMessage<TEChild::TLeft>()); 
                     if (canSend)
                         {
                         aContext.iNodeActivity->PostToOriginator(originator, TEBase::TError(aContext.iMessage.MessageId(), KErrAbort).CRef());
                         }
-    					
-
-	 	        	aContext.iNodeActivity->RemoveOriginator(idx);
+                    aContext.iNodeActivity->RemoveOriginator(idx);
       	        	}
       	        }
             }
@@ -616,21 +636,36 @@ void AMMNodeBase::StartNewActivitiesL(TNodeContextBase& aContext, CNodeActivityB
 
 void AMMNodeBase::StartActivityL(TNodeContextBase& aContext, const TNodeActivity& aActivitySig, const NetStateMachine::TStateTriple& aFirst)
     {
-    CNodeActivityBase* a = aActivitySig.iCtor(aActivitySig,*this);
-    if (iActivities.Find(a)==KErrNotFound)
+	CNodeActivityBase* nodeActivity;
+	// Activity is based on one of 2 declarations. One of which has an extra member. In the case of the instance
+	// with a second member the activities Ctor will point to this second member. Since the first member is a TNodeActivity
+	// We can compare the activities Ctor pointer to the address of the second member to assess which type of declarations
+	// this is.
+	
+	if (aActivitySig.iFlags & TNodeActivity::EContextCtor)
+		{ // TNodeActivity's iCtor is a pointer to Activity Ctor
+		nodeActivity = ((TNodeActivity::TStaticActivityContextCtor)aActivitySig.iCtor)(aActivitySig,aContext);
+		}
+	else
+		{ // TNodeActivity's iCtor is a pointer to activity constructor
+		nodeActivity = ((TNodeActivity::TStaticActivityCtor)aActivitySig.iCtor)(aActivitySig,*this);
+		}
+
+    if (iActivities.Find(nodeActivity)==KErrNotFound)
     	{
     	//The activity did not add itself to the list in any special way, append it here
-	    CleanupStack::PushL(a);
-   		a->AppendActivityL();
-	    CleanupStack::Pop(a);
+	    CleanupStack::PushL(nodeActivity);
+   		nodeActivity->AppendActivityL();
+	    CleanupStack::Pop(nodeActivity);
 		}
+
 	//assign only after the activity is successfully appended
-	aContext.iNodeActivity = a;
+	aContext.iNodeActivity = nodeActivity;
 
     //if StartL leaves the "a" will be removed from the array and deleted in ::PostReceived
     //since it will be idle
     XNodePeerId originator(aContext.iSender, aContext.iPeer);
-    a->StartL(aContext, originator, aFirst);
+    nodeActivity->StartL(aContext, originator, aFirst);
     }
 
 void AMMNodeBase::PreallocateSpaceL(TUint aSize)

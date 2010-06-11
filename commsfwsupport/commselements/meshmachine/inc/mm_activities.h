@@ -91,7 +91,7 @@ Define and export a custom node activity.
 	#define DEFINE_EXPORT_CUSTOM_NODEACTIVITY( id, name, msgtype, ctor ) \
 		EXPORT_C const MeshMachine::TNodeActivity& name :: Self() {return iSelf;} \
 		EXPORT_C const NetStateMachine::TStateTriple& name :: FirstTriple() {return iData[1];} \
-		const MeshMachine::TNodeActivity name :: iSelf = {id, msgtype::EId, msgtype::ERealm, name :: iData[1], &ctor, _S8(#name)}; \
+		const MeshMachine::TNodeActivity name :: iSelf = {id, 0, msgtype::EId, msgtype::ERealm, name :: iData[1], (TAny*)&ctor, _S8(#name)}; \
 		DEFINE_TRIPLES_TABLE( name :: iData )
 
 /**
@@ -110,7 +110,7 @@ Node activity class must derive from CNodeActivityBase.
 @see CNodeActivityBase
 */
 	#define DEFINE_CUSTOM_NODEACTIVITY( id, name, msgtype, ctor ) \
-		const MeshMachine::TNodeActivity name :: iSelf = {id, msgtype::EId, msgtype::ERealm, name :: iData[1], &ctor, _S8(#name)}; \
+		const MeshMachine::TNodeActivity name :: iSelf = {id, 0, msgtype::EId, msgtype::ERealm, name :: iData[1], (TAny*)&ctor, _S8(#name)}; \
 		DEFINE_TRIPLES_TABLE( name :: iData )
 
 #else
@@ -128,7 +128,7 @@ Define and export a custom node activity.
 	#define DEFINE_EXPORT_CUSTOM_NODEACTIVITY( id, name, msgtype, ctor ) \
 		EXPORT_C const MeshMachine::TNodeActivity& name :: Self() {return iSelf;} \
 		EXPORT_C const NetStateMachine::TStateTriple& name :: FirstTriple() {return iData[1];} \
-		const MeshMachine::TNodeActivity name :: iSelf = {id, msgtype::EId, msgtype::ERealm, name :: iData[1], &ctor, NULL}; \
+		const MeshMachine::TNodeActivity name :: iSelf = {id, 0, msgtype::EId, msgtype::ERealm, name :: iData[1], (TAny*)&ctor, NULL}; \
 		DEFINE_TRIPLES_TABLE( name :: iData )
 
 /**
@@ -147,7 +147,7 @@ Node activity class must derive from CNodeActivityBase.
 @see CNodeActivityBase
 */
 	#define DEFINE_CUSTOM_NODEACTIVITY( id, name, msgtype, ctor ) \
-		const MeshMachine::TNodeActivity name :: iSelf = {id, msgtype::EId, msgtype::ERealm, name :: iData[1], &ctor, NULL}; \
+		const MeshMachine::TNodeActivity name :: iSelf = {id, 0, msgtype::EId, msgtype::ERealm, name :: iData[1], (TAny*)&ctor, NULL}; \
 		DEFINE_TRIPLES_TABLE( name :: iData )
 
 #endif
@@ -417,6 +417,126 @@ maps.
 	};
 
 /**
+RESERVED MACROS NOT TO BE USED.
+The following are new macro definitions allowing the context to be passed as a parameter rather than the node.
+In time the ability to pass context rather than node will be placed in the original macros. For the meantime,
+only critical commsFw activities which must have the context passed instead of the node should use these macros.
+All other activities should continue to use original macros declared above.
+*/
+/**
+Declare and export a node activity.
+
+@param name  The name of the activity, which will be used to put it into the node's activity map
+
+@see DECLARE_NODEACTIVITY
+*/
+#define DECLARE_RESERVED_EXPORT_NODEACTIVITY( name ) \
+	struct name \
+		{ \
+		IMPORT_C static const MeshMachine::TNodeActivity& Self(); \
+		IMPORT_C static const NetStateMachine::TStateTriple& FirstTriple(); \
+		static const MeshMachine::TNodeActivity iSelf; \
+		static const NetStateMachine::TStateTriple iData[]; \
+		};
+
+/**
+Declares a node activity. A node activity is a state machine. It contains multiple nodeactivity
+entries, which respresent the states, transitions and forks of the state machine.
+
+@param name  The name of the activity, which will be used to put it into the node's activity map
+
+@see DEFINE_NODEACTIVITY
+@see NODEACTIVITY_ENTRY
+*/
+#define DECLARE_RESERVED_NODEACTIVITY( name ) \
+	struct name \
+		{ \
+		inline static const MeshMachine::TNodeActivity& Self() {return iSelf;} \
+		inline static const NetStateMachine::TStateTriple& FirstTriple() {return iData[1];} \
+		static const MeshMachine::TNodeActivity iSelf; \
+		static const NetStateMachine::TStateTriple iData[]; \
+		};
+
+#ifdef SYMBIAN_TRACE_ENABLE
+
+/**
+Define a custom node activity. A custom node activity is a node activity which defines its own
+node activity class. This is used, for example, if the activity wishes to share some custom context
+information between the states and transition in the activity.
+
+Node activity class must derive from CNodeActivityBase.
+
+@param id        Identifier for the activity
+@param name      The name of the activity
+@param msgtype   Message which will kickoff this activity
+@param ctor      Constructor for the custom activity class
+
+@see DEFINE_RESERVED_NODEACTIVITY
+@see CNodeActivityBase
+	
+*/
+	#define DEFINE_RESERVED_CUSTOM_NODEACTIVITY( id, name, msgtype, ctor ) \
+		const MeshMachine::TNodeActivity name :: iSelf = {id, 1, msgtype::EId, msgtype::ERealm, name :: iData[1], (TAny*)&ctor, _S8(#name)}; \
+		DEFINE_TRIPLES_TABLE( name :: iData )
+
+#else
+
+/**
+Define and export a custom node activity.
+
+@param id        Identifier for the activity
+@param name      The name of the activity
+@param msgtype   Message which will kickoff this activity
+@param ctor      Constructor for the custom activity class
+
+@see DEFINE_RESERVED_CUSTOM_NODEACTIVITY
+*/
+	#define DEFINE_RESERVED_EXPORT_CUSTOM_NODEACTIVITY( id, name, msgtype, ctor ) \
+		EXPORT_C const MeshMachine::TNodeActivity& name :: Self() {return iSelf;} \
+		EXPORT_C const NetStateMachine::TStateTriple& name :: FirstTriple() {return iData[1];} \
+		const MeshMachine::TNodeActivity name :: iSelf = {id, 1, msgtype::EId, msgtype::ERealm, name :: iData[1], (TAny*)&ctor, NULL}; \
+		DEFINE_TRIPLES_TABLE( name :: iData )
+
+/**
+Define a custom node activity. A custom node activity is a node activity which defines its own
+node activity class. This is used, for example, if the activity wishes to share some custom context
+information between the states and transition in the activity.
+
+Node activity class must derive from CNodeActivityBase.
+
+@param id        Identifier for the activity
+@param name      The name of the activity
+@param msgtype   Message which will kickoff this activity
+@param ctor      Constructor for the custom activity class
+
+@see DEFINE_RESERVED_NODEACTIVITY
+@see CNodeActivityBase
+*/
+	#define DEFINE_RESERVED_CUSTOM_NODEACTIVITY( id, name, msgtype, ctor ) \
+		const MeshMachine::TNodeActivity name :: iSelf = {id, 1, msgtype::EId, msgtype::ERealm, name :: iData[1], (TAny*)&ctor, NULL}; \
+		DEFINE_TRIPLES_TABLE( name :: iData )
+
+#endif
+
+/**
+Define and declare a custom node activity
+
+@param id        Identifier for the activity
+@param name      The name of the activity
+@param msgtype   Message which will kickoff this activity
+@param ctor      Constructor for the custom activity class
+
+@see DEFINE_RESERVED_CUSTOM_NODEACTIVITY
+*/
+#define DECLARE_DEFINE_RESERVED_CUSTOM_NODEACTIVITY( id, name, msgtype, ctor ) \
+	DECLARE_RESERVED_NODEACTIVITY( name ) \
+	DEFINE_RESERVED_CUSTOM_NODEACTIVITY( id, name, msgtype, ctor )
+
+/**
+END OF RESERVED MACROS
+*/
+
+/**
 Mark the end of an activity map. This macro should be used for an activity map based
 on other activity maps.
 
@@ -432,6 +552,7 @@ on other activity maps.
 
 namespace MeshMachine
 {
+
 /**
 Base class for all node activity objects. Non custom node activities will use this by default.
 **/
@@ -516,10 +637,13 @@ public:
 	Get the id of the node that the last request from this activity was sent to.
 	   @return Node id of the last node the activity has posted a request to
 	*/
-	const Messages::TNodeId PostedToId() const
-		{
-		return iPostedToId;
-		}
+	IMPORT_C const Messages::TNodeId& PostedToNodeId() const;
+	
+    /**
+    Get the id of the node that the last request from this activity was sent to.
+       @return Node id of the last node the activity has posted a request to
+    */
+	IMPORT_C const Messages::RNodeInterface* PostedToPeer() const;
 
 	/**
 	Get the id of the message that started this activity.
@@ -576,6 +700,13 @@ public:
 	   @param aNodeId Node id to set the postedTo id to
 	*/
 	IMPORT_C void SetPostedTo(const Messages::TNodeId& aNodeId);
+	
+    /**
+       Manually set the postedTo id
+
+       @param aNodeId Node id to set the postedTo id to
+    */
+	IMPORT_C void SetPostedTo(const Messages::RNodeInterface& aRecipient);
 
 	/**
 	   Clear the postedTo id
@@ -809,8 +940,60 @@ private: //Shouldn't be accessed directly
 
 	const TNodeActivity& iActivitySig;
 
-	// Last node a message was sent to
-	Messages::TNodeId iPostedToId;
+	class RPostedToNodeOrPeer
+	/*
+	 * Class is used to store the recipient of the last request sent from the 'this' 
+	 * (the activity). This recipient can be represented either by its TNodeId address 
+	 * or, if it's a peer of the local node, by RNodeInterface. 
+     * The implementation may seem awkward or overengineered. This is to protect binary
+     * compatibility (it used to be TNodeId here and sizeof TNodeId was all there was at hand).
+     * 
+     * Rules of the game are that RPostedToNodeOrPeer:iBuf is a shared dwelling for either:
+     * - address of an RNodeInterface (in case posted to is a peer)
+     * - TNodeId (in case posted to is not a peer)
+     * Inspecting the content of iBuf and the assumptions around it are a little fragile 
+     * (based on TNodeId class layout a bit), so the code must be viligent. 
+     * _Node and _Peer perform arbitral happy conversion, so there can be 3 reasons why _Node()->Ptr() is NULL:
+     * (1) iBuf stores a 4 byte ptr to RNodeInterface and what Ptr normally returns is beyond these 4 bytes in a land hopefully zeroed by ::Close
+     * (2) iBuf stores nothing. 
+     * (3) iBuf stores a TNodeId pointing a NULL node (effectivelly TNodeId::NullId()). (3) is only theoretical as Open(TNodeId) prevens Ptr be NULL
+     * Therefore it is safe to assume that if Ptr() is NULL, it is either a valid pointer to a peer or NULL.
+     * Happily _Peer() will return that pointer or NULL respectivelly.* 
+	 */
+	    {
+	private:
+	    typedef Messages::RNodeInterface* TPeerType;
+    public:
+	    RPostedToNodeOrPeer();
+	    void Open(const Messages::RNodeInterface& aPeer);
+	    void Open(const Messages::TNodeId& aNode);
+	    void Close();
+	    
+	    const Messages::RNodeInterface* Peer() const;
+	    const Messages::TNodeId& NodeId() const;
+	    
+	private:
+	    TPeerType* _Peer() 
+	        {
+            return reinterpret_cast<TPeerType*>(&iBuf[0]);
+	        }
+        
+	    const TPeerType* _Peer() const 
+            {
+            return reinterpret_cast<const TPeerType*>(&iBuf[0]);
+            }	    
+	    
+	    Messages::TNodeId* _Node()
+	        {
+	        return reinterpret_cast<Messages::TNodeId*>(&iBuf[0]);
+	        }
+	    
+        const Messages::TNodeId* _Node() const
+            {
+            return reinterpret_cast<const Messages::TNodeId*>(&iBuf[0]);
+            }
+        TUint8 iBuf[__Align8(sizeof(Messages::TNodeId))];	    
+	    } iPostedToId;
 	};
 
 
@@ -846,7 +1029,14 @@ protected:
 	@param aNode        The node to which this activity will belong.
 	@return Generated unique component of activity id
 	*/
-	IMPORT_C static TUint GetNextActivityCountL( const TNodeActivity& aActivitySig, const AMMNodeBase& aNode );
+	static TUint GetNextActivityCountL( const TNodeActivity& aActivitySig, const AMMNodeBase& aNode );
+	/**
+	For use by custom activity News to generate the unique part of the activity id.
+	@param aActivitySig Context information about how the activity is to be started
+	@param aNode        The node to which this activity will belong.
+	@return Generated unique component of activity id
+	*/
+	IMPORT_C static TUint GetNextActivityCount( const TNodeActivity& aActivitySig, const AMMNodeBase& aNode );
 
 	/**
 	Constructor for CNodeParallelActivityBase
@@ -1386,6 +1576,13 @@ private:
 	Creation of preallocated activities doesn't fail and hence a non-leaving ::New should be used instead*/
     static MeshMachine::CNodeActivityBase* NewL(const MeshMachine::TNodeActivity& aActivitySig, MeshMachine::AMMNodeBase& aNode);
 	};
+
+
+inline TUint CNodeParallelActivityBase::GetNextActivityCountL( const TNodeActivity& aActivitySig, const AMMNodeBase& aNode )
+    {
+    //Historical. Method ceased to leave, but must keep the old, L-ending overload.
+    return GetNextActivityCount(aActivitySig, aNode);
+    }
 
 } //namespace MeshMachine
 

@@ -259,7 +259,8 @@ void ConnStates::TJoinReceivedCpr::DoL()
 	__ASSERT_DEBUG(iContext.Node().ServiceProvider()==NULL, ConnPanic(KPanicExpectedNoServiceProvider));
 
 	TCFDataClient::TBindTo& bt = message_cast<TCFDataClient::TBindTo>(iContext.iMessage);
-    iContext.Node().AddClientL(bt.iNodeId, TClientType(TCFClientType::EServProvider, TCFClientType::EActive));
+    RNodeInterface* newSP = iContext.Node().AddClientL(bt.iNodeId, TClientType(TCFClientType::EServProvider, TCFClientType::EActive));
+    __ASSERT_DEBUG(iContext.Node().ServiceProvider()==newSP, ConnPanic(KPanicNoServiceProvider)); //[RZ] revise this, possibly overdefensive
 
     //If this is attach, we need to see if we are a monitor or not
     TClientType clientType(TCFClientType::ECtrl);
@@ -276,7 +277,7 @@ void ConnStates::TJoinReceivedCpr::DoL()
     	{
 		clientType.SetFlags(TCFClientType::EAttach);
     	}
-    iContext.iNodeActivity->PostRequestTo(bt.iNodeId,
+    iContext.iNodeActivity->PostRequestTo(*newSP,
     	TCFServiceProvider::TJoinRequest(iContext.NodeId(), clientType).CRef());
 	}
 
@@ -287,7 +288,7 @@ void ConnStates::TJoinReceivedSCpr::DoL()
 	__ASSERT_DEBUG(iContext.iPeer == iContext.Node().ServiceProvider(), ConnPanic(KPanicExpectedNoServiceProvider));
 
 	TCFServiceProvider::TCommsBinderResponse& br = message_cast<TCFServiceProvider::TCommsBinderResponse>(iContext.iMessage);
-    iContext.Node().AddClientL(br.iNodeId, TClientType(TCFClientType::EServProvider, TCFClientType::EDefault));
+    RNodeInterface* scpr = iContext.Node().AddClientL(br.iNodeId, TClientType(TCFClientType::EServProvider, TCFClientType::EDefault));
 
     //If this is attach, we need to see if we are a monitor or not
     TCFClientType clientType(TCFClientType::ECtrl);
@@ -304,7 +305,7 @@ void ConnStates::TJoinReceivedSCpr::DoL()
 		clientType.SetFlags(TCFClientType::EAttach);
     	}
 
-    iContext.iNodeActivity->PostRequestTo(br.iNodeId,
+    iContext.iNodeActivity->PostRequestTo(*scpr,
     	TCFServiceProvider::TJoinRequest(iContext.NodeId(), clientType).CRef());
 	}
 
@@ -315,10 +316,10 @@ void ConnStates::TJoinReceivedMcpr::DoL()
 	__ASSERT_DEBUG(iContext.Node().ServiceProvider()==NULL, ConnPanic(KPanicExpectedNoServiceProvider));
 
 	TCFSelector::TSelectComplete& sc = message_cast<TCFSelector::TSelectComplete>(iContext.iMessage);
-	iContext.Node().AddClientL(sc.iNodeId,TClientType(TCFClientType::EServProvider, TCFClientType::EAvailabilityProvider));
+	RNodeInterface* mcpr = iContext.Node().AddClientL(sc.iNodeId,TClientType(TCFClientType::EServProvider, TCFClientType::EAvailabilityProvider));
 
 
-	iContext.iNodeActivity->PostRequestTo(sc.iNodeId,
+	iContext.iNodeActivity->PostRequestTo(*mcpr,
 		TCFServiceProvider::TJoinRequest(iContext.NodeId(), TCFClientType(TCFClientType::ECtrl)).CRef());
 	}
 
@@ -351,7 +352,8 @@ void ConnStates::TProcessBinderResponseForCpr::DoL()
 
 	TCFServiceProvider::TCommsBinderResponse& br = message_cast<TCFServiceProvider::TCommsBinderResponse>(iContext.iMessage);
 
-	iContext.Node().AddClientL(br.iNodeId, TClientType(TCFClientType::EServProvider, TCFClientType::EActive));
+	RNodeInterface* sp = iContext.Node().AddClientL(br.iNodeId, TClientType(TCFClientType::EServProvider, TCFClientType::EActive));
+    __ASSERT_DEBUG(iContext.Node().ServiceProvider()==sp, ConnPanic(KPanicNoServiceProvider)); //[RZ] revise this, possibly overdefensive
 
 	//If this is attach, we need to see if we are a monitor or not
 	TCFClientType clientType;
@@ -368,7 +370,7 @@ void ConnStates::TProcessBinderResponseForCpr::DoL()
 		clientType.SetFlags(TCFClientType::EAttach);
 		}
 	
-	iContext.iNodeActivity->PostRequestTo(br.iNodeId,
+	iContext.iNodeActivity->PostRequestTo(*sp,
 		TCFServiceProvider::TJoinRequest(iContext.NodeId(), clientType).CRef());
 	}
 

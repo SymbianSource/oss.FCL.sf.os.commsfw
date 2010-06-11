@@ -170,6 +170,10 @@ EXPORT_C Meta::SMetaDataNetCtor* RResponseMsg::ReadClientReqMsg(TDes8& aDstBuff)
 	  		//That would usually be the fault of the client's CExtItfMsgPluginInfo.
 	  		//Depending on the state the client will be errored or panicked.
   			__DEBUGGER(); //diagnostic
+
+			// Mark the client buffer as read so that client can clean up gracefully
+			RMessage2::Write(iRequestMsgParam, KNullDesC8);
+
   			return NULL;
   			}
   		}

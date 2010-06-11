@@ -30,6 +30,7 @@
 #include "dummypr_metaconnprov.h"
 #include "dummypr_tiermanager.h"
 #include "dummypr_network_flow.h"
+#include "dummypr_flow.h"
 
 #include <comms-infras/ss_msgintercept.h>
 
@@ -43,8 +44,6 @@
 
 using namespace ESock;
 
-
-const TInt KProtocolInetDummy = 253;
 
 const TInt KDummyMajorVersionNumber = 0;
 const TInt KDummyMinorVersionNumber = 1;
@@ -61,12 +60,14 @@ const TImplementationProxy ImplementationTable[] =
 	IMPLEMENTATION_PROXY_ENTRY(CDummyTierManagerFactory::iUid, CDummyTierManagerFactory::NewL),
 	IMPLEMENTATION_PROXY_ENTRY(CDummyMetaConnectionProviderFactory::iUid, CDummyMetaConnectionProviderFactory::NewL),
 	IMPLEMENTATION_PROXY_ENTRY(CDummyConnectionProviderFactory::iUid, CDummyConnectionProviderFactory::NewL),
-	IMPLEMENTATION_PROXY_ENTRY(CDummyHangingConnectionProviderFactory::iUid, CDummyHangingConnectionProviderFactory::NewL),	
+	IMPLEMENTATION_PROXY_ENTRY(CDummyHangingConnectionProviderFactory::iUid, CDummyHangingConnectionProviderFactory::NewL),
+    IMPLEMENTATION_PROXY_ENTRY(CDummyVanillaConnectionProviderFactory::iUid, CDummyVanillaConnectionProviderFactory::NewL), 	
 	IMPLEMENTATION_PROXY_ENTRY(CDummySubConnectionProviderFactory::iUid, CDummySubConnectionProviderFactory::NewL),
+    IMPLEMENTATION_PROXY_ENTRY(CDummyVanillaSubConnectionProviderFactory::iUid, CDummyVanillaSubConnectionProviderFactory::NewL),	
 	IMPLEMENTATION_PROXY_ENTRY(CDummyExtendedSubConnectionProviderFactory::iUid, CDummyExtendedSubConnectionProviderFactory::NewL),
 
 	// Flow and flow description
-	IMPLEMENTATION_PROXY_ENTRY(CDummyNetworkFlowFactory::iUid, CDummyNetworkFlowFactory::NewL),
+	IMPLEMENTATION_PROXY_ENTRY(CDummyFlowFactory::iUid, CDummyFlowFactory::NewL),
 	};
 
 /**
@@ -166,6 +167,26 @@ ACommsFactoryNodeId* CDummyHangingConnectionProviderFactory::DoCreateObjectL(TFa
     return provider;
     }
 
+CDummyVanillaConnectionProviderFactory* CDummyVanillaConnectionProviderFactory::NewL(TAny* aParentContainer)
+    {
+    return new (ELeave) CDummyVanillaConnectionProviderFactory(TUid::Uid(CDummyVanillaConnectionProviderFactory::iUid), *reinterpret_cast<ESock::CConnectionFactoryContainer*>(aParentContainer));
+    }
+    
+CDummyVanillaConnectionProviderFactory::CDummyVanillaConnectionProviderFactory(TUid aFactoryId, ESock::CConnectionFactoryContainer& aParentContainer)
+    : ESock::CConnectionProviderFactoryBase(aFactoryId, aParentContainer)
+    {
+    //LOG_NODE_CREATE(KDummyCPRTag, CDummyHangingConnectionProviderFactory);
+    }
+
+ACommsFactoryNodeId* CDummyVanillaConnectionProviderFactory::DoCreateObjectL(TFactoryQueryBase& /* aQuery */)
+    {    
+    CConnectionProviderBase* provider = CDummyConnectionProvider::NewVanillaL(*this );
+    
+    ESOCK_DEBUG_REGISTER_GENERAL_NODE(iUid, provider);
+
+    return provider;
+    }
+
 //-=========================================================
 //
 // CDummySubConnectionProviderFactory methods
@@ -209,8 +230,7 @@ ACommsFactoryNodeId* CDummySubConnectionProviderFactory::DoCreateObjectL(TFactor
 // CDummyExtendedSubConnectionProviderFactory methods
 //
 //-=========================================================	
-namespace ESock
-{
+
 CDummyExtendedSubConnectionProviderFactory* CDummyExtendedSubConnectionProviderFactory::NewL(TAny* aParentContainer)
     {
     return new (ELeave) CDummyExtendedSubConnectionProviderFactory(TUid::Uid(CDummyExtendedSubConnectionProviderFactory::iUid), 
@@ -230,7 +250,7 @@ ACommsFactoryNodeId* CDummyExtendedSubConnectionProviderFactory::DoCreateObjectL
 
     if ((query.iSCPRType == RSubConnection::EAttachToDefault) || (query.iSCPRType == RSubConnection::ECreateNew))
         {
-        provider = ESock::CDummyExtendedSubConnectionProvider::NewL(*this);
+        provider = CDummyExtendedSubConnectionProvider::NewL(*this);
 		ESOCK_DEBUG_REGISTER_GENERAL_NODE(iUid, provider);
         }
     else
@@ -239,41 +259,74 @@ ACommsFactoryNodeId* CDummyExtendedSubConnectionProviderFactory::DoCreateObjectL
         }
     return provider;
     }
-}
+
+
 
 //-=========================================================
 //
-// CDummyNetworkFlowFactory methods
+// CDummyExtendedSubConnectionProviderFactory methods
+//
+//-=========================================================    
+CDummyVanillaSubConnectionProviderFactory* CDummyVanillaSubConnectionProviderFactory::NewL(TAny* aParentContainer)
+    {
+    return new (ELeave) CDummyVanillaSubConnectionProviderFactory(TUid::Uid(CDummyVanillaSubConnectionProviderFactory::iUid), 
+                                            *reinterpret_cast<ESock::CSubConnectionFactoryContainer*>(aParentContainer));
+    }
+    
+CDummyVanillaSubConnectionProviderFactory::CDummyVanillaSubConnectionProviderFactory(TUid aFactoryId, ESock::CSubConnectionFactoryContainer& aParentContainer)
+    : CSubConnectionProviderFactoryBase(aFactoryId, aParentContainer)
+    {
+    //LOG_NODE_CREATE(KDummyExtendedSCPRTag, CDummyExtendedSubConnectionProviderFactory);
+    }
+
+ACommsFactoryNodeId* CDummyVanillaSubConnectionProviderFactory::DoCreateObjectL(TFactoryQueryBase& aQuery)
+    {
+    const TDefaultSCPRFactoryQuery& query = static_cast<const TDefaultSCPRFactoryQuery&>(aQuery);    
+    CSubConnectionProviderBase* provider = NULL;
+
+    if ((query.iSCPRType == RSubConnection::EAttachToDefault) || (query.iSCPRType == RSubConnection::ECreateNew))
+        {
+        provider = CDummySubConnectionProvider::NewVanillaL(*this);
+        ESOCK_DEBUG_REGISTER_GENERAL_NODE(iUid, provider);
+        }
+    else
+        {
+        User::Leave(KErrNotSupported);
+        }
+    return provider;
+    }
+
+//-=========================================================
+//
+// CDummyFlowFactory methods
 //
 //-=========================================================	
-namespace ESock
-{
-CDummyNetworkFlowFactory* CDummyNetworkFlowFactory::NewL(TAny* aConstructionParameters)
+CDummyFlowFactory* CDummyFlowFactory::NewL(TAny* aConstructionParameters)
 	{
-	CDummyNetworkFlowFactory* fact = new (ELeave) CDummyNetworkFlowFactory(
+	CDummyFlowFactory* fact = new (ELeave) CDummyFlowFactory(
 			TUid::Uid(iUid),
 			*(reinterpret_cast<CSubConnectionFlowFactoryContainer*>(aConstructionParameters)));
 	return fact;
 	}
 
-CDummyNetworkFlowFactory::CDummyNetworkFlowFactory(TUid aFactoryId, CSubConnectionFlowFactoryContainer& aParentContainer)
+CDummyFlowFactory::CDummyFlowFactory(TUid aFactoryId, CSubConnectionFlowFactoryContainer& aParentContainer)
  : CSubConnectionFlowFactoryBase(aFactoryId, aParentContainer)
  	{
-	//LOG_NODE_CREATE(KESockDataFactTag, CDummyNetworkFlowFactory)
+	//LOG_NODE_CREATE(KESockDataFactTag, CDummyFlowFactory)
  	}
 
-CDummyNetworkFlowFactory::~CDummyNetworkFlowFactory()
+CDummyFlowFactory::~CDummyFlowFactory()
 	{
-	//LOG_NODE_DESTROY(KESockDataFactTag, CDummyNetworkFlowFactory)
+	//LOG_NODE_DESTROY(KESockDataFactTag, CDummyFlowFactory)
  	}
 
-CSubConnectionFlowBase* CDummyNetworkFlowFactory::DoCreateFlowL(CProtocolIntfBase* aProtocolIntf, TFactoryQueryBase& aQuery)
+CSubConnectionFlowBase* CDummyFlowFactory::DoCreateFlowL(CProtocolIntfBase* aProtocolIntf, TFactoryQueryBase& aQuery)
 	{
 	const TDefaultFlowFactoryQuery& query = static_cast<const TDefaultFlowFactoryQuery&>(aQuery);
 	return CDummyNetworkFlow::NewL(*this, query.iSCprId, aProtocolIntf);
 	}
 
-ACommsFactoryNodeId* CDummyNetworkFlowFactory::DoFindOrCreateObjectL(TFactoryQueryBase& aQuery)
+ACommsFactoryNodeId* CDummyFlowFactory::DoFindOrCreateObjectL(TFactoryQueryBase& aQuery)
 	{
 	const TDefaultFlowFactoryQuery& query = static_cast<const TDefaultFlowFactoryQuery&>(aQuery);
 	if(query.iMessageId != TCFServiceProvider::TCommsBinderRequest::Id())
@@ -287,7 +340,7 @@ ACommsFactoryNodeId* CDummyNetworkFlowFactory::DoFindOrCreateObjectL(TFactoryQue
 	CProtocolIntfBase* protocolInterface = SockManGlobals::Get()->iProtocolIntfFactories->FindOrCreateProtocolIntfL(Uid(), queryProto);
 	if (protocolInterface == NULL)
     	{
-    	LOG( ESockLog::Printf(KESockDataFactTag, _L8("CDummyNetworkFlowFactory %08x:\tCreateFlowL(protocolId '%08x') Cannot find protocol interface, bailing out"), this, Uid()) );
+    	LOG( ESockLog::Printf(KESockDataFactTag, _L8("CDummyFlowFactory %08x:\tCreateFlowL(protocolId '%08x') Cannot find protocol interface, bailing out"), this, Uid()) );
     	User::Leave(KErrNotFound);
     	}
 
@@ -295,10 +348,14 @@ ACommsFactoryNodeId* CDummyNetworkFlowFactory::DoFindOrCreateObjectL(TFactoryQue
 	CSubConnectionFlowBase* flow = NULL;
 	switch(query.iProtocolType)
 		{
-		case KProtocolInetDummy:
+		case CDummyNetworkFlow::EProtocolId:
 			flow = CDummyNetworkFlow::NewL(*this, query.iSCprId, protocolInterface);
 			break;
 
+        case CDummyFlow::EProtocolId:
+            flow = CDummyFlow::NewL(*this, query.iSCprId, protocolInterface);
+            break;
+            
 		default:
 			User::Leave(KErrNotFound);
 			break;
@@ -306,7 +363,7 @@ ACommsFactoryNodeId* CDummyNetworkFlowFactory::DoFindOrCreateObjectL(TFactoryQue
 	
 	LOG( ESockLog::Printf(
 		KESockDataFactTag,
-		_L8("CDummyNetworkFlowFactory %08x:\tCreateFlowL(protocolId '%08x'): flow %08x"),
+		_L8("CDummyFlowFactory %08x:\tCreateFlowL(protocolId '%08x'): flow %08x"),
 		this,
 		Uid(),
 		&flow));
@@ -322,32 +379,53 @@ ACommsFactoryNodeId* CDummyNetworkFlowFactory::DoFindOrCreateObjectL(TFactoryQue
 /**
 Description of the protocol this factory creates
 */
-TServerProtocolDesc* CDummyNetworkFlowFactory::DoCreateFlowDescriptionL(TInt aProtocol)
+TServerProtocolDesc* CDummyFlowFactory::DoCreateFlowDescriptionL(TInt aProtocol)
 	{
 	TServerProtocolDesc* protocolDescription = new(ELeave) TServerProtocolDesc();
 
 	// Poached from udp and modified to represent an rtp like protocol
 	switch(aProtocol)
 		{
-		case KProtocolInetDummy:
-			protocolDescription->iName		  = KDummyProtocolName;
-			protocolDescription->iAddrFamily	  = KAfInet;
-			protocolDescription->iSockType	  = KSockDatagram;
-			protocolDescription->iProtocol	  = KProtocolInetDummy;
-			protocolDescription->iVersion	  = TVersion(KDummyMajorVersionNumber,
-										KDummyMinorVersionNumber,
-										KDummyBuildVersionNumber);
-			protocolDescription->iByteOrder	  = EBigEndian;
-			protocolDescription->iServiceInfo	  = KSIConnectionLess | KSIDatagram |
-									KSIGracefulClose | KSIPeekData |
-									KSIRequiresOwnerInfo;
-			protocolDescription->iNamingServices	  = KNSNameResolution | KNSRequiresConnectionStartup;
-			protocolDescription->iSecurity	  = KSocketNoSecurity;
-			protocolDescription->iMessageSize	  = 65536-128; /*KSocketMessageSizeUndefined;*/
-			protocolDescription->iServiceTypeInfo  = ESocketSupport | ETransport |
-									EPreferMBufChains | ENeedMBufs |
-									EUseCanSend;
-			protocolDescription->iNumSockets	  = KUnlimitedSockets;
+        case CDummyNetworkFlow::EProtocolId:
+            protocolDescription->iName          = KDummyProtocolName;
+            protocolDescription->iAddrFamily    = KAfInet;
+            protocolDescription->iSockType      = KSockDatagram;
+            protocolDescription->iProtocol      = CDummyNetworkFlow::EProtocolId;
+            protocolDescription->iVersion       = TVersion(KDummyMajorVersionNumber,
+                                                         KDummyMinorVersionNumber,
+                                                         KDummyBuildVersionNumber);
+            protocolDescription->iByteOrder     = EBigEndian;
+            protocolDescription->iServiceInfo   = KSIConnectionLess | KSIDatagram |
+                                                  KSIGracefulClose | KSIPeekData |
+                                                  KSIRequiresOwnerInfo;
+            protocolDescription->iNamingServices= KNSNameResolution | KNSRequiresConnectionStartup;
+            protocolDescription->iSecurity      = KSocketNoSecurity;
+            protocolDescription->iMessageSize   = 65536-128; /*KSocketMessageSizeUndefined;*/
+            protocolDescription->iServiceTypeInfo= ESocketSupport | ETransport |
+                                                      EPreferMBufChains | ENeedMBufs |
+                                                      EUseCanSend;
+            protocolDescription->iNumSockets     = KUnlimitedSockets;
+            break;
+	    
+		case CDummyFlow::EProtocolId:
+			protocolDescription->iName		     = KDummyProtocolName;
+			protocolDescription->iAddrFamily     = CDummyTierManagerFactory::iUid;
+			protocolDescription->iSockType	     = KSockDatagram;
+			protocolDescription->iProtocol	     = CDummyFlow::EProtocolId;
+			protocolDescription->iVersion	     = TVersion(KDummyMajorVersionNumber,
+                                                         KDummyMinorVersionNumber,
+                                                         KDummyBuildVersionNumber);
+			protocolDescription->iByteOrder	     = EBigEndian;
+			protocolDescription->iServiceInfo	 = KSIConnectionLess | KSIDatagram |
+                                                   KSIGracefulClose | KSIPeekData |
+                                                   KSIRequiresOwnerInfo;
+			protocolDescription->iNamingServices = KNSNameResolution | KNSRequiresConnectionStartup;
+			protocolDescription->iSecurity	     = KSocketNoSecurity;
+			protocolDescription->iMessageSize	 = 65536-128; /*KSocketMessageSizeUndefined;*/
+			protocolDescription->iServiceTypeInfo= ESocketSupport | ETransport |
+                                                    EPreferMBufChains | ENeedMBufs |
+                                                    EUseCanSend;
+			protocolDescription->iNumSockets	 = KUnlimitedSockets;
 			break;
 		
 		default:
@@ -357,5 +435,4 @@ TServerProtocolDesc* CDummyNetworkFlowFactory::DoCreateFlowDescriptionL(TInt aPr
 
 	return protocolDescription;
 	}
-}
 

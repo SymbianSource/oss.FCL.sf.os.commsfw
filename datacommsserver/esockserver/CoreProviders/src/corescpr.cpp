@@ -1,4 +1,4 @@
-// Copyright (c) 2006-2009 Nokia Corporation and/or its subsidiary(-ies).
+ // Copyright (c) 2006-2009 Nokia Corporation and/or its subsidiary(-ies).
 // All rights reserved.
 // This component and the accompanying materials are made available
 // under the terms of "Eclipse Public License v1.0"
@@ -41,9 +41,9 @@ using namespace MeshMachine;
 
 //We reserve space for two preallocated activities that may start concurrently on the SCPR
 //node: destroy and data client stop.
-static const TUint KDefaultMaxPreallocatedActivityCount = 2;
+static const TUint KSCPRDefaultMaxPreallocatedActivityCount = 2;
 static const TUint KMaxPreallocatedActivitySize = sizeof(MeshMachine::CNodeRetryParallelActivity) + sizeof(MeshMachine::APreallocatedOriginators<4>);
-static const TUint KSCPRPreallocatedActivityBufferSize = KDefaultMaxPreallocatedActivityCount * KMaxPreallocatedActivitySize;
+static const TUint KSCPRPreallocatedActivityBufferSize = KSCPRDefaultMaxPreallocatedActivityCount * KMaxPreallocatedActivitySize;
 
 EXPORT_C CCoreSubConnectionProvider::CCoreSubConnectionProvider(CSubConnectionProviderFactoryBase& aFactory,
                                                                 const MeshMachine::TNodeActivityMap& aActivityMap)

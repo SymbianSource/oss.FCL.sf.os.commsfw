@@ -198,6 +198,8 @@ CTestStep* CTe_esockteststepsSuite::CreateTestStep(const TDesC& aStepName)
 				testStep = new CConnectRSocketServStep(iEsockTest);
 	else if(aStepName.CompareF (KConnectRSocketStep) == 0)
 				testStep = new CConnectRSocketStep(iEsockTest);
+    else if(aStepName.CompareF (KBindRSocketStep) == 0)
+                testStep = new CBindRSocketStep(iEsockTest);	
 	else if(aStepName.CompareF (KControlRSubConnectionStep) == 0)
 				testStep = new CControlRSubConnectionStep(iEsockTest);
 	else if(aStepName.CompareF (KCreateRConnectionStep) == 0)

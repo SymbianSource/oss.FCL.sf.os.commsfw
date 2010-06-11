@@ -61,6 +61,8 @@ enum TVerdict CTest06Split::doTestStepL(void)
 		{
 		return EFail;
 		}
+	TBool forceSmallBuf = EFalse;
+    bRet = GetIntFromConfig(_L("MBufMgrTest06"), _L("ForceSmallBuf"), forceSmallBuf);
  	Log(_L("     ------- Chain & Desc LENGTH   = %d --"), aLength);
  	Log(_L("     ------- OFFSET where to Split = %d --"), aOffset);
 	if ( (aLength > 1000)    ||(aLength <0) ||
@@ -79,7 +81,36 @@ enum TVerdict CTest06Split::doTestStepL(void)
 	Log(_L("  01 Creating CMBufManager and installing active scheduler:"));
     CleanupStack::PushL( iActSch = new(ELeave) CActiveScheduler );
 	CActiveScheduler::Install(iActSch);
-	CreateInstanceMBufMgrL(KMBufDefaultHeapSize);
+
+	enum { KBigBuf = 256, KSmallBuf = 128 };
+	if(forceSmallBuf)
+	    {
+        RArray<TCommsBufPoolCreateInfo> createInfoArray;
+        
+        TCommsBufPoolCreateInfo createInfo;
+        createInfo.iBufSize = KSmallBuf;
+        createInfo.iInitialBufs = 128;
+        createInfo.iGrowByBufs = 64;
+        createInfo.iMinFreeBufs = 40;
+        createInfo.iCeiling = 410; 
+        createInfoArray.AppendL(createInfo);
+        
+        createInfo.iBufSize = KBigBuf;
+        createInfo.iInitialBufs = 3;
+        createInfo.iGrowByBufs = 1;
+        createInfo.iMinFreeBufs = 1;
+        createInfo.iCeiling = 3;
+        createInfoArray.AppendL(createInfo);
+
+        CreateInstanceMBufMgrL(createInfoArray);
+
+        createInfoArray.Close();
+	    }	
+	else
+	    {
+        CreateInstanceMBufMgrL(KMBufDefaultHeapSize);
+	    }
+	
 	CleanupClosePushL(iBufPond);
 
 	//-------------- substep 2 --------------------
@@ -111,6 +142,18 @@ enum TVerdict CTest06Split::doTestStepL(void)
 #endif
 		User::Leave(EFail);
 		}
+	
+	if(forceSmallBuf)
+	    {
+        for(RMBuf* buf = aChain1.First(); buf; buf = buf->Next())
+            {
+            if(buf->Size() != KBigBuf)
+                {
+                Log(_L("-- initial chain should be composed of %d buf, found %d buf"), KBigBuf, buf->Size());
+                User::Leave(EFail);
+                }
+            }
+	    }
 
 	//-------------- substep 6 --------------------
 	Log(_L("  06 Copy in Des1 into Chain1:"));
@@ -158,6 +201,16 @@ enum TVerdict CTest06Split::doTestStepL(void)
 #endif
 		User::Leave(EFail);
 		}
+	
+    if(forceSmallBuf)
+        {
+        if(!aChain2.First() || aChain2.First()->Size() != KSmallBuf ||
+           !aChain2.First()->Next() || aChain2.First()->Next()->Size() != KSmallBuf)
+            {
+            Log(_L("-- split chain should start with two %d buf"), KSmallBuf);
+            User::Leave(EFail);
+            }
+        }
 
 	//-------------- substep 9 --------------------
 	Log(_L("  09 Copy out Chain1 into Des2:"));
@@ -184,7 +237,7 @@ enum TVerdict CTest06Split::doTestStepL(void)
 	//-------------- substep 12 --------------------
 	Log(_L("  12 Copy out the whole Chain2 into Des2 at offset = OFFSET"));
 	TPtr8 dest((TUint8*)aDes2->Ptr() + aOffset, aLength-aOffset, aLength - aOffset);
-	aChain1.CopyOut(dest);
+	aChain2.CopyOut(dest);
 
 	//-------------- substep 13 --------------------
 	Log(_L("  13 Compare the content of Des1 & Des2:"));

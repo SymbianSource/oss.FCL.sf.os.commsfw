@@ -35,9 +35,6 @@
 namespace ESock
 {
 
-_LIT(KDummyProtocolName, "dummy");
-_LIT(KDumberProtocolName, "dumber");
-
 class CDummyNetworkFlow : public CSubConnectionFlowBase,
 	public MSessionData,
 	public MSessionControl,
@@ -51,7 +48,8 @@ class CDummyNetworkFlow : public CSubConnectionFlowBase,
 	{
     friend class CSocket;
 public:
-    typedef CDummyNetworkFlowFactory FactoryType; //for factoryobject_cast to work
+    enum {EProtocolId = 253};
+    typedef CDummyFlowFactory FactoryType; //for factoryobject_cast to work
 
 	static CDummyNetworkFlow* NewL(CSubConnectionFlowFactoryBase& aFactory, const Messages::TNodeId& aSubConn, CProtocolIntfBase* aProtocolIntf);
 	void SetSSP(CServProviderBase& aSSP);

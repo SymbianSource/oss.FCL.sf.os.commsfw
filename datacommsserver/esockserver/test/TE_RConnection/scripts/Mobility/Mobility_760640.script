@@ -24,6 +24,7 @@ PRINT Simulate current AP going down
 PRINT Receive PreferredCarierAvailable
 PRINT Do not register (no call to RCommsMobilityApiExt::RegisterForMobilityNotification()),
 PRINT RCommsMobilityApiExt::MigrateToPreferredCarrier(),
+PRINT Check to see if the progresses from the abanonded AP don't perculate to the app.
 PRINT RCommsMobilityApiExt::Close()
 
 // Load the test suite
@@ -74,6 +75,11 @@ RUN_TEST_STEP 150 te_esockteststepsSuite CheckMobilityNotificationStep z:\testda
 
 //Migrate to preferred carrier
 RUN_TEST_STEP 150 te_esockteststepsSuite migratercommsmobilityapiextStep z:\testdata\configs\BearerMobility\Mobility_760640.ini MigrateToPreferredCarrier
+
+//Check absence of progress from the abandoned IAP4
+RUN_TEST_STEP 100 te_esockteststepsSuite RegisterProgressNotificationStep    z:\testdata\configs\BearerMobility\Mobility_760640.ini ProgressNotificationEvent1
+RUN_TEST_STEP 100 te_esockteststepsSuite CheckNegativeProgressNotificationStep z:\testdata\configs\BearerMobility\Mobility_760640.ini CheckNegativeProgressNotificationEvent1
+
 
 // Clean up what we used
 RUN_TEST_STEP 150 te_esockteststepsSuite CloseRCommsMobilityAPIExtStep z:\testdata\configs\BearerMobility\Mobility_760640.ini CloseMobilityExtension

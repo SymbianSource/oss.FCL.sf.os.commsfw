@@ -115,6 +115,15 @@ void RClientInterface::PostMessage(const TRuntimeCtxId& aPostFrom, const TRuntim
 *
 *
 *******************************************************************************************************/
+
+EXPORT_C RNodeInterface::RNodeInterface() : iPreAlloc(NULL)
+	{}
+
+EXPORT_C RNodeInterface::~RNodeInterface()
+	{
+	__ASSERT_DEBUG(iPreAlloc == NULL, User::Panic(KSpecAssert_ElemNodeMessIntC, 1));
+	}
+
 EXPORT_C void RNodeInterface::Open(TNodeId aPostTo, const TClientType& aClientType, MTransportSender* aSender)
 /*
 Opens 'this'.
@@ -129,8 +138,13 @@ EXPORT_C void RNodeInterface::Close()
 	{
 	RClientInterface::Close();
 	iClientType = TClientType::NullType();
+	if(iPreAlloc!=NULL)
+		{
+		delete iPreAlloc->iPreAllocatedActivityChunk;
+		}
+	delete iPreAlloc;
+	iPreAlloc = NULL;
 	}
-
 
 EXPORT_C void RNodeInterface::PostMessage(const TRuntimeCtxId& aPostFrom, const TNodeId::TRemainder& aPostTo, const TSignalBase& aMessage) const
 	{
@@ -147,6 +161,40 @@ EXPORT_C void RNodeInterface::PostMessage(const TRuntimeCtxId& aPostFrom, const 
 EXPORT_C TBool RNodeInterface::operator==(const RNodeInterface& aRHS) const
 	{
 	return RecipientId() == aRHS.RecipientId();
+	}
+
+EXPORT_C void RNodeInterface::PreAllocL(TUint aAllocSize)
+/**	Pre-allocates memory and stores the pointer and its size
+@param size of memory space to prealloc
+*/
+	{
+	if(iPreAlloc!=NULL)
+		// Memory already allocated for this client
+		{
+		__ASSERT_DEBUG(iPreAlloc->iPreAllocatedActivityChunk != NULL, User::Panic(KSpecAssert_ElemNodeMessIntC, 5));
+		return;
+		}
+	iPreAlloc = new (ELeave) TPreAllocStore();
+	iPreAlloc->iPreAllocatedActivityChunk = User::AllocL(aAllocSize);
+	iPreAlloc->iPreAllocSize = aAllocSize;
+	}
+
+EXPORT_C TAny* RNodeInterface::ClaimPreallocatedSpace(TUint aSize)
+/**	Finds a pointer of the requested size from the preallocation array (see PreallocActivitySpaceL) and returns it
+@param size of memory space requested
+@return pointer to memory allocation or NULL if no preallocation and allocation here fails
+*/
+	{
+	if(!(iPreAlloc && aSize <= iPreAlloc->iPreAllocSize))
+		{
+		// By this stage the PreAllocL must have been triggered and memory space must have been allocated.
+		__ASSERT_DEBUG(EFalse, User::Panic(KSpecAssert_ElemNodeMessIntC, 3));
+		delete iPreAlloc->iPreAllocatedActivityChunk;
+		iPreAlloc->iPreAllocatedActivityChunk = User::AllocL(aSize);
+		}
+	TAny* preallocatedSpace = (RNodeInterface*)iPreAlloc->iPreAllocatedActivityChunk;
+	iPreAlloc->iPreAllocatedActivityChunk=NULL;
+	return preallocatedSpace;
 	}
 
 /******************************************************************************************************
@@ -204,7 +252,7 @@ EXPORT_C TInt RRequestOriginator::Open(Messages::RNodeInterface& aNode, const Me
 
 EXPORT_C void RRequestOriginator::Open(RRequestOriginator& aOriginalRequest)
 	{
-	__ASSERT_DEBUG(aOriginalRequest.IsOpen(), User::Panic(KSpecAssert_ElemNodeMessIntC, 1));
+	__ASSERT_DEBUG(aOriginalRequest.IsOpen(), User::Panic(KSpecAssert_ElemNodeMessIntC, 4));
 	iNode = aOriginalRequest.iNode;
 	iRemainder = aOriginalRequest.iRemainder;
 	aOriginalRequest.Close();

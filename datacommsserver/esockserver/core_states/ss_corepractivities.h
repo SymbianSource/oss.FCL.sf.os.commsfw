@@ -685,6 +685,8 @@ public:
 public:
     static const TInt KInterfaceId = 0x102864DE;
 
+    IMPORT_C virtual void Cancel(MeshMachine::TNodeContextBase& aContext);    
+
 	IMPORT_C static Messages::RNodeInterface* IsDataClientPresent(MeshMachine::TNodeContextBase& aContext, TUint aClientFlags = 0);
 
     IMPORT_C void StoreBinder(Messages::RNodeInterface* aDataClient);

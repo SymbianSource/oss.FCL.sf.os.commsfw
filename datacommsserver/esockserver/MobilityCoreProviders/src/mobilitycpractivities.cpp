@@ -179,7 +179,7 @@ void CMobilityActivity::Cancel(TNodeContextBase& aContext)
 	__ASSERT_DEBUG(cp, User::Panic(KSpecAssert_ESockMbCrCPRAct, 4)); //We are a Cpr, must exist.
 
 	//PostedTo() could be our service provider or possibly other peer
-	if (PostedToId() != cp->RecipientId())
+	if (PostedToPeer() != cp)
 		{
 		cp->PostMessage(TNodeCtxId(ActivityId(), iNode.Id()),
 			TEBase::TCancel().CRef());
@@ -197,7 +197,8 @@ TInt CMobilityActivity::TNoTagBackwardsOrRecoverableErrorOrError::TransitionTag(
 		TErrResponse& resp = message_cast<TEErrorRecovery::TErrorRecoveryResponse>(iContext.iMessage).iErrResponse;
 		if (resp.iAction == TErrResponse::ERetry)
 			{
-		    return KNoTag | NetStateMachine::EBackward;
+			iContext.Activity()->SetError(KErrNone);
+      		return KNoTag | NetStateMachine::EBackward;
 			}
 		else if  (resp.iAction == TErrResponse::EPropagate || resp.iError == KErrCancel)
 			{

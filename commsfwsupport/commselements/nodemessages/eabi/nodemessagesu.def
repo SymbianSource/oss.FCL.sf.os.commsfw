@@ -331,5 +331,13 @@ EXPORTS
 	_ZTVN8Messages13TSigMessageIdE @ 330 NONAME
 	_ZTVN8Messages19TSigTypeIdAnyNumberE @ 331 NONAME
 	_ZTVN8Messages28TSigNodeIdNumberNumberNumberE @ 332 NONAME
-
+	_ZN8Messages14RNodeInterface22ClaimPreallocatedSpaceEj @ 333 NONAME
+	_ZN8Messages14RNodeInterface9PreAllocLEj @ 334 NONAME
+	_ZN8Messages14RNodeInterfaceC1Ev @ 335 NONAME
+	_ZN8Messages14RNodeInterfaceC2Ev @ 336 NONAME
+	_ZN8Messages14RNodeInterfaceD0Ev @ 337 NONAME
+	_ZN8Messages14RNodeInterfaceD1Ev @ 338 NONAME
+	_ZN8Messages14RNodeInterfaceD2Ev @ 339 NONAME
+	_ZTIN8Messages14RNodeInterfaceE @ 340 NONAME
+	_ZTVN8Messages14RNodeInterfaceE @ 341 NONAME
 

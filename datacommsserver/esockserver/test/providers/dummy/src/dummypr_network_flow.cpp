@@ -165,7 +165,7 @@ void CDummyNetworkFlow::RemName(TSockAddr& anAddr) const
 TInt CDummyNetworkFlow::SetRemName(TSockAddr& anAddr)
 	{__ASSERT_DEBUG(iFlowShim, User::Panic(KSpecAssert_ESockTestdmyprnt, 11)); return iFlowShim->SetRemName(anAddr);}
 
-const TInt KDummyNetworkFlowOptionLevel = CDummyNetworkFlowFactory::iUid;
+const TInt KDummyNetworkFlowOptionLevel = CDummyFlowFactory::iUid;
 const TInt KFlowProtocolName = 1;
 
 TInt CDummyNetworkFlow::GetOption(TUint aLevel, TUint aName, TDes8& anOption) const

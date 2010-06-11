@@ -30,6 +30,7 @@
 #include <comms-infras/ss_corepractivities.h>
 
 class CDummySubConnectionProviderFactory;
+class CDummyVanillaSubConnectionProviderFactory;
 
 //-================================================
 //
@@ -49,24 +50,22 @@ namespace DummyExtendedSCPRStates
 }
 
 
-namespace ESock
-{
-	/* We have to have CDummySubConnectionProvider inside the ESock namespace so it can befriend
-	mcfnode_cast - GCC simply doesn't allow befriending something in another template. See
-	http://gcc.gnu.org/ml/gcc-prs/2002-10/msg01010.html for Herb Sutter's GOTW column on exactly
-	this - it contains this discouraging summary:
 
-	The reason that I'm writing an article about it is because, alas,
-	befriending a template in another namespace is easier said than done:
+/* We have to have CDummySubConnectionProvider inside the ESock namespace so it can befriend
+mcfnode_cast - GCC simply doesn't allow befriending something in another template. See
+http://gcc.gnu.org/ml/gcc-prs/2002-10/msg01010.html for Herb Sutter's GOTW column on exactly
+this - it contains this discouraging summary:
 
-   	- The Bad News: There are two perfectly good standards-conforming
-     ways to do it, and neither one works on all current compilers.
+The reason that I'm writing an article about it is because, alas,
+befriending a template in another namespace is easier said than done:
 
-   	- The Good News: One of the perfectly good standards-conforming ways
-     does work on every current compiler I tried except for gcc.
+- The Bad News: There are two perfectly good standards-conforming
+ ways to do it, and neither one works on all current compilers.
 
-	So, since it's only test code & we need it building on GCC, I've hacked around it */
+- The Good News: One of the perfectly good standards-conforming ways
+ does work on every current compiler I tried except for gcc.
 
+So, since it's only test code & we need it building on GCC, I've hacked around it */
 class CDummySubConnectionProvider : public CCoreSubConnectionProvider
 /**
 
@@ -85,7 +84,8 @@ class CDummySubConnectionProvider : public CCoreSubConnectionProvider
     friend CDummySubConnectionProvider* Messages::mnode_cast<CDummySubConnectionProvider>(ANode* aNode);
     friend CDummySubConnectionProvider& Messages::mnode_cast<CDummySubConnectionProvider>(ANode& aNode);
 #endif
-    friend class ::CDummySubConnectionProviderFactory;
+    friend class CDummySubConnectionProviderFactory;
+    friend class CDummyVanillaSubConnectionProviderFactory;
     friend class DummySCPRStates::TRaiseGranted;
 
 public:
@@ -94,11 +94,15 @@ public:
 
 protected:
     static CDummySubConnectionProvider* NewL(ESock::CSubConnectionProviderFactoryBase& aFactory);
-    CDummySubConnectionProvider(ESock::CSubConnectionProviderFactoryBase& aFactory);
+    static CDummySubConnectionProvider* NewVanillaL(ESock::CSubConnectionProviderFactoryBase& aFactory);
+    
+    CDummySubConnectionProvider(ESock::CSubConnectionProviderFactoryBase& aFactory, const MeshMachine::TNodeActivityMap& aActivityMap);
 
 private:
     TBool incomingStatus;
 	};
+
+
 class CDummyExtendedSubConnectionProvider : public CCoreSubConnectionProvider
 /**
 This dummy is intended to create flow shim based layer beneath it during its own creation
@@ -134,13 +138,13 @@ protected:
 
 private:
     TBool incomingStatus;
-    TFlowParams iFlowParams;
+    ESock::TFlowParams iFlowParams;
 	};
-}
+
 
 namespace DummySCPRStates
 {
-typedef MeshMachine::TNodeContext<ESock::CDummySubConnectionProvider, SCprStates::TContext> TContext;
+typedef MeshMachine::TNodeContext<CDummySubConnectionProvider, SCprStates::TContext> TContext;
 
 DECLARE_SMELEMENT_HEADER( TRaiseGranted, MeshMachine::TStateTransition<TContext>, NetStateMachine::MStateTransition, DummySCPRStates::TContext )
 	virtual void DoL();
@@ -154,12 +158,70 @@ DECLARE_SMELEMENT_HEADER( TAwaitingBrokenStart, MeshMachine::TState<TContext>, N
 	virtual TBool Accept();
 DECLARE_SMELEMENT_FOOTER( TAwaitingBrokenStart )
 
+DECLARE_SMELEMENT_HEADER( TRebindSelf, MeshMachine::TStateTransition<TContext>, NetStateMachine::MStateTransition, DummySCPRStates::TContext )
+    virtual void DoL();
+DECLARE_SMELEMENT_FOOTER( TRebindSelf )
+
+
+
+
+
+struct TWaitForBindToMutex
+    {
+    static TBool IsBlocked(const MeshMachine::TNodeContextBase& aContext)
+        {
+        return aContext.iNode.CountActivities(ESock::ECFActivityBindTo) == 0;
+        }
+    };
+
+struct TWaitForNoDataClients
+    {
+    static TBool IsBlocked(const MeshMachine::TNodeContextBase& aContext)
+        {
+        return aContext.iNode.GetFirstClient<Messages::TDefaultClientMatchPolicy>(Messages::TClientType(ESock::TCFClientType::EData)) != NULL;
+        }
+    };
+
+DECLARE_SERIALIZABLE_STATE(
+    TNoTagWaitForBindTo,
+    TWaitForBindToMutex,
+    MeshMachine::TNoTag
+    )
+
+DECLARE_SERIALIZABLE_STATE(
+    TNoTagWaitNoDataClients,
+    TWaitForNoDataClients,
+    MeshMachine::TNoTag
+    )
+
+
+
+DECLARE_SMELEMENT_HEADER( TCancelPreviousSelfRequest, MeshMachine::TStateTransition<TContext>, NetStateMachine::MStateTransition, DummySCPRStates::TContext )
+    virtual void DoL();
+DECLARE_SMELEMENT_FOOTER( TCancelPreviousSelfRequest )
+
+class CrazyIdle : public MeshMachine::CNodeRetryActivity
+    {
+public:
+    DECLARE_SMELEMENT_HEADER( TAwaitingCancelled, MeshMachine::TState<TContext>, NetStateMachine::MState, TContext )
+        virtual TBool Accept();
+    DECLARE_SMELEMENT_FOOTER( TAwaitingCancelled )
+
+    static MeshMachine::CNodeActivityBase* CrazyIdle::NewL( const MeshMachine::TNodeActivity& aActivitySig, MeshMachine::AMMNodeBase& aNode );
+protected:
+    CrazyIdle( const MeshMachine::TNodeActivity& aActivitySig, MeshMachine::AMMNodeBase& aNode )
+    :MeshMachine::CNodeRetryActivity(aActivitySig, aNode) 
+     {};
+private:
+    ~CrazyIdle();
+    };
+
 DECLARE_ACTIVITY_MAP(stateMap)
 } // namespace DummyCPRStates
 
 namespace DummyExtendedSCPRStates
 {
-typedef MeshMachine::TNodeContext<ESock::CDummyExtendedSubConnectionProvider, SCprStates::TContext> TContext;
+typedef MeshMachine::TNodeContext<CDummyExtendedSubConnectionProvider, SCprStates::TContext> TContext;
 
 DECLARE_SMELEMENT_HEADER( TAwaitingBinderResponse, MeshMachine::TState<TContext>, NetStateMachine::MState, TContext )
 	virtual TBool Accept();
@@ -219,7 +281,7 @@ public:
 			}
 		iFlowParameters.Open(aFlowParameters);
 		}
-	typedef MeshMachine::TNodeContext<ESock::CDummyExtendedSubConnectionProvider, SCprStates::TContext> TContext;
+	typedef MeshMachine::TNodeContext<CDummyExtendedSubConnectionProvider, SCprStates::TContext> TContext;
 
 	static MeshMachine::CNodeActivityBase* CDummyBuildStackActivity::NewL( const MeshMachine::TNodeActivity& aActivitySig, MeshMachine::AMMNodeBase& aNode );
 
@@ -234,6 +296,7 @@ private:
 
 	ESock::RCFParameterFamilyBundleC iFlowParameters;
 	};
+
 
 #endif	// __DummySCPR_SUBCONNPROV_H__
 
