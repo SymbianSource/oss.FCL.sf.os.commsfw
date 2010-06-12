@@ -20,7 +20,9 @@
 
 
 PRJ_EXPORTS
+#if 0 // bug 2011
 ../svg/messagesequencetool.doc              		/epoc32/tools/commsfw/messagesequencetool.doc
+#endif
 ../svg/relations.pl         						/epoc32/tools/commsfw/relations.pl
 ../svg/relationships.txt         					/epoc32/tools/commsfw/relationships.txt
 ../svg/relationsVrml.pl         					/epoc32/tools/commsfw/relationsvrml.pl

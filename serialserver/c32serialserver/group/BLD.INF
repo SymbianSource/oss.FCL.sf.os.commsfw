@@ -35,8 +35,9 @@ PRJ_EXPORTS
 
 c32.iby	       /epoc32/rom/include/c32.iby
 
+#if 0 // bug 2011
 ../documentation/C32API.doc    /epoc32/engdoc/c32/c32api.doc
-
+#endif
 
 PRJ_TESTEXPORTS
 
