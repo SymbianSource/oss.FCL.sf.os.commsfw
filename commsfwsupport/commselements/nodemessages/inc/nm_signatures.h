@@ -496,14 +496,17 @@ template <class TSIGNATURE, TInt PAYLOADATTRIBOFFSET, class TATTRIBUTECREATIONPO
 class TSignatureWithPolymorphicPayloadMetaType : public TSignatureWithPolymorphicPayloadMetaTypeBase
 {
 public:
+
+__ASSERT_COMPILE(PAYLOADATTRIBOFFSET == __Align8(PAYLOADATTRIBOFFSET)); //Declared here to be able to build with GCCE
+	
 	inline static MMetaType* NewL(const TAny* aMem, const TAny* aData)
 		{
 		// For some reason this assertion does not compile under x86gcc which complains
 		// that a default template argument has been specified for a templated member
 		// function.  There is no such function so this is probably a parser bug.
-		#if !defined(__GCCXML__) && !defined(__X86GCC__)
-			__ASSERT_COMPILE(PAYLOADATTRIBOFFSET == __Align8(PAYLOADATTRIBOFFSET)); //must be alligned!
-		#endif
+		//#if !defined(__GCCXML__) && !defined(__X86GCC__)
+		//	__ASSERT_COMPILE(PAYLOADATTRIBOFFSET == __Align8(PAYLOADATTRIBOFFSET)); //must be alligned!
+		//#endif
 		return ::new ((TUint8*)aMem) TSignatureWithPolymorphicPayloadMetaType(aData);
 		}
 
