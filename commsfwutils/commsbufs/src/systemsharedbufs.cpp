@@ -28,8 +28,8 @@ CSystemSharedBufPool* CSystemSharedBufPool::New(MCommsBufPondIntf& aPondIntf, co
     // We take the freelist count as 50% of the ceiling size.
     const TInt KFreeListCount = aCreateInfo.iCeiling / 2; 
     self = new CSystemSharedBufPool(aPondIntf, aCreateInfo.iBufSize, KFreeListCount);
-#elif
-    self = new CSystemSharedBufPool(aPondIntf, aCreateInfo.iBufSize);
+#else 
+ self = new CSystemSharedBufPool(aPondIntf, aCreateInfo.iBufSize);
 #endif // SYMBIAN_ZEROCOPY_BUF_FREELIST
     if(self)
         {
