@@ -256,7 +256,7 @@ EXPORTS
 	_ZTIN16TierNotification37TAwaitingTierNotificationRegistrationE @ 255 NONAME
 	_ZTIN26CprDataClientStartActivity16TStartDataClientE @ 256 NONAME
 	_ZTIN26CprDataClientStartActivity21TNoTagOrNoTagBackwardE @ 257 NONAME
-	_ZTIN4Meta18RMetaDataContainerINS_13SMetaDataEComEEE @ 258 NONAME
+	_ZTIN4Meta18RMetaDataContainerINS_13SMetaDataEComEEE @ 258 NONAME ABSENT
 	_ZTIN8TMStates12TJoinToMCPRsE @ 259 NONAME
 	_ZTIN8TMStates15TSelectProviderE @ 260 NONAME
 	_ZTIN8TMStates20TSelectProviderSuperE @ 261 NONAME
@@ -354,7 +354,7 @@ EXPORTS
 	_ZTVN16TierNotification37TAwaitingTierNotificationRegistrationE @ 353 NONAME
 	_ZTVN26CprDataClientStartActivity16TStartDataClientE @ 354 NONAME
 	_ZTVN26CprDataClientStartActivity21TNoTagOrNoTagBackwardE @ 355 NONAME
-	_ZTVN4Meta18RMetaDataContainerINS_13SMetaDataEComEEE @ 356 NONAME
+	_ZTVN4Meta18RMetaDataContainerINS_13SMetaDataEComEEE @ 356 NONAME ABSENT
 	_ZTVN8TMStates12TJoinToMCPRsE @ 357 NONAME
 	_ZTVN8TMStates15TSelectProviderE @ 358 NONAME
 	_ZTVN8TMStates20TSelectProviderSuperE @ 359 NONAME

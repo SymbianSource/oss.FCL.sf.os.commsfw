@@ -287,7 +287,7 @@ EXPORTS
 	_ZTI22CSubConParameterFamily @ 286 NONAME ; #<TI>#
 	_ZTI26CSubConGenericParameterSet @ 287 NONAME ; #<TI>#
 	_ZTI28CSubConExtensionParameterSet @ 288 NONAME ; #<TI>#
-	_ZTIN4Meta18RMetaDataContainerINS_13SMetaDataEComEEE @ 289 NONAME ; #<TI>#
+	_ZTIN4Meta18RMetaDataContainerINS_13SMetaDataEComEEE @ 289 NONAME ABSENT ; #<TI>#
 	_ZTV11RConnection @ 290 NONAME ; #<VT>#
 	_ZTV13CESockIniData @ 291 NONAME ; #<VT>#
 	_ZTV19CSubConParameterSet @ 292 NONAME ; #<VT>#
@@ -295,7 +295,7 @@ EXPORTS
 	_ZTV22CSubConParameterFamily @ 294 NONAME ; #<VT>#
 	_ZTV26CSubConGenericParameterSet @ 295 NONAME ; #<VT>#
 	_ZTV28CSubConExtensionParameterSet @ 296 NONAME ; #<VT>#
-	_ZTVN4Meta18RMetaDataContainerINS_13SMetaDataEComEEE @ 297 NONAME ; #<VT>#
+	_ZTVN4Meta18RMetaDataContainerINS_13SMetaDataEComEEE @ 297 NONAME ABSENT ; #<VT>#
 	_ZN11RSocketServ7ConnectERK12TSessionPrefj @ 298 NONAME
 	_ZN13CESockIniData4NewLEPKN7CommsFW13COwnEntryListE @ 299 NONAME
 	_ZN13CESockIniDataC1EPKN7CommsFW13COwnEntryListE @ 300 NONAME
@@ -374,11 +374,11 @@ EXPORTS
 	_ZNK5ESock20CCommsDataObjectBase5StoreER5TDes8 @ 373 NONAME
 	_ZNK5ESock20CCommsDataObjectBase6LengthEv @ 374 NONAME
 	_ZTIN4Meta18RMetaDataContainerIN5ESock20XConnectionQueryBaseEEE @ 375 NONAME ABSENT ; #<TI>#
-	_ZTIN4Meta5TMetaIjEE @ 376 NONAME ; #<TI>#
+	_ZTIN4Meta5TMetaIjEE @ 376 NONAME ABSENT ; #<TI>#
 	_ZTIN5ESock16XCommsDataObjectE @ 377 NONAME ; #<TI>#
 	_ZTIN5ESock20CCommsDataObjectBaseE @ 378 NONAME ; #<TI>#
 	_ZTVN4Meta18RMetaDataContainerIN5ESock20XConnectionQueryBaseEEE @ 379 NONAME ABSENT ; #<VT>#
-	_ZTVN4Meta5TMetaIjEE @ 380 NONAME ; #<VT>#
+	_ZTVN4Meta5TMetaIjEE @ 380 NONAME ABSENT ; #<VT>#
 	_ZTVN5ESock16XCommsDataObjectE @ 381 NONAME ; #<VT>#
 	_ZTVN5ESock20CCommsDataObjectBaseE @ 382 NONAME ; #<VT>#
 	_ZThn4_N5ESock20CCommsDataObjectBase4CopyEPKv @ 383 NONAME ; #<thunk>#

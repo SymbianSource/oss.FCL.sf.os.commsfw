@@ -17,8 +17,8 @@ EXPORTS
 	_ZNK5ESock22CMobilityMsgPluginInfo28ImplementationProxyTableSizeEv @ 16 NONAME
 	_ZNK5ESock28CDataMonitoringMsgPluginInfo19ImplementationProxyEv @ 17 NONAME
 	_ZNK5ESock28CDataMonitoringMsgPluginInfo28ImplementationProxyTableSizeEv @ 18 NONAME
-	_ZTIN4Meta5TMetaIiEE @ 19 NONAME
-	_ZTIN4Meta5TMetaIjEE @ 20 NONAME
+	_ZTIN4Meta5TMetaIiEE @ 19 NONAME ABSENT
+	_ZTIN4Meta5TMetaIjEE @ 20 NONAME ABSENT
 	_ZTIN5ESock19TNewCarrierAcceptedE @ 21 NONAME
 	_ZTIN5ESock19TNewCarrierRejectedE @ 22 NONAME
 	_ZTIN5ESock22CMobilityMsgPluginInfoE @ 23 NONAME
@@ -33,8 +33,8 @@ EXPORTS
 	_ZTIN5ESock32TRequestDataReceivedNotificationE @ 32 NONAME
 	_ZTIN5ESock34TCancelDataSentNotificationRequestE @ 33 NONAME
 	_ZTIN5ESock38TCancelDataReceivedNotificationRequestE @ 34 NONAME
-	_ZTVN4Meta5TMetaIiEE @ 35 NONAME
-	_ZTVN4Meta5TMetaIjEE @ 36 NONAME
+	_ZTVN4Meta5TMetaIiEE @ 35 NONAME ABSENT
+	_ZTVN4Meta5TMetaIjEE @ 36 NONAME ABSENT
 	_ZTVN5ESock19TNewCarrierAcceptedE @ 37 NONAME
 	_ZTVN5ESock19TNewCarrierRejectedE @ 38 NONAME
 	_ZTVN5ESock22CMobilityMsgPluginInfoE @ 39 NONAME
