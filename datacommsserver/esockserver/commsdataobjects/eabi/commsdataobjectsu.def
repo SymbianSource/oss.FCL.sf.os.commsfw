@@ -53,7 +53,7 @@ EXPORTS
 	_ZNK5ESock21XProviderInfoQuerySet13GetVDataTableEv @ 52 NONAME
 	_ZNK5ESock9XIntQuery12GetAttribPtrEi @ 53 NONAME
 	_ZNK5ESock9XIntQuery13GetVDataTableEv @ 54 NONAME
-	_ZTIN4Meta11TMetaObjectINS_18RMetaDataContainerIN5ESock20XConnectionQueryBaseEEEEE @ 55 NONAME ; #<TI>#
+	_ZTIN4Meta11TMetaObjectINS_18RMetaDataContainerIN5ESock20XConnectionQueryBaseEEEEE @ 55 NONAME ABSENT ; #<TI>#
 	_ZTIN4Meta18RMetaDataContainerIN5ESock20XConnectionQueryBaseEEE @ 56 NONAME ABSENT
 	_ZTIN4Meta5TMetaI17TConnProviderInfoEE @ 57 NONAME ABSENT
 	_ZTIN4Meta5TMetaIN8CommsDat18TCDFieldValueTypesEEE @ 58 NONAME ABSENT
@@ -68,7 +68,7 @@ EXPORTS
 	_ZTIN5ESock20XConnectionQueryBaseE @ 67 NONAME
 	_ZTIN5ESock21XProviderInfoQuerySetE @ 68 NONAME
 	_ZTIN5ESock9XIntQueryE @ 69 NONAME
-	_ZTVN4Meta11TMetaObjectINS_18RMetaDataContainerIN5ESock20XConnectionQueryBaseEEEEE @ 70 NONAME
+	_ZTVN4Meta11TMetaObjectINS_18RMetaDataContainerIN5ESock20XConnectionQueryBaseEEEEE @ 70 NONAME ABSENT
 	_ZTVN4Meta18RMetaDataContainerIN5ESock20XConnectionQueryBaseEEE @ 71 NONAME ABSENT
 	_ZTVN4Meta5TMetaI17TConnProviderInfoEE @ 72 NONAME ABSENT
 	_ZTVN4Meta5TMetaIN8CommsDat18TCDFieldValueTypesEEE @ 73 NONAME ABSENT

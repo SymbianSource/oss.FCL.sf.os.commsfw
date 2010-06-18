@@ -311,8 +311,8 @@ EXPORTS
 	_ZTVN4Meta5TMetaI15TConnectionInfoEE @ 310 NONAME ABSENT
 	_ZTVN5ESock30TDefaultConnectionFactoryQueryE @ 311 NONAME
 	_ZTVN4Meta18RMetaDataContainerIN5ESock20XConnectionQueryBaseEEE @ 312 NONAME ABSENT
-	_ZTVN4Meta11TMetaObjectIN5ESock15TSelectionPrefsEEE @ 313 NONAME
-	_ZTVN4Meta10TMetaArrayIN5ESock27TProtocolExtensionSpecifierEEE @ 314 NONAME
+	_ZTVN4Meta11TMetaObjectIN5ESock15TSelectionPrefsEEE @ 313 NONAME ABSENT
+	_ZTVN4Meta10TMetaArrayIN5ESock27TProtocolExtensionSpecifierEEE @ 314 NONAME ABSENT
 	_ZTVN24PRDataClientStopActivity23TNoTagOrProviderStoppedE @ 315 NONAME
 	_ZTVN17SubSessActivities24CESockClientActivityBaseE @ 316 NONAME
 	_ZTVN17SubSessActivities14CCloseActivityE @ 317 NONAME
@@ -1391,8 +1391,8 @@ EXPORTS
 	_ZTIN17SubSessActivities14CCloseActivityE @ 1390 NONAME
 	_ZTIN17SubSessActivities24CESockClientActivityBaseE @ 1391 NONAME
 	_ZTIN24PRDataClientStopActivity23TNoTagOrProviderStoppedE @ 1392 NONAME
-	_ZTIN4Meta10TMetaArrayIN5ESock27TProtocolExtensionSpecifierEEE @ 1393 NONAME
-	_ZTIN4Meta11TMetaObjectIN5ESock15TSelectionPrefsEEE @ 1394 NONAME
+	_ZTIN4Meta10TMetaArrayIN5ESock27TProtocolExtensionSpecifierEEE @ 1393 NONAME ABSENT
+	_ZTIN4Meta11TMetaObjectIN5ESock15TSelectionPrefsEEE @ 1394 NONAME ABSENT
 	_ZTIN4Meta18RMetaDataContainerIN5ESock20XConnectionQueryBaseEEE @ 1395 NONAME ABSENT
 	_ZTIN4Meta5TMetaI15TConnectionInfoEE @ 1396 NONAME ABSENT
 	_ZTIN4Meta5TMetaI25TSubConnectionClosedEventEE @ 1397 NONAME ABSENT
