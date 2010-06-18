@@ -368,9 +368,7 @@ private:
    THEADER iHeader;
 };
 
-//Forcing a Vtable Export
-CItem<TValueBigEndian> DummyDummy;
-//Dummy object to force the vtable export and visibility
+
 
 
 
