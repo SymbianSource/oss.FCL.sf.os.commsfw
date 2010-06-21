@@ -2012,7 +2012,14 @@ Called from a protocol to indicate that new data is available for reading
 //	__ASSERT_DEBUG(State()!=ESStateCreated,Panic(EBadStateUpCall));		// no longer forced into shuttingdown state upon half-close
 	__ASSERT_DEBUG(State()!=ESStateClosing,Panic(EBadStateUpCall));
 	__ASSERT_DEBUG(!(iBlockedOperations&EReadStopped),Panic(EBadStateUpCall));
-	__ASSERT_DEBUG(State()!=ESStateError,Panic(EBadStateUpCall));
+
+	// The socket can now be errored from the control side as well as from the protocol below.  Hence, the socket
+	// can receive an upcall while in the errored state as the protocol is unaware of the socket errored state.
+	// Specific scenario is that TransportFlowShim receives a DataClientStop(KErrForceDisconnect), places the socket
+	// in the errored state and, subsequently, the TCP/IP stack issues NewData(KNewDataEndofData) as a result of an
+	// incoming FIN.
+	//__ASSERT_DEBUG(State()!=ESStateError,Panic(EBadStateUpCall));
+
 	__ASSERT_DEBUG(State()!=ESStateDisconnected,Panic(EBadStateUpCall));
 // zero is used in v1.5 to resume after	reneging __ASSERT_DEBUG(aCount>0,Panic(EBadDataCount));
 
@@ -2056,7 +2063,8 @@ Called from protocol to indicate new buffer space has become available
 	__ASSERT_DEBUG(State()!=ESStateCreated,Panic(EBadStateUpCall));
 	__ASSERT_DEBUG(State()!=ESStateClosing,Panic(EBadStateUpCall));
 	__ASSERT_DEBUG(State()!=ESStateShuttingDown,Panic(EBadStateUpCall));
-	__ASSERT_DEBUG(State()!=ESStateError,Panic(EBadStateUpCall));
+	// See comment in ASocket::NewData() as to why the errored state is valid here.
+	//__ASSERT_DEBUG(State()!=ESStateError,Panic(EBadStateUpCall));
 	__ASSERT_DEBUG(State()!=ESStateDisconnected,Panic(EBadStateUpCall));
 
 	TBool writeflowedoff = iBlockedOperations&EWriteFlowedOff;
@@ -2080,7 +2088,11 @@ Called from protocol to indicate that an active open has completed
 	//__ASSERT_DEBUG(State()==ESStateOpeningActive,Panic(EBadStateUpCall));
 	if (IsConnectionOriented())
 		{
-		SetState(ESStateConnected);
+	   // See comment in ASocket::NewData() as to why the errored state is valid here.
+        if (State() != ESStateError)
+            {
+            SetState(ESStateConnected);
+            }
 		//__ASSERT_DEBUG(IsBlockedConnect(), Panic(EUnexpectedConnect));
 		// assertion is invalid because operation could have been cancelled MarkT
 		CompleteConnect(KErrNone);
@@ -2112,7 +2124,8 @@ void ASocket::ConnectComplete(CSubConnectionFlowBase& anSSP)
 Called from protocol to indicate that a passive open has completed
 */
 	{
-	__ASSERT_DEBUG(State()==ESStateOpeningPassive,Panic(EBadStateUpCall));
+    // See comment in ASocket::NewData() as to why the errored state is valid here.
+	__ASSERT_DEBUG(State()==ESStateOpeningPassive || State()==ESStateError,Panic(EBadStateUpCall));
 	__ASSERT_ALWAYS(iAcceptQ, Panic(ENotListeningSocket));
 	__ASSERT_ALWAYS(iAcceptQ->Count()<iAcceptQ->Length(), Panic(EAcceptQueFull));
 
@@ -2296,11 +2309,15 @@ Called from protocol to indicate that a disconnect has been initiated - prob fro
 */
 	{
 	__ASSERT_ALWAYS(IsConnectionOriented(),Panic(EBadDisconnect));
-	__ASSERT_DEBUG(State()==ESStateConnected || State()==ESStateShuttingDown,Panic(EBadStateUpCall));
+   // See comment in ASocket::NewData() as to why the errored state is valid here.
+	__ASSERT_DEBUG(State()==ESStateConnected || State()==ESStateShuttingDown || State()==ESStateError, Panic(EBadStateUpCall));
 
 	iDisconnectDataError=KErrNone;
 
-	SetState(CanReconnect() ? ESStateCreated : ESStateDisconnected);
+	if (State() != ESStateError)
+	    {
+        SetState(CanReconnect() ? ESStateCreated : ESStateDisconnected);
+	    }
 	CompleteWrite(KErrDisconnected);
 	CompleteRead(KErrDisconnected);
 	CompleteConnect(KErrDisconnected);
@@ -2313,7 +2330,8 @@ Called from protocol to indicate that a disconnect has been initiated - prob fro
 */
 	{
 	__ASSERT_DEBUG(IsConnectionOriented(),Panic(EBadDisconnect));
-	__ASSERT_DEBUG(State()==ESStateConnected || State()==ESStateShuttingDown,Panic(EBadStateUpCall));
+	   // See comment in ASocket::NewData() as to why the errored state is valid here.
+	__ASSERT_DEBUG(State()==ESStateConnected || State()==ESStateShuttingDown || State()==ESStateError,Panic(EBadStateUpCall));
 
 	Disconnect();
 	iDisconnectData=aDisconnectData.Alloc();

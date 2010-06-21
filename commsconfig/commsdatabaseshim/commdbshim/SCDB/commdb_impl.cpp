@@ -362,7 +362,7 @@ void CCommDbTableExtension::InsertConnPrefRecordL(CCDConnectionPrefsRecord* aCon
 	User::LeaveIfError(recSet->iRecords.Append(aConnPref));
 	
 	iCurrentRecord = recSet->iRecords[recSet->iRecords.Count()-1];
-	iInsertedRecords.Insert(iCurrentRecord->RecordId(), KFirstRecord);
+	iInsertedRecords.InsertL(iCurrentRecord->RecordId(), KFirstRecord);
 	
 	TInt index = iDeletedRecords.Find(iCurrentRecord->RecordId());
 	
@@ -451,7 +451,7 @@ Updates the value of record index.
 	CleanupStack::Pop(newRecord);
 	
 	iCurrentRecord = newRecord;
-	iInsertedRecords.Insert(iCurrentRecord->RecordId(), KFirstRecord);
+	iInsertedRecords.InsertL(iCurrentRecord->RecordId(), KFirstRecord);
 	SortById();
 	
 	aId = newRecord->RecordId();

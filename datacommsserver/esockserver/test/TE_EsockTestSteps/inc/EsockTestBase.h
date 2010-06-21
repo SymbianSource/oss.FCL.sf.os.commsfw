@@ -502,6 +502,7 @@ public:
     //connection functions library
     RConnection* FindConnection(const TDesC& aConnectionName);
     TInt CreateConnection(const TDesC& aConnectionName);
+    TInt RemoveConnection(const TDesC& aConnectionName);
     TInt OpenConnection(const TRConnectionParams& aParams);
     TInt StartConnection(RConnection& aConn, TConnPref& aPrefs, TRequestStatus* aRequestStatus);
     TInt StartConnection(TRConnectionParams& aParams);

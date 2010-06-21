@@ -227,6 +227,10 @@ void CNetworkFlow::Unbind()
 				{
 				SetIdle();
 		    	ProcessDCIdleState();
+		    	if(!IdleSent())
+		    		{
+					LOG( ESockLog::Printf(_L("CNetworkFlow %08x:\tUnbind() - idle not sent"), this) );
+		    		}
 				}
 			}
 		else
@@ -255,6 +259,10 @@ void CNetworkFlow::ProcessDCIdleState()
 	if (Idle() && !IdleSent() && !NoBearerGuard())
 #endif
 		{
+		if(Started())
+			{
+			iSubConnectionProvider.PostMessage(Id(), TCFControlProvider::TDataClientGoneDown(KErrConnectionTerminated).CRef());
+			}
 		SetIdleSent();
 		iSubConnectionProvider.PostMessage(Id(), TCFControlProvider::TIdle().CRef());
 		}

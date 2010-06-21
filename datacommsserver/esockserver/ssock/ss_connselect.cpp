@@ -131,11 +131,10 @@ void CSelectionRequest::ReceivedL(const TRuntimeCtxId& aSender, const TNodeId& /
 						{
 						RNodeInterface::OpenPostMessageClose(Id(), aSender, TEChild::TLeft().CRef());
 						iActiveRequests[idx].SetFlags(TClientType::ELeaving);
-						}
-										
-					if (aSender == iTopMcprId)
-						{
-						iTopMcprId.SetNull();
+	                    if (aSender == iTopMcprId)
+	                        {
+	                        iTopMcprId.SetNull();
+	                        }						
 						}
 					}
 				SelectionError(aSender, error.iValue);
@@ -260,9 +259,18 @@ void CSelectionRequest::InitialiseDestroy()
 	__ASSERT_DEBUG(!iDestroying, User::Panic(KSpecAssert_ESockSSockscnslc, 17));
 	iDestroying = ETrue;
 
-    //We are not ready to destruct ourselves yet, waiting for TErrors
     if (iActiveRequests.Count()!=0)
     	{
+      /*
+      Unfortunatelly today the parent of 'this' (CConnection or CFlowRequest) doesn't handle ownership
+      with 'this' very well and it may (in cancelation scenarios it will) bail out right after posting TDestroy
+      to 'this'. This is not good because the TSelect protocol carries data owned by the parent (selection preferences)
+      and MCPRs may attempt to access them after the owner/parent has gone away. We're making it illegal for the
+      parent to post TDestroy before all requests are completed. Consequently before posting TDestroy the parent 
+      must make sure the selection is complete by awaiting response to the TSelect protocol. If it wants to
+      terminate selection it _must_ send TCancel (and await responses) before posting TDestroy.
+      */
+        __ASSERT_DEBUG(EFalse, User::Panic(KSpecAssert_ESockSSockscnslc, 44)); 
     	return;
     	}
 

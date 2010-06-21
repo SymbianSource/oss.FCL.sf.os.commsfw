@@ -489,15 +489,26 @@ void CHWPort::BreakCancel()
 	LOGTEXT2(_L8("PKTLOOPBACK:BreakCancel is not supported:  Unit %d..."), iPortName);
 	}
 
-TInt CHWPort::GetConfig(TDes8& /*aDes*/) const
+TInt CHWPort::GetConfig(TDes8& aDes) const
 /**
  * This gets the current configuration from the loopback driver.
  * 
- * @return KErrNotSupported
+ * @return KErrNone if the size of the output descriptor is valid
  */
 	{
-	LOGTEXT2(_L8("PKTLOOPBACK:GetConfig is not supported:  Unit %d..."), iPortName);
+	LOGTEXT2(_L8("PKTLOOPBACK:GetConfig: Unit %d..."), iPortName);
 
+	TInt length = aDes.Length();
+	__ASSERT_DEBUG( ((length==sizeof(TCommConfigV01)) ||
+	                 (length==sizeof(TCommConfigV02)) ),
+	                 User::Panic(KPortLoopBackCsyPanic, EPLBArgument));
+
+	if (length == sizeof(TCommConfigV01))
+	    {
+            aDes.Copy(iConfig);
+            return KErrNone;
+	    }
+        
 	return KErrNotSupported;
 	}
 
@@ -506,12 +517,28 @@ TInt CHWPort::SetConfig(const TDesC8& aDes)
  * This sets the current configuration for the loopback driver.  Note that
  * no error checking is done when setting the configuration.
  *
- * @return KErrNotSupported
+ * @return KErrNone if the size of the output descriptor is valid
  */
 	{
-	LOGTEXT2(_L8("PKTLOOPBACK:SetConfig is not supported:  Unit %d..."), iPortName);
+    
+	LOGTEXT2(_L8("PKTLOOPBACK:SetConfig:  Unit %d..."), iPortName);
+
+	TInt length = aDes.Length();
 	
-	iConfig.Copy(aDes);
+	__ASSERT_DEBUG( ((length==sizeof(TCommConfigV01)) ||
+	                  (length==sizeof(TCommConfigV02))),
+	                  User::Panic(KPortLoopBackCsyPanic, EPLBArgument));
+
+	if (length==sizeof(TCommConfigV01))
+	    {
+            iConfig.Copy(aDes);
+	    }
+	else if (length==sizeof(TCommConfigV02))
+	    {
+            TBuf8<sizeof(TCommConfigV02)> buff(aDes);
+            buff.SetLength(sizeof(TCommConfigV01));        
+            iConfig.Copy(buff);	
+	    }
 
 	return KErrNone;
 	}

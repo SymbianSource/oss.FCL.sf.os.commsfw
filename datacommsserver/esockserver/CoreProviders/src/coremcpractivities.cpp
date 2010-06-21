@@ -689,7 +689,7 @@ void CSelectNextLayerActivity::TAddProviderInfo::DoL()
 	CSelectNextLayerActivity& ac = static_cast<CSelectNextLayerActivity&>(*iContext.iNodeActivity);
 
 	TCFSelector::TSelectComplete& msg = message_cast<TCFSelector::TSelectComplete>(iContext.iMessage);
-	ac.iSelectCompleteMessages.Append(msg);
+	ac.iSelectCompleteMessages.AppendL(msg);
 	}
 
 EXPORT_DEFINE_SMELEMENT(CSelectNextLayerActivity::TJoinTierManager, NetStateMachine::MStateTransition, CSelectNextLayerActivity::TContext)

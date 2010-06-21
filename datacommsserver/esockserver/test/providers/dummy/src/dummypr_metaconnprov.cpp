@@ -27,6 +27,7 @@
 #include <elements/nm_messages_errorrecovery.h>
 #include <comms-infras/mobilitymcpractivities.h>
 #include "dummypr_metaconnprov.h"
+#include "dummypr_connprov.h"
 #include "dummypr_mcprpubsubsubscriber.h"
 
 #ifdef _DEBUG
@@ -42,10 +43,70 @@ using namespace MeshMachine;
 
 
 
+DEFINE_SMELEMENT(CDummyMCPRControlClientJoinActivity::TAddControlClient, NetStateMachine::MStateTransition, TContext)
+void CDummyMCPRControlClientJoinActivity::TAddControlClient::DoL()
+    {
+    TCFPeer::TJoinRequest& msg = message_cast<TCFPeer::TJoinRequest>(iContext.iMessage);
+
+    // Client type could be Messages::TClientType::EWorker (Selection Request)
+    // or ESock::TCFClientType::ECtrl, possibly others but not ESock::TCFClientType::EData
+    // which is handled by another activity
+    ASSERT(msg.iClientType.Type() != (TUint32)TCFClientType::EData);
+
+    iContext.Activity()->ReplaceOriginator(
+            *iContext.Node().AddClientL(msg.iNodeId, TClientType(TCFClientType::ECtrl)));
+    }
+
+
+DEFINE_SMELEMENT(CDummyMCPRControlClientJoinActivity::TSendJoinComplete, NetStateMachine::MStateTransition, TContext)
+void CDummyMCPRControlClientJoinActivity::TSendJoinComplete::DoL()
+    {
+    ASSERT(iContext.iNodeActivity);
+    
+    iContext.iNodeActivity->PostToOriginators(TCFPeer::TJoinComplete().CRef());
+    }
+
+
+MeshMachine::CNodeActivityBase* CDummyMCPRControlClientJoinActivity::NewL( const MeshMachine::TNodeActivity& aActivitySig, MeshMachine::AMMNodeBase& aNode )
+    {
+    TUint c = GetNextActivityCountL(aActivitySig,aNode);
+    return new(ELeave)CDummyMCPRControlClientJoinActivity(aActivitySig, aNode, c);
+    }
+
+void CDummyMCPRControlClientJoinActivity::ReplaceOriginator(RNodeInterface& aOriginator)
+    {
+    iOriginators.Remove(0);
+    TInt err = KErrNone;
+    TRAP(err, iOriginators.AppendL(XNodePeerId(aOriginator.RecipientId(), &aOriginator)));
+    ASSERT(err == KErrNone); //This test code is a wee bit lame. If executed in OOM, it may not work.
+    }
+
+namespace DummyMCPRControlClientJoinActivity
+{
+//DummyMCPRControlClientJoin is a special version of the core MCPR join activity that will artificially yield some time (50ms) to schedule the
+//test app. This is done to test RConnection::Stop injections at various RConnection::Start stages. Production MCPRs yield a lot reading database or
+//consulting other external entities, so the test MCPR must try to be representative. 
+DECLARE_DEFINE_CUSTOM_NODEACTIVITY(ECFActivityClientJoin, DummyMCPRControlClientJoin, TCFServiceProvider::TJoinRequest, CDummyMCPRControlClientJoinActivity::NewL)
+    FIRST_NODEACTIVITY_ENTRY(CoreNetStates::TAwaitingControlClientJoin, MeshMachine::TNoTag)
+    THROUGH_NODEACTIVITY_ENTRY(KNoTag, CDummyMCPRControlClientJoinActivity::TAddControlClient, MeshMachine::TNoTag)
+    NODEACTIVITY_ENTRY(KNoTag, CDelayTimer::TSetTimerMs<50>, CDelayTimer::TAwaitingTimerExpired, MeshMachine::TNoTag)
+    THROUGH_NODEACTIVITY_ENTRY(KNoTag, MCprStates::TDecrementBlockingDestroy, MeshMachine::TNoTag)
+    LAST_NODEACTIVITY_ENTRY(KNoTag, CDummyMCPRControlClientJoinActivity::TSendJoinComplete)   
+NODEACTIVITY_END()
+}
+
+
+namespace DummyMCPRActivities
+{
+DECLARE_DEFINE_ACTIVITY_MAP(stateMap)
+   ACTIVITY_MAP_ENTRY(DummyMCPRControlClientJoinActivity, DummyMCPRControlClientJoin)
+ACTIVITY_MAP_END_BASE(MobilityMCprActivities, mobilityMCprActivities)
+}
+
 CDummyMetaConnectionProvider* CDummyMetaConnectionProvider::NewL(CMetaConnectionProviderFactoryBase& aFactory,
                                                                      const TProviderInfo& aProviderInfo)
 	{
-	CDummyMetaConnectionProvider* self = new (ELeave) CDummyMetaConnectionProvider(aFactory,aProviderInfo,MobilityMCprActivities::mobilityMCprActivities::Self());
+	CDummyMetaConnectionProvider* self = new (ELeave) CDummyMetaConnectionProvider(aFactory,aProviderInfo,DummyMCPRActivities::stateMap::Self());
 	CleanupStack::PushL(self);
 	self->ConstructL();
 	CleanupStack::Pop(self);

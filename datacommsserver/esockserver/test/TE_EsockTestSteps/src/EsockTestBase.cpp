@@ -1124,6 +1124,18 @@ TInt CCEsockTestBase::CreateConnection(const TDesC& aConnectionName)
 	return error;
 	}
 
+TInt CCEsockTestBase::RemoveConnection(const TDesC& aConnectionName)
+    {
+    //check if this connection hasn't been created already
+    if (iConns.Find(aConnectionName)==NULL)
+        return KErrNotFound;
+
+    iConns.Remove(aConnectionName);
+    return KErrNone;
+    }
+
+
+
 TInt CCEsockTestBase::OpenConnection(const TRConnectionParams& aParams)
 	{
     RSocketServ* ss = iSockServs.Find(aParams.iSockServName);
@@ -1255,16 +1267,21 @@ TInt CCEsockTestBase::StartConnection(TRConnectionParams& aParams)
 	TRequestStatus* requestStatus = NULL;
 	if (aParams.iAsynch)
 		{
-		requestStatus = new TRequestStatus;
-	    if (requestStatus==NULL)
-	    	return KErrNoMemory;
-	    
-		TInt error = iRequestStatuses.Add(requestStatus, aParams.iConnectionName);
-		if (error!=KErrNone)
-			{
-			delete requestStatus;
-			return error;
-			}
+				//The request status may well already be there (created by the previous iteration?)
+        requestStatus = iRequestStatuses.Find(aParams.iConnectionName);
+        if (requestStatus == NULL)
+            {
+            requestStatus = new TRequestStatus;
+            if (requestStatus==NULL)
+                return KErrNoMemory;
+            
+            TInt error = iRequestStatuses.Add(requestStatus, aParams.iConnectionName);
+            if (error!=KErrNone)
+                {
+                delete requestStatus;
+                return error;
+                }
+            }
 		}
 
 	TInt error;

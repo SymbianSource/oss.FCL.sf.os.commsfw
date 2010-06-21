@@ -198,11 +198,11 @@ EXPORT_C void AMMNodeBase::RemoveClient(const TRuntimeCtxId& aClientId, TNodeCon
 	__ASSERT_DEBUG(!client->RecipientId().IsNull(), User::Panic(KSpecAssert_ElemMeshMachNodC, 1));
 	AbortActivitiesOriginatedBy(aContext, client->RecipientId());
 
+    if (aContext.iSender == aClientId)
+        {
+        aContext.iPeer = NULL;
+        }	
 	ANodeBase::RemoveClient(foundAt);
-   	if (aContext.iSender == aClientId)
-   	    {
-   	    aContext.iPeer = NULL;
-   	    }
 	}
 
 EXPORT_C CNodeActivityBase* AMMNodeBase::FindActivityById(TUint aActivityId) const

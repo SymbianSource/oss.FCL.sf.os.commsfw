@@ -40,6 +40,15 @@ const TUint KCommHighUnit=0;
 
 _LIT(KSerialDescription, "Packet Loopback CSY");
 _LIT(KSerialName, "PKTLOOPBACK");
+_LIT(KPortLoopBackCsyPanic, "PortLoopBack.csy");
+
+enum TPortLoopBackCsyPanic
+    {       
+    /** Input / Output Argument Invalid */
+    EPLBArgument
+    };
+
+
 
 class CHWPort;
 
