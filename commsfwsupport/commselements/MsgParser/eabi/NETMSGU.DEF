@@ -28,10 +28,10 @@ EXPORTS
 	_ZN9CListNodeD1Ev @ 27 NONAME ; CListNode::~CListNode [in-charge](void)
 	_ZTI9CListItem @ 28 NONAME ; typeinfo for CListItem
 	_ZTV9CListItem @ 29 NONAME ; vtable for CListItem
-	_ZTI5CItemI15TValueBigEndianE @ 30 NONAME ; #<TI>#
-	_ZTI5CItemI9TConstantE @ 31 NONAME ; #<TI>#
+	_ZTI5CItemI15TValueBigEndianE @ 30 NONAME ABSENT ; #<TI>#
+	_ZTI5CItemI9TConstantE @ 31 NONAME ABSENT ; #<TI>#
 	_ZTI9CListNode @ 32 NONAME ; #<TI>#
-	_ZTV5CItemI15TValueBigEndianE @ 33 NONAME ; #<VT>#
-	_ZTV5CItemI9TConstantE @ 34 NONAME ; #<VT>#
+	_ZTV5CItemI15TValueBigEndianE @ 33 NONAME ABSENT ; #<VT>#
+	_ZTV5CItemI9TConstantE @ 34 NONAME ABSENT ; #<VT>#
 	_ZTV9CListNode @ 35 NONAME ; #<VT>#
 
