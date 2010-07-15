@@ -764,7 +764,7 @@ EXPORT_C void TSendBindTo::DoL()
 	//TODO: TNodePeerId should become internal. When this happens, FirstOriginator should return
 	//      RNodeInterface.
 	iContext.iNodeActivity->PostRequestTo(
-		address_cast<Messages::TNodeId>(iContext.iNodeActivity->SoleOriginator().RecipientId()),
+		iContext.iNodeActivity->SoleOriginator().Peer(),
 		TCFDataClient::TBindTo(binderResponse.iNodeId).CRef());
 	}
 

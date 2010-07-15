@@ -1054,4 +1054,5 @@ EXPORTS
 	?Match@TTierTypeIdFactoryQuery@ESock@@MAE?AW4TMatchResult@MFactoryQuery@Factories@@AAUTFactoryObjectInfo@5@@Z @ 1053 NONAME ; enum Factories::MFactoryQuery::TMatchResult ESock::TTierTypeIdFactoryQuery::Match(struct Factories::TFactoryObjectInfo &)
 	?GetVDataTableStatic@TTierTypeIdFactoryQuery@ESock@@SAPBUSVDataTableEntry@Meta@@XZ @ 1054 NONAME ; struct Meta::SVDataTableEntry const * ESock::TTierTypeIdFactoryQuery::GetVDataTableStatic(void)
 	?AddClientL@CMMCommsProviderBase@ESock@@UAEPAVRNodeInterface@Messages@@ABVTNodeId@4@ABVTClientType@4@PAX@Z @ 1055 NONAME ; class Messages::RNodeInterface * ESock::CMMCommsProviderBase::AddClientL(class Messages::TNodeId const &, class Messages::TClientType const &, void *)
+	?ConstructL@ACFMMNodeBase@ESock@@IAEXH@Z @ 1056 NONAME ; void ESock::ACFMMNodeBase::ConstructL(int)
 

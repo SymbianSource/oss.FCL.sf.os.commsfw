@@ -52,6 +52,7 @@ EXPORT_C void TSignatureBase::DispatchL(const TRuntimeCtxId& aSender, const TRun
 	{
 	const TNodeId& nodeId = address_cast<TNodeId>(aRecipient); //This message type operates on nodes
 	__ASSERT_DEBUG(nodeId.Ptr(), User::Panic(KSpecAssert_ElemNodeMessMesC, 1));
+	__ASSERT_ALWAYS(nodeId.Node().NodeId() == nodeId, User::Panic(KMessagesPanic, EDeceasedNodePanic)); //Address reuse protection (Ptr() may match something existing, but not necesserily the intended addresee).
 	nodeId.Node().ReceivedL(aSender, nodeId, *this);
 	}
 

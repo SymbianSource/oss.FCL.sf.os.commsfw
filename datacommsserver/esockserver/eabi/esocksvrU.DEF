@@ -1961,4 +1961,5 @@ EXPORTS
 	_ZThn4_N5ESock23TTierTypeIdFactoryQuery5MatchERN9Factories18TFactoryObjectInfoE @ 1960 NONAME
 	_ZN5ESock20CMMCommsProviderBase10AddClientLERKN8Messages7TNodeIdERKNS1_11TClientTypeEPv @ 1961 NONAME
 	_ZThn36_N5ESock20CMMCommsProviderBase10AddClientLERKN8Messages7TNodeIdERKNS1_11TClientTypeEPv @ 1962 NONAME
+	_ZN5ESock13ACFMMNodeBase10ConstructLEi @ 1963 NONAME
 

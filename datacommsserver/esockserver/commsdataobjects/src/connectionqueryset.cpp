@@ -37,7 +37,7 @@ using namespace ESock;
 
 EXPORT_START_ATTRIBUTE_TABLE_AND_FN(XConnectionQuerySet, CCommsDataObjectFactory::iUid, XConnectionQuerySet::iUid)
 	REGISTER_ATTRIBUTE(XConnectionQuerySet, iQueries, TMetaObject<XConnectionQuerySet::RMetaDataQueryContainer>)
-END_ATTRIBUTE_TABLE()
+END_ATTRIBUTE_TABLE_BASE(XCommsDataObject, 0)
 
 
 EXPORT_C XConnectionQueryBase* XConnectionQuerySet::FindQuery(const XConnectionQueryBase& aQuery) const

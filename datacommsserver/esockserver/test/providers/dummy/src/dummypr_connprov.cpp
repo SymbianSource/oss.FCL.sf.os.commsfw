@@ -47,11 +47,6 @@ using namespace ESock;
 using namespace MeshMachine;
 using namespace PRActivities;
 
-//We reserve space for two preallocated activities that may start concurrently on the CPR
-//node: destroy and data client stop.
-static const TUint KDefaultMaxPreallocatedActivityCount = 2;
-static const TUint KMaxPreallocatedActivitySize = sizeof(MeshMachine::CNodeRetryParallelActivity) + sizeof(MeshMachine::APreallocatedOriginators<4>);
-static const TUint KDummyCPRPreallocatedActivityBufferSize = KDefaultMaxPreallocatedActivityCount * KMaxPreallocatedActivitySize;
 static const TUint KDestroyDelay = 3000;
 //-================================================
 //
@@ -251,7 +246,7 @@ CDummyConnectionProvider* CDummyConnectionProvider::NewL(ESock::CConnectionProvi
     {
     CDummyConnectionProvider* self = new (ELeave) CDummyConnectionProvider(aFactory, DummyCPRStates::stateMap::Self(), aConnStatus);
     CleanupStack::PushL(self);
-    self->ConstructL(KDummyCPRPreallocatedActivityBufferSize);
+    self->ConstructL();
     CleanupStack::Pop(self);
     return self;
     }
@@ -260,7 +255,7 @@ CDummyConnectionProvider* CDummyConnectionProvider::NewVanillaL(ESock::CConnecti
     {
     CDummyConnectionProvider* self = new (ELeave) CDummyConnectionProvider(aFactory, VanillaDummyCPRStates::stateMap::Self(), CDummyConnectionProvider::EConnNoIncoming);
     CleanupStack::PushL(self);
-    self->ConstructL(KDummyCPRPreallocatedActivityBufferSize);
+    self->ConstructL();
     CleanupStack::Pop(self);
     return self;
     }

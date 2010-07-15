@@ -470,9 +470,11 @@ void ConnStates::TProcessIncomingConnection::DoL()
 	__ASSERT_DEBUG(iContext.iNodeActivity, ConnPanic(KPanicNoActivity));
     CSubConnection* waitingSubConn = iContext.Node().Session()->CSubConnectionFromHandle(static_cast<CESockClientActivityBase&>(*iContext.iNodeActivity).Int0());
 	User::LeaveIfError(waitingSubConn != NULL ? KErrNone : KErrCancel);
-
+    RNodeInterface* waitingSubConnPeer = iContext.Node().FindClient(waitingSubConn->Id()); //To my surprise SC is a peer of this (so must use peer handle when talking to it)
+    __ASSERT_DEBUG(waitingSubConnPeer, ConnPanic(KPanicNoDataClient));
+    	
     TCFServiceProvider::TCommsBinderResponse& binderResp = message_cast<TCFServiceProvider::TCommsBinderResponse>(iContext.iMessage);
-    iContext.iNodeActivity->PostRequestTo(waitingSubConn->Id(),
+    iContext.iNodeActivity->PostRequestTo(*waitingSubConnPeer,
         TCFDataClient::TBindTo(binderResp.iNodeId).CRef());
 	}
 

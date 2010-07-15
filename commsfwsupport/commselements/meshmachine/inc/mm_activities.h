@@ -91,7 +91,7 @@ Define and export a custom node activity.
 	#define DEFINE_EXPORT_CUSTOM_NODEACTIVITY( id, name, msgtype, ctor ) \
 		EXPORT_C const MeshMachine::TNodeActivity& name :: Self() {return iSelf;} \
 		EXPORT_C const NetStateMachine::TStateTriple& name :: FirstTriple() {return iData[1];} \
-		const MeshMachine::TNodeActivity name :: iSelf = {id, 0, msgtype::EId, msgtype::ERealm, name :: iData[1], (TAny*)&ctor, _S8(#name)}; \
+		const MeshMachine::TNodeActivity name :: iSelf = {id, MeshMachine::TNodeActivity::ENodeCtor, msgtype::EId, msgtype::ERealm, name :: iData[1], (TAny*)&ctor, _S8(#name)}; \
 		DEFINE_TRIPLES_TABLE( name :: iData )
 
 /**
@@ -110,7 +110,7 @@ Node activity class must derive from CNodeActivityBase.
 @see CNodeActivityBase
 */
 	#define DEFINE_CUSTOM_NODEACTIVITY( id, name, msgtype, ctor ) \
-		const MeshMachine::TNodeActivity name :: iSelf = {id, 0, msgtype::EId, msgtype::ERealm, name :: iData[1], (TAny*)&ctor, _S8(#name)}; \
+		const MeshMachine::TNodeActivity name :: iSelf = {id, MeshMachine::TNodeActivity::ENodeCtor, msgtype::EId, msgtype::ERealm, name :: iData[1], (TAny*)&ctor, _S8(#name)}; \
 		DEFINE_TRIPLES_TABLE( name :: iData )
 
 #else
@@ -128,7 +128,7 @@ Define and export a custom node activity.
 	#define DEFINE_EXPORT_CUSTOM_NODEACTIVITY( id, name, msgtype, ctor ) \
 		EXPORT_C const MeshMachine::TNodeActivity& name :: Self() {return iSelf;} \
 		EXPORT_C const NetStateMachine::TStateTriple& name :: FirstTriple() {return iData[1];} \
-		const MeshMachine::TNodeActivity name :: iSelf = {id, 0, msgtype::EId, msgtype::ERealm, name :: iData[1], (TAny*)&ctor, NULL}; \
+		const MeshMachine::TNodeActivity name :: iSelf = {id, MeshMachine::TNodeActivity::ENodeCtor, msgtype::EId, msgtype::ERealm, name :: iData[1], (TAny*)&ctor, NULL}; \
 		DEFINE_TRIPLES_TABLE( name :: iData )
 
 /**
@@ -147,7 +147,7 @@ Node activity class must derive from CNodeActivityBase.
 @see CNodeActivityBase
 */
 	#define DEFINE_CUSTOM_NODEACTIVITY( id, name, msgtype, ctor ) \
-		const MeshMachine::TNodeActivity name :: iSelf = {id, 0, msgtype::EId, msgtype::ERealm, name :: iData[1], (TAny*)&ctor, NULL}; \
+		const MeshMachine::TNodeActivity name :: iSelf = {id, MeshMachine::TNodeActivity::ENodeCtor, msgtype::EId, msgtype::ERealm, name :: iData[1], (TAny*)&ctor, NULL}; \
 		DEFINE_TRIPLES_TABLE( name :: iData )
 
 #endif
@@ -476,7 +476,7 @@ Node activity class must derive from CNodeActivityBase.
 	
 */
 	#define DEFINE_RESERVED_CUSTOM_NODEACTIVITY( id, name, msgtype, ctor ) \
-		const MeshMachine::TNodeActivity name :: iSelf = {id, 1, msgtype::EId, msgtype::ERealm, name :: iData[1], (TAny*)&ctor, _S8(#name)}; \
+		const MeshMachine::TNodeActivity name :: iSelf = {id, MeshMachine::TNodeActivity::EContextCtor, msgtype::EId, msgtype::ERealm, name :: iData[1], (TAny*)&ctor, _S8(#name)}; \
 		DEFINE_TRIPLES_TABLE( name :: iData )
 
 #else
@@ -494,7 +494,7 @@ Define and export a custom node activity.
 	#define DEFINE_RESERVED_EXPORT_CUSTOM_NODEACTIVITY( id, name, msgtype, ctor ) \
 		EXPORT_C const MeshMachine::TNodeActivity& name :: Self() {return iSelf;} \
 		EXPORT_C const NetStateMachine::TStateTriple& name :: FirstTriple() {return iData[1];} \
-		const MeshMachine::TNodeActivity name :: iSelf = {id, 1, msgtype::EId, msgtype::ERealm, name :: iData[1], (TAny*)&ctor, NULL}; \
+		const MeshMachine::TNodeActivity name :: iSelf = {id, MeshMachine::TNodeActivity::EContextCtor, msgtype::EId, msgtype::ERealm, name :: iData[1], (TAny*)&ctor, NULL}; \
 		DEFINE_TRIPLES_TABLE( name :: iData )
 
 /**
@@ -513,7 +513,7 @@ Node activity class must derive from CNodeActivityBase.
 @see CNodeActivityBase
 */
 	#define DEFINE_RESERVED_CUSTOM_NODEACTIVITY( id, name, msgtype, ctor ) \
-		const MeshMachine::TNodeActivity name :: iSelf = {id, 1, msgtype::EId, msgtype::ERealm, name :: iData[1], (TAny*)&ctor, NULL}; \
+		const MeshMachine::TNodeActivity name :: iSelf = {id, MeshMachine::TNodeActivity::EContextCtor, msgtype::EId, msgtype::ERealm, name :: iData[1], (TAny*)&ctor, NULL}; \
 		DEFINE_TRIPLES_TABLE( name :: iData )
 
 #endif
@@ -928,7 +928,26 @@ protected:
 	All the nodes that have started the same activity
 	*/
 	RArray<Messages::XNodePeerId> iOriginators;
-
+/*	class TOriginatorStore
+		{
+	private:
+		typedef Messages::XNodePeerId TOriginatorType;
+	public:
+		class Iterator
+			{
+		public:
+			Iterator(const TOriginatorStore& aOriginatorStore);
+			TOriginatorType* operator++();
+			operator*();
+			};
+		virtual TInt Count() const {return iOriginators.Count();}
+		virtual const TOriginatorType& operator[](TUint aIndex) const {return iOriginators[aIndex];};
+		virtual TInt Append(const Messages::RNodeInterface& aInterface);
+		virtual TInt Remove(const Messages::RNodeInterface& aInterface);
+	private:
+		RArray<TOriginatorType> iOriginators;
+		} iOriginators;
+*/
 private: //Shouldn't be accessed directly
 	TInt     iError;    //Risk of failure is a generic property of an activity.
 	                    //Activities may choose to use external error handling activities,
@@ -1542,9 +1561,10 @@ private:
 // CPreallocatedNodeActivityBase
 //
 //-=========================================================
-template <TInt ORIGINATORSCOUNT>
+// APreallocatedOriginators is primed with 2 as the vast majority of Activities will have a maximum of 2 originators.
+// Corner cases should be handled seperately. For example CDestroyActivity has its own implementation as it will only ever have 1 originator
 class CPreallocatedNodeRetryActivity : public MeshMachine::CNodeRetryActivity,
-                                      protected MeshMachine::APreallocatedOriginators<ORIGINATORSCOUNT>
+                                      protected MeshMachine::APreallocatedOriginators<2>
 /**
 @internalTechnology
 */
@@ -1561,7 +1581,7 @@ public:
 protected:
 	CPreallocatedNodeRetryActivity(const MeshMachine::TNodeActivity& aActivitySig, MeshMachine::AMMNodeBase& aNode)
 	:	CNodeRetryActivity(aActivitySig, aNode),
-		APreallocatedOriginators<ORIGINATORSCOUNT>(iOriginators)
+		APreallocatedOriginators<2>(iOriginators)
 		{
 		}
 
@@ -1583,6 +1603,14 @@ inline TUint CNodeParallelActivityBase::GetNextActivityCountL( const TNodeActivi
     //Historical. Method ceased to leave, but must keep the old, L-ending overload.
     return GetNextActivityCount(aActivitySig, aNode);
     }
+
+//By default we reserve the space for preallocated activities generously, to fit even a synchronised activity preallocating space for up to 3 originators.
+//Any node, hosting specific activities that may need the preallocation mechanism can choose a more optimal amounts.
+//For efficiency reasons it is strongly recommended that any node (or family of nodes) is revisited and an optimal
+//amount of space is specified (could be specified in the base class for those nodes or in every type of node separatelly).
+static const TUint KDefaultMaxPreallocatedActivityCount = 3;
+static const TUint KDefaultMaxPreallocatedActivitySize = sizeof(CNodeRetryParallelActivity) + sizeof(APreallocatedOriginators<3>);
+static const TUint KDefaultPreallocatedActivityBufferSize = KDefaultMaxPreallocatedActivityCount * KDefaultMaxPreallocatedActivitySize;
 
 } //namespace MeshMachine
 

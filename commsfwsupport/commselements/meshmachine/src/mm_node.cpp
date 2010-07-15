@@ -36,14 +36,6 @@ using namespace Messages;
 using namespace MeshMachine;
 using namespace NetStateMachine;
 
-//By default we reserve the space generously, to fit even a synchronised activity preallocating space for up to 4 originators.
-//Any node, hosting specific activities that may need the preallocation mechanism can choose a more optimal amounts.
-//For efficiency reasons it is strongly recommended that any node (or family of nodes) is revisited and an optimal
-//amount of space is specified (could be specified in the base class for those nodes or in every type of node separatelly).
-static const TUint KDefaultMaxPreallocatedActivityCount = 1;
-static const TUint KMaxPreallocatedActivitySize = sizeof(CNodeRetryParallelActivity) + sizeof(APreallocatedOriginators<4>);
-static const TUint KDefaultPreallocatedActivityBufferSize = KDefaultMaxPreallocatedActivityCount * KMaxPreallocatedActivitySize;
-
 //-=========================================================
 //
 //Panics
@@ -124,7 +116,7 @@ EXPORT_C void AMMNodeBase::ConstructL(TInt aSize)
     	{
     	//Nodes will usually use the default parameter (-1) and rely on KDefaultPreallocatedActivityBufferSize.
     	//We do not use KDefaultPreallocatedActivityBufferSize as the default argument to avoid publishing of
-    	//this constant or KDefaultMaxPreallocatedActivityCount/KMaxPreallocatedActivitySize (either can be
+    	//this constant or KDefaultMaxPreallocatedActivityCount/KDefaultMaxPreallocatedActivitySize (either can be
     	//freely changed at any time).
     	aSize = KDefaultPreallocatedActivityBufferSize;
     	}
@@ -675,7 +667,7 @@ void AMMNodeBase::PreallocateSpaceL(TUint aSize)
 	// to ensure they can be added to the activities list while the system is out of memory.  We also
 	// add enough space for extra data strucures to store the free list - the caller cannot reserve this
 	// space without knowledge of the preallocation implementation so we do this ourselves.
-	TUint maxPreallocatedActivities = aSize / KMaxPreallocatedActivitySize;
+	TUint maxPreallocatedActivities = aSize / KDefaultMaxPreallocatedActivitySize;
 	iActivities.ReserveL(iActivities.Count() + maxPreallocatedActivities);
 	__ASSERT_DEBUG(iPreallocatedSpace==NULL, User::Panic(KSpecAssert_ElemMeshMachNodC, 5));
     iPreallocatedSpace = User::AllocZL(aSize + sizeof(TUint) + maxPreallocatedActivities * sizeof(TAny*));
@@ -697,7 +689,7 @@ TAny* AMMNodeBase::GetPreallocatedCell(TUint aIndex) const
 	// Calculate the offset of the start of the preallocated space after the free list.
 	TUint8* bufferStart = reinterpret_cast<TUint8*>(iPreallocatedSpace) + sizeof(TUint*) + MaxPreallocatedActivityCount() * sizeof(TAny*);
 
-	return bufferStart + aIndex * KMaxPreallocatedActivitySize;
+	return bufferStart + aIndex * KDefaultMaxPreallocatedActivitySize;
 	}
 
 TAny* AMMNodeBase::BorrowPreallocatedSpace(TUint aSize)
@@ -705,16 +697,16 @@ TAny* AMMNodeBase::BorrowPreallocatedSpace(TUint aSize)
 	MESH_LOG((KMeshMachineSubTag, _L8("AMMNodeBase %08x:\tBorrowPreallocatedSpace (%d)"),this,aSize));
 
 	__ASSERT_ALWAYS(iPreallocatedSpace, User::Panic(KMMNodePanic, EPanicPreallocatedSpaceAlreadyTaken));
-	__ASSERT_ALWAYS(aSize <= KMaxPreallocatedActivitySize, User::Panic(KMMNodePanic, EPanicPreallocatedSpaceAlreadyTaken));
+	__ASSERT_ALWAYS(aSize <= KDefaultMaxPreallocatedActivitySize, User::Panic(KMMNodePanic, EPanicPreallocatedSpaceAlreadyTaken));
 
 	#ifdef SYMBIAN_TRACE_ENABLE
 		if(!iPreallocatedSpace)
 			{
 			MESH_LOG((KMeshMachineSubTag, _L8("ERROR AMMNodeBase %08x:\tBorrowPreallocatedSpace - Preallocated space has not been allocated!"), this));
 			}
-		if(aSize>KMaxPreallocatedActivitySize)
+		if(aSize>KDefaultMaxPreallocatedActivitySize)
 			{
-			MESH_LOG((KMeshMachineSubTag, _L8("ERROR AMMNodeBase %08x:\tBorrowPreallocatedSpace - Size exceeds maximum limit for a single allocation (%d was requested but only %d is available)!"), this, aSize, KMaxPreallocatedActivitySize));
+			MESH_LOG((KMeshMachineSubTag, _L8("ERROR AMMNodeBase %08x:\tBorrowPreallocatedSpace - Size exceeds maximum limit for a single allocation (%d was requested but only %d is available)!"), this, aSize, KDefaultMaxPreallocatedActivitySize));
 			}
 	#endif
 
@@ -732,7 +724,7 @@ TAny* AMMNodeBase::BorrowPreallocatedSpace(TUint aSize)
 			ptr = freeList[index] = GetPreallocatedCell(index);
 
 			// Zero the cell so that any object allocated will have the expected initial zero fill.
-			memset(ptr, 0, KMaxPreallocatedActivitySize);
+			memset(ptr, 0, KDefaultMaxPreallocatedActivitySize);
 
 			break;
 			}
