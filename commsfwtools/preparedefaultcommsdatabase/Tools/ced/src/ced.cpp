@@ -875,7 +875,7 @@ TInt ParseCommandLineL(TBool &aDebugOn, TBool &aOverWrite, TBool &aForceXMLProce
         if ( !bInFound )
 			{
 			RFs fs;
-			fs.Connect();
+			User::LeaveIfError(fs.Connect());
 			CleanupClosePushL(fs);
 			TUint dummy;
 			

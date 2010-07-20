@@ -77,7 +77,7 @@ public:
 class CDelayTimer: public CTimer
     {
 public:
-    static CDelayTimer* NewL( Messages::RNodeInterface* aSender, const Messages::TNodeId& aRecipient, const Messages::TNodeSignal::TMessageId& aMessageId );
+    static CDelayTimer* NewL( const Messages::TNodeId& aSender, const Messages::TNodeId& aRecipient, const Messages::TNodeSignal::TMessageId& aMessageId );
 
     virtual ~CDelayTimer();
     void Start( TInt aIntervalInSecs );    
@@ -91,16 +91,43 @@ public:
     };
 
 private:
-    CDelayTimer( Messages::RNodeInterface* aSender, const Messages::TNodeId& aRecipient, const Messages::TNodeSignal::TMessageId& aMessageId );
+    CDelayTimer( const Messages::TNodeId& aSender, const Messages::TNodeId& aRecipient, const Messages::TNodeSignal::TMessageId& aMessageId );
     void ConstructL();
     
 protected: // From CTimer (CActive)
     void RunL();
         
 private:
-    Messages::RNodeInterface* iSender;
+    Messages::TNodeId iSender;
     Messages::TNodeId iRecipient;
     Messages::TNodeSignal::TMessageId iMessageId;
+
+public:
+    //States and Transitions
+    typedef MeshMachine::TNodeContext<ESock::CMMCommsProviderBase, CoreNetStates::TContext> TContext;
+    
+    template <TInt IntervalMs>
+    class TSetTimerMs : public MeshMachine::TStateTransition<TContext>
+        {
+    public:
+        NETSM_TPL_DECLARE_CTR(TSetTimerMs, NetStateMachine::MStateTransition, TContext)
+
+        TSetTimerMs(TContext& aContext)
+        :TStateTransition<TContext>(aContext)
+            {
+            }
+
+        virtual void DoL()
+            {
+            CDelayTimer* delay = CDelayTimer::NewL(iContext.NodeId(), iContext.NodeId(), Messages::TEBase::TNull::Id());
+            delay->Start(IntervalMs);
+            }
+        };
+    
+    
+    DECLARE_SMELEMENT_HEADER( TAwaitingTimerExpired, MeshMachine::TState<TContext>, NetStateMachine::MState, TContext )
+        virtual TBool Accept();
+    DECLARE_SMELEMENT_FOOTER( TAwaitingTimerExpired )
     };
 
 

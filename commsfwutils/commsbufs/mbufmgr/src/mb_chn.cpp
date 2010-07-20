@@ -281,7 +281,7 @@ subsequent prepending without further allocation (typically used for protocol he
     if(First())
         {
         newChain.iNext = First()->Pool()->Pond().Alloc(len + aHdrReserve, 0, KMaxTInt);
-        err = iNext ? KErrNone : KErrNoMBufs;      
+        err = newChain.iNext ? KErrNone : KErrNoMBufs;      
         }
     else
         {

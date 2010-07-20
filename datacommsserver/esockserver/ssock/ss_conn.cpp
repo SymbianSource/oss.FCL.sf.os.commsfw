@@ -267,8 +267,7 @@ DECLARE_DEFINE_CUSTOM_NODEACTIVITY(ECFActivityDestroy, ConnectionClose, TCFInter
 	// Handshake a shutdown of AllInterfaceNotificationWorker (send TCancel, await TError).
 	NODEACTIVITY_ENTRY(ConnStates::KCancelAllInterfaceWorker, ConnStates::TCancelAllInterfaceNotificationWorker, TAwaitingMessageState<TEBase::TError>, MeshMachine::TNoTag)
     THROUGH_NODEACTIVITY_ENTRY(KNoTag, ConnStates::TCancelAllLegacyRMessage2Activities, ConnStates::TNoTagBlockedByLegacyRMessage2Activities)
-	NODEACTIVITY_ENTRY(KNoTag, ConnStates::TProcessClose, TECABState<MeshMachine::TAwaitingLeaveComplete>, MeshMachine::TNoTag)
-	//TDestroyAwaitingLeaveCompleteLoop loops back to its own triple if more SPs
+    THROUGH_NODEACTIVITY_ENTRY(KNoTag, ConnStates::TProcessClose, MeshMachine::TNoTag)
 	NODEACTIVITY_ENTRY(KNoTag, MeshMachine::TDoNothing, TECABState<MeshMachine::TAwaitingLeaveComplete>, CoreActivities::CDestroyActivity::TNoTagOrNoTagBackwards)
 	LAST_NODEACTIVITY_ENTRY(KNoTag, MeshMachine::TDoNothing)
 NODEACTIVITY_END()

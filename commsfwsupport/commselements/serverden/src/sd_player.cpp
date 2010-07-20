@@ -17,7 +17,7 @@
  @file
  @internalComponent
 */
-
+    
 #include <e32base.h>
 #include <cfshared.h>
 #include "sd_log.h"
@@ -39,10 +39,12 @@ using namespace CommsFW;
 //
 // CSockSessionProxy
 //
+
 EXPORT_C CCommonSessionProxy::CCommonSessionProxy(CWorkerSession* aSession, CCommonPlayer& aPlayer)
 :	iSession(aSession),
 	iPlayer(aPlayer),
-	iNumSubSessClosing(ELivingSession)
+	iNumSubSessClosing(ELivingSession),
+	iSubSessionCloseThrottle(*this)
 	{
 	//COMMONLOG((WorkerId(),KECommonBootingTag, _L8("CSockSessionProxy %08x:\tCSockSessionProxy(), iSockSession %08x"), this, iSession) );
 	}
@@ -66,37 +68,77 @@ void CCommonSessionProxy::BeginSessionClose()
 	__ASSERT_DEBUG(!IsClosing(), User::Panic(KSpecAssert_ElemSvrDenPlayrC, 1));
 	iNumSubSessClosing = 1;	// dummy subsession to prevent premature suicide during this close loop
 
-	// The object container is stored as a packed array, so working backwards through it avoids invalidating
-	// the iterator when removing entries (and as a bonus is more efficient)
-	CCommonPlayer::TSubSessionContainer& subSessions(iPlayer.SubSessions());
-	for(TInt i = subSessions.Count() - 1; i >= 0; --i)
-		{
-		CWorkerSubSession* subSession = subSessions[i];
-		if(subSession->Session() == iSession)
-			{
-			++iNumSubSessClosing;
-			if(!subSession->IsClosing())
-				{
-				subSession->DeleteMe();
-				}
-			}
-		}
-
-	NotifySubSessionDestroyed();	// remove the dummy subsession
+	
+	DeleteSubSessionsWithThrottling();
 	}
+
+void CCommonSessionProxy::DeleteSubSessionsWithThrottling()
+    {
+    // Why Throttle?  The original scenario is a process which opens a large number of sockets (100 in the
+    // original case) and terminates without closing them, leaving BeginSessionClose() to clean them up.
+    // In addition, the worker in question (pdummy1) synchronously deletes subsessions (1) and uses a shared
+    // shared heap configuration (i.e. limited memory).  As each deletion results in a message being sent
+    // (to an SCPR), and there is no opportunity to drain these due to the synchronous deletion, the transport
+    // queue overflows and cannot be grown resulting in a panic.  So use a (*low* priority) active object to
+    // delete a limited number of subsessions per RunL().
+    //
+    // (1) a call to DeleteMe() results in an immediate upcall to NotifySubSessionDestroyed(). 
+    
+    TInt count = KSubSessionThrottleSize;
+    
+    // The object container is stored as a packed array, so working backwards through it avoids invalidating
+    // the iterator when removing entries (and as a bonus is more efficient)
+
+    CCommonPlayer::TSubSessionContainer& subSessions(iPlayer.SubSessions());
+    for(TInt i = subSessions.Count() - 1; i >= 0; --i)
+        {
+        CWorkerSubSession* subSession = subSessions[i];
+        if(subSession->Session() == iSession)
+            {
+            ++iNumSubSessClosing;
+            if(!subSession->IsClosing())
+                {
+                subSession->DeleteMe();
+                // Throttle the deletions as appropriate
+                if (--count <= 0)
+                    {
+                    COMMONLOG((Player().WorkerId(),KECommonBootingTag, _L8("CCommonSessionProxy %08x:\tDeleteSubSessionBunch(): throttled subsession deletion"), this) );
+                    // Re-prime the one shot
+                    iSubSessionCloseThrottle.Call();
+                    return;
+                    }
+                }
+            }
+        }
+    NotifySubSessionDestroyed();    // all, done, remove the dummy subsession
+    }
 
 EXPORT_C void CCommonSessionProxy::NotifySubSessionDestroyed()
 	{
-	//COMMONLOG((Player().WorkerId(),KECommonBootingTag, _L8("CCommonSessionProxy %08x:\tNotifySubSessionDestroyed(), iSockSession %08x"), this, iSession) );
-	if(IsClosing() && --iNumSubSessClosing <= 0)
-		{
-		__ASSERT_DEBUG(iNumSubSessClosing == 0, User::Panic(KSpecAssert_ElemSvrDenPlayrC, 2));
-		CCommonWorkerThread& worker = iPlayer.WorkerThread();
-		worker.CompleteSessionClose(iSession);
-		delete this;
-		}
+	//COMMONLOG((Player().WorkerId(),KECommonBootintgTag, _L8("CCommonSessionProxy %08x:\tNotifySubSessionDestroyed(), iSockSession %08x"), this, iSession) );
+	if(IsClosing() &&--iNumSubSessClosing <= 0)
+	    {
+        __ASSERT_DEBUG(iNumSubSessClosing == 0, User::Panic(KSpecAssert_ElemSvrDenPlayrC, 2));
+        CCommonWorkerThread& worker = iPlayer.WorkerThread();
+        worker.CompleteSessionClose(iSession);
+        delete this;
+	    }
 	}
 
+//
+// CCommonSessionProxy::CSubSessionCloseThrottle
+//
+
+CCommonSessionProxy::CSubSessionCloseThrottle::CSubSessionCloseThrottle(CCommonSessionProxy& aProxy)
+  : CAsyncOneShot(EPriorityLow), iProxy(aProxy)     // This must be low priority!
+    {
+    }
+
+void CCommonSessionProxy::CSubSessionCloseThrottle::RunL()
+    {
+    // Delete some more subsessions
+    iProxy.DeleteSubSessionsWithThrottling();
+    }
 
 //
 // CCommonPlayer

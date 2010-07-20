@@ -34,6 +34,8 @@ RUN_SCRIPT z:\testdata\scripts\te_dummyprovider_005.script
 RUN_SCRIPT z:\testdata\scripts\te_dummyprovider_006.script
 RUN_SCRIPT z:\testdata\scripts\te_dummyprovider_008.script
 RUN_SCRIPT z:\testdata\scripts\te_dummyprovider_009.script
+RUN_SCRIPT z:\testdata\scripts\te_dummyprovider_010.script
+
 
 RUN_SCRIPT z:\testdata\scripts\te_esock_test_unloadesockForced.script
 RUN_SCRIPT z:\testdata\scripts\te_esock_test_remove_config_files.script

@@ -149,7 +149,7 @@ EXPORTS
 	_ZN3Den19CCommonWorkerThread20CompleteSessionCloseEPNS_14CWorkerSessionE @ 148 NONAME
 	_ZN3Den19CCommonWorkerThread21DecProlongBindingLifeEv @ 149 NONAME
 	_ZN3Den19CCommonWorkerThread21IncProlongBindingLifeEv @ 150 NONAME
-	_ZN3Den19CCommonWorkerThread22MaybeCompleteUnbindingEt @ 151 NONAME
+	_ZN3Den19CCommonWorkerThread22MaybeCompleteUnbindingEti @ 151 NONAME
 	_ZN3Den19CCommonWorkerThread23MaybeCompleteUnbindingsEv @ 152 NONAME
 	_ZN3Den19CCommonWorkerThread25SetDealerShutdownCompleteEi @ 153 NONAME
 	_ZN3Den19CCommonWorkerThread25SetPlayerShutdownCompleteEi @ 154 NONAME
@@ -378,5 +378,4 @@ EXPORTS
 	_ZNK3Den13CCommonPlayer28ShouldCompleteCurrentRequestEv @ 377 NONAME
 	_ZNK3Den18RApiExtSessionBase4SendERNS_13TApiExtReqMsgERK11RHandleBaseR14TRequestStatus @ 378 NONAME
 	_ZNK3Den21RApiExtSubSessionBase4SendERNS_13TApiExtReqMsgERK11RHandleBaseR14TRequestStatus @ 379 NONAME
-
 

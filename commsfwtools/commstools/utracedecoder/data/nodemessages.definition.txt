@@ -452,5 +452,11 @@ END MESSAGE
 //    MESSAGEID = KPeerRealmId:EJoinRequest
 //END MESSAGE
 
-
+STRUCT RResponseMsg
+	RMessage2 iMessage
+	PAD 24						// iInterfaceId
+	UINT8 iRequestMsgParam
+	UINT8 iResponseMsgParam
+	PAD 2
+END STRUCT
 

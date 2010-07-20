@@ -41,7 +41,7 @@
 
 //COMMS SPECIFIC OR NOT YET PRODUCTISED ELEMENTS
 #include "../MsgParser/group/bld.inf"
-#include "../NetSubscribe/group/BLD.INF"
+#include "../NetSubscribe/group/bld.inf"
 
 
 PRJ_EXPORTS

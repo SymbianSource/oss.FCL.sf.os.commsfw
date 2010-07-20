@@ -373,6 +373,7 @@ public:
 	virtual ~CStartAttachActivity();
 	
 	virtual TBool Next(MeshMachine::TNodeContextBase& aContext);
+	virtual void Cancel(MeshMachine::TNodeContextBase& aContext);
 
 	void ReturnInterfacePtrL(CoreActivities::ABindingActivity*& aInterface)
     	{

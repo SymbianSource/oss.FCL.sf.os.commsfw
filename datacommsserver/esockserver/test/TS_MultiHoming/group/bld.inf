@@ -289,25 +289,25 @@ PRJ_TESTEXPORTS
 ../ScriptFiles/TS_MultiHoming_Test7.ini	/epoc32/release/wins/udeb/z/testdata/configs/ts_multihoming_test7.ini
 ../ScriptFiles/TS_MultiHoming_Test7.ini	/epoc32/release/winscw/udeb/z/testdata/configs/ts_multihoming_test7.ini
 
-../ScriptFiles/TS_MultiHoming_Test7a.ini	/epoc32/data/z/testdata/configs/ts_multihoming_test7a.ini
-../ScriptFiles/TS_MultiHoming_Test7a.ini	/epoc32/release/wins/udeb/z/testdata/configs/ts_multihoming_test7a.ini
-../ScriptFiles/TS_MultiHoming_Test7a.ini	/epoc32/release/winscw/udeb/z/testdata/configs/ts_multihoming_test7a.ini
+../ScriptFiles/ts_multihoming_test7a.ini	/epoc32/data/z/testdata/configs/ts_multihoming_test7a.ini
+../ScriptFiles/ts_multihoming_test7a.ini	/epoc32/release/wins/udeb/z/testdata/configs/ts_multihoming_test7a.ini
+../ScriptFiles/ts_multihoming_test7a.ini	/epoc32/release/winscw/udeb/z/testdata/configs/ts_multihoming_test7a.ini
 
-../ScriptFiles/TS_MultiHoming_Test7b.ini	/epoc32/data/z/testdata/configs/ts_multihoming_test7b.ini
-../ScriptFiles/TS_MultiHoming_Test7b.ini	/epoc32/release/wins/udeb/z/testdata/configs/ts_multihoming_test7b.ini
-../ScriptFiles/TS_MultiHoming_Test7b.ini	/epoc32/release/winscw/udeb/z/testdata/configs/ts_multihoming_test7b.ini
+../ScriptFiles/ts_multihoming_test7b.ini	/epoc32/data/z/testdata/configs/ts_multihoming_test7b.ini
+../ScriptFiles/ts_multihoming_test7b.ini	/epoc32/release/wins/udeb/z/testdata/configs/ts_multihoming_test7b.ini
+../ScriptFiles/ts_multihoming_test7b.ini	/epoc32/release/winscw/udeb/z/testdata/configs/ts_multihoming_test7b.ini
 
-../ScriptFiles/TS_MultiHoming_Test7c.ini	/epoc32/data/z/testdata/configs/ts_multihoming_test7c.ini
-../ScriptFiles/TS_MultiHoming_Test7c.ini	/epoc32/release/wins/udeb/z/testdata/configs/ts_multihoming_test7c.ini
-../ScriptFiles/TS_MultiHoming_Test7c.ini	/epoc32/release/winscw/udeb/z/testdata/configs/ts_multihoming_test7c.ini
+../ScriptFiles/ts_multihoming_test7c.ini	/epoc32/data/z/testdata/configs/ts_multihoming_test7c.ini
+../ScriptFiles/ts_multihoming_test7c.ini	/epoc32/release/wins/udeb/z/testdata/configs/ts_multihoming_test7c.ini
+../ScriptFiles/ts_multihoming_test7c.ini	/epoc32/release/winscw/udeb/z/testdata/configs/ts_multihoming_test7c.ini
 
-../ScriptFiles/TS_MultiHoming_Test7d.ini	/epoc32/data/z/testdata/configs/ts_multihoming_test7d.ini
-../ScriptFiles/TS_MultiHoming_Test7d.ini	/epoc32/release/wins/udeb/z/testdata/configs/ts_multihoming_test7d.ini
-../ScriptFiles/TS_MultiHoming_Test7d.ini	/epoc32/release/winscw/udeb/z/testdata/configs/ts_multihoming_test7d.ini
+../ScriptFiles/ts_multihoming_test7d.ini	/epoc32/data/z/testdata/configs/ts_multihoming_test7d.ini
+../ScriptFiles/ts_multihoming_test7d.ini	/epoc32/release/wins/udeb/z/testdata/configs/ts_multihoming_test7d.ini
+../ScriptFiles/ts_multihoming_test7d.ini	/epoc32/release/winscw/udeb/z/testdata/configs/ts_multihoming_test7d.ini
 
-../ScriptFiles/TS_MultiHoming_Test7e.ini	/epoc32/data/z/testdata/configs/ts_multihoming_test7e.ini
-../ScriptFiles/TS_MultiHoming_Test7e.ini	/epoc32/release/wins/udeb/z/testdata/configs/ts_multihoming_test7e.ini
-../ScriptFiles/TS_MultiHoming_Test7e.ini	/epoc32/release/winscw/udeb/z/testdata/configs/ts_multihoming_test7e.ini
+../ScriptFiles/ts_multihoming_test7e.ini	/epoc32/data/z/testdata/configs/ts_multihoming_test7e.ini
+../ScriptFiles/ts_multihoming_test7e.ini	/epoc32/release/wins/udeb/z/testdata/configs/ts_multihoming_test7e.ini
+../ScriptFiles/ts_multihoming_test7e.ini	/epoc32/release/winscw/udeb/z/testdata/configs/ts_multihoming_test7e.ini
 
 
 ../ScriptFiles/TS_MultiHoming_Test7.script	/epoc32/data/z/testdata/scripts/ts_multihoming_test7.script

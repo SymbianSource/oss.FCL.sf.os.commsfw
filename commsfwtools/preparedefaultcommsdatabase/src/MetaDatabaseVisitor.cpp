@@ -235,7 +235,7 @@ void TMDBVisitorBase::FindRecordsUsingTemplateL(CMDBSessionImpl* aSession, RArra
         {
         if ( KErrNotFound == fieldIds.Find(aRecordIds[i], CompareByRecordId) )
             {
-            aCandidateIds.Append(aRecordIds[i]);
+            aCandidateIds.AppendL(aRecordIds[i]);
             }
         }
     CleanupStack::PopAndDestroy(&fieldIds); 

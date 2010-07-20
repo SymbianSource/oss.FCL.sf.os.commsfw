@@ -540,7 +540,7 @@ EXPORT_C void THandleDataClientIdle::DoL()
     	}
     else
     	{
-		__CFLOG_VAR((KCoreProviderStatesTag, KCoreProviderStatesSubTag, _L8("TSendDestroyToSendingDataClient::DoL - client not destroyed, because it is started or has been requested again")));
+		__CFLOG_VAR((KCoreProviderStatesTag, KCoreProviderStatesSubTag, _L8("TSendDestroyToSendingDataClient::DoL - client not destroyed, because it is started or has been requested again [flags %x]"), iContext.iPeer->Flags()));
 		TSendDataClientIdleIfNoClients(iContext).DoL();
     	}
 	}

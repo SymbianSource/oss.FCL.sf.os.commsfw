@@ -280,6 +280,8 @@ CTestStep* CTe_esockteststepsSuite::CreateTestStep(const TDesC& aStepName)
 				testStep = new CShutdownRSocketStep(iEsockTest);
 	else if(aStepName.CompareF (KStartRConnectionStep) == 0)
 				testStep = new CStartRConnectionStep(iEsockTest);
+    else if(aStepName.CompareF (KStartStopCrazyLoopRConnectionStep) == 0)
+                testStep = new CStartStopCrazyLoopRConnectionStep(iEsockTest);	
 	else if(aStepName.CompareF (KAwaitRConnectionStartComplete) == 0)
 				testStep = new CAwaitRConnectionStartComplete(iEsockTest);
 	
@@ -424,7 +426,9 @@ CTestStep* CTe_esockteststepsSuite::CreateTestStep(const TDesC& aStepName)
 	NEW_ESOCK_TESTSTEP(RegisterProgressNotificationStep)
 	NEW_ESOCK_TESTSTEP(CheckProgressNotificationStep)
 	NEW_ESOCK_TESTSTEP(CheckNegativeProgressNotificationStep)
-	NEW_ESOCK_TESTSTEP(GetParameters_IntStep)	
+	NEW_ESOCK_TESTSTEP(GetParameters_IntStep)
+	NEW_ESOCK_TESTSTEP(WaitStep)
+	
 	return testStep;
 	}
 

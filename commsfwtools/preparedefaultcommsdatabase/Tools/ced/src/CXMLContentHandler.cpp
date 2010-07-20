@@ -507,7 +507,7 @@ void CXMLContentHandler::OnStartElementL(const RTagInfo& aInfo, const RAttribute
 
             		gMsg->Msg(_L("Create new table entry for table : [%S] with operation (%S)"),
                             			&iCurrentTableName, &operation);
-            		iXmlDb->AddTableEntry(tableEntry);
+            		iXmlDb->AddTableEntryL(tableEntry);
             		return;
         			}
 
@@ -1475,11 +1475,11 @@ void CXMLTableEntry::AddParameterL(const TBuf<MAX_BUFFER_LEN>& aParamName,
 	{
 	TBuf<MAX_BUFFER_LEN>* name = new(ELeave) TBuf<MAX_BUFFER_LEN>;
 	name->Copy(aParamName);
-	paramName.Append(name);
+	paramName.AppendL(name);
 
 	TBuf<MAX_BUFFER_LEN>* value = new(ELeave) TBuf<MAX_BUFFER_LEN>;
 	value->Copy(aParamValue);
-	paramValue.Append(value);
+	paramValue.AppendL(value);
 	}
 
 // Remove a parameter from the list
@@ -1530,11 +1530,11 @@ CXMLDatabase* CXMLDatabase::NewL()
 	}
 
 // Add a table entry to the database given the pointer
-void CXMLDatabase::AddTableEntry(CXMLTableEntry* aEntry)
+void CXMLDatabase::AddTableEntryL(CXMLTableEntry* aEntry)
 	{
 	if(aEntry != NULL)
 		{
-		tableEntries.Append(aEntry);
+		tableEntries.AppendL(aEntry);
 		}
 	}
 
