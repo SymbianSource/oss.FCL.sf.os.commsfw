@@ -98,7 +98,9 @@ TBool gValidityChecking = EFalse;
 /** flag to indicate whether the execution format is .dll or .exe*/
 TBool gIsExeDLL = EFalse;
 /** flag to indicate whether the configuration file is in XML format */
-TBool gIsXML = ETrue; 
+TBool gIsXML = ETrue;
+/** flag to keep generic records */
+TBool gKeepGenerics = ETrue;
 
 #ifdef SYMBIAN_NETWORKING_3GPPDEFAULTQOS
 TBool gDeprecatedFields = EFalse;
@@ -293,6 +295,7 @@ void DoDeleteL()
 		}
 	
 	// delete everything in the database
+	TInt keptElements = 0; 
 	if (ids.Count())
 		{
 		for ( TInt i = ids.Count()-1; i >=0 ; i--)
@@ -302,10 +305,18 @@ void DoDeleteL()
 				{
 				gMsg->Msg(_L("%d"),i);
 				}
-			User::LeaveIfError(storage->Delete(ids[i]));
+			if(!gKeepGenerics || ids[i] < KCDInitialUDefRecordType || ids[i] > KCDLastUDefRecordType)
+			    {
+                User::LeaveIfError(storage->Delete(ids[i]));
+			    }
+			else
+			    {
+			    ++keptElements;
+			    }
 			}
 		}
 	
+    gMsg->Msg(_L("Kept %d elements intact (KeepGenerics option == %d"), keptElements, gKeepGenerics);
 	TUint32 aErrorId;
 	err = storage->CommitTransaction(aErrorId);
 
@@ -690,6 +701,10 @@ TInt E32Main()
 	return !gProcessingSuccessful;
 	}
 
+TBool MatchArg(const TDesC& aArg, const TDesC& aOpt)
+    {
+    return aArg.Left(aOpt.Length()).CompareF(aOpt) == 0;
+    }
 
 TInt ParseCommandLineL(TBool &aDebugOn, TBool &aOverWrite, TBool &aForceXMLProcessing, TDes &aIn, TDes &aOut, TDes &aInPref)
 /** Parse the command line for any overriding settings from exe command line 
@@ -734,14 +749,14 @@ TInt ParseCommandLineL(TBool &aDebugOn, TBool &aOverWrite, TBool &aForceXMLProce
 			
 			// CED will report all the failures on the end, unlike success in all the cases except missing cfg file
 			// Switch introduced because of high impact on test results and to avoid BC break
-			if ( arg.FindF(_L("-V")) != KErrNotFound )
+			if ( MatchArg(arg, _L("-V")) )
 				{
 				gValidityChecking = ETrue;
 				continue;
 				}
 
 			//Display help
-			if ( arg.FindF(_L("-H")) != KErrNotFound )
+			if ( MatchArg(arg, _L("-H")) )
 				{
 				HelpDump();
 				CleanupStack::Pop(pCmd);
@@ -750,36 +765,50 @@ TInt ParseCommandLineL(TBool &aDebugOn, TBool &aOverWrite, TBool &aForceXMLProce
 				}
 			
 			// Append database switch
-			if ( arg.FindF(_L("-A")) != KErrNotFound )
+			if ( MatchArg(arg, _L("-A")) )
 				{
 				aOverWrite = EFalse;
 				continue;
 				}
 			
 			// Debug switch
-			if ( arg.FindF(_L("-D")) != KErrNotFound )
+			if ( MatchArg(arg, _L("-D")) )
 				{
 				aDebugOn = ETrue;
 				continue;
 				}
 
 			// Debug switch
-			if ( arg.FindF(_L("-M")) != KErrNotFound )
+			if ( MatchArg(arg, _L("-M")) )
 				{
 				aInPref = pCmd->Arg(++i);
 				continue;
 				}
 			
+            // Keep generics switch
+            if ( MatchArg(arg, _L("-KG")) )
+                {
+                gKeepGenerics = ETrue;
+                continue;
+                }
+			
+            // Zap generics switch
+            if ( MatchArg(arg, _L("-ZG")) )
+                {
+                gKeepGenerics = EFalse;
+                continue;
+                }
+
 			// Presence of invalid table entry links
 			// will not cause an error
-			if ( arg.FindF(_L("-F")) != KErrNotFound )
+			if ( MatchArg(arg, _L("-F")) )
 				{
 				aForceXMLProcessing = ETrue;
 				continue;
 				}
 			
 			// Specification of an input file
-			if ( arg.FindF(_L("-I")) != KErrNotFound )
+			if ( MatchArg(arg, _L("-I")) )
 				{
 				if( i != pCmd->Count()-1 )
 					{
@@ -800,7 +829,7 @@ TInt ParseCommandLineL(TBool &aDebugOn, TBool &aOverWrite, TBool &aForceXMLProce
 					}
 				}
 			// Specification of an output file
-			if ( arg.FindF(_L("-O")) != KErrNotFound )
+			if ( MatchArg(arg, _L("-O")) )
 				{
 				if( i != pCmd->Count()-1 )
 					{
@@ -823,7 +852,7 @@ TInt ParseCommandLineL(TBool &aDebugOn, TBool &aOverWrite, TBool &aForceXMLProce
 			// This must be specified on the tools2 platform.
 			TBuf<16> databaseVersion;
 			
-			if ( arg.FindF(_L("-B")) != KErrNotFound )
+			if ( MatchArg(arg, _L("-B")) )
 				{
 				if( i != pCmd->Count()-1 )
 					{
@@ -929,6 +958,8 @@ Prints basic help information to the emulator window including command switches
 	gConsole->Printf(_L("\n-v  Enables validation of the configuration data while writing to the database."));
 	gConsole->Printf(_L("\n-i  Specifies an input file to CED. Must be either *.xml or *.cfg. Defaults to reading '%S' or '%S'."), &CFG_TARGET, &XML_TARGET);
 	gConsole->Printf(_L("\n-o  Specifies an output file for CED to log to. Defaults to '%S'."), &LOG_TARGET);
+    gConsole->Printf(_L("\n-kg Keep existing generic-record elements (default)"));
+    gConsole->Printf(_L("\n-zg Zap all existing elements including generics (unless appending)"));
 #ifdef __TOOLS2__
 	gConsole->Printf(_L("\n-b  Specifies the binary output should be compatible with this Symbian OS version.\n"));
 #endif

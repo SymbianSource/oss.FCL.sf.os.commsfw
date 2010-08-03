@@ -79,20 +79,10 @@ CTestSuiteEsock* CTestSuiteEsock::NewL()
 // Third phase constructor for ESOCK test suite
 void CTestSuiteEsock::InitialiseL( void )
 	{
-	TInt ret = User::LoadPhysicalDevice( PDD_NAME );
-	if ( KErrNone != ret && KErrAlreadyExists != ret )
-		{
-		User::Leave( ret );
-		}
-	ret = User::LoadLogicalDevice( LDD_NAME );
-	if ( KErrNone != ret && KErrAlreadyExists != ret )
-		{
-		User::Leave( ret );
-		}
 	// When bootstrapping C32 we have to avoid the PhBkSyncServer being started, since
 	// it needs a different CommDB
 	_LIT(KPhbkSyncCMI, "phbsync.cmi");
-    ret = StartC32WithCMISuppressions(KPhbkSyncCMI);
+    TInt ret = StartC32WithCMISuppressions(KPhbkSyncCMI);
 	if ( KErrNone != ret && KErrAlreadyExists != ret )
 		{
 		User::Leave( ret );

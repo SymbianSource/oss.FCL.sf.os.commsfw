@@ -6,7 +6,6 @@
  under the terms of "Eclipse Public License v1.0"
  which accompanies this distribution, and is available
  at the URL "http://www.eclipse.org/legal/epl-v10.html".
-
  Initial Contributors:
  Nokia Corporation - initial contribution.
 
@@ -69,13 +68,13 @@
         <IAPNetworkWeighting>0</IAPNetworkWeighting>
         <LocationRef>Location.Mobile</LocationRef>
     </IAP>
-    <IAP operation="add">
-        <Name>iTest name cdma2000</Name>
-        <IAPService>CDMA2000PacketService.test name cdma2000</IAPService>
-        <IAPBearer>ModemBearer.Hungry (Long Timeout)</IAPBearer>
+	    <IAP operation="add">
+        <Name>Additional Dial In ISP</Name>
+        <IAPService>DialInISP.Dial In CS ISP</IAPService>
+        <IAPBearer>ModemBearer.Linux</IAPBearer>
         <IAPNetwork>Network.NT RAS</IAPNetwork>
         <IAPNetworkWeighting>0</IAPNetworkWeighting>
-        <LocationRef>Location.Mobile</LocationRef>
+        <LocationRef>Location.Home</LocationRef>
     </IAP>
     <IAP operation="add">
         <Name>Default Dial In ISP</Name>
@@ -102,12 +101,12 @@
         <LocationRef>Location.Office Direct Dial</LocationRef>
     </IAP>
     <IAP operation="add">
-        <Name>Ethernet with Daemon Dynamic IP</Name>
-        <IAPService>LANService.Ethernet</IAPService>
-        <IAPBearer>LANBearer.EKA2 Ethernet</IAPBearer>
-        <IAPNetwork>Network.Intranet</IAPNetwork>
-        <IAPNetworkWeighting>0</IAPNetworkWeighting>
-        <LocationRef>Location.Office</LocationRef>
+		<Name>WlanConnectivity</Name>
+		<IAPService>LANService.WlanConnectivity</IAPService>
+       <IAPBearer>LANBearer.WLANBearer</IAPBearer>
+		<IAPNetwork>Network.Intranet</IAPNetwork>
+		<IAPNetworkWeighting>0</IAPNetworkWeighting>
+		<LocationRef>Location.Office Direct Dial</LocationRef>
     </IAP>
     <IAP operation="add">
         <Name>Virtual Comm port</Name>
@@ -620,33 +619,34 @@
 
 <LANBearerTable>
     <LANBearer operation="add">
-	<Name>EKA2 Ethernet</Name>
-	<Agent>nullagt.agt</Agent>
-	<IfName>ethint</IfName>
-	<LDDFilename>enet</LDDFilename>
-	<LDDName>Ethernet</LDDName>
-	<PDDFilename>ethernet</PDDFilename>
-	<PDDName>Ethernet.MOMAP16xx</PDDName>
-	<PacketDriverName>EtherPkt.drv</PacketDriverName>
-	<LastSocketActivityTimeout>10</LastSocketActivityTimeout>
-	<LastSessionClosedTimeout>10</LastSessionClosedTimeout>
-	<LastSocketClosedTimeout>10</LastSocketClosedTimeout>
+		<Name>WLANBearer</Name>
+		<IfName>wlannif</IfName>
+		<LDDName>not used</LDDName>
+		<PDDName>not used</PDDName>
+		<LastSocketActivityTimeout>10</LastSocketActivityTimeout>
+		<LastSessionClosedTimeout>10</LastSessionClosedTimeout>
+		<LastSocketClosedTimeout>10</LastSocketClosedTimeout>
+		<Agent>wlanagt.agt</Agent>
     </LANBearer>
 </LANBearerTable>
 
 <LANServiceTable>
     <LANService operation="add">
-        <Name>Ethernet</Name>
-        <IfNetworks>ip</IfNetworks>
-        <IpNetMask>255.255.255.0</IpNetMask>
-        <IpGateway>10.23.143.254</IpGateway>
-        <IpAddr></IpAddr>
-        <IpAddrFromServer>TRUE</IpAddrFromServer>
-        <IpDNSAddrFromServer>TRUE</IpDNSAddrFromServer>
-        <IpNameServer1>10.16.59.15</IpNameServer1>
-        <IpNameServer2>10.112.58.6</IpNameServer2>
-        <ConfigDaemonManagerName>NetCfgExtnDhcp</ConfigDaemonManagerName>
-        <ConfigDaemonName>!DhcpServ</ConfigDaemonName>
+		<Name>WlanConnectivity</Name>
+		<IfNetworks>ip</IfNetworks>
+		<IpNetMask>255.255.255.0</IpNetMask>
+		<IpGateway>0.0.0.0</IpGateway>
+		<IpAddrFromServer>TRUE</IpAddrFromServer>
+		<IpAddr>0.0.0.0</IpAddr>
+		<IpDNSAddrFromServer>TRUE</IpDNSAddrFromServer>
+		<IpNameServer1>0.0.0.0</IpNameServer1>
+		<IpNameServer2>0.0.0.0</IpNameServer2>
+		<Ip6DnsAddrFromServer>TRUE</Ip6DnsAddrFromServer>
+		<Ip6NameServer1>0:0:0:0:0:0:0:0</Ip6NameServer1>
+		<Ip6NameServer2>0:0:0:0:0:0:0:0</Ip6NameServer2>
+		<IpAddrLeaseValidFrom>0</IpAddrLeaseValidFrom>
+		<ConfigDaemonManagerName>NetCfgExtnDhcp</ConfigDaemonManagerName>
+		<ConfigDaemonName>!DhcpServ</ConfigDaemonName>
     </LANService>
 </LANServiceTable>
 
@@ -891,50 +891,6 @@
 <AgentLookupTable>
 </AgentLookupTable>
 
-<CDMA2000PacketServiceTable>
-    <CDMA2000PacketService operation="add">
-        <Name>test name cdma2000</Name>
-        <IwfName>Test2000</IwfName>
-        <ServiceOption>HIGHSPEEDCDMA2000DATA</ServiceOption>
-        <PdpType>IPV4</PdpType>
-        <ReqFwdPriority>PRIORITY04</ReqFwdPriority>
-        <ReqRevPriority>PRIORITY04</ReqRevPriority>
-        <ReqFwdBitrate>32KBPS</ReqFwdBitrate>
-        <ReqRevBitrate>32KBPS</ReqRevBitrate>
-        <ReqFwdLoss>LOSS1</ReqFwdLoss>
-        <ReqRevLoss>LOSS1</ReqRevLoss>
-        <ReqFwdMaxdelay>40MS</ReqFwdMaxdelay>
-        <ReqRevMaxdelay>40MS</ReqRevMaxdelay>
-        <MinFwdBitrate>8KBPS</MinFwdBitrate>
-        <MinRevBitrate>8KBPS</MinRevBitrate>
-        <AccptFwdLoss>LOSS2</AccptFwdLoss>
-        <AccptRevLoss>LOSS2</AccptRevLoss>
-        <AccptFwdMaxdelay>120MS</AccptFwdMaxdelay>
-        <AccptRevMaxdelay>120MS</AccptRevMaxdelay>
-        <DataCompression>FALSE</DataCompression>
-        <HeaderCompression>FALSE</HeaderCompression>
-        <AnonymousAccess>FALSE</AnonymousAccess>
-        <IfNetworks>ip</IfNetworks>
-        <IfAuthName>RasUser</IfAuthName>
-        <IfAuthPass>pass</IfAuthPass>
-        <AuthRetries>1</AuthRetries>
-        <IpNetMask>0.255.255.255</IpNetMask>
-        <IpGateway>10.0.0.1</IpGateway>
-        <EnableLCPExtension>TRUE</EnableLCPExtension>
-        <DisablePlainTextAuth>TRUE</DisablePlainTextAuth>
-        <ApType>2</ApType>
-        <IfPromptForAuth>FALSE</IfPromptForAuth>
-        <IpAddrFromServer>TRUE</IpAddrFromServer>
-        <IpDNSAddrFromServer>TRUE</IpDNSAddrFromServer>
-        <RlpMode>UNKNOWN</RlpMode>
-        <CDMAMobileIP>FALSE</CDMAMobileIP>
-        <CDMAMobileIPTimeout>10000000</CDMAMobileIPTimeout>
-    </CDMA2000PacketService>
-</CDMA2000PacketServiceTable>
-
-<DefaultCDMA2000Table>
-</DefaultCDMA2000Table>
-
 <ChargecardTable>
     <Chargecard operation="add">
         <Name>Dummy BT Chargecard</Name>
@@ -969,7 +925,7 @@
         <Direction>OUTGOING</Direction>
         <DialogPref>DONOTPROMPT</DialogPref>
         <BearerSet>LAN</BearerSet>
-        <IAPRef>IAP.Ethernet with Daemon Dynamic IP</IAPRef>
+        <IAPRef>IAP.WlanConnectivity</IAPRef>
     </ConnectionPreferences>
 </ConnectionPreferencesTable>
 
@@ -1235,5 +1191,3 @@
 
 
 </CommDB:Config>
-
-
