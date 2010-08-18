@@ -138,7 +138,7 @@ EXPORTS
 	?IsShuttingDown@CCommonPitBoss@Den@@QBEHXZ @ 137 NONAME ; int Den::CCommonPitBoss::IsShuttingDown(void) const
 	?IsSubSessionIpcExtensionSupported@CWorkerSubSession@Den@@IAEPAVTIpcExtensionRoutingMessageFromSubSession@2@HAAVTDes8@@@Z @ 138 NONAME ; class Den::TIpcExtensionRoutingMessageFromSubSession * Den::CWorkerSubSession::IsSubSessionIpcExtensionSupported(int, class TDes8 &)
 	?LogSubSession@CWorkerSession@Den@@SAXPAV12@PAVCWorkerSubSession@2@HPAX@Z @ 139 NONAME ; void Den::CWorkerSession::LogSubSession(class Den::CWorkerSession *, class Den::CWorkerSubSession *, int, void *)
-	?MaybeCompleteUnbinding@CCommonWorkerThread@Den@@IAEXG@Z @ 140 NONAME ; void Den::CCommonWorkerThread::MaybeCompleteUnbinding(unsigned short)
+	?MaybeCompleteUnbinding@CCommonWorkerThread@Den@@IAEXGH@Z @ 140 NONAME ; void Den::CCommonWorkerThread::MaybeCompleteUnbinding(unsigned short)
 	?MaybeCompleteUnbindings@CCommonWorkerThread@Den@@QAEHXZ @ 141 NONAME ; int Den::CCommonWorkerThread::MaybeCompleteUnbindings(void)
 	?MaybeSetPlayerShutdownComplete@CCommonPlayer@Den@@QAEXH@Z @ 142 NONAME ; void Den::CCommonPlayer::MaybeSetPlayerShutdownComplete(int)
 	?MaybeSwitch@THeapSwitcher@Den@@AAEXAAVCCommonPitBoss@2@G@Z @ 143 NONAME ; void Den::THeapSwitcher::MaybeSwitch(class Den::CCommonPitBoss &, unsigned short)

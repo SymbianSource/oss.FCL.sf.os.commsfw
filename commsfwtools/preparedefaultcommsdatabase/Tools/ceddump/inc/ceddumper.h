@@ -26,6 +26,7 @@
 
 
 #include <e32base.h>
+#include <centralrepository.h>
 #include "filedump.h"
 #include "ceddumpglobals.h"
 
@@ -50,6 +51,8 @@ class CConsoleBase;
 #define TRUE_VAL				_S("TRUE")
 #define FALSE_VAL				_S("FALSE")
 
+typedef RArray<SGenericRecordTypeInfo> RRecordInfoArray;
+typedef TBuf<KCDMaxFieldNameLength> TGenericTableName;
 
 class CCedDumper : public CBase
 	{
@@ -93,6 +96,12 @@ class CCedDumper : public CBase
 		//this function doesn't need to be modified.
 		void ResolveCommsDatTableNameVariant_to_CommdbTableNameVariant(RBuf& aCommsdatTableName);
 
+		void ListGenericTablesL();
+		void DumpGenericTablesL();
+		void ConvertFieldTypeL(TInt aFieldType, TDes &aConvertedFieldType);
+		void ConvertFieldAttributeL(TInt aFieldAttribute, TDes &aConvertedFieldAttribute);
+		TBool WriteFieldValueL(CMDBGenericRecord* aRecord, const TDesC& aFieldName);
+
 	private:
 		CMDBSession* iDbSession; // Session to connect to CenRep
 		CMDBRecordSetBase *iTable; //To get the Record type
@@ -117,6 +126,11 @@ class CCedDumper : public CBase
 // SYMBIAN_NETWORKING_3GPPDEFAULTQOS
         TBool iUseHexFormat;
         TBool iROHIDSupport;
+		CRepository* iRepository;
+
+        RArray<TUint32> iGenericTableIds;
+		RArray<TGenericTableName> iGenericTableNames;
+		RArray<RRecordInfoArray> iGenericTableFields;
 	};
 
 #endif

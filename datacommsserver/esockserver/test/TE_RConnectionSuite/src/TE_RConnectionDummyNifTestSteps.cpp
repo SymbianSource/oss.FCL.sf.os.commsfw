@@ -142,7 +142,10 @@ CProgressWatcherTest1b::~CProgressWatcherTest1b()
 
 void CProgressWatcherTest1b::DoCancel()
 	{
-	iConnection.CancelProgressNotification();
+    if (iConnection.SubSessionHandle() != 0)
+        {
+        iConnection.CancelProgressNotification();
+        }
 	}
 
 void CProgressWatcherTest1b::RunL()
@@ -220,12 +223,11 @@ CConnectionTest1b::~CConnectionTest1b()
 		{
 		INFO_PRINTF2(_L("Closing Connection at Stage %d"), iProgressWatcher->Progress()().iStage);
 		}
-
-	Cancel();
 	
+    Cancel();
 	delete iProgressWatcher;
 	iProgressWatcher = NULL;
-	iConnection.Close();
+
 	iSocketServ.Close();
 	}
 
@@ -244,6 +246,7 @@ void CConnectionTest1b::StopProgressObservation()
 
 void CConnectionTest1b::DoCancel()
 	{
+    iConnection.Close();
 	StopProgressObservation();
 	}
 

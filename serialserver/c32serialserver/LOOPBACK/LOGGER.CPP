@@ -74,7 +74,7 @@ void CETelLogger::ConstructL()
 	{
 	if (FolderExists())
 		{
-		iFs.Connect();
+		User::LeaveIfError(iFs.Connect());
 		TInt ret=KErrNone;
 	#if !(defined (_DEBUG))
 		ret=iFs.Delete(KHayesLogFileName);
@@ -260,7 +260,7 @@ TBool CETelLogger::FolderExists()
  */
 	{
 	TUint n;
-	iFs.Connect();
+	User::LeaveIfError(iFs.Connect());
 	TInt ret=iFs.Att(KHayesLogFolder,n);
 	iFs.Close();
 

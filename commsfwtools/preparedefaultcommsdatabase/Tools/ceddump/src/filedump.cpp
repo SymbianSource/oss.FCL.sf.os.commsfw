@@ -99,6 +99,9 @@ Writes a section header to the internal buffer
 			case 0:
 				iBuffer.Copy(_L("ADD_TEMPLATE\r\n"));
 				break;
+			case -2:
+				iBuffer.Copy(_L("ADD_DEFINITION\r\n"));
+				break;
 			default:
 				iBuffer.Format(_L("ADD_SECTION\r\n# COMMDB_ID = %d\r\n"),
 					aCommDbId);
@@ -209,6 +212,10 @@ Writes a section footer to the internal buffer
 		if (aCommDbId == 0)
 			{
 			iBuffer.Copy(_L("END_TEMPLATE\r\n\r\n"));
+			}
+		else if (aCommDbId == -2)
+			{
+			iBuffer.Copy(_L("END_DEFINITION\r\n\r\n"));
 			}
 		else
 			{

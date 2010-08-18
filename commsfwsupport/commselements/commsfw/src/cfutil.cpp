@@ -493,14 +493,14 @@ EXPORT_C void COwnEntryList::UniqueWildScanAcrossDrivesL(const TDesC& aDir, cons
 						}
 					if(!found)
 						{
-						files.Append(entry);
+						files.AppendL(entry);
 						fullEntry.Set(entry.iName, &ff.File(), NULL);      
 						AddL(TOwnEntry(fullEntry, entry));
 						}
 					}
 				else
 					{
-					files.Append(entry);
+					files.AppendL(entry);
 				    fullEntry.Set(entry.iName, &ff.File(), NULL);      
 				    AddL(TOwnEntry(fullEntry, entry));
 				    }

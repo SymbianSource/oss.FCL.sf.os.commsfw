@@ -927,6 +927,20 @@ TBool ConnActivities::CStartAttachActivity::Next(MeshMachine::TNodeContextBase& 
     return nextRet;
     }
 
+void ConnActivities::CStartAttachActivity::Cancel(MeshMachine::TNodeContextBase& aContext)
+    {
+    if (!iCSR.IsNull() && iCSR == PostedToNodeId())
+        {//iCSR is a bit akward as it isn't stored in the Node's client array. MeshMachine auto-cancelling refuses to auto-forward TCancels
+         //to nodes it can't verify they are alive. CStartAttachActivity can warrant iCSR is alive.
+        RClientInterface::OpenPostMessageClose(TNodeCtxId(ActivityId(), iNode.Id()), PostedToNodeId(), TEBase::TCancel().CRef());
+        SetError(KErrCancel);
+        }
+    else
+        {
+        CESockClientActivityBase::Cancel(aContext);
+        }
+    }
+
 
 DEFINE_SMELEMENT(CStartAttachActivity::TNoTagOrStartPrefsSetTag, NetStateMachine::MStateFork, ConnStates::TContext)
 TInt CStartAttachActivity::TNoTagOrStartPrefsSetTag::TransitionTag()

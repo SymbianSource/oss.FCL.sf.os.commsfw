@@ -384,15 +384,21 @@ enum TVerdict CSocketTest1_7::InternalDoTestStepL( void )
 		{
 		sockNum--;
 		}
-	Logger().WriteFormat(_L("Created %d sockets, expected at least %d sockets"), sockNum, sockCount1);
-	TESTL(sockNum >= sockCount1);
+	Logger().WriteFormat(_L("Created %d sockets"), sockNum);
+	
+	// Not sure what use it is to test whether we can open at least as many sockets as previously.
+	// We can't assume that once we've freed all the sockets first time around that the ESock heap will
+	// go back exactly to where it was before - this makes assumptions about the ESock algorithms.  Why
+	// wouldn't ESock legitimately cache objects, for example?
+	//TESTL(sockNum >= sockCount1);
 
-	Logger().WriteFormat(_L("Freeing sockets in creation order"));
-	for (i=0; i<sockNum; i++)
-		{
-		socks[i].Close();
-		}
-
+	//
+	// NOTE:
+	// We do *not* free up the sockets but just close the session.  This is to exercise the subsession
+	// cleanup behaviour in ESock with a large number of sockets.  We test that this cleanup operation
+	// does not overflow the transport queue, as each subsession cleanup results in a message being sent.
+	//
+	
 #endif	// (_DEBUG) }
 
 	CleanupStack::PopAndDestroy(socks);

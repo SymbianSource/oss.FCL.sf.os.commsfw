@@ -52,14 +52,13 @@ using namespace PRActivities;
 static const TUint KDefaultMaxPreallocatedActivityCount = 2;
 static const TUint KMaxPreallocatedActivitySize = sizeof(MeshMachine::CNodeRetryParallelActivity) + sizeof(MeshMachine::APreallocatedOriginators<4>);
 static const TUint KDummyCPRPreallocatedActivityBufferSize = KDefaultMaxPreallocatedActivityCount * KMaxPreallocatedActivitySize;
-static const TUint KDestroyDelay = 3;
-static const TUint KMillion = 1000000;
+static const TUint KDestroyDelay = 3000;
 //-================================================
 //
 // States and Transitions
 //
 //-================================================
-CDelayTimer* CDelayTimer::NewL( Messages::RNodeInterface* aSender, const Messages::TNodeId& aRecipient, const Messages::TNodeSignal::TMessageId& aMessageId )
+CDelayTimer* CDelayTimer::NewL( const Messages::TNodeId& aSender, const Messages::TNodeId& aRecipient, const Messages::TNodeSignal::TMessageId& aMessageId )
     {
     CDelayTimer* timer = new(ELeave) CDelayTimer( aSender, aRecipient, aMessageId );
     CleanupStack::PushL( timer );
@@ -73,7 +72,7 @@ CDelayTimer::~CDelayTimer()
     Cancel();
     }
     
-CDelayTimer::CDelayTimer( Messages::RNodeInterface* aSender, const Messages::TNodeId& aRecipient, const Messages::TNodeSignal::TMessageId& aMessageId ) :
+CDelayTimer::CDelayTimer( const Messages::TNodeId& aSender, const Messages::TNodeId& aRecipient, const Messages::TNodeSignal::TMessageId& aMessageId ) :
     CTimer( EPriorityStandard ),
     iSender(aSender),
     iRecipient(aRecipient),
@@ -90,13 +89,13 @@ void CDelayTimer::ConstructL()
 void CDelayTimer::RunL()
     {
     CDelayTimer::TDelayMessage msg(iMessageId);
-    Messages::RClientInterface::OpenPostMessageClose(iSender->RecipientId() , iRecipient, msg );
+    Messages::RClientInterface::OpenPostMessageClose(iSender, iRecipient, msg );
     delete this;
     }
 
-void CDelayTimer::Start( TInt aIntervalInSecs )
+void CDelayTimer::Start( TInt aIntervalInMSecs )
     {
-    After( TTimeIntervalMicroSeconds32( aIntervalInSecs * KMillion ) );
+    After( TTimeIntervalMicroSeconds32( aIntervalInMSecs * 1000 ) );
     }
 
 CDelayTimer::TDelayMessage::TDelayMessage()
@@ -108,6 +107,12 @@ CDelayTimer::TDelayMessage::TDelayMessage(const TNodeSignal::TMessageId& aMessag
     {
     }
 
+
+DEFINE_SMELEMENT(CDelayTimer::TAwaitingTimerExpired, NetStateMachine::MState, CDelayTimer::TContext)
+TBool CDelayTimer::TAwaitingTimerExpired::Accept()
+    {
+    return iContext.iMessage.IsMessage<Messages::TEBase::TNull>();
+    }
 
 namespace DummyCPRStates
 {
@@ -141,7 +146,7 @@ void TCreateIncomingSCPR::DoL()
 DEFINE_SMELEMENT(TThreeSecDelayAndPostToSelf, NetStateMachine::MStateTransition, DummyCPRStates::TContext)
 void TThreeSecDelayAndPostToSelf::DoL()
     {
-    CDelayTimer* delay = CDelayTimer::NewL(iContext.Node().ControlProvider(), iContext.NodeId(), iContext.iMessage.MessageId() );
+    CDelayTimer* delay = CDelayTimer::NewL(iContext.Node().ControlProvider()->RecipientId(), iContext.NodeId(), iContext.iMessage.MessageId() );
     delay->Start(KDestroyDelay);
     }
 

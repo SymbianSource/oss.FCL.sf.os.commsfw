@@ -75,13 +75,39 @@ protected:
     CMCPrPubSubStopTrigger* iPubSubStopTrigger;
     };
 
-namespace DummyMCPRStates
-{
-typedef MeshMachine::TNodeContext<CDummyMetaConnectionProvider,PRStates::TContext> TContext;
-DECLARE_SMELEMENT_HEADER( TNoTagOrLoopTag, MeshMachine::TStateFork<TContext>, NetStateMachine::MStateFork, DummyMCPRStates::TContext )
-	virtual TInt TransitionTag();
-DECLARE_SMELEMENT_FOOTER( TNoTagOrLoopTag )
-} // namespace DummyMCPRStates
+
+class CDummyMCPRControlClientJoinActivity : public MeshMachine::CNodeParallelActivityBase
+    {
+public:
+    static MeshMachine::CNodeActivityBase* NewL( const MeshMachine::TNodeActivity& aActivitySig, MeshMachine::AMMNodeBase& aNode );
+    void ReplaceOriginator(Messages::RNodeInterface& aOriginator);
+protected:
+    CDummyMCPRControlClientJoinActivity( const MeshMachine::TNodeActivity& aActivitySig, MeshMachine::AMMNodeBase& aNode, TUint aNextActivityCount )
+    :MeshMachine::CNodeParallelActivityBase( aActivitySig, aNode, aNextActivityCount )
+     {};
+     void Cancel(MeshMachine::TNodeContextBase& /*aContext*/) 
+         {
+         //CDummyMCPRControlClientJoinActivity ignores TCancels, for it's easier than actually handling cancelations. Handling cancelations in join scenarios is not practically
+         //interesting as joins are normally very swift. This join isn't swift as it's been modified to artificially yield (again easier to yield in Join than elsewhere)
+         };
+     
+private:
+    ~CDummyMCPRControlClientJoinActivity() 
+        {
+        };
+public:
+    typedef MeshMachine::TNodeContext<CDummyMetaConnectionProvider,PRStates::TContext, CDummyMCPRControlClientJoinActivity> TContext;
+    DECLARE_SMELEMENT_HEADER( TAddControlClient, MeshMachine::TStateTransition<TContext>, NetStateMachine::MStateTransition, TContext )
+        virtual void DoL();
+    DECLARE_SMELEMENT_FOOTER( TAddControlClient )
+    
+    DECLARE_SMELEMENT_HEADER( TSendJoinComplete, MeshMachine::TStateTransition<TContext>, NetStateMachine::MStateTransition, TContext )
+        virtual void DoL();
+    DECLARE_SMELEMENT_FOOTER( TSendJoinComplete )
+    
+    friend class TAddControlClient;    
+    };
+
 
 #endif //SYMBIAN_DUMMYPR_METACONNPROV_H
 

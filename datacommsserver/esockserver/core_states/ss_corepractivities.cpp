@@ -1113,7 +1113,7 @@ void CBindToActivity::AddClientAsSuccessfulL(Messages::RNodeInterface* aDataClie
 	{
 	__ASSERT_DEBUG(aDataClient, User::Panic(KCorePrPanic, KPanicDataClient));
 	__ASSERT_DEBUG(iSuccessfulDataClients.Find(aDataClient) == KErrNotFound, User::Panic(KCorePrPanic, KPanicIncorrectState));
-	iSuccessfulDataClients.Append(aDataClient);
+	iSuccessfulDataClients.AppendL(aDataClient);
 	}
 
 void CBindToActivity::RemoveClientFromSuccessful(Messages::RNodeInterface* aDataClient)

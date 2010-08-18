@@ -32,6 +32,10 @@ RUN_TEST_STEP 100 te_esockteststepsSuite createrconnectionStep z:\testdata\confi
 RUN_TEST_STEP 100 te_esockteststepsSuite connectrsocketservStep z:\testdata\configs\te_dummyprovider_003.ini ConnectSockSvr1
 RUN_TEST_STEP 100 te_esockteststepsSuite openrconnectionStep z:\testdata\configs\te_dummyprovider_003.ini OpenConn1
 RUN_TEST_STEP 100 te_esockteststepsSuite startrconnectionStep z:\testdata\configs\te_dummyprovider_003.ini StartConn1
+
+//Let the test get stuck where we want to get stuck first (otherwise we may be cancelling prematurely).
+RUN_TEST_STEP 100 te_esockteststepsSuite waitStep z:\testdata\configs\te_dummyprovider_003.ini WaitUntilStuffStucks
+
 RUN_TEST_STEP 100 te_esockteststepsSuite stoprconnectionStep z:\testdata\configs\te_dummyprovider_003.ini StopConn1
 RUN_TEST_STEP 100 te_esockteststepsSuite AwaitRConnectionStartComplete z:\testdata\configs\te_dummyprovider_003.ini WaitStartComplete1
 RUN_TEST_STEP 100 te_esockteststepsSuite closerconnectionStep z:\testdata\configs\te_dummyprovider_003.ini CloseConn1

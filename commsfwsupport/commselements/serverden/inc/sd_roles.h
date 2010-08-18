@@ -545,7 +545,19 @@ class CCommonSessionProxy : public CBase
 	{
 private:
 	enum { ELivingSession = 0x80000000 };
-
+	
+   NONSHARABLE_CLASS(CSubSessionCloseThrottle) : public CAsyncOneShot
+        {
+        public:
+           CSubSessionCloseThrottle(CCommonSessionProxy& aProxy);
+            void RunL();
+        private:
+            CCommonSessionProxy& iProxy;
+        };
+   
+   static const TInt KSubSessionThrottleSize = 15; 
+   friend class CSubSessionCloseThrottle;
+   
 public:
 	IMPORT_C ~CCommonSessionProxy();
 
@@ -576,10 +588,14 @@ protected:
 	IMPORT_C CCommonSessionProxy(CWorkerSession* aSession, CCommonPlayer& aPlayer);
 
 private:
+	void DeleteSubSessionsWithThrottling();
+
+private:
 	CWorkerSession* iSession;   		//< The session which is represented by proxy instance
 	CCommonPlayer& iPlayer;
 	TInt iNumSubSessClosing;			//< Number of subsessions in current thread to complete
 	TDblQueLink iLink;
+	CSubSessionCloseThrottle iSubSessionCloseThrottle;
 	};
 
 /**

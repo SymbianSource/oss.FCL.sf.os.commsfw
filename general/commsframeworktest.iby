@@ -30,6 +30,7 @@
 	|| defined(CI_TEST_ROM_1) || defined(CI_TEST_ROM_2) || defined(CI_TEST_ROM_3) || defined(CI_TEST_ROM_4) \
 	|| defined(WAPSTACK_TEST_ROM) \
 	|| defined(SERCOMMS_TEST_ROM) \
+	|| defined(__NETWORKING_TEST_OBY__) \
 	)
 
 // Rom build hasn't explicitly defined a subset of tests to include so to avoid
@@ -45,6 +46,9 @@
 
 #define WAPSTACK_TEST_ROM
 #define SERCOMMS_TEST_ROM
+//#define NETWORKING_UPS_TESTS
+//#define SYMBIAN_FLEXMM_ZERO_COPY_NETWORKING
+#define __NETWORKING_TEST_OBY__
 
 #endif
 
@@ -166,12 +170,24 @@ REM ---------- Comms-Infras ----------
 #ifdef SYMBIAN_FLEXMM_ZERO_COPY_NETWORKING
 #include <zerocopy_loopback_driver.iby>
 #include <legacy_loopback_driver.iby>
+#include <commsbufskern.iby>
 #include <zerocopy_loopback_driver_test.iby>
 #include <legacy_loopback_driver_test.iby>
 #include <zerocopy_loopback_link_protocol.iby>
 #include <legacy_loopback_link_protocol.iby>
-#include <te_loopback.iby>
 #endif
+
+#include <te_loopback.iby>
+#include <Te_Cap_RConnDHCP.IBY>
+#include <Te_Cap_RES.IBY>
+#include <Te_Cap_Esock.IBY>
+#include <Te_Cap_RConnServ.IBY>
+#include <te_cap_esock_transfer.iby>
+#include <te_cap_rootserver.iby>
+#include <Te_Cap_Configurator.IBY>
+#include <te_esockteststepssuite.iby>
+#include <te_UmtsGprsScpr.iby>
+#include <SerComms.IBY>
 
 // RootServer Tests
 #ifdef CI_TEST_ROM_3
@@ -248,8 +264,19 @@ REM #include <tftp_e.iby>
 #if defined(CI_TEST_ROM_1) || defined(NW_TEST_ROM_1)
 #include <te_pppsize.iby>
 #include <ts_dummyppp.iby>
-
+#include <zerocopy_loopback_driver.iby>
+#include <te_loopback.iby>
 #include <te_pppcomp.iby>
+#include <te_configutil.iby>
+#include <te_Configuratorsuite.iby>
+#include <te_http.iby>
+#include <integrationtest.iby>
+#include <te_sblpsuite.iby>
+#include <te_DedicatedSignalling1ryCtx.iby>
+#include <TE_SpudUnit.iby>
+#include <integrationtest.iby>
+#include <te_cedsuite.iby>
+#include <wapmessage.iby>
 #include <te_vjcomp.iby>
 #include <te_incoming_ppp.iby>
 #endif
@@ -272,9 +299,9 @@ REM #include <tftp_e.iby>
 //////#include <qostesting.iby>
 
 // Sockbench Tests
-#if defined(CI_TEST_ROM_1) || defined(NW_TEST_ROM_2)
-#include <sockbench.iby>
-#endif
+//#if defined(CI_TEST_ROM_1) || defined(NW_TEST_ROM_2)
+//#include <sockbench.iby>
+//#endif
 
 // TLS (SSL) Tests
 #ifdef NW_TEST_ROM_1
@@ -343,7 +370,7 @@ REM --- NEEDED FOR THE SECURITY TESTS ---
 #include <swi.iby>
 
 REM --- NETSTEB PERFORMANCE TEST FRAMEWORK ---
-#include <te_STEBTestSuite.iby>
+REM #include <te_STEBTestSuite.iby>
 
 REM --- EAP Tests ---
 REM #include <te_eap.iby>
@@ -355,7 +382,8 @@ REM --- UPS ---
 #include <upstestnotifier.iby>
 #include <netups_test.iby>
 
-#if defined(CI_TEST_ROM_1) || defined(CI_TEST_ROM_4)
+#if defined(CI_TEST_ROM_1) || defined(CI_TEST_ROM_2)
+#include <netups.iby>
 REM #include <te_ipups.iby>
 #endif
 

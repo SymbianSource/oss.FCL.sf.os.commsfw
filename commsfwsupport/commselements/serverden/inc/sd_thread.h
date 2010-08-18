@@ -269,7 +269,7 @@ protected:
 
 	void ProcessIniDataL();
 	IMPORT_C TInt DecodePeerId(const CommsFW::TCFSubModuleAddress* aSubModule1, const CommsFW::TCFSubModuleAddress* aSubModule2, CommsFW::TWorkerId& aPeerId);
-	IMPORT_C void MaybeCompleteUnbinding(CommsFW::TWorkerId aWorker);
+	IMPORT_C void MaybeCompleteUnbinding(CommsFW::TWorkerId aWorker, TBool aPeerIsDead);
 
 protected:
 	/** This is the handler used for bi-directional communication with the Root Server. */

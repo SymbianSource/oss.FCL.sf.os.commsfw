@@ -275,7 +275,7 @@ public:
 	
 public:
 	// Functions to manipulate the database elements
-	void AddTableEntry(CXMLTableEntry* aEntry);
+	void AddTableEntryL(CXMLTableEntry* aEntry);
 	CXMLTableEntry* GetTableEntry(const TInt aIndex);
 	TInt GetNumberTableEntries() const;
 	CXMLTableEntry* GetLastTableEntry();

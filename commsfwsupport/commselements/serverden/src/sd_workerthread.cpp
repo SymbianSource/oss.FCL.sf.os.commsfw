@@ -454,7 +454,7 @@ void CCommonWorkerThread::CFUnbindMessageReceived(const CommsFW::TCFUnbindMsg& a
 	#endif
 
 	// Mark the peer handler as unbinding
-    __CFLOG_VAR(( KECommonComponentTag, KECommonServerTag, _L8("W%d: CFUnbindMessageReceived %S <=> %S"),
+    COMMONLOG((WorkerId(), KECommonBootingTag, _L8("W%d: CFUnbindMessageReceived %S <=> %S"),
 		WorkerId(),
 		&fullModName1,
 		&fullModName2 ));
@@ -483,7 +483,7 @@ void CCommonWorkerThread::CFUnbindMessageReceived(const CommsFW::TCFUnbindMsg& a
 		{
 		iTransport->SetLastRequestIdConcerningPeer(unbindId, aMsg.Identifier());
 		iTransport->SetDropTransportPending(unbindId, ETrue);
-		MaybeCompleteUnbinding(unbindId);
+		MaybeCompleteUnbinding(unbindId, aMsg.PeerIsDead());
 		}
 	else
 		{
@@ -507,7 +507,7 @@ EXPORT_C TBool CCommonWorkerThread::MaybeCompleteUnbindings()
 			// We always have a transport to ourself & it needs no unbinding
 			if(player != WorkerId())
 				{
-				MaybeCompleteUnbinding(player);
+				MaybeCompleteUnbinding(player, EFalse);
 				if(iTransport->PeerReachable(player))
 					{
 					return EFalse;
@@ -526,13 +526,13 @@ unbind from this particular worker. If so, deletes handler and send unbind respo
 @see CCommonPlayer::CanUnbindFromWorker
 @see TCFUnbindCompleteMsg
 */
-EXPORT_C void CCommonWorkerThread::MaybeCompleteUnbinding(TWorkerId aWorker)
+EXPORT_C void CCommonWorkerThread::MaybeCompleteUnbinding(TWorkerId aWorker, TBool aPeerIsDead)
 	{
 	if(iTransport->PeerReachable(aWorker) && iTransport->IsDropTransportPending(aWorker))
 		{
-		if(!Dealer() || Dealer()->CanUnbindFromWorker(aWorker))
+		if(aPeerIsDead || !Dealer() || Dealer()->CanUnbindFromWorker(aWorker))
 			{
-			if(!Player() || Player()->CanUnbindFromWorker(aWorker))
+			if(aPeerIsDead || !Player() || Player()->CanUnbindFromWorker(aWorker))
 				{
 				COMMONLOG((WorkerId(), KECommonBootingTag, _L8("CCommonWorkerThread::MaybeCompleteUnbinding(%d) - dropping transport & unbinding"), aWorker));
 				// Let the peer know that we've unbound - if it has management responsibility towards us then
@@ -719,7 +719,7 @@ EXPORT_C void CCommonWorkerThread::DispatchL(const CommsFW::TCFMessage& aMessage
 
 			if(iTransport->PeerReachable(peerId))
 				{
-				MaybeCompleteUnbinding(peerId);
+				MaybeCompleteUnbinding(peerId, ETrue);
 				if(iTransport->PeerReachable(peerId))
 					{
 					COMMONLOG((iWorkerId, KECommonServerTag, _L8("Destroying peer #%d handler"),peerId));

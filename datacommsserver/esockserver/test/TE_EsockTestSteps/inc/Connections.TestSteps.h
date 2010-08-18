@@ -173,12 +173,36 @@ public:
 	TVerdict doSingleTestStep();
 	TInt ConfigureFromIni();
 
-private:
+protected:
     TRConnectionParams iParams; //current params (.ini)
 	};
 
 _LIT(KStartRConnectionStep,"StartRConnectionStep");
 
+/**
+Class implementing StartStopCrazyLoopRConnectionStep
+The test does a loop, where every iteration:
+(1) Starts the connection
+(2) Snoozes for an <interval>
+(3) Stops the connection injecting a cancel at that stage of the connection start
+(4) Increases the <interval> a bit so that next time round the cancel is injected at a different stage.
+
+Note that since the test is normally executed by a thread of lower priority than ESock_IP, it relies on
+ESock_IP yielding (otherwise it won't test different phases. 
+For instance DummyMCPR will artificially yield on TCFServiceProvider::TJoinRequest.
+NetMCPR will not normally yield as is. 
+
+@internalComponent
+*/
+class CStartStopCrazyLoopRConnectionStep : public CStartRConnectionStep
+    {
+public:
+    CStartStopCrazyLoopRConnectionStep(CCEsockTestBase*& aEsockTest);
+    TVerdict doSingleTestStep();
+    TInt CalibrateStart();
+    };
+
+_LIT(KStartStopCrazyLoopRConnectionStep,"StartStopCrazyLoopRConnectionStep");
 
 /**
 Class implementing openrconnectionStep
@@ -442,6 +466,20 @@ private:
     };
 
 _LIT(KGetParameters_IntStep,"GetParameters_IntStep");
+
+
+
+class CWaitStep : public CTe_EsockStepBase
+    {
+public:
+    CWaitStep(CCEsockTestBase*& aEsockTest);
+    TVerdict doSingleTestStep();
+    TInt ConfigureFromIni();
+private:
+    TInt iTimeOutMs;
+    };
+
+_LIT(KWaitStep,"WaitStep");
 
 
 #endif // CONNECTIONS_TESTSTEPS_H
