@@ -416,6 +416,13 @@ private:
 			iPreAllocSize=0;
 			iPreAllocatedActivityChunk=NULL;
 			}
+		~TPreAllocStore()
+			{
+			if(iPreAllocatedActivityChunk != NULL)
+				{
+				User::Free(iPreAllocatedActivityChunk);
+				}
+			}
 		TUint iPreAllocSize;
 		TAny* iPreAllocatedActivityChunk;
 		};

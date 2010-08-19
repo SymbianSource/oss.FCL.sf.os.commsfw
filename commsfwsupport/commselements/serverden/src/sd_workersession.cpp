@@ -62,6 +62,7 @@ void CSubSessionIx::InitialiseL()
 
 EXPORT_C CSubSessionIx::~CSubSessionIx()
 	{
+    iLock.Close();
 	User::Free(iIx);
 	}
 

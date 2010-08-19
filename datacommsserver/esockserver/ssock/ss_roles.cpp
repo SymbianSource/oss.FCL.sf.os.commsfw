@@ -812,6 +812,7 @@ void CPlayer::NewHostResolverDefaultL(TUint aAddrFamily,TUint aProtocol)
 
 	h->SetFlowRequestPending(ETrue);
 	h->AdoptFlowRequestMessage(SafeMessage());
+	h->SetFlowRequestType(TFlowParams::EImplicit);
 
 	DontCompleteCurrentRequest();
 	}
@@ -842,7 +843,7 @@ void CPlayer::NewHostResolverWithConnectionL(TUint aAddrFamily, TUint aProtocol,
 
 	h->SetFlowRequestPending(ETrue);
 	h->AdoptFlowRequestMessage(SafeMessage());
-
+	h->SetFlowRequestType(TFlowParams::EExplicitConnection);
 	DontCompleteCurrentRequest();
 	}
 

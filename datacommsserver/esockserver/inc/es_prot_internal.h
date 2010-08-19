@@ -198,6 +198,9 @@ a class instance that can be used to dynamically retrieve thread and process id 
 @internalTechnology
 */
 const TUint KSoSetPlatSecApi = 4 | KSocketInternalOptionBit;
+
+const TUint KSoFlowRequestType = 5 |  KSocketInternalOptionBit;
+        
 #endif //SYMBIAN_NETWORKING_UPS
 
 /**

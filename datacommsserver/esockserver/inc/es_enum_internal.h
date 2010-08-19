@@ -88,6 +88,15 @@ public:
 */
 typedef TPckgBuf<TConnectionGetSocketInfoArg> TConnGetSocketInfoArgBuf;
 
+/**
+This enum is used as an internal extension to TConnInterfaceState
+
+@internalComponent
+*/
+enum TConnInterfaceStateInternal
+    {
+    EInterfaceRestarting = 0x100
+    };
 
 
 #include <es_enum_internal.inl>

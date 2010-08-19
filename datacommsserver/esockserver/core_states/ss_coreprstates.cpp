@@ -232,8 +232,8 @@ EXPORT_C void TAddControlClientAndSendJoinCompleteIfRequest::DoL()
         // which is handled by another activity
         __ASSERT_DEBUG(msg.iClientType.Type() != (TUint32)TCFClientType::EData, User::Panic(KSpecAssert_ESockCrStaCPRSC, 3));
 
-//		iContext.Node().AddClientL(msg.iNodeId, TClientType(TCFClientType::ECtrl,msg.iValue));
-		iContext.Node().AddClientL(msg.iNodeId, TClientType(TCFClientType::ECtrl));
+		iContext.Node().AddClientL(msg.iNodeId, TClientType(TCFClientType::ECtrl,msg.iClientType.Flags()));
+
 		//Send confirmation
 		RClientInterface::OpenPostMessageClose(iContext.NodeId(), iContext.iSender, TCFPeer::TJoinComplete().CRef());
 		}
@@ -2127,7 +2127,7 @@ EXPORT_C void TProcessDataClientStop::DoL()
 	iContext.iNodeActivity->SetError(static_cast<TSigNumber&>(iContext.iMessage).iValue);
 	}
 
-DEFINE_SMELEMENT(TCancelAndCloseZone0ClientExtIfaces, NetStateMachine::MStateTransition, CoreNetStates::TContext)
+EXPORT_DEFINE_SMELEMENT(TCancelAndCloseZone0ClientExtIfaces, NetStateMachine::MStateTransition, CoreNetStates::TContext)
 void TCancelAndCloseZone0ClientExtIfaces::DoL()
 	{
 	//0 means we will cancel and close all open extensions!
@@ -2182,7 +2182,7 @@ EXPORT_C void TProcessOrForwardRMessage2Ext::DoL()
 	}
 
 EXPORT_DEFINE_SMELEMENT(TCancelStart, NetStateMachine::MStateTransition, CoreNetStates::TContext)
-void TCancelStart::DoL()
+EXPORT_C void TCancelStart::DoL()
 	{
 	CNodeActivityBase* startActivity = iContext.Node().FindActivityById(ECFActivityStart);
 	if (startActivity)

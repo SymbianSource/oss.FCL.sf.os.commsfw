@@ -51,6 +51,7 @@ enum TMessagesPanics
 	EAddressNotValidPanic,
 	EClientNotValidPanic,
 	EDeceasedNodePanic,
+	EPreAllocationFailedPanic
 	};
 
 

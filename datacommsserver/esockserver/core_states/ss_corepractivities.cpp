@@ -2118,7 +2118,7 @@ EXPORT_C MeshMachine::CNodeActivityBase* CStartActivity::NewL(const MeshMachine:
 //
 //-=========================================================
 
-MeshMachine::CNodeActivityBase* CGoneDownActivity::New(const MeshMachine::TNodeActivity& aActivitySig, MeshMachine::AMMNodeBase& aNode)
+EXPORT_C MeshMachine::CNodeActivityBase* CGoneDownActivity::New(const MeshMachine::TNodeActivity& aActivitySig, MeshMachine::AMMNodeBase& aNode)
     	{
    		TAny* space = BorrowPreallocatedSpace(aNode, sizeof(CGoneDownActivity));
 		CGoneDownActivity* self = new (space) CGoneDownActivity(aActivitySig, aNode);
@@ -2180,7 +2180,7 @@ TBool CGoneDownActivity::IsIdle() const
 	return NetStateMachine::ACore::IsIdle();
 	}
 
-DEFINE_SMELEMENT(CGoneDownActivity::TSendErrorRecoveryReq, NetStateMachine::MStateTransition, CGoneDownActivity::TContext)
+EXPORT_DEFINE_SMELEMENT(CGoneDownActivity::TSendErrorRecoveryReq, NetStateMachine::MStateTransition, CGoneDownActivity::TContext)
 void CGoneDownActivity::TSendErrorRecoveryReq::DoL()
     {
 	__ASSERT_DEBUG(iContext.iNodeActivity, User::Panic(KCorePrPanic, KPanicNoActivity));
@@ -2203,7 +2203,7 @@ void CGoneDownActivity::TSendErrorRecoveryReq::DoL()
     activity.ClearPostedTo();
     }
 
-DEFINE_SMELEMENT(CGoneDownActivity::TIgnoreOrPropagate, NetStateMachine::MStateFork, CGoneDownActivity::TContext)
+EXPORT_DEFINE_SMELEMENT(CGoneDownActivity::TIgnoreOrPropagate, NetStateMachine::MStateFork, CGoneDownActivity::TContext)
 TInt CGoneDownActivity::TIgnoreOrPropagate::TransitionTag()
     {
     __ASSERT_DEBUG(iContext.iMessage.IsMessage<TEErrorRecovery::TErrorRecoveryResponse>(), User::Panic(KSpecAssert_ESockCrStaCPRAC, 38));
