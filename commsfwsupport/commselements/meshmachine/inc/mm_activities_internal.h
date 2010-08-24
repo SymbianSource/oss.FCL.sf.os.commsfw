@@ -46,11 +46,6 @@ struct TNodeActivity
 /**
 */
 	{
-	enum TNodeActivityFlags
-	{
-	EContextCtor = 1
-	};
-	
 	/*There are now two types of activity c'tors (hence TAny iCtor supported:
 	(1) The legacy ctor based on AMMNodeBase that must be supported for source backwards compatibility
 	(2) The new ctor based on TNodeContextBase that is desired because TNodeContextBase gives access to AMMNodeBase as well as the message 
@@ -58,6 +53,12 @@ struct TNodeActivity
 		by allowing access to the peer, which stores the space preallocated for the activity
 	Ideally this once fixed to only leave (2) especially since differentiating (1) from (2) is rather obscure. iCtor is a pointer
 	to a pointer to a ctor function and the distinction is based on where iCtor points (see AMMNodeBase::StartActivityL) */
+	enum TNodeActivityFlags
+		{
+		ENodeCtor = 0,
+		EContextCtor = 1
+		};
+
 	typedef CNodeActivityBase* (*TStaticActivityCtor)(const TNodeActivity& aActivitySig, AMMNodeBase& aNode);
 	typedef CNodeActivityBase* (*TStaticActivityContextCtor)(const TNodeActivity& aActivitySig, TNodeContextBase& aCtx);
 	const TUint8 iId;

@@ -49,6 +49,8 @@ protected:
         {
         }
 
+    IMPORT_C void ConstructL(TInt aSize = MeshMachine::KUseDefaultPreallocatedSize); //When KUseDefaultPreallocatedSize, KDefaultMaxPreallocatedActivitySize will be used
+
 	/**
 	Fetch the interface control for a given interface id
 	@param aInterfaceId Interface id to fetch control for.

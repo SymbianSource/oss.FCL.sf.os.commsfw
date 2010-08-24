@@ -39,12 +39,6 @@ using namespace NetStateMachine;
 using namespace Messages;
 using namespace MeshMachine;
 
-//We reserve space for two preallocated activities that may start concurrently on the SCPR
-//node: destroy and data client stop.
-static const TUint KSCPRDefaultMaxPreallocatedActivityCount = 2;
-static const TUint KMaxPreallocatedActivitySize = sizeof(MeshMachine::CNodeRetryParallelActivity) + sizeof(MeshMachine::APreallocatedOriginators<4>);
-static const TUint KSCPRPreallocatedActivityBufferSize = KSCPRDefaultMaxPreallocatedActivityCount * KMaxPreallocatedActivitySize;
-
 EXPORT_C CCoreSubConnectionProvider::CCoreSubConnectionProvider(CSubConnectionProviderFactoryBase& aFactory,
                                                                 const MeshMachine::TNodeActivityMap& aActivityMap)
 :CSubConnectionProviderBase(aFactory,aActivityMap)
@@ -62,7 +56,7 @@ EXPORT_C CCoreSubConnectionProvider* CCoreSubConnectionProvider::NewL(CSubConnec
 	{
     CCoreSubConnectionProvider* provider = new (ELeave) CCoreSubConnectionProvider(aFactory);
     CleanupStack::PushL(provider);
-    provider->ConstructL(KSCPRPreallocatedActivityBufferSize);
+    provider->ConstructL();
     CleanupStack::Pop();
     return provider;
 	}
