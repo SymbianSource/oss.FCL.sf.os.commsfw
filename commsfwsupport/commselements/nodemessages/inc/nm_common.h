@@ -49,9 +49,7 @@ enum TMessagesPanics
 	EMessageCastPanic,
 	EConstructedObjectTooBig,
 	EAddressNotValidPanic,
-	EClientNotValidPanic,
-	EDeceasedNodePanic,
-	EPreAllocationFailedPanic
+	EClientNotValidPanic
 	};
 
 

@@ -28,9 +28,8 @@ data=EPOCROOT##epoc32\data\z\TestData\scripts\te_dummyprovider_004.script TestDa
 data=EPOCROOT##epoc32\data\z\TestData\scripts\te_dummyprovider_005.script TestData\scripts\te_dummyprovider_005.script
 data=EPOCROOT##epoc32\data\z\TestData\scripts\te_dummyprovider_006.script TestData\scripts\te_dummyprovider_006.script
 data=EPOCROOT##epoc32\data\z\TestData\scripts\te_dummyprovider_008.script TestData\scripts\te_dummyprovider_008.script
-data=EPOCROOT##epoc32\data\z\TestData\scripts\te_dummyprovider_009.script TestData\scripts\te_dummyprovider_009.script
-data=EPOCROOT##epoc32\data\z\TestData\scripts\te_dummyprovider_010.script TestData\scripts\te_dummyprovider_010.script
-data=EPOCROOT##epoc32\data\z\TestData\scripts\te_dummyprovider_011.script TestData\scripts\te_dummyprovider_011.script
+data=EPOCROOT##epoc32\data\z\TestData\scripts\te_dummyprovider_008.script TestData\scripts\te_dummyprovider_009.script
+data=EPOCROOT##epoc32\data\z\TestData\scripts\te_dummyprovider_008.script TestData\scripts\te_dummyprovider_010.script
 data=EPOCROOT##epoc32\data\z\TestData\scripts\te_dummyprovider_incomingSCPR.script TestData\scripts\te_dummyprovider_incomingSCPR.script
 
 data=EPOCROOT##epoc32\data\z\TestData\configs\te_dummyproviders.cfg TestData\configs\te_dummyproviders.cfg
@@ -41,11 +40,7 @@ data=EPOCROOT##epoc32\data\z\TestData\configs\te_dummyprovider_004.ini TestData\
 data=EPOCROOT##epoc32\data\z\TestData\configs\te_dummyprovider_005.ini TestData\configs\te_dummyprovider_005.ini
 data=EPOCROOT##epoc32\data\z\TestData\configs\te_dummyprovider_006.ini TestData\configs\te_dummyprovider_006.ini
 data=EPOCROOT##epoc32\data\z\TestData\configs\te_dummyprovider_008.ini TestData\configs\te_dummyprovider_008.ini
-data=EPOCROOT##epoc32\data\z\TestData\configs\te_dummyprovider_009.ini TestData\configs\te_dummyprovider_009.ini
-data=EPOCROOT##epoc32\data\z\TestData\configs\te_dummyprovider_010.ini TestData\configs\te_dummyprovider_010.ini
-data=EPOCROOT##epoc32\data\z\TestData\configs\te_dummyprovider_011.ini TestData\configs\te_dummyprovider_011.ini
-data=EPOCROOT##epoc32\data\z\TestData\configs\TE_DummyProvider_ip.tcpip.esk TestData\configs\TE_DummyProvider_ip.tcpip.esk
-
-
+data=EPOCROOT##epoc32\data\z\TestData\configs\te_dummyprovider_008.ini TestData\configs\te_dummyprovider_009.ini
+data=EPOCROOT##epoc32\data\z\TestData\configs\te_dummyprovider_008.ini TestData\configs\te_dummyprovider_010.ini
 #endif // __TE_DummyProviders_IBY__
 

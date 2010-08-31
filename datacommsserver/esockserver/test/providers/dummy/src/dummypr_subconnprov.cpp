@@ -119,7 +119,7 @@ TBool CrazyIdle::TAwaitingCancelled::Accept()
     if (iContext.iMessage.IsMessage<Messages::TEBase::TError>())
         {
         ASSERT(iContext.iNodeActivity);
-        iContext.iNodeActivity->SetPostedTo(iContext.iNodeActivity->SoleOriginator().Peer());
+        iContext.iNodeActivity->SetPostedTo(iContext.iNodeActivity->SoleOriginator().Peer().RecipientId());
         }
     return EFalse;
     }

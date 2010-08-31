@@ -20,7 +20,7 @@ PRJ_TESTEXPORTS
 // If you change this(to xml format for example), remember to update te_cap_rsubconn.script
 ../configs/te_RSubConnection_Mesh.cfg	z:/testdata/configs/te_rsubconnection_mesh.cfg
 ../configs/te_RSubConnection_LoopbackCsy.ini	z:/testdata/configs/te_rsubconnection_loopbackcsy.ini
-../configs/te_RSubConnection_Simtsy.txt	z:/testdata/configs/te_rsubconnection_simtsy.txt
+../configs/te_RSubConnection_simtsy.txt	z:/testdata/configs/te_rsubconnection_simtsy.txt
 
 ../scripts/te_RSubConnectionSuite.script z:/testdata/scripts/te_rsubconnectionsuite.script
 ../scripts/te_RSubConnectionQoSRemovedSuite.script	z:/testdata/scripts/te_rsubconnectionqosremovedsuite.script

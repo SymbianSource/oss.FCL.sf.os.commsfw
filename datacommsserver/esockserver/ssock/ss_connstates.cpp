@@ -56,7 +56,7 @@
 #include <comms-infras/ss_upsaccesspointconfigext.h>
 #include <comms-infras/upsmessages.h>
 #endif
-#include <comms-infras/ss_roles.h>
+
 #ifdef _DEBUG
 // Panic category for "absolutely impossible!" vanilla ASSERT()-type panics from this module
 // (if it could happen through user error then you should give it an explicit, documented, category + code)
@@ -252,6 +252,35 @@ void ConnStates::TSendFinishedSelectionStateChange::DoL()
 		TCFMessage::TStateChange(TStateChange(KFinishedSelection,KErrNone)).CRef());
 	}
 
+DEFINE_SMELEMENT(ConnStates::TJoinReceivedCpr, NetStateMachine::MStateTransition, ConnStates::TContext)
+void ConnStates::TJoinReceivedCpr::DoL()
+	{
+	__ASSERT_DEBUG(iContext.iNodeActivity, ConnPanic(KPanicNoActivity));
+	__ASSERT_DEBUG(iContext.Node().ServiceProvider()==NULL, ConnPanic(KPanicExpectedNoServiceProvider));
+
+	TCFDataClient::TBindTo& bt = message_cast<TCFDataClient::TBindTo>(iContext.iMessage);
+    RNodeInterface* newSP = iContext.Node().AddClientL(bt.iNodeId, TClientType(TCFClientType::EServProvider, TCFClientType::EActive));
+    __ASSERT_DEBUG(iContext.Node().ServiceProvider()==newSP, ConnPanic(KPanicNoServiceProvider)); //[RZ] revise this, possibly overdefensive
+
+    //If this is attach, we need to see if we are a monitor or not
+    TClientType clientType(TCFClientType::ECtrl);
+
+    TUint selPrefs = static_cast<ConnActivities::CStartAttachActivity&>(*iContext.iNodeActivity).SelectionPrefs().Flags();
+    if (selPrefs & TSelectionPrefs::EMonitor)
+    	{
+		clientType.SetFlags(TCFClientType::EMonitor);
+    	iContext.Node().iIsMonitor = ETrue;
+    	}
+
+	// If it is an attach set the flag cause it is used by NetUPS to check if a JoinRequest comes from an RConnection::Attach
+	if (selPrefs & TSelectionPrefs::EAttach)
+    	{
+		clientType.SetFlags(TCFClientType::EAttach);
+    	}
+    iContext.iNodeActivity->PostRequestTo(*newSP,
+    	TCFServiceProvider::TJoinRequest(iContext.NodeId(), clientType).CRef());
+	}
+
 DEFINE_SMELEMENT(ConnStates::TJoinReceivedSCpr, NetStateMachine::MStateTransition, ConnStates::TContext)
 void ConnStates::TJoinReceivedSCpr::DoL()
 	{
@@ -441,11 +470,9 @@ void ConnStates::TProcessIncomingConnection::DoL()
 	__ASSERT_DEBUG(iContext.iNodeActivity, ConnPanic(KPanicNoActivity));
     CSubConnection* waitingSubConn = iContext.Node().Session()->CSubConnectionFromHandle(static_cast<CESockClientActivityBase&>(*iContext.iNodeActivity).Int0());
 	User::LeaveIfError(waitingSubConn != NULL ? KErrNone : KErrCancel);
-    RNodeInterface* waitingSubConnPeer = iContext.Node().FindClient(waitingSubConn->Id()); //To my surprise SC is a peer of this (so must use peer handle when talking to it)
-    __ASSERT_DEBUG(waitingSubConnPeer, ConnPanic(KPanicNoDataClient));
-    	
+
     TCFServiceProvider::TCommsBinderResponse& binderResp = message_cast<TCFServiceProvider::TCommsBinderResponse>(iContext.iMessage);
-    iContext.iNodeActivity->PostRequestTo(*waitingSubConnPeer,
+    iContext.iNodeActivity->PostRequestTo(waitingSubConn->Id(),
         TCFDataClient::TBindTo(binderResp.iNodeId).CRef());
 	}
 
@@ -1274,60 +1301,8 @@ ConnActivities::CAllInterfaceNotificationActivity::~CAllInterfaceNotificationAct
 		{
 		iNode.RemoveClient(aux->RecipientId());
 		}
-
-    if (iRegisteredForInterfaceStateChanges)
-        {
-        CCommsFactoryBase* ipProtoCprFactory = IpProtoCprFactory();
-        if (ipProtoCprFactory)
-            {
-            Factories::IFactoryNotify itf(this, GetVTable());
-            ipProtoCprFactory->DeRegisterNotifier(itf);
-            }
-        }
-
 	delete iAllInterfaceNotificationWorker; //delete this node (why via iAllInterfaceNotificationWorker??)
 	}
-
-/**
-Called by the IpProtoCpr factory to propagate an interface state change from IpProtoCpr to registered
-observers (suc as ourself).  If the interface is restarting, then we need to insert an EInterfaceDown,
-EInterfaceUp "toggle" sequence into the AllInterfaceNotification queue.  This is because, ordinarily,
-EInterfaceUp and EInterfaceDown are generated when the IpProtoCpr itself is created and destroyed,
-but not if it is restarted before being destroyed. 
-*/
-void CAllInterfaceNotificationActivity::InterfaceStateChangeNotification(const TDesC8& aInfo)
-    {
-    if (aInfo.Length() == sizeof(TInterfaceNotification))
-        {
-        const TInterfaceNotification* const info = reinterpret_cast<const TInterfaceNotification*>(aInfo.Ptr());
-        if (info && info->iState == EInterfaceRestarting)
-            {
-            LOG( ESockLog::Printf(KESockConnectionTag, _L("CAllInterfaceNotificationActivity %08x:\tInterfaceStateChangeNotification(): CConnection %08x, IapId %d, NetId %d"),
-                this, &iAllInterfaceNotificationWorker->iConnection, info->iConnectionInfo.iIapId, info->iConnectionInfo.iNetId  ));
-
-            AConnectionLegacy& legacy = iAllInterfaceNotificationWorker->iConnection.iLegacyConnection;
-            TInterfaceNotification notification(*info);
-            notification.iState = EInterfaceDown;
-            legacy.iNotificationQueue.Enque(notification);
-            notification.iState = EInterfaceUp;
-            legacy.iNotificationQueue.Enque(notification);
-            legacy.CompleteAllInterfaceNotificationL(KErrNone);
-            }
-        }
-    }
-
-CCommsFactoryBase* CAllInterfaceNotificationActivity::IpProtoCprFactory() const
-    {
-    CConnectionFactoryContainer& container = *static_cast<CPlayer&>(iAllInterfaceNotificationWorker->iConnection.Player()).SockManGlobals()->iConnectionFactories;
-    return static_cast<CCommsFactoryBase*>(container.FindFactory(TUid::Uid(AConnectionLegacy::KIPProtoConnectionProviderFactoryUid)));
-    }
-
-// Registration table for receiving InterfaceStateChangeNotification() events.
-const Factories::TAnyFn CAllInterfaceNotificationActivity::iInterfaceVTableF[] =
-    {
-    (Factories::TAnyFn)1, // number of methods. the following entries must be in this order!
-    (Factories::TAnyFn)(Factories::TFactoryNotify<CAllInterfaceNotificationActivity>::Notification)
-    };
 
 // States
 
@@ -1484,23 +1459,6 @@ void AllInterfaceNotificationActivity::TEnqueueNotification::DoL()
 	TCFTierStatusProvider::TTierNotification& msg = message_cast<TCFTierStatusProvider::TTierNotification>(iContext.iMessage);
 
 	__ASSERT_DEBUG(msg.iBundle, User::Panic(KSpecAssert_ESockSSockscnsts, 14));
-	
-    CAllInterfaceNotificationActivity& act = *iContext.Activity();
-    
-    // Register with the IpProtoCpr factory for interface state changes if we haven't already done so.
-    // We can only do this if the IpProtoCpr is active, and the assumption here is that it must be active
-    // if an interface event has been generated.
-    if (!act.iRegisteredForInterfaceStateChanges)
-        {
-        CCommsFactoryBase* ipProtoCprFactory = act.IpProtoCprFactory();
-        if (ipProtoCprFactory)
-            {
-            Factories::IFactoryNotify itf(&act, act.GetVTable());
-            ipProtoCprFactory->RegisterNotifierL(itf);
-            act.iRegisteredForInterfaceStateChanges = ETrue;
-            }
-        }
-
 	if(msg.iBundle->PtrL()->CountParamSetContainers() > 0)
 		{
 		TInt i = 0;

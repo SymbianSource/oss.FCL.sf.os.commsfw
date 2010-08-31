@@ -168,15 +168,15 @@ EXPORT_C /*static*/ MeshMachine::CNodeActivityBase* CTierNotificationActivity::N
 	// set up a session with each collector
 	for (TInt sessionId=0 ; sessionId<aCollectors.Count() ; ++sessionId)
 		{
-		MDataCollector* collector = aCollectors[sessionId];
-		aCollectors[sessionId] = NULL;
-		CleanupStack::PushL(collector);
-		CDataCollectorSession* newCollectorSession = CDataCollectorSession::NewL(collector, *this, sessionId);
-		CleanupStack::Pop(collector);
-		CleanupStack::PushL(newCollectorSession);
-		iCollectorSessions.AppendL(newCollectorSession);
-		CleanupStack::Pop(newCollectorSession);
+		CDataCollectorSession* newCollector = CDataCollectorSession::NewL(aCollectors[sessionId], *this, sessionId );
+		CleanupStack::PushL(newCollector);
+		iCollectorSessions.AppendL(newCollector);
+		CleanupStack::Pop(newCollector);
+		
+		// now owned by the CDataCollectorSession in iCollectorSessions so don't want it to be in the cleanup path twice!
+		aCollectors[sessionId] = 0;
 		}
+
 
 	// Must run session creation and start loops separately in case the initial data fetch is synchronous.
 	// Reasoning:

@@ -741,7 +741,6 @@ Called when we have got a valid connection info that we can set
     {
 	LOG(ESockLog::Printf(KESockConnectionTag, _L8("CHostResolver %08x:\tStartSending() iBusy %d, iAwaitingConnection %d"), this,iBusy,iAwaitingConnection) );
 	LockToConnectionInfo();
-	UpdateFlowRequestType();
 	if (iBusy && iAwaitingConnection)
 		{
 		switch (iCurrentOp)
@@ -894,12 +893,6 @@ information to the Host Resolver.
 		}
 	}
 
-void CHostResolver::UpdateFlowRequestType()
-    {
-    TPckgBuf<TInt> flowRequestTypePckg = iFlowRequestType;
-     
-    iRSP->SetOption(KSOLProvider, KSoFlowRequestType, flowRequestTypePckg);
-    }
 
 void CHostResolver::ProcessMessageL()
 	{

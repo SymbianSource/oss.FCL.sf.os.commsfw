@@ -100,9 +100,6 @@ public:
 
 	IMPORT_C void RegisterNotifierL(const IFactoryNotify& aFactoryNotify);
 	IMPORT_C void DeRegisterNotifier(const IFactoryNotify& aFactoryNotify);
-	// Called by a node to indicate that an interface state change has taken place.  The factory then propagates
-	// this to all observers that have registered to be notified.
-    IMPORT_C void InterfaceStateChange(const TDesC8& aInfo);
 
 protected:
 	IMPORT_C explicit CFactoryBase(TUid aFactoryUid, CFactoryContainer& aParentContainer);

@@ -49,11 +49,6 @@ class TEnqueueNotification;
 class TSendErrorToConnection;
 }
 
-namespace ConnActivities
-{
-class CAllInterfaceNotificationActivity;
-}
-
 namespace EnumerateConnectionsActivity
 {
 class TQueryTierStatus;
@@ -89,12 +84,9 @@ NONSHARABLE_CLASS(AConnectionLegacy)
 	friend class EnumerateConnectionsActivity::TCompleteClient;
 	friend class AllInterfaceNotificationActivity::TEnqueueNotification;
 	friend class AllInterfaceNotificationActivity::TSendErrorToConnection;
-	friend class ConnActivities::CAllInterfaceNotificationActivity;
 	friend class ConnStates::TNoTagOrCancelAllInterfaceWorker;
 	friend class ConnStates::TCancelAllInterfaceNotificationWorker;
 
-public:
-	enum { KIPProtoConnectionProviderFactoryUid = 0x10281DD3 };
 public: //So that friends of CConnection (transitions) can access it
 	void CompleteAttachL(TSelectionPrefs& aPrefs);
 	void CancelServiceChangeNotification(const Den::RSafeMessage& aMessage);
@@ -163,6 +155,7 @@ protected:
 	ADataMonitoringProvider* FetchSubConnDataMonitoringProvider() const;
 
 	//global notifications
+	void InterfaceStateChangeNotification(TDesC8& aInfo);
 	void RequestServiceChangeNotificationL(const Den::RSafeMessage& aMessage);
     void ControlL(TUint aOptionName, TUint aMessageId);
 
@@ -219,6 +212,9 @@ private:
 	RMessage2 iAllInterfaceNotificationMessage;
 	TInterfaceChangeQueue iNotificationQueue;
   	Messages::TNodeId iAllInterfaceNotificationWorker;
+  	
+protected:
+	static const TAnyFn iInterfaceVTableF[];
 	};
 
 

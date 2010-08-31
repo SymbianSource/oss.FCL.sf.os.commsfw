@@ -65,35 +65,20 @@ public:
 		return Peer().Type();
 		}
 
-    TUint32 Flags() const
-        {
-        // Non-client peers lack flags (a state early in relationship)
-        if(PeerPtr())
-            {
-            return PeerPtr()->Flags();
-            }
-        return 0;
-        }
+	TUint32 Flags() const
+		{
+		return Peer().Flags();
+		}
 
-    TUint32 SetFlags(TUint32 aFlags)
-        {
-        // We only require peer info to be present if an actual state change is occurring (as opposed to default handling)
-        if(aFlags)
-            {
-            return Peer().SetFlags(aFlags);
-            }
-        return Flags();
-        }
+	TUint32 SetFlags(TUint32 aFlags)
+		{
+		return Peer().SetFlags(aFlags);
+		}
 
-    TUint32 ClearFlags(TUint32 aFlags)
-        {
-        // We only require peer info to be present if an actual state change is occurring (as opposed to default handling)
-        if(aFlags)
-            {
-            return Peer().ClearFlags(aFlags);
-            }
-        return Flags();
-        }
+	TUint32 ClearFlags(TUint32 aFlags)
+		{
+		return Peer().ClearFlags(aFlags);
+		}
 
 	const RNodeInterface& Peer() const
 		{

@@ -26,16 +26,7 @@ LOAD_SUITE te_esockteststepsSuite -SharedData
 RUN_SCRIPT z:\TestData\scripts\te_esock_test_loadesock.script
 
 START_TESTCASE			COMINF-ESOCK-DummyProviders-004
-//! @SYMTestCaseID COMINF-ESOCK-DummyProviders-004
-//! @SYMTestCaseDesc  Tests the TCFServiceProvider::TStart/TStop semantics on the managemnet plane.
-//! @SYMTestActions   Gets the MCPR to stop the control and data planes, whilst keeping itself alive.
-//										Gets the MCPR to restart the control and data planes, 
-//										Uses RConnectionServ to monitor that connections are being stopped and started.
-//										Gets the MCPR to stop the control and data planes and let itself be removed.
-//! @SYMTestExpectedResults    Access points report started/stopped via RConnectionServ. No crashes.
-//! @SYMTestPriority  Critical 
-//! @SYMTestType CT
-//! @SYMComponent   comms-infras_esock
+//! @SYMTestCaseID		COMINF-ESOCK-DummyProviders-004
 
 RUN_TEST_STEP 100 te_esockteststepsSuite CreateRConnectionServStep z:\testdata\configs\te_dummyprovider_004.ini CreateConnectionServ1
 RUN_TEST_STEP 100 te_esockteststepsSuite ConnectRConnectionServStep z:\testdata\configs\te_dummyprovider_004.ini ConnectConnectionServ1
@@ -76,4 +67,4 @@ END_TESTCASE COMINF-ESOCK-DummyProviders-004
 
 RUN_SCRIPT Z:\TestData\scripts\te_esock_test_unloadesockForced.script
 
-PRINT Completed CASE004
+PRINT Completed CASE003

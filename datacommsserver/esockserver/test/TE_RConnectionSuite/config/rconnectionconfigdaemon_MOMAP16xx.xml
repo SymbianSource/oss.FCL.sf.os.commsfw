@@ -80,7 +80,7 @@
     <IAP operation="add">
         <Name>Emulator Lan IAP No Daemon</Name>
         <IAPService>LANService.Ethernet No Daemon</IAPService>
-        <IAPBearer>LANBearer.EKA2 Emulator Ethernet</IAPBearer>
+        <IAPBearer>LANBearer.WLANBearer</IAPBearer>
         <IAPNetwork>Network.Intranet</IAPNetwork>
         <IAPNetworkWeighting>0</IAPNetworkWeighting>
         <LocationRef>Location.Office</LocationRef>
@@ -88,7 +88,7 @@
     <IAP operation="add">
         <Name>Emulator Lan IAP Bad Daemon</Name>
         <IAPService>LANService.Ethernet Bad Daemon</IAPService>
-        <IAPBearer>LANBearer.EKA2 Emulator Ethernet</IAPBearer>
+        <IAPBearer>LANBearer.WLANBearer</IAPBearer>
         <IAPNetwork>Network.mRouter</IAPNetwork>
         <IAPNetworkWeighting>0</IAPNetworkWeighting>
         <LocationRef>Location.Office</LocationRef>
@@ -96,7 +96,7 @@
     <IAP operation="add">
         <Name>Emulator Lan IAP Static IP 1</Name>
         <IAPService>LANService.Ethernet Static IP</IAPService>
-        <IAPBearer>LANBearer.EKA2 Emulator Ethernet</IAPBearer>
+        <IAPBearer>LANBearer.WLANBearer</IAPBearer>
         <IAPNetwork>Network.mRouter</IAPNetwork>
         <IAPNetworkWeighting>0</IAPNetworkWeighting>
         <LocationRef>Location.Office</LocationRef>
@@ -104,23 +104,23 @@
     <IAP operation="add">
         <Name>Emulator Lan IAP Static IP 2</Name>
         <IAPService>LANService.Ethernet Static IP</IAPService>
-        <IAPBearer>LANBearer.EKA2 Emulator Ethernet</IAPBearer>
+        <IAPBearer>LANBearer.WLANBearer</IAPBearer>
         <IAPNetwork>Network.Intranet</IAPNetwork>
         <IAPNetworkWeighting>0</IAPNetworkWeighting>
         <LocationRef>Location.Office</LocationRef>
     </IAP>
     <IAP operation="add">
-        <Name>Emulator Lan IAP 1</Name>
-        <IAPService>LANService.Ethernet</IAPService>
-        <IAPBearer>LANBearer.EKA2 Target Ethernet</IAPBearer>
-        <IAPNetwork>Network.mRouter</IAPNetwork>
-        <IAPNetworkWeighting>0</IAPNetworkWeighting>
-        <LocationRef>Location.Office</LocationRef>
+		<Name>WlanConnectivity</Name>
+		<IAPService>LANService.WlanConnectivity</IAPService>
+       <IAPBearer>LANBearer.WLANBearer</IAPBearer>
+		<IAPNetwork>Network.Intranet</IAPNetwork>
+		<IAPNetworkWeighting>0</IAPNetworkWeighting>
+		<LocationRef>Location.Office</LocationRef>
     </IAP>
     <IAP operation="add">
         <Name>Emulator Lan IAP 2</Name>
-        <IAPService>LANService.Ethernet</IAPService>
-        <IAPBearer>LANBearer.EKA2 Emulator Ethernet</IAPBearer>
+        <IAPService>LANService.WlanConnectivity</IAPService>
+        <IAPBearer>LANBearer.WLANBearer</IAPBearer>
         <IAPNetwork>Network.Intranet</IAPNetwork>
         <IAPNetworkWeighting>0</IAPNetworkWeighting>
         <LocationRef>Location.Office</LocationRef>
@@ -1198,112 +1198,83 @@
 
 <LANBearerTable>
     <LANBearer operation="add">
-	<Name>EKA1 Target Ethernet</Name>
-	<Agent>nullagt.agt</Agent>
-	<IfName>ethint</IfName>
-	<LDDFilename>ethercard</LDDFilename>
-	<LDDName>EtherCard</LDDName>
-	<PDDFilename>EtherSmc</PDDFilename>
-	<PDDName>EtherCard.Smc</PDDName>
-	<PacketDriverName>EtherPkt.drv</PacketDriverName>
-	<LastSocketActivityTimeout>-1</LastSocketActivityTimeout>
-	<LastSessionClosedTimeout>-1</LastSessionClosedTimeout>
-	<LastSocketClosedTimeout>-1</LastSocketClosedTimeout>
-    </LANBearer>
-
-    <LANBearer operation="add">
-	<Name>EKA2 Target Ethernet</Name>
-	<Agent>nullagt.agt</Agent>
-	<IfName>ethint</IfName>
-	<LDDFilename>enet</LDDFilename>
-	<LDDName>Ethernet</LDDName>
-	<PDDFilename>ethernet</PDDFilename>
-	<PDDName>Ethernet.MOMAP16xx</PDDName>
-	<PacketDriverName>EtherPkt.drv</PacketDriverName>
-	<LastSocketActivityTimeout>-1</LastSocketActivityTimeout>
-	<LastSessionClosedTimeout>-1</LastSessionClosedTimeout>
-	<LastSocketClosedTimeout>-1</LastSocketClosedTimeout>
-    </LANBearer>
-
-    <LANBearer operation="add">
-	<Name>EKA1 Emulator Ethernet</Name>
-	<Agent>nullagt.agt</Agent>
-	<IfName>ethint</IfName>
-	<LDDFilename>ethercard</LDDFilename>
-	<LDDName>Ethercard</LDDName>
-	<PDDFilename>etherwins</PDDFilename>
-	<PDDName>Ethercard.wins</PDDName>
-	<PacketDriverName>EtherPkt.drv</PacketDriverName>
-	<LastSocketActivityTimeout>-1</LastSocketActivityTimeout>
-	<LastSessionClosedTimeout>-1</LastSessionClosedTimeout>
-	<LastSocketClosedTimeout>-1</LastSocketClosedTimeout>
-    </LANBearer>
-
-    <LANBearer operation="add">
-	<Name>EKA2 Emulator Ethernet</Name>
-	<Agent>nullagt.agt</Agent>
-	<IfName>ethint</IfName>
-	<LDDFilename>enet</LDDFilename>
-	<LDDName>Ethernet</LDDName>
-	<PDDFilename>ethernet</PDDFilename>
-	<PDDName>Ethernet.Wins</PDDName>
-	<PacketDriverName>EtherPkt.drv</PacketDriverName>
-	<LastSocketActivityTimeout>-1</LastSocketActivityTimeout>
-	<LastSessionClosedTimeout>-1</LastSessionClosedTimeout>
-	<LastSocketClosedTimeout>-1</LastSocketClosedTimeout>
+		<Name>WLANBearer</Name>
+		<IfName>wlannif</IfName>
+		<LDDName>not used</LDDName>
+		<PDDName>not used</PDDName>
+		<LastSocketActivityTimeout>10</LastSocketActivityTimeout>
+		<LastSessionClosedTimeout>10</LastSessionClosedTimeout>
+		<LastSocketClosedTimeout>10</LastSocketClosedTimeout>
+		<Agent>wlanagt.agt</Agent>
     </LANBearer>
 </LANBearerTable>
 
 <LANServiceTable>
     <LANService operation="add">
-        <Name>Ethernet</Name>
-        <IfNetworks>ip</IfNetworks>
-        <IpNetMask>255.255.255.0</IpNetMask>
-        <IpGateway>10.23.143.254</IpGateway>
-        <IpAddr></IpAddr>
-        <IpAddrFromServer>TRUE</IpAddrFromServer>
-        <IpDNSAddrFromServer>TRUE</IpDNSAddrFromServer>
-        <IpNameServer1>10.16.59.15</IpNameServer1>
-        <IpNameServer2>10.112.58.6</IpNameServer2>
-        <ConfigDaemonManagerName>NetCfgExtnDhcp</ConfigDaemonManagerName>
-        <ConfigDaemonName>!DhcpServ</ConfigDaemonName>
+		<Name>WlanConnectivity</Name>
+		<IfNetworks>ip</IfNetworks>
+		<IpNetMask>255.255.255.0</IpNetMask>
+		<IpGateway>0.0.0.0</IpGateway>
+		<IpAddrFromServer>TRUE</IpAddrFromServer>
+		<IpAddr>0.0.0.0</IpAddr>
+		<IpDNSAddrFromServer>TRUE</IpDNSAddrFromServer>
+		<IpNameServer1>0.0.0.0</IpNameServer1>
+		<IpNameServer2>0.0.0.0</IpNameServer2>
+		<Ip6DnsAddrFromServer>TRUE</Ip6DnsAddrFromServer>
+		<Ip6NameServer1>0:0:0:0:0:0:0:0</Ip6NameServer1>
+		<Ip6NameServer2>0:0:0:0:0:0:0:0</Ip6NameServer2>
+		<IpAddrLeaseValidFrom>0</IpAddrLeaseValidFrom>
+		<ConfigDaemonManagerName>NetCfgExtnDhcp</ConfigDaemonManagerName>
+		<ConfigDaemonName>!DhcpServ</ConfigDaemonName>
     </LANService>
     <LANService operation="add">
-        <Name>Ethernet Static IP</Name>
-        <IfNetworks>ip</IfNetworks>
-        <IpNetMask>255.255.255.0</IpNetMask>
-        <IpGateway>192.168.20.2</IpGateway>
-        <IpAddr>192.168.20.13</IpAddr>
-        <IpAddrFromServer>FALSE</IpAddrFromServer>
-        <IpDNSAddrFromServer>TRUE</IpDNSAddrFromServer>
-        <IpNameServer1>194.72.6.51</IpNameServer1>
-        <IpNameServer2>194.72.6.52</IpNameServer2>
-        <ConfigDaemonManagerName>NetCfgExtnDhcp</ConfigDaemonManagerName>
-        <ConfigDaemonName>!DhcpServ</ConfigDaemonName>
+		<Name>Ethernet Static IP</Name>
+		<IfNetworks>ip</IfNetworks>
+		<IpNetMask>255.255.255.0</IpNetMask>
+		<IpGateway>192.168.20.2</IpGateway>
+		<IpAddrFromServer>FALSE</IpAddrFromServer>
+		<IpAddr>192.168.20.13</IpAddr>
+		<IpDNSAddrFromServer>TRUE</IpDNSAddrFromServer>
+		<IpNameServer1>194.72.6.51</IpNameServer1>
+		<IpNameServer2>194.72.6.52</IpNameServer2>
+		<Ip6DnsAddrFromServer>TRUE</Ip6DnsAddrFromServer>
+		<Ip6NameServer1>0:0:0:0:0:0:0:0</Ip6NameServer1>
+		<Ip6NameServer2>0:0:0:0:0:0:0:0</Ip6NameServer2>
+		<IpAddrLeaseValidFrom>0</IpAddrLeaseValidFrom>
+		<ConfigDaemonManagerName>NetCfgExtnDhcp</ConfigDaemonManagerName>
+		<ConfigDaemonName>!DhcpServ</ConfigDaemonName>
     </LANService>
     <LANService operation="add">
-        <Name>Ethernet Bad Daemon</Name>
-        <IfNetworks>ip</IfNetworks>
-        <IpNetMask>255.255.255.0</IpNetMask>
-        <IpGateway>10.32.194.254</IpGateway>
-        <IpAddr>10.32.194.251</IpAddr>
-        <IpAddrFromServer>FALSE</IpAddrFromServer>
-        <IpDNSAddrFromServer>TRUE</IpDNSAddrFromServer>
-        <IpNameServer1>194.72.6.51</IpNameServer1>
-        <IpNameServer2>194.72.6.52</IpNameServer2>
-        <ConfigDaemonManagerName>NonExistingServ</ConfigDaemonManagerName>
-        <ConfigDaemonName>NonExistingServ</ConfigDaemonName>
+		<Name>Ethernet Bad Daemon</Name>
+		<IfNetworks>ip</IfNetworks>
+		<IpNetMask>255.255.255.0</IpNetMask>
+		<IpGateway>10.32.194.254</IpGateway>
+		<IpAddrFromServer>FALSE</IpAddrFromServer>
+		<IpAddr>10.32.194.251</IpAddr>
+		<IpDNSAddrFromServer>FALSE</IpDNSAddrFromServer>
+		<IpNameServer1>194.72.6.51</IpNameServer1>
+		<IpNameServer2>194.72.6.52</IpNameServer2>
+		<Ip6DnsAddrFromServer>TRUE</Ip6DnsAddrFromServer>
+		<Ip6NameServer1>0:0:0:0:0:0:0:0</Ip6NameServer1>
+		<Ip6NameServer2>0:0:0:0:0:0:0:0</Ip6NameServer2>
+		<IpAddrLeaseValidFrom>0</IpAddrLeaseValidFrom>
+		<ConfigDaemonManagerName>NonExistingServ</ConfigDaemonManagerName>
+		<ConfigDaemonName>NonExistingServ</ConfigDaemonName>
     </LANService>
     <LANService operation="add">
-        <Name>Ethernet No Daemon</Name>
-        <IfNetworks>ip</IfNetworks>
-        <IpNetMask>255.255.255.0</IpNetMask>
-        <IpGateway>10.32.194.254</IpGateway>
-        <IpAddr>10.32.194.251</IpAddr>
-        <IpAddrFromServer>FALSE</IpAddrFromServer>
-        <IpDNSAddrFromServer>TRUE</IpDNSAddrFromServer>
-        <IpNameServer1>194.72.6.51</IpNameServer1>
-        <IpNameServer2>194.72.6.52</IpNameServer2>
+		<Name>Ethernet No Daemon</Name>
+		<IfNetworks>ip</IfNetworks>
+		<IpNetMask>255.255.255.0</IpNetMask>
+		<IpGateway>10.32.194.254</IpGateway>
+		<IpAddrFromServer>FALSE</IpAddrFromServer>
+		<IpAddr>10.32.194.251</IpAddr>
+		<IpDNSAddrFromServer>FALSE</IpDNSAddrFromServer>
+		<IpNameServer1>194.72.6.51</IpNameServer1>
+		<IpNameServer2>194.72.6.52</IpNameServer2>
+		<Ip6DnsAddrFromServer>TRUE</Ip6DnsAddrFromServer>
+		<Ip6NameServer1>0:0:0:0:0:0:0:0</Ip6NameServer1>
+		<Ip6NameServer2>0:0:0:0:0:0:0:0</Ip6NameServer2>
+		<IpAddrLeaseValidFrom>0</IpAddrLeaseValidFrom>
     </LANService>
 </LANServiceTable>
 
@@ -1788,7 +1759,7 @@
         <Direction>OUTGOING</Direction>
         <DialogPref>DONOTPROMPT</DialogPref>
         <BearerSet>LAN</BearerSet>
-        <IAPRef>IAP.Emulator Lan IAP 1</IAPRef>
+        <IAPRef>IAP.WlanConnectivity</IAPRef>
     </ConnectionPreferences>
 </ConnectionPreferencesTable>
 

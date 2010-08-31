@@ -393,7 +393,7 @@ CCFLog::CCFLog() :
 
 void CCFLog::ConstructL()
 	{
-	User::LeaveIfError(iCsLock.CreateLocal());
+	iCsLock.CreateLocal();
 
 	// construct initial cflogger will be first in session arrays
 	RFileLogger* defaultflogger;

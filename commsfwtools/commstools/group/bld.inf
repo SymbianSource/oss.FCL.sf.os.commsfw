@@ -23,7 +23,7 @@ PRJ_EXPORTS
 ../svg/messagesequencetool.doc              		/epoc32/tools/commsfw/messagesequencetool.doc
 ../svg/relations.pl         						/epoc32/tools/commsfw/relations.pl
 ../svg/relationships.txt         					/epoc32/tools/commsfw/relationships.txt
-../svg/relationsvrml.pl         					/epoc32/tools/commsfw/relationsvrml.pl
+../svg/relationsVrml.pl         					/epoc32/tools/commsfw/relationsvrml.pl
 ../svg/parse.ini         							/epoc32/tools/commsfw/parse.ini
 ../svg/parseit.bat         							/epoc32/tools/commsfw/parseit.bat
 ../svg/parselog.pl         							/epoc32/tools/commsfw/parselog.pl

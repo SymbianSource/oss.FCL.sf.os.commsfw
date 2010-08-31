@@ -11,7 +11,7 @@
 // Contributors:
 //
 // Description:
-// Core PR State
+// Core PR States
 //
 //
 
@@ -759,19 +759,19 @@ EXPORT_DECLARE_SMELEMENT_HEADER( TCancelDataClientStart, MeshMachine::TStateTran
 	IMPORT_C virtual void DoL();
 DECLARE_SMELEMENT_FOOTER( TCancelDataClientStart )
 
-EXPORT_DECLARE_SMELEMENT_HEADER( TCancelAndCloseZone0ClientExtIfaces, MeshMachine::TStateTransition<TContext>, NetStateMachine::MStateTransition, TContext )
+DECLARE_SMELEMENT_HEADER( TCancelAndCloseZone0ClientExtIfaces, MeshMachine::TStateTransition<TContext>, NetStateMachine::MStateTransition, TContext )
 	virtual void DoL();
 DECLARE_SMELEMENT_FOOTER( TCancelAndCloseZone0ClientExtIfaces )
 
 EXPORT_DECLARE_SMELEMENT_HEADER( TProcessOrForwardRMessage2Ext, MeshMachine::TStateTransition<TContext>, NetStateMachine::MStateTransition, TContext )
-    IMPORT_C virtual void DoL();
+	virtual void DoL();
 DECLARE_SMELEMENT_FOOTER( TProcessOrForwardRMessage2Ext )
 
 /**
  * Check if ECFActivityStart is running, and if so cancel it
  */
 EXPORT_DECLARE_SMELEMENT_HEADER( TCancelStart, MeshMachine::TStateTransition<TContext>, NetStateMachine::MStateTransition, TContext )
-	IMPORT_C virtual void DoL();
+	virtual void DoL();
 DECLARE_SMELEMENT_FOOTER( TCancelStart )
 
 DECLARE_AGGREGATED_TRANSITION2(

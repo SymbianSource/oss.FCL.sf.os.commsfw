@@ -432,14 +432,6 @@ EXPORT_C AFactoryObject* CFactoryBase::FindObject(MFactoryQuery& aQuery) const
 	return obj;
 	}
 
-EXPORT_C void CFactoryBase::InterfaceStateChange(const TDesC8& aInfo)
-    {
-    for (TInt i = iFactoryNotify.Count() - 1; i >= 0; --i)
-        {
-        iFactoryNotify[i].InterfaceStateChange(aInfo);
-        }
-    }
-
 EXPORT_C AFactoryObject::AFactoryObject(CFactoryBase& aFactory)
 :	iFactory(aFactory)
 	{

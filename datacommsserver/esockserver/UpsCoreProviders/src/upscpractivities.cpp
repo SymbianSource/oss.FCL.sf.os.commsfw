@@ -92,12 +92,12 @@ void CDeferredCtrlClientJoinActivity::SetFlags(TInt aFlags)
 	{
 	iFlags = aFlags;
 	}
-
+/*
 TInt CDeferredCtrlClientJoinActivity::Flags()
 	{
 	return iFlags;
 	}
-
+*/
 EXPORT_DEFINE_SMELEMENT(CDeferredCtrlClientJoinActivity::TStoreControlClient, NetStateMachine::MStateTransition, CDeferredCtrlClientJoinActivity::TContext)
 
 EXPORT_C void CDeferredCtrlClientJoinActivity::TStoreControlClient::DoL()
@@ -109,7 +109,6 @@ Store the control client locally from a TCtrlClientJoinRequest.
 	__ASSERT_DEBUG(act->Client() == TNodeId::NullId(), User::Panic(KSpecAssert_ESockUpsCoreProv, 2));
 	const TCFControlClient::TJoinRequest& msg = message_cast<TCFControlClient::TJoinRequest>(iContext.iMessage);
 	act->SetClient(msg.iNodeId);
-    act->SetFlags(msg.iClientType.Flags());
 	}
 
 EXPORT_DEFINE_SMELEMENT(CDeferredCtrlClientJoinActivity::TAddControlClientAndSendJoinComplete, NetStateMachine::MStateTransition, CDeferredCtrlClientJoinActivity::TContext)
@@ -122,7 +121,7 @@ Add the stored control client as a client, and send a TJoinComplete to originato
 	__ASSERT_DEBUG(act->Client() != TNodeId::NullId(), User::Panic(KSpecAssert_ESockUpsCoreProv, 3));
 	
 	// Add control client
-	iContext.Node().AddClientL(act->Client(), TCFClientType(TCFClientType::ECtrl, act->Flags()));
+	iContext.Node().AddClientL(act->Client(), TCFClientType(TCFClientType::ECtrl));
 
 	// Send TJoinComplete
 	RClientInterface::OpenPostMessageClose(iContext.NodeId(), act->Client(), TCFControlClient::TJoinComplete().CRef());

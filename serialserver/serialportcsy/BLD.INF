@@ -18,7 +18,7 @@ PRJ_EXPORTS
 ECUART.iby		/epoc32/rom/include/ecuart.iby
 
 PRJ_TESTEXPORTS
-#include "../c32serialserver/LOOPBACK/BLD.INF"
+#include "../c32serialserver/LOOPBACK/bld.inf"
 
 PRJ_MMPFILES
 ECUART.MMP

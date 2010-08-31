@@ -96,8 +96,8 @@ void FlowRequestStates::TJoinReceivedSCpr::DoL()
 
 	TCFServiceProvider::TCommsBinderResponse& br = message_cast<TCFServiceProvider::TCommsBinderResponse>(iContext.iMessage);
 
-	RNodeInterface* brPeer = iContext.Node().AddClientL(br.iNodeId, TClientType(TCFClientType::EServProvider, TCFClientType::EDefault));
-    iContext.iNodeActivity->PostRequestTo(*brPeer, TCFServiceProvider::TJoinRequest(iContext.NodeId(),
+    iContext.Node().AddClientL(br.iNodeId, TClientType(TCFClientType::EServProvider, TCFClientType::EDefault));
+    iContext.iNodeActivity->PostRequestTo(br.iNodeId, TCFServiceProvider::TJoinRequest(iContext.NodeId(),
 		TClientType(TCFClientType::ECtrl)).CRef());
 	}
 

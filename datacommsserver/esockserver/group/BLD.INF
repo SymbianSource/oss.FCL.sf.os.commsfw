@@ -206,7 +206,7 @@ PRJ_EXPORTS
 ../inc/ss_mobility_apiext_internal.h   					SYMBIAN_OS_LAYER_PLATFORM_EXPORT_PATH(comms-infras/ss_mobility_apiext_internal.h)
 ../inc/ss_refcountowner.h								SYMBIAN_OS_LAYER_PLATFORM_EXPORT_PATH(comms-infras/ss_refcountowner.h)
 
-#include "../etc/BLD.INF"
+#include "../etc/bld.inf"
 #include "../compatibility_headers/group/bld.inf"
 
 //Backup and restore exports

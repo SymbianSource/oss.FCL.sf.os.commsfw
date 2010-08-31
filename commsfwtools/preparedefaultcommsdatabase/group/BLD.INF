@@ -21,9 +21,9 @@
 /**
  @file
 */
-   #include "../Tools/ced/group/BLD.INF"
-   #include "../Tools/ceddump/group/BLD.INF"
-   #include "../Tools/cfg2xml/group/BLD.INF"
+   #include "../Tools/ced/group/bld.inf"
+   #include "../Tools/ceddump/group/bld.inf"
+   #include "../Tools/cfg2xml/group/bld.inf"
 //making default file for the central repository
 //#include "../defaultcommdb/group/bld.inf"
 
@@ -46,8 +46,8 @@ PRJ_EXPORTS
 ../inc/commsdat_partner.h 		SYMBIAN_OS_LAYER_PLATFORM_EXPORT_PATH(commsdat_partner.h)
 ../inc/metadatabase_partner.h 		SYMBIAN_OS_LAYER_PLATFORM_EXPORT_PATH(metadatabase_partner.h)
 ../inc/commsdattypesv1_1_partner.h 	SYMBIAN_OS_LAYER_PLATFORM_EXPORT_PATH(commsdattypesv1_1_partner.h)
-../inc/commsdattypesv1_1_internal.h 	SYMBIAN_OS_LAYER_PLATFORM_EXPORT_PATH(commsdattypesv1_1_internal.h)
-../inc/Commsdattypeinfov1_1_internal.h 	SYMBIAN_OS_LAYER_PLATFORM_EXPORT_PATH(commsdattypeinfov1_1_internal.h)
+../inc/commsdattypesv1_1_internal.h	SYMBIAN_OS_LAYER_PLATFORM_EXPORT_PATH(commsdattypesv1_1_internal.h)
+../inc/commsdattypeinfov1_1_internal.h	SYMBIAN_OS_LAYER_PLATFORM_EXPORT_PATH(commsdattypeinfov1_1_internal.h)
 
 PRJ_TESTEXPORTS
 

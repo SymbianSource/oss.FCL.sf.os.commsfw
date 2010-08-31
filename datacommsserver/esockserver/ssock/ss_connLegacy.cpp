@@ -62,6 +62,12 @@ using namespace Den;
 
 //const TInt KNumberOfEmulatedSubConnections = 2;
 
+const Factories::TAnyFn AConnectionLegacy::iInterfaceVTableF[] =
+	{
+	(Factories::TAnyFn)1,
+	(Factories::TAnyFn)(TFactoryNotify<AConnectionLegacy>::Notification)
+	};
+
 AConnectionLegacy::~AConnectionLegacy()
     {
    	TSubConnectionEvent* subConnectionEvent;
@@ -124,7 +130,7 @@ MFactoryQuery::TMatchResult XConnectionFactoryAPQuery::Match(TFactoryObjectInfo&
 	}
 
 
-//static const TUid K_CIPProtoConnectionProviderFactory_iUid = {0x10281DD3};
+static const TUid K_CIPProtoConnectionProviderFactory_iUid = {0x10281DD3};
 
 void AConnectionLegacy::CompleteAttachL(ESock::TSelectionPrefs& aPrefs)
 	{
@@ -140,7 +146,7 @@ void AConnectionLegacy::CompleteAttachL(ESock::TSelectionPrefs& aPrefs)
     __ASSERT_DEBUG(cpr->GetFirstClient<TDefaultClientMatchPolicy>(TClientType(TCFClientType::EServProvider))==NULL, User::Panic(KSpecAssert_ESockSSockscnLgc, 3)); //This is why we are "legacy"
 
 	CConnectionFactoryContainer& container = *static_cast<CPlayer&>(iConnection.Player()).SockManGlobals()->iConnectionFactories;
-	CCommsFactoryBase* factory = static_cast<CCommsFactoryBase*>(container.FindFactory(TUid::Uid(KIPProtoConnectionProviderFactoryUid)));
+	CCommsFactoryBase* factory = static_cast<CCommsFactoryBase*>(container.FindFactory(K_CIPProtoConnectionProviderFactory_iUid));
     User::LeaveIfError(factory? KErrNone : KErrArgument);
 
     XConnectionFactoryAPQuery query(static_cast<const TCommDbConnPref&>(cp).IapId());
@@ -892,6 +898,40 @@ void AConnectionLegacy::GetLongDesSettingL(const Den::RSafeMessage& aMessage)
 	TMCprGetConnectionSetting msg(TMCprGetConnectionSetting::ELongDesSetting, aMessage);
 	iConnection.CMMSockSubSession::ReceivedL(aMessage.Function(), msg);
 	iConnection.DontCompleteCurrentRequest();
+	}
+
+
+
+void AConnectionLegacy::InterfaceStateChangeNotification(TDesC8& /*aInfo*/)
+	{
+	//[399TODO] implement InterfaceStateChangeNotification
+	LOG(ESockLog::Printf(KESockConnectionTag, _L8("TODO: implement InterfaceStateChangeNotification - KErrNotSupported")));
+#if TODO_IMPLEMENT_THIS
+	TInterfaceNotification& interfaceNotification = ((TInterfaceNotificationBuf&)aInfo)();
+
+	if(iAllInterfaceNotificationMessage.IsNull())
+		{
+		iInterfaceChangeQueue.Enque(interfaceNotification);
+		return;
+		}
+	else // request is outstanding
+		{
+		if(!iInterfaceChangeQueue.IsEmpty())
+			{
+			// can this situation ever happen?
+			// - new requests fullfilled from queue before becoming outstanding
+			// - no queued items when request outstanding
+
+			// But in case we do...
+			// should we get oldest change first in case this new one overwrites it
+			iInterfaceChangeQueue.Enque(interfaceNotification);
+			iInterfaceChangeQueue.Deque(interfaceNotification);
+			}
+
+		TInt ret = iAllInterfaceNotificationMessage.Write(0, aInfo);
+		CompleteMessage(iAllInterfaceNotificationMessage, ret);
+		}
+#endif
 	}
 
 void AConnectionLegacy::SubConnectionEvent(const TSubConnectionEvent& aSubConnectionEvent)

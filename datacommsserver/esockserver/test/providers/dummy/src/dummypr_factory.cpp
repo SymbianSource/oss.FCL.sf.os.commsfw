@@ -329,8 +329,6 @@ CSubConnectionFlowBase* CDummyFlowFactory::DoCreateFlowL(CProtocolIntfBase* aPro
 ACommsFactoryNodeId* CDummyFlowFactory::DoFindOrCreateObjectL(TFactoryQueryBase& aQuery)
 	{
 	const TDefaultFlowFactoryQuery& query = static_cast<const TDefaultFlowFactoryQuery&>(aQuery);
-	User::After(0.3*1000000); //Artificial yield to test cancellation. Do not remove.
-
 	if(query.iMessageId != TCFServiceProvider::TCommsBinderRequest::Id())
 		{
 		//the factory only reacts to creation triggered by TCommsBinderRequest

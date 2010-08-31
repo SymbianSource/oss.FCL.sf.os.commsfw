@@ -26,7 +26,7 @@ using namespace ESock;
 
 EXPORT_START_ATTRIBUTE_TABLE_AND_FN(XProviderInfoQuerySet, CCommsDataObjectFactory::iUid, XProviderInfoQuerySet::iUid)
 	REGISTER_ATTRIBUTE(XProviderInfoQuerySet, iConnProviderInfo, TMeta<TConnProviderInfo>)
-END_ATTRIBUTE_TABLE_BASE(XCommsDataObject, 0)
+END_ATTRIBUTE_TABLE()
 
 
 EXPORT_C XProviderInfoQuerySet::~XProviderInfoQuerySet()

@@ -28,7 +28,7 @@
 namespace Factories
 {
 
-typedef void (*TInterfaceStateChangeFn)( TAny*, const TDesC8& aInfo );
+typedef void (*TInterfaceStateChangeFn)( TAny*, TDesC8& aInfo );
 typedef TInt (*TFactoryNotifyFn)( TAny*, AFactoryObject& aObject, CFactoryBase& aFactory );
 typedef void (*TAnyFn)(TAny*);
 
@@ -50,7 +50,7 @@ public:
 		{
 		}
 
-	void InterfaceStateChange(const TDesC8& aInfo)
+	void InterfaceStateChange(TDesC8& aInfo)
 		{
 		if ( Check(1) )
 			{
@@ -89,14 +89,14 @@ class TFactoryNotify
  */
 	{
 public:
-	static void Notification(TAny* aThis, const TDesC8& aInfo);
+	static void Notification(TAny* aThis, TDesC8& aInfo);
 	static void NotifyDeletion(TAny* aThis, AFactoryObject& aObject, CFactoryBase& aFactory);
 	static TInt NotifyCreation(TAny* aThis, AFactoryObject& aObject, CFactoryBase& aFactory);
 
 	};
 
 template <class TCLIENT>
-void TFactoryNotify<TCLIENT>::Notification(TAny* aThis, const TDesC8& aInfo)
+void TFactoryNotify<TCLIENT>::Notification(TAny* aThis, TDesC8& aInfo)
 	{
 	TCLIENT* me = (TCLIENT*)aThis;
 	me->InterfaceStateChangeNotification(aInfo);

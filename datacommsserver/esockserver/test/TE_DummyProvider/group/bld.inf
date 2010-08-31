@@ -31,10 +31,9 @@ PRJ_TESTEXPORTS
 ../scripts/te_dummyprovider_008.script	z:/testdata/scripts/te_dummyprovider_008.script
 ../scripts/te_dummyprovider_009.script	z:/testdata/scripts/te_dummyprovider_009.script
 ../scripts/te_dummyprovider_010.script	z:/testdata/scripts/te_dummyprovider_010.script
-../scripts/te_dummyprovider_011.script	z:/testdata/scripts/te_dummyprovider_011.script
 
 
-../scripts/te_dummyprovider_incomingSCPR.script	z:/testdata/scripts/te_dummyprovider_incomingSCPR.script
+../scripts/te_dummyprovider_incomingSCPR.script	z:/testdata/scripts/te_dummyprovider_incomingscpr.script
 ../configs/te_dummyproviders.cfg	z:/testdata/configs/te_dummyproviders.cfg
 ../configs/te_dummyprovider_001.ini	z:/testdata/configs/te_dummyprovider_001.ini
 ../configs/te_dummyprovider_002.ini	z:/testdata/configs/te_dummyprovider_002.ini
@@ -45,5 +44,4 @@ PRJ_TESTEXPORTS
 ../configs/te_dummyprovider_008.ini	z:/testdata/configs/te_dummyprovider_008.ini
 ../configs/te_dummyprovider_009.ini	z:/testdata/configs/te_dummyprovider_009.ini
 ../configs/te_dummyprovider_010.ini	z:/testdata/configs/te_dummyprovider_010.ini
-../configs/te_dummyprovider_011.ini	z:/testdata/configs/te_dummyprovider_011.ini
 ../configs/TE_DummyProvider_ip.tcpip.esk z:/testdata/configs/TE_DummyProvider_ip.tcpip.esk

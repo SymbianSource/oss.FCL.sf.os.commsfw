@@ -84,6 +84,10 @@ DECLARE_SMELEMENT_HEADER( TSelectMetaPlane, SubSessStates::TECABStateTransitionB
 	virtual void DoL();
 DECLARE_SMELEMENT_FOOTER( TSelectMetaPlane )
 
+DECLARE_SMELEMENT_HEADER( TJoinReceivedCpr, SubSessStates::TECABStateTransitionBase<TContext>, NetStateMachine::MStateTransition, TContext )
+	virtual void DoL();
+DECLARE_SMELEMENT_FOOTER( TJoinReceivedCpr )
+
 DECLARE_SMELEMENT_HEADER( TSendFinishedSelectionStateChange, SubSessStates::TECABStateTransitionBase<TContext>, NetStateMachine::MStateTransition, TContext )
 	virtual void DoL();
 DECLARE_SMELEMENT_FOOTER( TSendFinishedSelectionStateChange )
@@ -113,6 +117,12 @@ DECLARE_SMELEMENT_FOOTER( TProcessBinderResponseForCpr )
 DECLARE_SMELEMENT_HEADER( TStartConnection, SubSessStates::TECABStateTransitionBase<TContext>, NetStateMachine::MStateTransition, TContext )
 	virtual void DoL();
 DECLARE_SMELEMENT_FOOTER( TStartConnection )
+
+DECLARE_AGGREGATED_TRANSITION2(
+    TSendFinishedSelectionAndJoinReceivedCpr,
+	ConnStates::TSendFinishedSelectionStateChange,
+	ConnStates::TJoinReceivedCpr
+	)
 
 DECLARE_SMELEMENT_HEADER( TErrorOrCancel, MeshMachine::TStateFork<ConnStates::TContext>, NetStateMachine::MStateFork, ConnStates::TContext )
 	virtual TInt TransitionTag();
@@ -515,8 +525,6 @@ friend class AllInterfaceNotificationActivity::TLeaveTierManager;
 
 public:
 	static MeshMachine::CNodeActivityBase* NewL(const MeshMachine::TNodeActivity& aActivitySig, MeshMachine::AMMNodeBase& aNode);
-    void InterfaceStateChangeNotification(const TDesC8& aInfo);
-    ESock::CCommsFactoryBase* IpProtoCprFactory() const;
 
 private:
 	CAllInterfaceNotificationActivity(const MeshMachine::TNodeActivity& aActivitySig, MeshMachine::AMMNodeBase& aNode) :
@@ -527,16 +535,11 @@ private:
 		}
 
 	virtual ~CAllInterfaceNotificationActivity();
-    const Factories::TAnyFn& GetVTable() { return iInterfaceVTableF[0]; };
 
 private:
 	TUid iTierUid;
 	Messages::TNodeId iTierManager;
 	const CAllInterfaceNotificationWorker* iAllInterfaceNotificationWorker;
-	TBool iRegisteredForInterfaceStateChanges:1;       // Registered with IpProtoCpr factory
-
-private:
-	static const ESock::TAnyFn iInterfaceVTableF[];
 	};
 
 /**

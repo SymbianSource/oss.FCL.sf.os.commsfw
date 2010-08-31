@@ -44,7 +44,7 @@ use strict;
 
 require 'getopts.pl';
 
-my $version = "2.3 (16/06/10)";
+my $version = "2.2 (16/04/10)";
 
 #
 # Internal Options
@@ -160,7 +160,7 @@ while (<>) {
 #OLD:
 #CFNode	MetaConn	a	47	W6: CIpTierManagerFactory 0c1822d0:	created [MCFNode 0c1822d8] [96]
 #NEW:
-#250,194,1,1864213751,0,0x00f3e114,ENodeMessages: CFactoryContainerNode 0e571204:	created [ANode 0e571220] [44]
+#250,194,1,1864213751,0,0x00f3e114,ENodeMessages: CFactoryContainerNode 0e571204:	created [MNode 0e571220] [44]
 	elsif (/.*created \[ANode=0x([0-9A-Fa-f]{8})\]/) {
 		my ($name,$realaddr,$nodeaddr) = m/(\w+) ([0-9A-Fa-f]{8}):\tcreated \[ANode=0x([0-9A-Fa-f]{8})\]/;
 		$realaddr =~ s/^0x//;
@@ -223,7 +223,7 @@ while (<>) {
 		print "l ^Shutting-down\n";
 		$lifeStage = 0;
 		}
-#1061,194,2,1212990838,0,0x00a1b488,ENodeMessages: [STARTBLOCK=Context]  CNodeActivityBase 0d922584:	StartL->starting activity Node:  [ANode=0x0d9229e0]  Sender:  [Address=[iThread=0x0006] [iPtr=0x0d922338] ]  Recipient:  [Address=[iThread=0x0006] [iPtr=0x0d9229e0] ]  aContext.iMessage:  [Signature=0x00000000:0xfdfdfdfd]  [STARTBLOCK=Activity]   [Activity=MCprControlClientJoin] [CurrentTriple=Idle]  [ENDBLOCK=Activity]  [ENDBLOCK=Context]
+#1061,194,2,1212990838,0,0x00a1b488,ENodeMessages: [STARTBLOCK=Context]  CNodeActivityBase 0d922584:	StartL->starting activity Node:  [MNode=0x0d9229e0]  Sender:  [Address=[iThread=0x0006] [iPtr=0x0d922338] ]  Recipient:  [Address=[iThread=0x0006] [iPtr=0x0d9229e0] ]  aContext.iMessage:  [Signature=0x00000000:0xfdfdfdfd]  [STARTBLOCK=Activity]   [Activity=MCprControlClientJoin] [CurrentTriple=Idle]  [ENDBLOCK=Activity]  [ENDBLOCK=Context]
 	elsif (/starting activity.*?\[ANode=0x([0-9A-Fa-f]{8})\].*\[Activity=(\w*)\]/)
 		{
 		if (!($opt_X & 1))
@@ -360,9 +360,9 @@ while (<>) {
 		{
 		print "t ", objectName($lastDispatchDestination), " (STRAY $1)\n";
 		}
-#1077,194,2,1212991263,0,0x00a1b488,ENodeMessages: [STARTBLOCK=Context]  CNodeActivityBase 0d922584:	StartL->activity started Node:  [ANode=0x0d9229e0]  Sender:  [Address=[iThread=0x0006] [iPtr=0x0d922338] ]  Recipient:  [Address=[iThread=0x0006] [iPtr=0x0d9229e0] ]  aContext.iMessage:  [Signature=0x00000000:0xfdfdfdfd]  [STARTBLOCK=Activity]   [Activity=MCprControlClientJoin] [CurrentTriple=MCprStates::TDecrementBlockingDestoryAndAddControlClientAndSendJoinCompleteIfRequest->NULL]  [ENDBLOCK=Activity]  [ENDBLOCK=Context]
-#843,195,1,1212618492,0,0x00a1b488,EMeshMachine: CNodeActivityBase:	Accept->First transition: ConnStates::TProcessStateChange->MeshMachine::TAwaitingStateChange [ANode=0x0b1ff948]
-#897,194,2,1212884309,0,0x00a1b488,ENodeMessages: [STARTBLOCK=Activity]  CNodeActivityBase 0d921eb8:	Next->transition happened [ANode=0x0b1ff948] [Activity=ConnectionStart] [CurrentTriple=ConnStates::TSelectMetaPlane->TECABState<CoreNetStates::TAwaitingBindTo>]  [ENDBLOCK=Activity]
+#1077,194,2,1212991263,0,0x00a1b488,ENodeMessages: [STARTBLOCK=Context]  CNodeActivityBase 0d922584:	StartL->activity started Node:  [MNode=0x0d9229e0]  Sender:  [Address=[iThread=0x0006] [iPtr=0x0d922338] ]  Recipient:  [Address=[iThread=0x0006] [iPtr=0x0d9229e0] ]  aContext.iMessage:  [Signature=0x00000000:0xfdfdfdfd]  [STARTBLOCK=Activity]   [Activity=MCprControlClientJoin] [CurrentTriple=MCprStates::TDecrementBlockingDestoryAndAddControlClientAndSendJoinCompleteIfRequest->NULL]  [ENDBLOCK=Activity]  [ENDBLOCK=Context]
+#843,195,1,1212618492,0,0x00a1b488,EMeshMachine: CNodeActivityBase:	Accept->First transition: ConnStates::TProcessStateChange->MeshMachine::TAwaitingStateChange [MNode=0x0b1ff948]
+#897,194,2,1212884309,0,0x00a1b488,ENodeMessages: [STARTBLOCK=Activity]  CNodeActivityBase 0d921eb8:	Next->transition happened [MNode=0x0b1ff948] [Activity=ConnectionStart] [CurrentTriple=ConnStates::TSelectMetaPlane->TECABState<CoreNetStates::TAwaitingBindTo>]  [ENDBLOCK=Activity]
 #1237,195,1,2340065279,0,0x00dfff38,EMeshMachine: CNodeActivityBase 0cb427ec:	Next->match [ANode=0x0cb42c48] [Activity=MCprBinderRequest] [Triple=PRStates::TCreateDataClient->CoreNetStates::TAwaitingDataClientJoin]
 
 	elsif (($opt_X & 2) == 0 && (/(StartL)->activity started.*?\[ANode=0x([0-9a-f]{8})\].*\[Activity=(\S*)\].*\[Triple=(\S*)\]/ ||
@@ -440,11 +440,11 @@ while (<>) {
 			print "t ", objectName($activityNode{$actAddr}), " ($activityName{$actAddr}) Cancel().  Posted to ", objectName($postedToId), "\n";
 			}
 	}
-	elsif (($opt_X & 4) == 0 && /UnparkState->unparked\s+\[ANode=0x([0-9a-fA-F]{8})\].*\[Activity=(\w+)\].*\[Triple=(.*?)\]/)
+	elsif (($opt_X & 4) == 0 && /UnparkState->unparked\s+\[MNode=0x([0-9a-fA-F]{8})\].*\[Activity=(\w+)\].*\[Triple=(.*?)\]/)
  	            {
 	            print "t ", objectName($1), " {50,200,50} (Unparked $2, $3)\n";
  	            }
-	elsif (($opt_X & 4) == 0 && /ParkState->parked\s+\[ANode=0x([0-9a-fA-F]{8})\].*\[Activity=(\w+)\].*\[Triple=(.*?)\]/) {
+	elsif (($opt_X & 4) == 0 && /ParkState->parked\s+\[MNode=0x([0-9a-fA-F]{8})\].*\[Activity=(\w+)\].*\[Triple=(.*?)\]/) {
 	            print "t ", objectName($1), " {50,200,50} (Parked $2, $3)\n";
  	            }
 	elsif (/Synchronous call:/) {
