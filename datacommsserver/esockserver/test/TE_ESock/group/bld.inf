@@ -56,7 +56,6 @@ PRJ_TESTEXPORTS
 ../scriptfiles/te_esock.xml                                         z:/testdata/configs/te_esock.xml
 ../scriptfiles/te_esock_ethernet_MOMAP16xx.xml                      z:/testdata/configs/te_esock_ethernet_momap16xx.xml
 ../scriptfiles/te_esock_ethernet_wins.xml                           z:/testdata/configs/te_esock_ethernet.xml
-../scriptfiles/te_esock_wlan.xml                                    z:/testdata/configs/te_esock_wlan.xml
 
 ../scriptfiles/hosts.te_esock                                       z:/testdata/configs/hosts.te_esock
 

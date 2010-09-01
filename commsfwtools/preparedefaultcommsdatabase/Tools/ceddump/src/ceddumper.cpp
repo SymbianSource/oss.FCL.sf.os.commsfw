@@ -55,8 +55,6 @@ TBuf<MAX_COL_LONG_VAL_LEN> globalValueBuffer;
 #define KLinkSeparator     _L(".")
 #define TableNameTag     _L("Table")
 
-const TUid KCommsDatUid = {0xcccccc00};
-
 const TText* const gAtttibutesArray[]=
 	{
 	Hidden,
@@ -68,16 +66,7 @@ const TText* const gAtttibutesArray[]=
 
 CCedDumper::~CCedDumper()
 	{
-	iGenericTableIds.Close();
-	iGenericTableNames.Close();
-	for(TInt i=0; i<iGenericTableFields.Count();i++)
-		{
-		iGenericTableFields[i].Close();
-		}
-	iGenericTableFields.Close();
-	delete iRepository;
-
-    delete iFileDumper;
+	delete iFileDumper;
 	delete iDbSession;
 	delete iConsole;
 	delete iTable;
@@ -101,7 +90,6 @@ CCedDumper::~CCedDumper()
 void CCedDumper::ConstructL()
 	{
 	iConsole = Console::NewL(_L("Ceddump Tool"),TSize(KConsFullScreen,KConsFullScreen));
-	iRepository = CRepository::NewL(KCommsDatUid);
 
 #ifdef SYMBIAN_NETWORKING_3GPPDEFAULTQOS
 	iR99Conversion = EFalse;
@@ -316,8 +304,6 @@ void CCedDumper::PrintError(TInt error)
 
 void CCedDumper::DumpContents()
 	{
-	ListGenericTablesL();
-	DumpGenericTablesL();
 
 	TInt loop = 0;
 	TBuf<MAX_COL_NAME_LEN> tempTable;
@@ -2195,224 +2181,3 @@ void CCedDumper::WriteR99Conversion()
 	}
 #endif
 //SYMBIAN_NETWORKING_3GPPDEFAULTQOS
-
-void CCedDumper::ListGenericTablesL()
-	{
-	TUint32 KMaskForNames = 0x007FFFFF;
-	TUint32 KKeyForNames = KCDMaskShowFieldType | KCDMaskShowRecordId; 
-	
-	
-	RArray<TUint32> tableIds;
-	iRepository->FindL(KKeyForNames, KMaskForNames, tableIds);
-	for(TInt i=0; i<tableIds.Count();i++)
-		{
-		if(tableIds[i] >= KCDInitialUDefRecordType &&
-		   tableIds[i] <= KCDLastUDefRecordType)
-			{
-			TBuf<KCDMaxFieldNameLength> name;
-			iRepository->Get(tableIds[i], name);
-			iGenericTableIds.Append(tableIds[i]);
-			iGenericTableNames.Append(name);
-			
-			RRecordInfoArray recordInfoArray;
-			
-			RArray<TUint32> fields;
-			TUint32 KMaskForFields = 0xFF80FFFF;
-			TUint32 tableId = tableIds[i];
-			iRepository->FindL(tableIds[i], KMaskForFields, fields);
-			for(TInt j=0; j<fields.Count() - 1;j++)
-			//Do not care about the last one as it is a delimiter.
-				{
-				SGenericRecordTypeInfo ptr;
-				TPckg<SGenericRecordTypeInfo> package(ptr);
-			
-				iRepository->Get(fields[j], package);
-				
-				recordInfoArray.Append(ptr);
-				}
-			iGenericTableFields.Append(recordInfoArray);
-			fields.Close();
-			}
-		
-		}
-	
-	tableIds.Close();
-	}
-	
-void CCedDumper::ConvertFieldTypeL(TInt aFieldType, TDes &aConvertedFieldType)
-	{
-	switch(aFieldType)
-		{
-		case EText:
-			aConvertedFieldType.Copy(_L("EText"));
-			break;
-		case EDesC8:
-			aConvertedFieldType.Copy(_L("EDesC8"));
-			break;
-		case EUint32:
-			aConvertedFieldType.Copy(_L("EUint32"));
-			break;
-		case EInt:
-			aConvertedFieldType.Copy(_L("EInt"));
-			break;
-		case EBool:
-			aConvertedFieldType.Copy(_L("EBool"));
-			break;
-		case EMedText:
-			aConvertedFieldType.Copy(_L("EMedText"));
-			break;
-		case ELongText:
-			aConvertedFieldType.Copy(_L("ELongText"));
-			break;	
-		case ELink:
-			aConvertedFieldType.Copy(_L("ELink"));
-			break;
-		default:
-			User::Leave(KErrArgument);
-		}
-	
-	}
-
-void CCedDumper::ConvertFieldAttributeL(TInt aFieldAttribute, TDes &aConvertedFieldAttribute)
-	{
-	switch(aFieldAttribute)
-		{
-		case ENoAttrs:
-			aConvertedFieldAttribute.Copy(_L("ENoAttrs"));
-			break;
-		case ENotNull:
-			aConvertedFieldAttribute.Copy(_L("ENotNull"));
-			break;
-		default:
-			User::Leave(KErrArgument);
-		}
-	}
-	
-void CCedDumper::DumpGenericTablesL()
-	{
-
-	for(TInt i = 0; i< 	iGenericTableIds.Count(); i++)
-		{
-		TUint32 tableId = iGenericTableIds[i] & KCDMaskShowRecordType;
-		
-		CMDBRecordSet<CMDBGenericRecord>* recordSet = new (ELeave) CMDBRecordSet<CMDBGenericRecord>(tableId);
-		CleanupStack::PushL(recordSet);
-		
-		
-		iFileDumper->WriteTableHeader(iGenericTableNames[i]);
-		
-		//First print out table declaration
-		if(iGenericTableFields[i].Count()>0)
-			{
-			iFileDumper->WriteSectionHeader(-2);
-			_LIT(KFieldStructure, "FIELDSTRUCTURE");
-			_LIT(KFormat, "%08x,%S,%S,%S");
-			TPtrC ptrFieldStructure(KFieldStructure);
-			for(TInt f = 0; f< iGenericTableFields[i].Count(); f++)
-				{
-				// line will hold sth like 00120000,EText,ENotNull,SomeName
-				// its total length is:
-				// hex id : 8 chars
-				// type : max 9 chars
-				// attribute: max 8 chars
-				// 
-				TBuf<KCDMaxFieldNameLength + 30> line;				
-				// type: max 9 chars
-				TBuf<9> fieldType, fieldAttribute;
-				ConvertFieldTypeL(iGenericTableFields[i][f].iValType, fieldType);
-				ConvertFieldAttributeL(iGenericTableFields[i][f].iTypeAttr, fieldAttribute);
-				line.Format(KFormat, iGenericTableFields[i][f].iTypeId, &fieldType, &fieldAttribute ,&(iGenericTableFields[i][f].iTypeName));
-				TPtrC ptrFieldLine(line);
-				iFileDumper->WriteColumnValue(ptrFieldStructure, ptrFieldLine);
-				}
-			iFileDumper->WriteSectionFooter(-2);
-			}
-
-		TRAPD(err, recordSet->LoadL(*iDbSession));
-		if(err!= KErrNotFound)
-			{
-			User::LeaveIfError(err);
-			}
-			
-		for(TInt j = 0; j<recordSet->iRecords.Count();j++)
-			{
-			iFileDumper->WriteSectionHeader(recordSet->iRecords[j]->RecordId());
-			TInt noOfFields(0);
-			for(TInt k = 0; k < iGenericTableFields[i].Count(); k++)
-				{
-				SGenericRecordTypeInfo recordTypeInfo = iGenericTableFields[i][k];
-				if(WriteFieldValueL(reinterpret_cast<CMDBGenericRecord*>(recordSet->iRecords[j]), iGenericTableFields[i][k].iTypeName))
-					{
-					noOfFields++;
-					}
-				}
-			iFileDumper->WriteFieldCount(noOfFields);
-			iFileDumper->WriteSectionFooter(recordSet->iRecords[j]->RecordId());
-			}
-		CleanupStack::PopAndDestroy(recordSet);
-		}
-	}
-	
-TBool CCedDumper::WriteFieldValueL(CMDBGenericRecord* aRecord, const TDesC& aFieldName)
-	{
-	TInt valType;
-	TPtrC ptrFieldName(aFieldName);
-	TBuf<20> bufVal;
-	CMDBElement* element = aRecord->GetFieldByNameL(aFieldName, valType); 
-	if(element->IsNull())
-		{
-		return EFalse;
-		}
-	switch(valType)
-		{
-		case EText:
-		case EMedText:
-		case ELongText:
-			{
-			CMDBField<TDesC>* textField = static_cast<CMDBField<TDesC> *>(element);
-			TPtrC ptrTextField(*textField);
-			iFileDumper->WriteColumnValue(ptrFieldName, ptrTextField);
-			break;
-			}
-		case EDesC8:
-			{
-			CMDBField<TDesC8>* text8Field = static_cast<CMDBField<TDesC8> *>(element);
-			TPtrC8 ptrText8Field(*text8Field);
-			iFileDumper->WriteColumnValue(ptrFieldName, reinterpret_cast<TPtrC&>(ptrText8Field));
-			break;
-			}
-		case EInt:
-			{
-			TInt intVal;
-			CMDBField<TInt>* intField = static_cast<CMDBField<TInt> *>(element);		
-			intVal = *intField;
-			bufVal.Num(intVal);
-			TPtrC ptrIntField(bufVal.MidTPtr(0));
-			iFileDumper->WriteColumnValue(ptrFieldName, ptrIntField);
-			break; 
-			}
-		case EBool:
-			{
-			TBool boolVal;
-			CMDBField<TInt>* boolField = static_cast<CMDBField<TInt> *>(element);
-			boolVal = *boolField;
-			TPtrC ptrBoolField(boolVal?TRUE_VAL:FALSE_VAL);
-			iFileDumper->WriteColumnValue(ptrFieldName, ptrBoolField);
-			break; 
-			}
-		case EUint32:
-		case ELink:
-			{
-			TInt int32Val;
-			CMDBField<TInt>* int32Field = static_cast<CMDBField<TInt> *>(element);
-			int32Val = *int32Field;
-			bufVal.Num(int32Val);
-			TPtrC ptrInt32Field(bufVal.MidTPtr(0));
-			iFileDumper->WriteColumnValue(ptrFieldName, ptrInt32Field);
-			break;		
-			}
-		default:
-			User::Leave(KErrArgument);
-		}
-		return ETrue;
-	}

@@ -27,6 +27,6 @@ data=EPOCROOT##epoc32\release\winscw\udeb\z\TestData\Scripts\Cap_00000000_EsockS
 data=EPOCROOT##epoc32\release\winscw\udeb\z\TestData\Scripts\Cap_00000400_EsockSub.script 	TestData\Scripts\Cap_00000400_EsockSub.script
 data=EPOCROOT##epoc32\release\winscw\udeb\z\TestData\Scripts\Cap_00002000_EsockSub.script 	TestData\Scripts\Cap_00002000_EsockSub.script
 data=EPOCROOT##epoc32\release\winscw\udeb\z\TestData\Scripts\Cap_00002400_EsockSub.script 	TestData\Scripts\Cap_00002400_EsockSub.script
-data=EPOCROOT##epoc32\release\winscw\udeb\z\TestData\Scripts\Cap_80000000_EsockSub.script 	TestData\Scripts\Cap_80000000_EsockSub.script
+
 
 #endif

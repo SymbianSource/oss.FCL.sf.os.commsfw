@@ -23,12 +23,7 @@ REM CED
 #include <Xml.iby>
 #include <stdlib.iby>
 
-#ifdef __ROHID_CED
-file=ABI_DIR\DEBUG_DIR\_rohid_ced.exe                      			System\Libs\ced.exe
-#else
 file=ABI_DIR\DEBUG_DIR\ced.exe                      			System\Libs\ced.exe
-#endif
-
 data=EPOCROOT##epoc32\data\z\system\data\meshpreface1.cfg		system\data\meshpreface1.cfg
 
 #endif

@@ -162,7 +162,17 @@ enum TVerdict CTest06Split::doTestStepL(void)
 	//-------------- substep 7 --------------------
 	Log(_L("  07 Split Chain1. The 2nd part goes to Chain2:"));
 	RMBufChain aChain2;
-	TRAP(ret,aChain1.SplitL(aOffset, aChain2));
+	
+	if(forceSmallBuf)
+	    {
+        RMBufAllocator allocator;
+        ret= aChain1.Split(aOffset, aChain2, allocator);
+	    }
+	else
+	    {
+        TRAP(ret,aChain1.SplitL(aOffset, aChain2));
+	    }
+	
 	if (ret != KErrNone)
 		{
 		Log(_L("Error: Couldn't Split"));

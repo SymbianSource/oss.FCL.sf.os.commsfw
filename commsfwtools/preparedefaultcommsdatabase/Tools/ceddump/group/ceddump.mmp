@@ -39,7 +39,6 @@ OS_LAYER_SYSTEMINCLUDE_SYMBIAN
 USERINCLUDE     ../../ced/inc
 
 LIBRARY 	euser.lib efsrv.lib bafl.lib commsdat.lib
-LIBRARY		centralrepository.lib
 
 CAPABILITY ALL -Tcb
 

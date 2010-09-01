@@ -437,7 +437,7 @@ void ConfigLoader::BuildConfigCPMListL(RRootServ& aRootServer, RUnloadInfoArray&
 	// Leave with last seen error, if any
 	if(err!=KErrNone)
 		{
-//		User::Leave(err);
+		User::Leave(err);
 		}
 	}
 

@@ -40,7 +40,6 @@ namespace ConnStates
 	class TProcessIncomingConnection;
 	class TProcessProgressRequest;
 	class TParseECNAttach;
-	class TJoinReceivedCpr;
 	class TProcessBinderResponseForCpr;
 	class TCompleteLegacyAttach;
 	class TProcessEnumResponse;
@@ -144,7 +143,6 @@ NONSHARABLE_CLASS(CConnection) : public CMMSockSubSession,
 	friend class ConnStates::TProcessIncomingConnection;
 	friend class ConnStates::TProcessProgressRequest;
 	friend class ConnStates::TParseECNAttach;
-	friend class ConnStates::TJoinReceivedCpr;
 	friend class ConnStates::TProcessBinderResponseForCpr;
 	friend class ConnStates::TCompleteLegacyAttach;
 	friend class ConnStates::TProcessEnumResponse;
@@ -155,6 +153,7 @@ NONSHARABLE_CLASS(CConnection) : public CMMSockSubSession,
 	friend class EnumerateConnectionsActivity::TCompleteClient;
 	friend class AllInterfaceNotificationActivity::TEnqueueNotification;
 	friend class AllInterfaceNotificationActivity::TSendErrorToConnection;
+	friend class ConnActivities::CAllInterfaceNotificationActivity;
 	friend class ConnSubConnEventsActivity::TProcessSubConnEvent;
 
 	friend class ConnStates::TGenerateConnectionUpProgress;
@@ -294,6 +293,7 @@ NONSHARABLE_CLASS(CAllInterfaceNotificationWorker) :
 friend class AllInterfaceNotificationActivity::TStartLinkNotification;
 friend class AllInterfaceNotificationActivity::TEnqueueNotification;
 friend class AllInterfaceNotificationActivity::TSendErrorToConnection;
+friend class ConnActivities::CAllInterfaceNotificationActivity;
 
 public:
     CAllInterfaceNotificationWorker(ESock::CConnection& aConnection);

@@ -51,14 +51,14 @@ Returns when it is loaded.
 	if (result!=KErrNone && result!=KErrAlreadyExists)
 		{
 		__FLOG_1(_L("Could not load PDD! Leaving with error %d."), result);
-//		return result;
+		return result;
 		}
 
 	result=User::LoadLogicalDevice(LDD_NAME);
 	if (result!=KErrNone && result!=KErrAlreadyExists)
 		{
 		__FLOG_1(_L("Could not load LDD! Leaving with error %d."), result);	
-//		return result;
+		return result;
 		}
 #endif
 	// Warm-boot the Comms Process, but avoid loading the Phonebook Synchronizer
@@ -309,7 +309,7 @@ void C32Loader::DoUnloadC32L(TCFShutdownType aType, MHarnessLogAdaptor* aHarness
 	// LEave with last seen error, if any
 	if(err!=KErrNone)
 		{
-//		User::Leave(err);
+		User::Leave(err);
 		}
 		
 	if (checkForLeaks)

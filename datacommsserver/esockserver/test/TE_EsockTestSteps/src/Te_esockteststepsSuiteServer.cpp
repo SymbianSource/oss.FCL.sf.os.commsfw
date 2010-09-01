@@ -281,7 +281,9 @@ CTestStep* CTe_esockteststepsSuite::CreateTestStep(const TDesC& aStepName)
 	else if(aStepName.CompareF (KStartRConnectionStep) == 0)
 				testStep = new CStartRConnectionStep(iEsockTest);
     else if(aStepName.CompareF (KStartStopCrazyLoopRConnectionStep) == 0)
-                testStep = new CStartStopCrazyLoopRConnectionStep(iEsockTest);	
+                testStep = new CStartStopCrazyLoopRConnectionStep(iEsockTest);
+    else if(aStepName.CompareF (KStartCloseCrazyLoopRConnectionStep) == 0)
+                testStep = new CStartCloseCrazyLoopRConnectionStep(iEsockTest);  
 	else if(aStepName.CompareF (KAwaitRConnectionStartComplete) == 0)
 				testStep = new CAwaitRConnectionStartComplete(iEsockTest);
 	

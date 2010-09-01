@@ -268,6 +268,28 @@ MSessionData* CTransportFlowShim::BindL(MSessionDataNotify& aNotify)
 	return this;
     }
 
+void CTransportFlowShim::HostResolverSpecificUnbind()
+	{
+	// Can't have both HR & SAP
+	__ASSERT_DEBUG(!iProvider, User::Panic(KSpecAssert_ESockSSocksspshm, 9));
+
+	if(iSubConnectionProvider.IsOpen())
+		{
+		iSessionControlNotify = NULL;
+		iSessionDataNotify = NULL;
+		iHostResolverNotify = NULL;
+		if (!Idle())
+			{
+			SetIdle();
+			ProcessDCIdleState();
+			}
+		}
+	else
+		{
+		DeleteThisFlow();
+		}
+	}
+
 void CTransportFlowShim::Unbind()
     {
 	LOG( ESockLog::Printf(_L8("CTransportFlowShim %08x:\tUnbind()"), this) );
@@ -279,41 +301,30 @@ void CTransportFlowShim::Unbind()
 		return;
 		}
 
-	// Legacy support for host resolvers
+	// Legacy support for host resolvers involves a separate north bound MUpperControl interface
 	if(iHostResolverNotify)
 		{
-		__ASSERT_DEBUG(!iProvider, User::Panic(KSpecAssert_ESockSSocksspshm, 9));	// can't have both HR & SAP
-
-		LOG( ESockLog::Printf(_L8("CTransportFlowShim %08x:\tUnbind(): iBearerExpected %d"), this, BearerExpected()) );
-		if (!BearerExpected())
-			{
-			delete this;
-			}
-		else
-			{
-			SetDeleteUponBearerReception();
-			iHostResolverNotify = NULL;
-			}
-		return;
+		HostResolverSpecificUnbind();
 		}
-
-	if (iProvider)
+	else
 		{
-		iProvider->SetNotify(NULL);
-
-		if (!Detaching())
+		if (iProvider)
 			{
-			delete iProvider;
-			iProvider = NULL;
+			iProvider->SetNotify(NULL);
+
+			if (!Detaching())
+				{
+				delete iProvider;
+				iProvider = NULL;
+				}
 			}
-		}
 
 #ifdef SYMBIAN_NETWORKING_UPS
-	// Hook for derived classes to do cleanup before unbind occurs
-	PreUnbind();
+		// Hook for derived classes to do cleanup before unbind occurs
+		PreUnbind();
 #endif
-
-	CNetworkFlow::Unbind();
+		CNetworkFlow::Unbind();
+		}
     }
 
 ESock::CSubConnectionFlowBase& CTransportFlowShim::CloneFlowL()

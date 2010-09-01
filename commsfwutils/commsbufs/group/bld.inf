@@ -51,10 +51,10 @@ commsbufskern.iby /epoc32/rom/include/commsbufskern.iby
 ../mbufmgr/inc/mbufpktq.h		SYMBIAN_OS_LAYER_PLATFORM_EXPORT_PATH(comms-infras/mbufpktq.h)
 ../mbufmgr/inc/mbufpktq.inl		SYMBIAN_OS_LAYER_PLATFORM_EXPORT_PATH(comms-infras/mbufpktq.inl)
 ../mbufmgr/inc/mbufasyncrequest.h	SYMBIAN_OS_LAYER_PLATFORM_EXPORT_PATH(comms-infras/mbufasyncrequest.h)
-../mbufmgr/inc/MBufPanic.h		SYMBIAN_OS_LAYER_PLATFORM_EXPORT_PATH(comms-infras/mbufpanic.h)
+../mbufmgr/inc/mbufpanic.h		SYMBIAN_OS_LAYER_PLATFORM_EXPORT_PATH(comms-infras/mbufpanic.h)
 ../mbufmgr/inc/nifmbuf.h		SYMBIAN_OS_LAYER_PLATFORM_EXPORT_PATH(nifmbuf.h)
 ../mbufmgr/inc/mb_thread.h		SYMBIAN_OS_LAYER_PLATFORM_EXPORT_PATH(mb_thread.h)
-../mbufmgrimpl/inc/ES_MBMAN.h		SYMBIAN_OS_LAYER_PLATFORM_EXPORT_PATH(es_mbman.h)
+../mbufmgrimpl/inc/es_mbman.h		SYMBIAN_OS_LAYER_PLATFORM_EXPORT_PATH(es_mbman.h)
 
 
 PRJ_TESTEXPORTS

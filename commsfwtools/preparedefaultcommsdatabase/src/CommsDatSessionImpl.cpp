@@ -157,13 +157,8 @@ returned.  The latest version is returned in the aLatestVersion parameter for in
         return KErrNone;
         }
     
-#ifdef __FLOG_ACTIVE
-    RThread self;
-    TBuf<KMaxFullName> name;
-    self.FullName(name);
-    __FLOG_STATIC2(KLogComponent, KCDInfoLog, _L("*** CMDBSessionImpl::ConstructL() constructing session object <%08x> in thread \"%S\""), this, &name);
-#endif
-
+    __FLOG_STATIC1(KLogComponent, KCDInfoLog, _L("*** CMDBSessionImpl::ConstructL() constructing session object object <%08x>"), this);
+    
     EstablishVersionL(aRequiredVersion); 
  
     // Connect to the repository
@@ -192,7 +187,6 @@ No session required with Central repository
 @internalComponent
 */
     {
-    __FLOG_STATIC1(KLogComponent, KCDInfoLog, _L("*** CMDBSessionImpl::Close() closing session object <%08x>"), this);
 #ifndef __TOOLS2__
     TRAPD(
         err, 

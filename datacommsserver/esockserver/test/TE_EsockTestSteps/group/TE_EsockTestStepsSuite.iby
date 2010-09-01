@@ -20,7 +20,6 @@
 #define __TE_ESOCKTESTSTEPSSUITE_IBY__
 
 #include <te_esockteststeps.iby>
-data=ABI_DIR\DEBUG_DIR\Te_esockteststepsSuite_captest.exe sys\bin\te_esockteststepsSuite_captest.exe
 
 #endif
 

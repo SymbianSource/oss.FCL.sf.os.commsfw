@@ -230,6 +230,8 @@ protected:
 	SAP_FLAG_FUNCTIONS(DeleteUponBearerReception, EDeleteUponBearerReception)
 	SAP_FLAG_FUNCTIONS(UseBearerErrors, EUseBearerErrors)
 
+	void HostResolverSpecificUnbind();
+
 private:
 	CServProviderBase* iProvider;
 	//CHostResolver specific workaround for now

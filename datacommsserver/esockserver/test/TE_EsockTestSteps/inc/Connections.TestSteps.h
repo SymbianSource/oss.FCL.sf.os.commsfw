@@ -190,19 +190,71 @@ The test does a loop, where every iteration:
 Note that since the test is normally executed by a thread of lower priority than ESock_IP, it relies on
 ESock_IP yielding (otherwise it won't test different phases. 
 For instance DummyMCPR will artificially yield on TCFServiceProvider::TJoinRequest.
-NetMCPR will not normally yield as is. 
+NetMCPR will not normally yield as is. DummyFlowFactory will yield on serving a TFindOrCreateRequest.
 
 @internalComponent
 */
 class CStartStopCrazyLoopRConnectionStep : public CStartRConnectionStep
     {
 public:
+    enum {
+    /*
+     * The test executes a loop of starting and then stopping a connection at discrete, growing intervals.
+     * It is crucial that enough iterations are executed, as otherwise the test isn't doing its job.
+     * The test will fail if this is detected. As iteration gaps are time-based the test first calibrates 
+     * itself by running CStartStopCrazyLoopRConnectionStep::CalibrateStart to determine how 
+     * much time does the start take in order to chop this span further into ELoops intevals. 
+     * Calibration isn't uterrly precise and it can be that a connection startup executed within
+     * the loop completes quicker than during calibration. It has been in fact observed 
+     * in the overnight builds (about 7.5%). A number of things can be done to accomdate for that.
+     * The approach chosen is to: 
+     * (1) Plan for EPlannedLoops (chop down the CStartStopCrazyLoopRConnectionStep::CalibrateStart 
+     *     into EPlannedLoops
+     * (2) Insist on excuting at least EMandatoryLoops (the test will fail if less iterations are executed)
+     * (3) Keep on iterating beyond EPlannedLoops until the snooze slides of the connection 
+     *     startup time (the calbrated connection startup time equally might have been unrepresentativelly short)
+     */     
+    EPlannedLoops = 15,
+    EMandatoryLoops = 14,
+    };
+    
     CStartStopCrazyLoopRConnectionStep(CCEsockTestBase*& aEsockTest);
+    virtual ~CStartStopCrazyLoopRConnectionStep();
+    
     TVerdict doSingleTestStep();
     TInt CalibrateStart();
+    virtual TInt doLoopStep(TInt aTimerVal);
+    
+protected:
+    RTimer iTimer;
+    TRequestStatus* ipConnectionStartStatus;
     };
 
 _LIT(KStartStopCrazyLoopRConnectionStep,"StartStopCrazyLoopRConnectionStep");
+
+/**
+Class implementing StartCloseCrazyLoopRConnectionStep
+The test does a loop, where every iteration:
+(1) Starts the connection
+(2) Snoozes for an <interval>
+(3) Closes the connection injecting a cancel at that stage of the connection start
+(4) Increases the <interval> a bit so that next time round the cancel is injected at a different stage.
+
+Note that since the test is normally executed by a thread of lower priority than ESock_IP, it relies on
+ESock_IP yielding (otherwise it won't test different phases. 
+For instance DummyMCPR will artificially yield on TCFServiceProvider::TJoinRequest.
+NetMCPR will not normally yield as is. DummyFlowFactory will yield on serving a TFindOrCreateRequest.
+
+@internalComponent
+*/
+class CStartCloseCrazyLoopRConnectionStep : public CStartStopCrazyLoopRConnectionStep
+    {
+public:
+    CStartCloseCrazyLoopRConnectionStep(CCEsockTestBase*& aEsockTest);
+    virtual TInt doLoopStep(TInt aTimerVal);
+    };
+
+_LIT(KStartCloseCrazyLoopRConnectionStep,"StartCloseCrazyLoopRConnectionStep");
 
 /**
 Class implementing openrconnectionStep

@@ -169,8 +169,8 @@ PRJ_TESTEXPORTS
 
 // CED
 ../configs/Mobility/BearerMobility_001.ced.cfg z:/testdata/configs/bearermobility/bearermobility_001.ced.cfg
-../configs/Mobility/BearerMobility_DummyProviders_002.ced.cfg z:/testdata/configs/bearermobility/bearermobility_dummyproviders_002.ced.cfg
-../configs/Mobility/BearerMobility_DummyProviders_003.ced.cfg z:/testdata/configs/bearermobility/bearermobility_dummyproviders_003.ced.cfg
+../configs/Mobility/BearerMobility_DummyProviders_002.ced.cfg z:/testdata/configs/bearermobility/BearerMobility_DummyProviders_002.ced.cfg
+../configs/Mobility/BearerMobility_DummyProviders_003.ced.cfg z:/testdata/configs/bearermobility/BearerMobility_DummyProviders_003.ced.cfg
 
 // Configs
 ../configs/Mobility/Mobility_760600.ini z:/testdata/configs/bearermobility/mobility_760600.ini

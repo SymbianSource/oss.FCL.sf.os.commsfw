@@ -286,6 +286,12 @@ TInt CStartStopCrazyLoopRConnectionStep::CalibrateStart()
         return KErrCorrupt;
         }
     
+    if (iEsockTest->OpenConnection(iParams) != KErrNone)
+        {
+        INFO_PRINTF1(_L("Can't reopen connection, most likely you didn't supply the session name"));
+        return KErrCorrupt;
+        }
+    
     timeBegin.HomeTime();
     TInt error = iEsockTest->StartConnection(iParams);
     if (error != KErrNone)
@@ -299,42 +305,41 @@ TInt CStartStopCrazyLoopRConnectionStep::CalibrateStart()
         }    
     timeEnd.HomeTime();
     iEsockTest->StopConnection(iParams);
+    iEsockTest->CloseConnection(iParams.iConnectionName);
+    
     return timeEnd.MicroSecondsFrom(timeBegin).Int64();
     }
 
+CStartStopCrazyLoopRConnectionStep::~CStartStopCrazyLoopRConnectionStep()
+    {
+    iTimer.Close();
+    }
 
 TVerdict CStartStopCrazyLoopRConnectionStep::doSingleTestStep()
     {
     // Default to failing
     SetTestStepResult(EFail);
     iParams.iAsynch = ETrue; //force async.
-    RTimer timer;
-    TInt error = timer.CreateLocal();
+    TInt error = iTimer.CreateLocal();
     if (error!=KErrNone)
         {
         INFO_PRINTF2(_L("Creating RTimer object failed with %d"), error);
         return TestStepResult();
         }
     
-    TRequestStatus timerRequestStatus;
-    TRequestStatus* pConnectionStartStatus = new TRequestStatus; 
-    if (pConnectionStartStatus == NULL)
+    ipConnectionStartStatus = new TRequestStatus;
+    if (ipConnectionStartStatus == NULL)
         {
         INFO_PRINTF1(_L("Heap allocation for TRequestStatus failed"));
-        timer.Close();
         return TestStepResult();
         }
-    error = iEsockTest->iRequestStatuses.Add(pConnectionStartStatus, iParams.iConnectionName);
+    error = iEsockTest->iRequestStatuses.Add(ipConnectionStartStatus, iParams.iConnectionName); //And will be owned here
     if (error!=KErrNone)
         {
         INFO_PRINTF2(_L("Failed "), error);
-        timer.Close();
-        delete pConnectionStartStatus;
         return TestStepResult();
         }
-    TRequestStatus& connectionStartStatus = *pConnectionStartStatus;
     
-    const TInt KLoops = 10;
     INFO_PRINTF1(_L("Calibrating timer by running full start"));
     //Well, we're running the full start twice as the first run is likely to take more than the representative time.
     TInt timerIncrement = Min<TInt>(CalibrateStart(), CalibrateStart());
@@ -343,64 +348,119 @@ TVerdict CStartStopCrazyLoopRConnectionStep::doSingleTestStep()
         INFO_PRINTF2(_L("Full start failed, unable to calibrate, test failed with %d"), timerIncrement);
         return TestStepResult();
         }
-    INFO_PRINTF3(_L("Start took %dus, will divide by %d and use as the increment"), timerIncrement, KLoops);
+    INFO_PRINTF3(_L("Start took %dus, will divide by %d and use as the increment"), timerIncrement, EPlannedLoops);
     
-    
-    TInt timerVal = 1;
-    timerIncrement /= KLoops;
-    
-    INFO_PRINTF1(_L("Beginning crazy start/stop loop"));
+    timerIncrement /= EPlannedLoops;
 
-    for (TInt i = 1; i < KLoops+1; i++)
+    
+    /*=======================================================
+     * The loop
+     */
+    TInt timerVal = 1;
+    TInt i = 0;
+    INFO_PRINTF1(_L("Beginning crazy loop"));
+    while (ETrue)
         {
+        if (++i > (2 * EPlannedLoops))
+            {
+            INFO_PRINTF1(_L("The test has been executing far too many iterations than can be reasonably expected, aborting.."));
+            return TestStepResult();
+            }
         INFO_PRINTF2(_L("[Loop %d], Starting a new loop=============================="), i);
-        INFO_PRINTF2(_L("[Loop %d], Closing connection"), i);
-        iEsockTest->CloseConnection(iParams.iConnectionName);
-        INFO_PRINTF2(_L("[Loop %d], Re-openning connection"), i);        
+        INFO_PRINTF2(_L("***********Re-openning connection"), i);
         if (iEsockTest->OpenConnection(iParams) != KErrNone)
             {
             INFO_PRINTF1(_L("Can't reopen connection, most likely you didn't supply the session name"));
-            timer.Close();
-            return TestStepResult();
-            }
-        INFO_PRINTF2(_L("[Loop %d], Starting connection (asynch)"), i);  
-        error = iEsockTest->StartConnection(iParams);
-        if (error != KErrNone)
-            {
-            INFO_PRINTF1(_L("Starting connection failed, aborting"));
-            timer.Close();
-            return TestStepResult();
-            }
-        INFO_PRINTF3(_L("[Loop %d], Setting timer to %dus .zzz...."), i, timerVal);
-        timer.After(timerRequestStatus,timerVal);
-        User::WaitForRequest(timerRequestStatus,connectionStartStatus);
-        if (timerRequestStatus.Int() == KRequestPending)
-            {
-            INFO_PRINTF2(_L("Connection Start completed with %d"), connectionStartStatus.Int());
-            INFO_PRINTF1(_L("Irrespective of the start result the test has failed, because it hadn't execute enough iterations"));
-            //If you get this a lot this means there;s a flaw in the logic of this test and for some reason the execution of
-            //RConnection::Start speeds up with time. You may want to re-calibrate then and rerun the loop again with finer
-            //interval. 
-            timer.Cancel();
-            User::WaitForRequest(timerRequestStatus);
-            timer.Close();
             return TestStepResult();
             }
         
+        error = doLoopStep(timerVal);
+        if ( error == KErrUnderflow )
+            {
+            if ( i < EMandatoryLoops )
+                {
+                INFO_PRINTF1(_L("The test didn't execute enough iterations and hence hasn't tested what needed to be tested"));
+                return TestStepResult();
+                }
+            break; //The only EPass exit condition
+            }
+        else if ( error != KErrNone )
+            {
+            INFO_PRINTF2(_L("Loop test has failed with %d"), error);
+            return TestStepResult();
+            }
         timerVal += timerIncrement;
-        INFO_PRINTF2(_L("[Loop %d], ....zzz. Stopping connection"), i);
-        iEsockTest->StopConnection(iParams);
-        User::WaitForRequest(connectionStartStatus);
-        INFO_PRINTF2(_L("[Loop %d], Connection stopped"), i);
+        
+        INFO_PRINTF2(_L("***********Closing connection"), i);
+        iEsockTest->CloseConnection(iParams.iConnectionName);
         }
-    timer.Close();
+
     SetTestStepResult(EPass);
     return TestStepResult();
     }
 
+TInt CStartStopCrazyLoopRConnectionStep::doLoopStep(TInt aTimerVal)
+    {
+    TRequestStatus timerRequestStatus;
+    
+    INFO_PRINTF1(_L("***********Starting connection (asynch)"));  
+    TInt error = iEsockTest->StartConnection(iParams);
+    if (error != KErrNone)
+        {
+        INFO_PRINTF1(_L("Starting connection failed, aborting"));
+        return error;
+        }
+    INFO_PRINTF2(_L("***********Setting timer to %dus .zzz...."), aTimerVal);
+    iTimer.After(timerRequestStatus,aTimerVal);
+    User::WaitForRequest(timerRequestStatus, *ipConnectionStartStatus);
+    if (timerRequestStatus.Int() == KRequestPending)
+        {
+        INFO_PRINTF2(_L("Connection Start completed with %d and before the timer"), ipConnectionStartStatus->Int());
+        iTimer.Cancel();
+        User::WaitForRequest(timerRequestStatus);
+        return ipConnectionStartStatus->Int() == KErrNone ? KErrUnderflow : ipConnectionStartStatus->Int(); //Whether this is fatal for the test or not, will be determined by the caller;
+        }
+    
+    INFO_PRINTF1(_L("*********** ....zzz. Stopping connection"));
+    iEsockTest->StopConnection(iParams);
+    User::WaitForRequest(*ipConnectionStartStatus);
+    INFO_PRINTF1(_L("***********Connection stopped")); 
+    return KErrNone;
+    }
 
 
+// CStartCloseCrazyLoopRConnectionStep
+//-----------------
 
+CStartCloseCrazyLoopRConnectionStep::CStartCloseCrazyLoopRConnectionStep(CCEsockTestBase*& aEsockTest)
+:   CStartStopCrazyLoopRConnectionStep(aEsockTest)
+    {
+    SetTestStepName(KStartCloseCrazyLoopRConnectionStep);
+    }
+
+TInt CStartCloseCrazyLoopRConnectionStep::doLoopStep(TInt aTimerVal)
+    {
+    TRequestStatus timerRequestStatus;
+    
+    INFO_PRINTF1(_L("***********Starting connection (asynch)"));  
+    TInt error = iEsockTest->StartConnection(iParams);
+    if (error != KErrNone)
+        {
+        INFO_PRINTF1(_L("Starting connection failed, aborting"));
+        return error;
+        }
+    INFO_PRINTF2(_L("***********Setting timer to %dus .zzz...."), aTimerVal);
+    iTimer.After(timerRequestStatus,aTimerVal);
+    User::WaitForRequest(timerRequestStatus, *ipConnectionStartStatus);
+    if (timerRequestStatus.Int() == KRequestPending)
+        {
+        INFO_PRINTF2(_L("Connection Start completed with %d and before the timer"), ipConnectionStartStatus->Int());
+        iTimer.Cancel();
+        User::WaitForRequest(timerRequestStatus);
+        return ipConnectionStartStatus->Int() == KErrNone ? KErrUnderflow : ipConnectionStartStatus->Int(); //Whether this is fatal for the test or not, will be determined by the caller;
+        }
+    return KErrNone;
+    }
 
 
 

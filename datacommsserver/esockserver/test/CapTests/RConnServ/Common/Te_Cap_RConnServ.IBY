@@ -18,8 +18,6 @@
 #ifndef __Cap_PARAM_SVR_SUITENAME_IBY__
 #define __Cap_PARAM_SVR_SUITENAME_IBY__
 
-data=ABI_DIR\DEBUG_DIR\PARAM_SVR_SUITENAME.exe Sys\bin\PARAM_SVR_SUITENAME.exe
-data=EPOCROOT##epoc32\release\winscw\udeb\z\TestData\Scripts\Te_Cap_RConnServ.script   TestData\Scripts\Te_Cap_RConnServ.script
-data=EPOCROOT##epoc32\release\winscw\udeb\z\TestData\Scripts\Cap_00000000_RConnServSub.script TestData\Scripts\Cap_00000000_RConnServSub.script
-data=EPOCROOT##epoc32\release\winscw\udeb\z\TestData\Scripts\Cap_00002000_RConnServSub.script TestData\Scripts\Cap_00002000_RConnServSub.script
+file=ABI_DIR\DEBUG_DIR\Cap_PARAM_SVR_SUITENAME.DLL System\bin\Cap_PARAM_SVR_SUITENAME.DLL
+
 #endif

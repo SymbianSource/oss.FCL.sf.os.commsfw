@@ -618,10 +618,11 @@ newChain gets the other half.
     return KErrNone;
 	}           
 
-// overloading for TLS
+// overloading intended to avoid TLS lookup of pool manager. Seemingly not really useful since most Split() 
+// operations will have an existing buffer to base a Copy() from
 EXPORT_C TInt RMBufChain::Split(TInt anOffset, RMBufChain& newChain, RMBufAllocator& /* aRMBufAllocator */)
 	{
-	return RCommsBufChain::Split ( anOffset, newChain );
+	return RMBufChain::Split ( anOffset, newChain );
 	}
 
 

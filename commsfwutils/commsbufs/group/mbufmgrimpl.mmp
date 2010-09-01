@@ -37,12 +37,12 @@ CAPABILITY ALL -Tcb
 
 SOURCEPATH      ../mbufmgrimpl/src
 
-SOURCE		MB_MAN.CPP
-SOURCE		Mb_timer.CPP
-SOURCE		MBufMemoryAllocator.cpp
-SOURCE		MBufMemoryManager.cpp
-SOURCE		MBufPoolChain.cpp
-SOURCE		MBufPoolManager.cpp
+SOURCE		mb_man.cpp
+SOURCE		mb_timer.CPP
+SOURCE		mbufmemoryallocator.cpp
+SOURCE		mbufmemorymanager.cpp
+SOURCE		mbufpoolchain.cpp
+SOURCE		mbufpoolmanager.cpp
 
 USERINCLUDE 	../inc
 USERINCLUDE	../mbufmgrimpl/inc

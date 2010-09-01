@@ -52,7 +52,7 @@
       </component>
     </collection>
     <collection id="commsfwutils" name="Comms Framework Utilities" level="framework">
-      <component id="commsbufs" name="Comms Buffers" introduced="^3" purpose="mandatory">
+      <component id="commsbufs" name="Comms Buffers" introduced="tb92" purpose="mandatory">
         <unit bldFile="commsfwutils/commsbufs/group" mrp="commsfwutils/commsbufs/group/comms-infras_commsbufs.mrp"/>
       </component>
     </collection>
@@ -60,7 +60,7 @@
       <component id="commsinfrastructuredocs" name="Comms Infrastructure Documentation" introduced="7.0" purpose="development" class="doc">
         <unit mrp="commsfw_info/commsinfrastructuredocs/comms-infras_documentation.mrp"/>
       </component>
-      <component id="commsfw_metadata" name="Communications Framework Metadata" class="config" introduced="^2" purpose="development" target="desktop">
+      <component id="commsfw_metadata" name="Communications Framework Metadata" class="config" introduced="tb91" purpose="development" target="desktop">
         <unit mrp="commsfw_info/commsfw_metadata/commsfw_metadata.mrp"/>
       </component>
     </collection>
@@ -70,7 +70,7 @@
       </component>
 	  </collection>
     <collection id="commsinfrastructureapitest" name="Comms-Infras API Tests" level="app-if">
-      <component id="commsinfrastructuresvs" name="Comms Infrastructure Verification Suite" introduced="^3" purpose="development">
+      <component id="commsinfrastructuresvs" name="Comms Infrastructure Verification Suite" introduced="tb92" purpose="development">
         <unit mrp="commsinfrastructureapitest/commsinfrastructuresvs/group/commsinfrastructuresvs.mrp"/>
       </component>
     </collection>
@@ -81,7 +81,7 @@
       <component id="installdefaultcommsdatabase" name="Install Default Comms Database" purpose="mandatory" target="desktop">
         <unit bldFile="commsfwtools/preparedefaultcommsdatabase/installdefaultcommdb/group" mrp="commsfwtools/preparedefaultcommsdatabase/installdefaultcommdb/group/comms-infras_installdefaultcommdb.mrp" priority="1010"/>
       </component>
-      <component id="commstools" name="Comms Tools" introduced="^3" purpose="development" target="desktop">
+      <component id="commstools" name="Comms Tools" introduced="tb92" purpose="development" target="desktop">
          <unit bldFile="commsfwtools/commstools/group" mrp="commsfwtools/commstools/group/comms-infras_tools.mrp"/>
       </component>
 	  </collection>
