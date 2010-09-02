@@ -67,12 +67,6 @@ using namespace PRActivities;
 using namespace Messages;
 using namespace MeshMachine;
 
-//We reserve space for two preallocated activities that may start concurrently on the extended SCPR
-//node: destroy and data client stop.
-static const TUint KDefaultMaxPreallocatedActivityCount = 2;
-static const TUint KMaxPreallocatedActivitySize = sizeof(MeshMachine::CNodeRetryParallelActivity) + sizeof(MeshMachine::APreallocatedOriginators<4>);
-static const TUint KDummyExtendedSCPRPreallocatedActivityBufferSize = KDefaultMaxPreallocatedActivityCount * KMaxPreallocatedActivitySize;
-
 namespace DummyExtendedSCPRStates
 {
 DEFINE_SMELEMENT(TAwaitingBinderResponse, NetStateMachine::MState, DummyExtendedSCPRStates::TContext)
@@ -376,7 +370,7 @@ CDummyExtendedSubConnectionProvider* CDummyExtendedSubConnectionProvider::NewL(E
 
 void CDummyExtendedSubConnectionProvider::ConstructL()
 	{
-	CCoreSubConnectionProvider::ConstructL(KDummyExtendedSCPRPreallocatedActivityBufferSize);
+	CCoreSubConnectionProvider::ConstructL();
 	}
 
 CDummyExtendedSubConnectionProvider::CDummyExtendedSubConnectionProvider(CSubConnectionProviderFactoryBase& aFactory)

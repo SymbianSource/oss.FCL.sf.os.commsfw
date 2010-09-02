@@ -36,12 +36,6 @@ _LIT(KPanicCategory, "corecpr");
 _LIT8(KCoreCprSubTag, "corecpr");
 #endif
 
-//We reserve space for two preallocated activities that may start concurrently on the CPR
-//node: destroy and data client stop.
-static const TUint KDefaultMaxPreallocatedActivityCount = 2;
-static const TUint KMaxPreallocatedActivitySize = sizeof(MeshMachine::CNodeRetryParallelActivity) + sizeof(MeshMachine::APreallocatedOriginators<4>);
-static const TUint KCPRPreallocatedActivityBufferSize = KDefaultMaxPreallocatedActivityCount * KMaxPreallocatedActivitySize;
-
 using namespace ESock;
 using namespace NetStateMachine;
 using namespace Messages;
@@ -59,7 +53,7 @@ EXPORT_C CCoreConnectionProvider* CCoreConnectionProvider::NewL(CConnectionProvi
 	{
     CCoreConnectionProvider* provider = new (ELeave) CCoreConnectionProvider(aFactory,CprActivities::coreCprActivities::Self());
     CleanupStack::PushL(provider);
-    provider->ConstructL(KCPRPreallocatedActivityBufferSize);
+    provider->ConstructL();
     CleanupStack::Pop(provider);
     return provider;
 	}

@@ -38,12 +38,6 @@
 using namespace ESock;
 using namespace MeshMachine;
 
-//We reserve space for two preallocated activities that may start concurrently on the SCPR
-//node: destroy and data client stop.
-static const TUint KDefaultMaxPreallocatedActivityCount = 2;
-static const TUint KMaxPreallocatedActivitySize = sizeof(MeshMachine::CNodeRetryParallelActivity) + sizeof(MeshMachine::APreallocatedOriginators<4>);
-static const TUint KDummySCPRPreallocatedActivityBufferSize = KDefaultMaxPreallocatedActivityCount * KMaxPreallocatedActivitySize;
-
 namespace DummySCPRStates
 {
 DEFINE_SMELEMENT(TRaiseGranted, NetStateMachine::MStateTransition, DummySCPRStates::TContext)
@@ -231,7 +225,7 @@ CDummySubConnectionProvider* CDummySubConnectionProvider::NewL(ESock::CSubConnec
     {
     CDummySubConnectionProvider* self = new (ELeave) CDummySubConnectionProvider(aFactory, DummySCPRStates::stateMap::Self());
     CleanupStack::PushL(self);
-    self->ConstructL(KDummySCPRPreallocatedActivityBufferSize);
+    self->ConstructL();
     CleanupStack::Pop(self);
     return self;
     }
@@ -240,7 +234,7 @@ CDummySubConnectionProvider* CDummySubConnectionProvider::NewVanillaL(ESock::CSu
     {
     CDummySubConnectionProvider* self = new (ELeave) CDummySubConnectionProvider(aFactory, VanillaDummySCPRStates::stateMap::Self());
     CleanupStack::PushL(self);
-    self->ConstructL(KDummySCPRPreallocatedActivityBufferSize);
+    self->ConstructL();
     CleanupStack::Pop(self);
     return self;
     }

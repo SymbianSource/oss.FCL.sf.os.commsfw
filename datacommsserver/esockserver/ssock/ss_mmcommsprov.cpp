@@ -33,10 +33,6 @@ _LIT(KSpecAssert_ESockSSocksmcmsp, "ESockSSocksmcmsp");
 using namespace ESock;
 using namespace Messages;
 
-//We reserve space for two preallocated activities that may start concurrently on the connection
-//node: destroy (connection close) and connection stop.
-static const TUint KMaxPreallocatedActivitySize = sizeof(MeshMachine::CNodeRetryParallelActivity) + sizeof(MeshMachine::APreallocatedOriginators<4>);
-
 CMMCommsProviderBase::CMMCommsProviderBase(CCommsFactoryBase& aFactory,
                                     const MeshMachine::TNodeActivityMap& aActivityMap)
 :	ACommsFactoryNodeId(aFactory),
@@ -123,7 +119,7 @@ EXPORT_C RNodeInterface* CMMCommsProviderBase::AddClientL(const Messages::TNodeI
 
 	if(aClientType.Type() == TCFClientType::ECtrl)
 		{
-		TRAPD(err, nodeInterface->PreAllocL(KMaxPreallocatedActivitySize));
+		TRAPD(err, nodeInterface->PreAllocL(MeshMachine::KDefaultMaxPreallocatedActivitySize));
 		if(err!=KErrNone)
 			{
 			RemoveClient(nodeInterface->RecipientId());

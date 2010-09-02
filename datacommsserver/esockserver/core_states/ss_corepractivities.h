@@ -888,17 +888,24 @@ public:
 //
 //-=========================================================
 
-class CGoneDownActivity : public MeshMachine::CNodeRetryActivity
+class CGoneDownActivity : public MeshMachine::CNodeRetryActivity, protected MeshMachine::APreallocatedOriginators<2>
     {
 public:
-    static MeshMachine::CNodeActivityBase* NewL(const MeshMachine::TNodeActivity& aActivitySig, MeshMachine::AMMNodeBase& aNode);
+    static MeshMachine::CNodeActivityBase* New(const MeshMachine::TNodeActivity& aActivitySig, MeshMachine::AMMNodeBase& aNode);
 
 protected:
 	CGoneDownActivity(const MeshMachine::TNodeActivity& aActivitySig, MeshMachine::AMMNodeBase& aNode);
 	virtual TBool IsIdle() const;
 	virtual void StartL(MeshMachine::TNodeContextBase& aContext, const Messages::XNodePeerId& aOriginator, const NetStateMachine::TStateTriple& aFirst);
 	virtual ~CGoneDownActivity();
-	
+    virtual void Destroy();
+
+private:
+	/*
+	Private NewL with no implementation to hide the CNodeActivityBase::NewL
+	Creation of preallocated activities doesn't fail and hence a non-leaving ::New should be used instead*/
+    static MeshMachine::CNodeActivityBase* NewL(const MeshMachine::TNodeActivity& aActivitySig, MeshMachine::AMMNodeBase& aNode);
+
 public:
     TUint iGoneDownApId;
 
@@ -914,6 +921,34 @@ public:
 		virtual void DoL();
 	DECLARE_SMELEMENT_FOOTER( TSendErrorRecoveryReq )
 	};
+
+//-=========================================================
+//
+//Stop Activity
+//
+//-=========================================================
+/*
+class CStopActivity : public MeshMachine::CNodeRetryActivity
+	{
+	static const TUint KPreallocatedStopActivitySize = sizeof(CStopActivity) + sizeof(MeshMachine::APreallocatedOriginators<10>);
+public:
+    static MeshMachine::CNodeActivityBase* New(const MeshMachine::TNodeActivity& aActivitySig, MeshMachine::AMMNodeBase& aNode);
+protected:
+	CStopActivity(const MeshMachine::TNodeActivity& aActivitySig, MeshMachine::AMMNodeBase& aNode);
+	virtual ~CStopActivity();
+    virtual void Destroy();
+private:
+*/
+	/*
+	Private NewL with no implementation to hide the CNodeActivityBase::NewL
+	Creation of preallocated activities doesn't fail and hence a non-leaving ::New should be used instead
+	*/
+
+/*
+static MeshMachine::CNodeActivityBase* NewL(const MeshMachine::TNodeActivity& aActivitySig, MeshMachine::AMMNodeBase& aNode);
+
+	};
+*/
 
 } //namespace PRActivities
 

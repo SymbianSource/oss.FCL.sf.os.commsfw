@@ -326,7 +326,7 @@ NODEACTIVITY_END()
 
 namespace PRDataClientStopActivity
 {
-DECLARE_DEFINE_CUSTOM_NODEACTIVITY(ECFActivityStopDataClient, PRDataClientStop, TCFDataClient::TStop, MeshMachine::CNodeRetryActivity::NewL)
+DECLARE_DEFINE_CUSTOM_NODEACTIVITY(ECFActivityStopDataClient, PRDataClientStop, TCFDataClient::TStop, MeshMachine::CPreallocatedNodeRetryActivity::New)
 	FIRST_NODEACTIVITY_ENTRY(CoreNetStates::TAwaitingDataClientStop, MeshMachine::TNoTag)
 	THROUGH_NODEACTIVITY_ENTRY(KNoTag, PRStates::TProcessDataClientStop, CoreNetStates::TNoTagOrDataClientsToStopBlockedByStarting)
 
@@ -358,7 +358,7 @@ NODEACTIVITY_END()
 
 namespace PRGoneDownActivity
 {
-DECLARE_DEFINE_CUSTOM_NODEACTIVITY(ECFActivityGoneDown, PRGoneDown, TCFControlClient::TGoneDown, CGoneDownActivity::NewL)
+DECLARE_DEFINE_CUSTOM_NODEACTIVITY(ECFActivityGoneDown, PRGoneDown, TCFControlClient::TGoneDown, CGoneDownActivity::New)
 	// Our Service Provider has gone down unexpectedly (we haven't issued a TStop)
 	FIRST_NODEACTIVITY_ENTRY(CoreNetStates::TAwaitingGoneDown, MeshMachine::TNoTag)
 	THROUGH_NODEACTIVITY_ENTRY(KNoTag, CoreNetStates::TCancelAndCloseZone0ClientExtIfaces, MeshMachine::TNoTag)
@@ -2117,16 +2117,26 @@ EXPORT_C MeshMachine::CNodeActivityBase* CStartActivity::NewL(const MeshMachine:
 //Gone Down Activity
 //
 //-=========================================================
-MeshMachine::CNodeActivityBase* CGoneDownActivity::NewL(const MeshMachine::TNodeActivity& aActivitySig, MeshMachine::AMMNodeBase& aNode)
-    {
-    CGoneDownActivity* self = new (ELeave) CGoneDownActivity(aActivitySig,aNode);
-    return self;
-    }
+
+MeshMachine::CNodeActivityBase* CGoneDownActivity::New(const MeshMachine::TNodeActivity& aActivitySig, MeshMachine::AMMNodeBase& aNode)
+    	{
+   		TAny* space = BorrowPreallocatedSpace(aNode, sizeof(CGoneDownActivity));
+		CGoneDownActivity* self = new (space) CGoneDownActivity(aActivitySig, aNode);
+		self->AppendPreallocatedActivity();
+		return self;
+    	}
 
 CGoneDownActivity::CGoneDownActivity(const MeshMachine::TNodeActivity& aActivitySig, MeshMachine::AMMNodeBase& aNode)
-:	MeshMachine::CNodeRetryActivity(aActivitySig, aNode)
-	{
-	}
+	:	CNodeRetryActivity(aActivitySig, aNode),
+		APreallocatedOriginators<2>(iOriginators)
+		{
+		}
+
+void CGoneDownActivity::Destroy()
+		{
+		this->~CGoneDownActivity(); //Run the destructor
+		ReturnPreallocatedSpace(this);
+		}
 
 CGoneDownActivity::~CGoneDownActivity()
     {
@@ -2212,7 +2222,42 @@ TInt CGoneDownActivity::TIgnoreOrPropagate::TransitionTag()
     return CoreStates::KPropagate | NetStateMachine::EForward;
 	}
 
+//-=========================================================
+//
+//Stop Activity
+//
+//-=========================================================
+/*
+MeshMachine::CNodeActivityBase* CStopActivity::New(const MeshMachine::TNodeActivity& aActivitySig, MeshMachine::AMMNodeBase& aNode)
+	{
+	TAny* space = BorrowPreallocatedSpace(aNode, sizeof(CStopActivity));
+	CStopActivity* self = new (space) CStopActivity(aActivitySig, aNode);
+	self->AppendPreallocatedActivity();
+	return self;
+	}
 
+CStopActivity::CStopActivity(const MeshMachine::TNodeActivity& aActivitySig, MeshMachine::AMMNodeBase& aNode)
+	:	CNodeRetryActivity(aActivitySig, aNode),
+		APreallocatedOriginators<10>(iOriginators)
+	{
+	}
+
+void CStopActivity::Destroy()
+	{
+	this->~CStopActivity(); //Run the destructor
+	ReturnPreallocatedSpace(this);
+	}
+
+CStopActivity::~CStopActivity()
+    {
+    //This is a gone down activity. Error mode is its only/natural state
+    //CGoneDownActivity inherits ultimatelly from CNodeActivityBase, which
+    //will attempt to interpret the error mode as a failure to execute (and
+    //auto respond to orignators), which we don't want. Hence clearing
+    //the error and allowing 'this' to die peacefully.
+    SetError(KErrNone);
+    }
+*/
 EXPORT_DEFINE_SMELEMENT(CStartActivity::TAwaitingBindToCompleteOrCancel, NetStateMachine::MState, CStartActivity::TContext)
 TBool CStartActivity::TAwaitingBindToCompleteOrCancel::Accept()
 	{

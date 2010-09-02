@@ -71,12 +71,6 @@ using namespace Messages;
 using namespace MeshMachine;
 using namespace Den;
 
-//We reserve space for two preallocated activities that may start concurrently on the connection
-//node: destroy (connection close) and connection stop.
-static const TUint KDefaultMaxPreallocatedActivityCount = 2;
-static const TUint KMaxPreallocatedActivitySize = sizeof(CNodeRetryParallelActivity) + sizeof(APreallocatedOriginators<4>);
-static const TUint KConnectionPreallocatedActivityBufferSize = KDefaultMaxPreallocatedActivityCount * KMaxPreallocatedActivitySize;
-
 //
 //Activities serving client (RConnection) requests
 namespace ConnectionStartActivity
@@ -312,7 +306,7 @@ NODEACTIVITY_END()
 
 namespace ConnectionGoingDownActivity
 {
-DECLARE_DEFINE_CUSTOM_NODEACTIVITY(ECFActivityGoneDown, ConnectionGoingDown, TCFControlClient::TGoneDown, PRActivities::CGoneDownActivity::NewL)
+DECLARE_DEFINE_CUSTOM_NODEACTIVITY(ECFActivityGoneDown, ConnectionGoingDown, TCFControlClient::TGoneDown, PRActivities::CGoneDownActivity::New)
 	FIRST_NODEACTIVITY_ENTRY(ConnStates::TAwaitingGoneDown, MeshMachine::TNoTag)
 	THROUGH_NODEACTIVITY_ENTRY(KNoTag, ConnectionGoingDownActivity::TStoreGoneDownError, MeshMachine::TNoTag)
 	THROUGH_NODEACTIVITY_ENTRY(KNoTag, SubSessStates::TCancelAndCloseClientExtIfaces, MeshMachine::TNoTag)
@@ -514,7 +508,7 @@ Create a new CConnection object associated with the same interface as that of an
 
 void CConnection::ConstructL()
 	{
-	MeshMachine::AMMNodeBase::ConstructL(KConnectionPreallocatedActivityBufferSize);
+	MeshMachine::AMMNodeBase::ConstructL();
 	CSockSubSession::ConstructL(NULL);
 
 	iConnectionInfo = CConnectionInfo::NewL(UniqueId());

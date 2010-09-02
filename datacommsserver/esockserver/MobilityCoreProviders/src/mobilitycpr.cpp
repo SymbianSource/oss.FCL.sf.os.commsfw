@@ -46,12 +46,6 @@ using namespace NetStateMachine;
 using namespace Messages;
 using namespace MeshMachine;
 
-//We reserve space for two preallocated activities that may start concurrently on the CPR
-//node: destroy and data client stop.
-static const TUint KMobilityCPRDefaultMaxPreallocatedActivityCount = 2;
-static const TUint KMaxPreallocatedActivitySize = sizeof(MeshMachine::CNodeRetryParallelActivity) + sizeof(MeshMachine::APreallocatedOriginators<4>);
-static const TUint KMobilityCPRPreallocatedActivityBufferSize = KMobilityCPRDefaultMaxPreallocatedActivityCount * KMaxPreallocatedActivitySize;
-
 //-=========================================================
 //
 // CMobilityConnectionProvider methods
@@ -61,7 +55,7 @@ EXPORT_C CMobilityConnectionProvider* CMobilityConnectionProvider::NewL(CConnect
     {
     CMobilityConnectionProvider* provider = new (ELeave) CMobilityConnectionProvider(aFactory, aActivityMap);
     CleanupStack::PushL(provider);
-    provider->ConstructL(KMobilityCPRPreallocatedActivityBufferSize);
+    provider->ConstructL();
     CleanupStack::Pop(provider);
 	return provider;
     }
