@@ -20,10 +20,10 @@ VENDORID 0x70000001
 #include 	"comms-infras/commsdebugutility.mmh"
 #include        <cflog.mmh>
 
-SOURCEPATH      ../ts_rootserver/testcpm
+SOURCEPATH      ../te_rootserver/testcpm
 SOURCE          testcpm.cpp
 
-USERINCLUDE	    ../ts_rootserver
+USERINCLUDE	    ../te_rootserver/inc
 
 SYSTEMINCLUDE	../inc
 #ifdef SYMBIAN_OLD_EXPORT_LOCATION

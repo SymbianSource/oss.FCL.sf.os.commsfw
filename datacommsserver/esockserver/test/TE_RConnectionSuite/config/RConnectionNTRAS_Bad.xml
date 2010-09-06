@@ -32,6 +32,9 @@
         <Name>NT RAS</Name>
     </Network>
     <Network operation="add">
+        <Name>Intranet</Name>
+    </Network>
+    <Network operation="add">
         <Name>Linux</Name>
     </Network>
     <Network operation="add">
@@ -98,12 +101,12 @@
         <LocationRef>Location.Office Direct Dial</LocationRef>
     </IAP>
     <IAP operation="add">
-        <Name>Actual NT RAS</Name>
-        <IAPService>DialOutISP.NT RAS</IAPService>
-        <IAPBearer>ModemBearer.Null Modem 115200bps</IAPBearer>
-        <IAPNetwork>Network.NT RAS</IAPNetwork>
-        <IAPNetworkWeighting>0</IAPNetworkWeighting>
-        <LocationRef>Location.Office</LocationRef>
+		<Name>WlanConnectivity</Name>
+		<IAPService>LANService.WlanConnectivity</IAPService>
+       <IAPBearer>LANBearer.WLANBearer</IAPBearer>
+		<IAPNetwork>Network.Intranet</IAPNetwork>
+		<IAPNetworkWeighting>0</IAPNetworkWeighting>
+		<LocationRef>Location.Office Direct Dial</LocationRef>
     </IAP>
     <IAP operation="add">
         <Name>Virtual Comm port</Name>
@@ -622,19 +625,35 @@
         <LDDName>Dummy LDD</LDDName>
         <PDDName>Dummy PDD</PDDName>
     </LANBearer>
+    <LANBearer operation="add">
+		<Name>WLANBearer</Name>
+		<IfName>wlannif</IfName>
+		<LDDName>not used</LDDName>
+		<PDDName>not used</PDDName>
+		<LastSocketActivityTimeout>10</LastSocketActivityTimeout>
+		<LastSessionClosedTimeout>10</LastSessionClosedTimeout>
+		<LastSocketClosedTimeout>10</LastSocketClosedTimeout>
+		<Agent>wlanagt.agt</Agent>
+    </LANBearer>
 </LANBearerTable>
 
 <LANServiceTable>
     <LANService operation="add">
-        <Name>Ethernet</Name>
-        <IfNetworks>ip,ip6</IfNetworks>
-        <IpNetMask>255.255.255.0</IpNetMask>
-        <IpGateway>194.72.6.1</IpGateway>
-        <IpAddr>192.168.0.100</IpAddr>
-        <IpAddrFromServer>TRUE</IpAddrFromServer>
-        <IpDNSAddrFromServer>FALSE</IpDNSAddrFromServer>
-        <IpNameServer1>194.72.6.51</IpNameServer1>
-        <IpNameServer2>194.72.6.52</IpNameServer2>
+		<Name>WlanConnectivity</Name>
+		<IfNetworks>ip</IfNetworks>
+		<IpNetMask>255.255.255.0</IpNetMask>
+		<IpGateway>0.0.0.0</IpGateway>
+		<IpAddrFromServer>TRUE</IpAddrFromServer>
+		<IpAddr>0.0.0.0</IpAddr>
+		<IpDNSAddrFromServer>TRUE</IpDNSAddrFromServer>
+		<IpNameServer1>0.0.0.0</IpNameServer1>
+		<IpNameServer2>0.0.0.0</IpNameServer2>
+		<Ip6DnsAddrFromServer>TRUE</Ip6DnsAddrFromServer>
+		<Ip6NameServer1>0:0:0:0:0:0:0:0</Ip6NameServer1>
+		<Ip6NameServer2>0:0:0:0:0:0:0:0</Ip6NameServer2>
+		<IpAddrLeaseValidFrom>0</IpAddrLeaseValidFrom>
+		<ConfigDaemonManagerName>NetCfgExtnDhcp</ConfigDaemonManagerName>
+		<ConfigDaemonName>!DhcpServ</ConfigDaemonName>
     </LANService>
 </LANServiceTable>
 
@@ -912,8 +931,8 @@
         <Ranking>1</Ranking>
         <Direction>OUTGOING</Direction>
         <DialogPref>DONOTPROMPT</DialogPref>
-        <BearerSet>CSD</BearerSet>
-        <IAPRef>IAP.Bad NT RAS</IAPRef>
+        <BearerSet>LAN</BearerSet>
+        <IAPRef>IAP.WlanConnectivity</IAPRef>
     </ConnectionPreferences>
 </ConnectionPreferencesTable>
 
@@ -931,7 +950,7 @@
         <LocationForDataAndFax>Location.Office</LocationForDataAndFax>
         <LocationForPhoneServicesAndSMS>Location.Office</LocationForPhoneServicesAndSMS>
         <GPRSClassCBearer>GSM</GPRSClassCBearer>
-        <DefaultNetwork>Network.NT RAS</DefaultNetwork>
+        <DefaultNetwork>Network.Intranet</DefaultNetwork>
         <BearerAvailabilityCheckTSY>mm</BearerAvailabilityCheckTSY>
     </GlobalSettings>
 </GlobalSettingsTable>

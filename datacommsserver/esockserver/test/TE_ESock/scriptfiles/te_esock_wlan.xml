@@ -734,8 +734,8 @@
 		<IpGateway>0.0.0.0</IpGateway>
 		<IpAddrFromServer>TRUE</IpAddrFromServer>
 		<IpAddr>0.0.0.0</IpAddr>
-		<IpDNSAddrFromServer>TRUE</IpDNSAddrFromServer>
-		<IpNameServer1>0.0.0.0</IpNameServer1>
+		<IpDNSAddrFromServer>FALSE</IpDNSAddrFromServer>
+		<IpNameServer1>10.29.23.7</IpNameServer1>
 		<IpNameServer2>0.0.0.0</IpNameServer2>
 		<Ip6DnsAddrFromServer>TRUE</Ip6DnsAddrFromServer>
 		<Ip6NameServer1>0:0:0:0:0:0:0:0</Ip6NameServer1>
