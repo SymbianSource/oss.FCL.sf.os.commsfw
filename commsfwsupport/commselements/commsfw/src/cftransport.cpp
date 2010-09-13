@@ -225,9 +225,9 @@ class CTransportSelfSender : public CActive, public MBindingAwareTransportSender
 public:
 	enum
 		{
-		KSelfSenderInitialQueueLength = 40,	/** Initial size of self-sender queue (double what testing has observed) */
-		KSelfSenderQueueGrowthStep = 40,	/** Increment of self-sender queue size when full. PostMessage() functions panic if growth
-											    required and fails; to minimise this risk ensure initial size adequate for all likely cases */
+		KSelfSenderInitialQueueLength = 20, /** Initial size of self-sender queue */
+		KSelfSenderQueuePreAllocationGrowthStep = 20, /** Additionl space to reserve each time we pre-allocate some queue space to avoind too much re-allocation */
+		KSelfSenderQueueGrowthStep = 20 /** Increment of self-sender queue size when full. PostMessage() functions panic if growth required and fails */
 		};
 
 	static CTransportSelfSender* NewL(MMessageDispatcher& aDispatcher, TWorkerId aSelfId);
@@ -264,6 +264,8 @@ public:
 		{
 		return EFalse;
 		}
+	
+	void PreallocateQueueSpaceL(TInt aMinUndeliveredMessages);
 
 	~CTransportSelfSender();
 protected:
@@ -277,7 +279,7 @@ private:
 	TInt DoPostMessage(const TRuntimeCtxId& aPostFrom, const TRuntimeCtxId& aPostTo, const TDesC8& aMessage);
 	TInt ProcessMessage(TCFMessage2& aMessage, TInt aFirstDispatchLeaveReason);
 	void MaybeTriggerReceipt();
-	TInt ResizeQueue(TInt aAdditionalChips);
+	void ResizeQueueL(TInt aAdditionalChips);
 private:
 	TChipReceiver iReceiver;
 	CCirBuf<TCFMessage>* iBuf;
@@ -311,29 +313,43 @@ CTransportSelfSender* CTransportSelfSender::NewL(MMessageDispatcher& aDispatcher
 	CleanupStack::Pop(self);
 	return self;
 	}
+/*
+ * Preemptively allocate self sender queue length, given by aMinUndeliveredMessages.
+ * Note the current logic for queue enlargement is rather coarse, preferring linear growth by a fixed amount.
+ * A better approach would have been to implement a logarithmic increase for the queue length, which would have saved a bit more memory when the  
+ */
+void CTransportSelfSender::PreallocateQueueSpaceL(TInt aMinUndeliveredMessages)
+	{	
+	TInt currentLength = iBuf->Length();
+	if (aMinUndeliveredMessages > currentLength)
+		{
+		TInt resizeBy = aMinUndeliveredMessages - currentLength;
+		__CFLOG_VAR(( KLogCommsFw, KLogFwTransport, _L8("CTransportSelfSender::PreallocateQueueSpaceL(%d) Trying to enlarge queue from %d to %d chips"), aMinUndeliveredMessages, currentLength, currentLength + resizeBy + KSelfSenderQueuePreAllocationGrowthStep ));
+		ResizeQueueL(resizeBy + KSelfSenderQueuePreAllocationGrowthStep);
+		__CFLOG_VAR(( KLogCommsFw, KLogFwTransport, _L8("CTransportSelfSender::PreallocateQueueSpaceL queue enlargement successful") ));
+		}
+	}
 
-TInt CTransportSelfSender::ResizeQueue(TInt aAdditionalChips)
+void CTransportSelfSender::ResizeQueueL(TInt aAdditionalChips)
 	{
+	__CFLOG_VAR(( KLogCommsFw, KLogFwTransport, _L8("CTransportSelfSender::ResizeQueueL(%d)"), aAdditionalChips ));
+	
 	TInt newLen = iBuf->Length() + aAdditionalChips;
 	__ASSERT_ALWAYS(newLen > iBuf->Count(), Panic(ECFInvalidQueueSize));
+				
+	if (iBuf->Count() == 0)
+		{
+		iBuf->SetLengthL(newLen);
+		return;
+		}
 
 	// Create a new queue of the requisite size, copy the elements, and swap for the original
 	// (there's no safe way to resize in-place).
-	CCirBuf<TCFMessage>* newBuf = new CCirBuf<TCFMessage>;
-	if(newBuf == NULL)
-		{
-		__CFLOG_VAR(( KLogCommsFw, KLogFwTransport, _L8("ERROR: CTransportSelfSender::ResizeQueue() unable to enlarge queue from %d chips to %d chips because error -4 occured"), iBuf->Length(), newLen ));
-
-		return KErrNoMemory;
-		}
-
-	TRAPD(ret, newBuf->SetLengthL(newLen));
-	if(ret != KErrNone)
-		{
-		__CFLOG_VAR(( KLogCommsFw, KLogFwTransport, _L8("ERROR: CTransportSelfSender::ResizeQueue() unable to enlarge queue from %d chips to %d chips because error %d occured"), iBuf->Length(), newLen, ret ));
-
-		return ret;
-		}
+	CCirBuf<TCFMessage>* newBuf = new (ELeave) CCirBuf<TCFMessage>;
+	CleanupStack::PushL(newBuf);
+	newBuf->SetLengthL(newLen);
+	CleanupStack::Pop(newBuf);
+	
 	TCFMessage entry;
 	while(iBuf->Remove(&entry))
 		{
@@ -341,7 +357,6 @@ TInt CTransportSelfSender::ResizeQueue(TInt aAdditionalChips)
 		}
 	delete iBuf;
 	iBuf = newBuf;
-	return KErrNone;
 	}
 
 void CTransportSelfSender::PostMessage(const TCFMessage& aMessage)
@@ -349,21 +364,10 @@ void CTransportSelfSender::PostMessage(const TCFMessage& aMessage)
 	TInt ret = DoPostMessage(aMessage);
 	if(ret != KErrNone)
 		{
-		ResizeQueue(KSelfSenderQueueGrowthStep);
+		TRAP_IGNORE(ResizeQueueL(KSelfSenderQueueGrowthStep));
 		ret = DoPostMessage(aMessage);
-		//For the benefit of OOM testing as we currently do it (only the sequential failure model)
-		//we attempt to resize the queue for the second time.
-		//In real scenarios this approach has very limited or no value as the OOM conditions do rarely
-		//resemble the ones of our sequential failure OOM testing.
-		//Therefore it would probably make sense to configure out the code for UREL and only keep
-		//it for _DEBUG.
-		if(ret != KErrNone)
-			{
-			ResizeQueue(KSelfSenderQueueGrowthStep);
-			ret = DoPostMessage(aMessage);
-		__ASSERT_ALWAYS(ret == KErrNone, Panic(ECFTransPeerDrainFailure));	// true, even though peer is us...
-			}
 		}
+	__ASSERT_ALWAYS(ret == KErrNone, Panic(ECFTransPeerDrainFailure));	// true, even though peer is us...
 	}
 
 void CTransportSelfSender::PostMessage(const TRuntimeCtxId& aPostFrom, const TRuntimeCtxId& aPostTo, const TDesC8& aMessage)
@@ -372,21 +376,10 @@ void CTransportSelfSender::PostMessage(const TRuntimeCtxId& aPostFrom, const TRu
 	TInt ret = DoPostMessage(aPostFrom, aPostTo, aMessage);
 	if(ret != KErrNone)
 		{
-		ResizeQueue(KSelfSenderQueueGrowthStep);
+		TRAP_IGNORE(ResizeQueueL(KSelfSenderQueueGrowthStep));
 		ret = DoPostMessage(aPostFrom, aPostTo, aMessage);
-		//For the benefit of OOM testing as we currently do it (only the sequential failure model)
-		//we attempt to resize the queue for the second time.
-		//In real scenarios this approach has very limited or no value as the OOM conditions do rarely
-		//resemble the ones of our sequential failure OOM testing.
-		//Therefore it would probably make sense to configure out the code for UREL and only keep
-		//it for _DEBUG.
-		if(ret != KErrNone)
-			{
-			ResizeQueue(KSelfSenderQueueGrowthStep);
-			ret = DoPostMessage(aPostFrom, aPostTo, aMessage);
-		__ASSERT_ALWAYS(ret == KErrNone, Panic(ECFTransPeerDrainFailure));	// true, even though peer is us...
-			}
 		}
+	__ASSERT_ALWAYS(ret == KErrNone, Panic(ECFTransPeerDrainFailure));	// true, even though peer is us...
 	}
 
 
@@ -453,7 +446,7 @@ TInt CTransportSelfSender::DoPostMessage(const TRuntimeCtxId& aPostFrom, const T
 				}
 			else
 				{
-				ResizeQueue(KSelfSenderQueueGrowthStep);
+				TRAP_IGNORE(ResizeQueueL(KSelfSenderQueueGrowthStep));
 				err = DoPostMessage(*msgPtr);
 				if(err != KErrNone)
 					{
@@ -961,6 +954,8 @@ public:
 		{
 		return GetSenderMandatory(aPeerId)->IsDropTransportPending();
 		}
+	
+	void PreallocateQueueSpaceL(TInt aMinUndeliveredMessages);
 
 	void RunL();	// for deleting chippers posted to death row
 private:
@@ -1410,6 +1405,15 @@ void CCommsTransportImpl::PurgeDeathRow()
 		}
 	}
 
+void CCommsTransportImpl::PreallocateQueueSpaceL(TInt aMinUndeliveredMessages)
+	{
+#ifndef SYMBIAN_NETWORKING_INTERTHREAD_TRANSPORT_ONLY
+	iSelfSender->PreallocateQueueSpaceL(aMinUndeliveredMessages);
+#else
+	(void)aSize; // Do nothing
+#endif
+	}
+
 //
 
 EXPORT_C CCommsTransport* CCommsTransport::NewL(MWorkerThreadRegister& aThreadRegister, const CMetaDataVirtualCtorInPlace* aVirtCtor, CCFTransportHooks* /*aHooksWalker*/)
@@ -1538,6 +1542,10 @@ EXPORT_C TBool CCommsTransport::IsDropTransportPending(TWorkerId aPeerId) const
 	return iImpl->IsDropTransportPending(aPeerId);
 	}
 
+EXPORT_C void CCommsTransport::PreallocateQueueSpaceL(TInt aMinUndeliveredMessages)
+	{
+	iImpl->PreallocateQueueSpaceL(aMinUndeliveredMessages);
+	}
 
 //
 

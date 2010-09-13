@@ -67,15 +67,24 @@ EXPORT_C void RMetaExtensionContainerC::Close()
 
 EXPORT_C const Meta::SMetaData* RMetaExtensionContainerC::FindExtension(const Meta::STypeId& aTypeId) const
     {
-    __ASSERT_ALWAYS(iContainerImpl, PanicMec(ENoImplementation));
-    return iContainerImpl->FindExtension(aTypeId);
+    if (Container())
+        {
+        return Container()->FindExtension(aTypeId);
+        }
+    else
+        {
+        return NULL;
+        }
     }
 
 
 EXPORT_C const Meta::SMetaData& RMetaExtensionContainerC::FindExtensionL(const Meta::STypeId& aTypeId) const
     {
-    __ASSERT_ALWAYS(iContainerImpl, PanicMec(ENoImplementation));
-    return iContainerImpl->FindExtensionL(aTypeId);
+    if (!Container())
+        {
+        User::Leave(KErrNotFound);
+        }
+    return Container()->FindExtensionL(aTypeId);
     }
 
 

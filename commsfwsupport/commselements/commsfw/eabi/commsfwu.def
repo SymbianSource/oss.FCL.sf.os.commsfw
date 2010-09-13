@@ -129,5 +129,5 @@ EXPORTS
 	_ZN7CommsFW5PanicENS_18TCFTransportPanicsE @ 128 NONAME
 	_ZNK7CommsFW15CCommsTransport15RegisteredCountEv @ 129 NONAME
 	_ZN7CommsFW16CPerfMetricStore12RemoveClientEPv @ 130 NONAME
-
+	_ZN7CommsFW15CCommsTransport22PreallocateQueueSpaceLEi @ 131 NONAME
 

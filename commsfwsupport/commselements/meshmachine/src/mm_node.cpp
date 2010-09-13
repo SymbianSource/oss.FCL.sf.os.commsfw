@@ -735,7 +735,10 @@ TAny* AMMNodeBase::BorrowPreallocatedSpace(TUint aSize)
 	if(!freeCellFound)
 		{
 		MESH_LOG((KMeshMachineSubTag, _L8("ERROR AMMNodeBase %08x:\tBorrowPreallocatedSpace - All %d preallocation cells have been allocated!"), this, maxPreallocatedActivities));
-		__ASSERT_ALWAYS(freeCellFound, User::Panic(KMMNodePanic, EPanicPreallocatedSpaceAlreadyTaken));
+		__ASSERT_DEBUG(freeCellFound, User::Panic(KMMNodePanic, EPanicPreallocatedSpaceAlreadyTaken));
+		// Attempt to allocate some space from the heap now in a last attempt to continue processing.
+		TRAPD(err,ptr =  User::AllocL(aSize));
+		__ASSERT_ALWAYS(err, User::Panic(KMessagesPanic, EPreAllocationFailedPanic));
 		}
 
 	return ptr;
@@ -766,6 +769,8 @@ void AMMNodeBase::ReturnPreallocatedSpace(TAny* aSpace)
 		{
 		MESH_LOG((KMeshMachineSubTag, _L8("ERROR AMMNodeBase %08x:\tReturnPreallocatedSpace - the returned pointer 0x%08X is invalid!"), this, aSpace));
 		__ASSERT_DEBUG(allocatedCellFound, User::Panic(KMMNodePanic, EPanicPreallocatedSpaceReturnedOther));
+		// May be returning a cell which was created in error recovery section of the Borrow in which case if must be "free"d.
+		User::Free(aSpace);
 		}
 	}
 

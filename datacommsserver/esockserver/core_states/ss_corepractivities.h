@@ -891,7 +891,7 @@ public:
 class CGoneDownActivity : public MeshMachine::CNodeRetryActivity, protected MeshMachine::APreallocatedOriginators<2>
     {
 public:
-    static MeshMachine::CNodeActivityBase* New(const MeshMachine::TNodeActivity& aActivitySig, MeshMachine::AMMNodeBase& aNode);
+    IMPORT_C static MeshMachine::CNodeActivityBase* New(const MeshMachine::TNodeActivity& aActivitySig, MeshMachine::AMMNodeBase& aNode);
 
 protected:
 	CGoneDownActivity(const MeshMachine::TNodeActivity& aActivitySig, MeshMachine::AMMNodeBase& aNode);
@@ -913,11 +913,11 @@ protected:
     typedef MeshMachine::TNodeContext<ESock::CMMCommsProviderBase, CoreNetStates::TContext> TContext;
 
 public:
-	DECLARE_SMELEMENT_HEADER( TIgnoreOrPropagate, MeshMachine::TStateFork<TContext>, NetStateMachine::MStateFork, TContext )
+    EXPORT_DECLARE_SMELEMENT_HEADER( TIgnoreOrPropagate, MeshMachine::TStateFork<TContext>, NetStateMachine::MStateFork, TContext )
 		virtual TInt TransitionTag();
 	DECLARE_SMELEMENT_FOOTER( TIgnoreOrPropagate )
 
-	DECLARE_SMELEMENT_HEADER( TSendErrorRecoveryReq, MeshMachine::TStateTransition<TContext>, NetStateMachine::MStateTransition, TContext )
+    EXPORT_DECLARE_SMELEMENT_HEADER( TSendErrorRecoveryReq, MeshMachine::TStateTransition<TContext>, NetStateMachine::MStateTransition, TContext )
 		virtual void DoL();
 	DECLARE_SMELEMENT_FOOTER( TSendErrorRecoveryReq )
 	};

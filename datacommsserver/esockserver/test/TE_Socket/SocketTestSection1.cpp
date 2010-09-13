@@ -313,7 +313,7 @@ enum TVerdict CSocketTest1_7::InternalDoTestStepL( void )
 	{
 	TVerdict verdict = EPass;
 
-	TInt numExhaustiveSockets = iNormalTest ? KNumExhaustiveSockets : 10;
+	TInt numExhaustiveSockets = iNormalTest ? KNumExhaustiveSockets : 10;	
 	iNormalTest = EFalse; // normal test is only run once, the rest are OOM tests
 
 	Logger().WriteFormat(_L("Test Purpose: Exhaustive Socket Open"));
@@ -391,6 +391,13 @@ enum TVerdict CSocketTest1_7::InternalDoTestStepL( void )
 	// go back exactly to where it was before - this makes assumptions about the ESock algorithms.  Why
 	// wouldn't ESock legitimately cache objects, for example?
 	//TESTL(sockNum >= sockCount1);
+	TESTL(sockNum >= sockCount1);
+
+	Logger().WriteFormat(_L("Freeing sockets in creation order"));
+	for (i=0; i<sockNum; i++)
+		{
+		socks[i].Close();
+		}
 
 	//
 	// NOTE:
@@ -404,6 +411,7 @@ enum TVerdict CSocketTest1_7::InternalDoTestStepL( void )
 	CleanupStack::PopAndDestroy(socks);
 
 	CleanupStack::Pop(&ss);
+	Logger().WriteFormat(_L("Now closing socket server session without closing %d opened sockets"), sockNum);
 	ss.Close();
 	SetTestStepResult(verdict);
 	return verdict;

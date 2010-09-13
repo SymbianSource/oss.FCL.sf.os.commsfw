@@ -39,6 +39,20 @@ _LIT(KSpecAssert_ElemMeshMachActH, "ElemMeshMachActH");
 
 //-=========================================================
 //
+//Panics
+//
+//-=========================================================
+_LIT (KMMActivityPanic,"MMActivityPanic");
+enum
+	{
+	EPanicCorruptedContext = 1,
+	EPanicNoPreallocatedSpace = 2,
+	EPanicOutOfActivities = 3,
+	EPanicOutOfBounds
+	};
+
+//-=========================================================
+//
 // MACROS
 //
 //-=========================================================
@@ -1048,7 +1062,7 @@ protected:
 	@param aNode        The node to which this activity will belong.
 	@return Generated unique component of activity id
 	*/
-	static TUint GetNextActivityCountL( const TNodeActivity& aActivitySig, const AMMNodeBase& aNode );
+	IMPORT_C static TUint GetNextActivityCountL( const TNodeActivity& aActivitySig, const AMMNodeBase& aNode );
 	/**
 	For use by custom activity News to generate the unique part of the activity id.
 	@param aActivitySig Context information about how the activity is to be started
@@ -1064,6 +1078,15 @@ protected:
 	@param aNextActivityCount The unique part of the activity id
 	*/
     IMPORT_C CNodeParallelActivityBase( const TNodeActivity& aActivitySig, AMMNodeBase& aNode, TUint aNextActivityCount );
+
+private:
+	/**
+	For use by custom activity NewLs to generate the unique part of the activity id.
+	@param aActivitySig Context information about how the activity is to be started
+	@param aNode        The node to which this activity will belong.
+	@return Generated unique component of activity id
+	*/
+	static TUint DoGetNextActivityCountL( const TNodeActivity& aActivitySig, const AMMNodeBase& aNode );
 
 protected:
 	/**
@@ -1596,13 +1619,6 @@ private:
 	Creation of preallocated activities doesn't fail and hence a non-leaving ::New should be used instead*/
     static MeshMachine::CNodeActivityBase* NewL(const MeshMachine::TNodeActivity& aActivitySig, MeshMachine::AMMNodeBase& aNode);
 	};
-
-
-inline TUint CNodeParallelActivityBase::GetNextActivityCountL( const TNodeActivity& aActivitySig, const AMMNodeBase& aNode )
-    {
-    //Historical. Method ceased to leave, but must keep the old, L-ending overload.
-    return GetNextActivityCount(aActivitySig, aNode);
-    }
 
 //By default we reserve the space for preallocated activities generously, to fit even a synchronised activity preallocating space for up to 3 originators.
 //Any node, hosting specific activities that may need the preallocation mechanism can choose a more optimal amounts.
