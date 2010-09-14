@@ -39,6 +39,8 @@ Meta Extension Container Unit Test Server
 #include "mectest010step.h"
 #include "mectest011step.h"
 #include "mectest012step.h"
+#include "mectest013step.h"
+#include "mectest014step.h"
 
 #include "mectest030step.h"
 #include "mectest031step.h"
@@ -57,8 +59,6 @@ Meta Extension Container Unit Test Server
 #include "mectestpanic2step.h"
 #include "mectestpanic3step.h"
 #include "mectestpanic4step.h"
-#include "mectestpanic5step.h"
-#include "mectestpanic6step.h"
 #include "mectestpanic7step.h"
 #include "mectestpanic8step.h"
 #include "mectestpanic9step.h"
@@ -170,6 +170,8 @@ CTestStep* CMecUnitTestServer::CreateTestStep(const TDesC& aStepName)
         TEST_STEP(MecTest010)
 		TEST_STEP(MecTest011)
 		TEST_STEP(MecTest012)
+		TEST_STEP(MecTest013)
+		TEST_STEP(MecTest014)
         
 		TEST_STEP(MecTest030)
 		TEST_STEP(MecTest031)
@@ -186,9 +188,9 @@ CTestStep* CMecUnitTestServer::CreateTestStep(const TDesC& aStepName)
 //		TEST_STEP(MecTestPanic1) 
         TEST_STEP(MecTestPanic2) 
         TEST_STEP(MecTestPanic3) 
-        TEST_STEP(MecTestPanic4) 
-        TEST_STEP(MecTestPanic5)
-        TEST_STEP(MecTestPanic6) 
+        TEST_STEP(MecTestPanic4)
+        // MecTestPanic5 and MecTestPanic6 removed as FindExtension()/FindExtensionL()
+        // no longer panic if container hasn't been opened.
 		TEST_STEP(MecTestPanic7) 
 		TEST_STEP(MecTestPanic8) 
 		TEST_STEP(MecTestPanic9) 

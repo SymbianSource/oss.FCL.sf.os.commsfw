@@ -104,7 +104,7 @@ void CTransportFlowShim::Unbind( MUpperDataReceiver* /*aReceiver*/, MUpperContro
 
 MLowerDataSender::TSendResult CTransportFlowShim::Send(RMBufChain& /*aData*/)
     {
-    __ASSERT_DEBUG(iHostResolverNotify, User::Panic(KSpecAssert_ESockSSocksspshm, 3));
+    __ASSERT_DEBUG(IsHostResolver(), User::Panic(KSpecAssert_ESockSSocksspshm, 3));
 
     TBuf8<sizeof(TConnectionInfo)> buf;
     if (Control(KSOLProvider, static_cast<TUint>(KSoConnectionInfo), buf) == KErrNone)
@@ -270,9 +270,7 @@ MSessionData* CTransportFlowShim::BindL(MSessionDataNotify& aNotify)
 
 void CTransportFlowShim::HostResolverSpecificUnbind()
 	{
-	// Can't have both HR & SAP
 	__ASSERT_DEBUG(!iProvider, User::Panic(KSpecAssert_ESockSSocksspshm, 9));
-
 	if(iSubConnectionProvider.IsOpen())
 		{
 		iSessionControlNotify = NULL;
@@ -289,7 +287,6 @@ void CTransportFlowShim::HostResolverSpecificUnbind()
 		DeleteThisFlow();
 		}
 	}
-
 void CTransportFlowShim::Unbind()
     {
 	LOG( ESockLog::Printf(_L8("CTransportFlowShim %08x:\tUnbind()"), this) );
@@ -301,29 +298,32 @@ void CTransportFlowShim::Unbind()
 		return;
 		}
 
-	// Legacy support for host resolvers involves a separate north bound MUpperControl interface
-	if(iHostResolverNotify)
+	// Legacy support for host resolvers
+	if(IsHostResolver())
 		{
 		HostResolverSpecificUnbind();
-		}
-	else
-		{
-		if (iProvider)
-			{
-			iProvider->SetNotify(NULL);
 
-			if (!Detaching())
-				{
-				delete iProvider;
-				iProvider = NULL;
-				}
 			}
+		else
+			{
+
+	if (iProvider)
+		{
+		iProvider->SetNotify(NULL);
+
+		if (!Detaching())
+			{
+			delete iProvider;
+			iProvider = NULL;
+			}
+		}
 
 #ifdef SYMBIAN_NETWORKING_UPS
-		// Hook for derived classes to do cleanup before unbind occurs
-		PreUnbind();
+	// Hook for derived classes to do cleanup before unbind occurs
+	PreUnbind();
 #endif
-		CNetworkFlow::Unbind();
+
+	CNetworkFlow::Unbind();
 		}
     }
 
@@ -1336,7 +1336,7 @@ void CTransportFlowShim::SubConnectionError(const TEBase::TError& errorMsg, TUin
 		LOG( ESockLog::Printf(_L("CTransportFlowShim %08x:\tSubConnectionError() - calling Error() function"), this) );
     	Error(errorMsg.iValue, anOperationMask);
 	    }
-	else if (iHostResolverNotify)
+	else if (IsHostResolver())
 	    {
 		LOG( ESockLog::Printf(_L("CTransportFlowShim %08x:\tSubConnectionError() - passing to host resolver's Error() function"), this) );
 	    iHostResolverNotify->Error(errorMsg.iValue);
@@ -1374,7 +1374,7 @@ up and running and that we should bind to a Flow below.
 		
 		__ASSERT_DEBUG(iSubConnectionProvider.IsOpen(), User::Panic(KSpecAssert_ESockSSocksspshm, 48));	// legacy flows have no control side; should never get here
 		}
-	else if (iHostResolverNotify)
+	else if (IsHostResolver())
 	    {//workaroud to indicate to CHostResolver we've got connection info
 	    if (!aBindTo.iNodeId.Ptr())
 	        {
@@ -1433,7 +1433,7 @@ void CTransportFlowShim::StartFlowL(const TRuntimeCtxId& aSender)
 
         // A held-over implicit resolution request will now work (if it ever will).
 		// Explicit host resolver requests have already been re-issued in BindToL().
-        if (iHostResolverNotify && (iFlowParams.iFlowRequestType != TFlowParams::EExplicitConnection))
+        if (IsHostResolver() && (iFlowParams.iFlowRequestType != TFlowParams::EExplicitConnection))
 	        {
     	    iHostResolverNotify->StartSending();
 	        }
@@ -1461,13 +1461,16 @@ void CTransportFlowShim::StopFlow(TCFDataClient::TStop& aMessage)
 	// RConnection but not transferring any data will not cause the TCP/IP stack to attach the flow
 	// to the route and hence not call Error() if the interface comes down.
 
-	if (IsBoundToSession() && aMessage.iValue == KErrForceDisconnected)
+	TInt err = (aMessage.iValue == KErrForceDisconnected) ? KErrDisconnected : aMessage.iValue;
+	if (IsBoundToSession() && (aMessage.iValue == KErrForceDisconnected || !UseBearerErrors()))
 		{
-		Error(KErrDisconnected, EErrorAllOperations);
+		Error(err, EErrorAllOperations);
 		}
-	else if (IsBoundToSession() && !UseBearerErrors())
+	else if (IsHostResolver())
 	    {
-    	Error(aMessage.iValue, EErrorAllOperations);
+        __ASSERT_DEBUG(err != KErrNone, User::Panic(KSpecAssert_ESockSSocksspshm, 67));
+        LOG( ESockLog::Printf(_L("CTransportFlowShim %08x:\tStopFlow() - passing to host resolver's Error() function"), this) );
+        iHostResolverNotify->Error(err);
 	    }
 
 	if (iLowerFlow)

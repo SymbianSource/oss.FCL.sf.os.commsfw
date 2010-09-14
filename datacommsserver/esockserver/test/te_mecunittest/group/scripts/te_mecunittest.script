@@ -200,6 +200,26 @@ RUN_TEST_STEP 			60 te_mecunittest MecTest012
 END_TESTCASE            MEC_UNIT_TEST_012
 
 
+START_TESTCASE          MEC_UNIT_TEST_013
+//! @SYMTestCaseID      MEC_UNIT_TEST_013
+//! @SYMTestCaseDesc    Test NULL return for RMetaExtensionContainerC::FindExtension() with un-opened container
+//! @SYMFssID           COMMS-INFRAS/Esock/MetaExtensionContainer/UnitTest
+//! @SYMTestActions     1) FindExtension T1 in constMec
+//! @SYMTestExpectedResults  NULL return code
+RUN_TEST_STEP           60 te_mecunittest MecTest013
+END_TESTCASE            MEC_UNIT_TEST_013
+
+
+START_TESTCASE          MEC_UNIT_TEST_014
+//! @SYMTestCaseID      MEC_UNIT_TEST_014
+//! @SYMTestCaseDesc    Test KErrNotFound leave for RMetaExtensionContainerC::FindExtensionL() with un-opened container
+//! @SYMFssID           COMMS-INFRAS/Esock/MetaExtensionContainer/UnitTest
+//! @SYMTestActions     1) FindExtensionL T1 in constMec
+//! @SYMTestExpectedResults  Leaves with KErrNotFound
+RUN_TEST_STEP           60 te_mecunittest MecTest014
+END_TESTCASE            MEC_UNIT_TEST_014
+
+
 ////////////////////////////////////////////////
 // Container Branching Tests
 ////////////////////////////////////////////////
@@ -486,30 +506,6 @@ START_TESTCASE          MEC_UNIT_TEST_104
 //! @SYMTestStatus 		Implemented
 RUN_PANIC_STEP_RESULT 	3 mecpanic  60 te_mecunittest MecTestPanic4
 END_TESTCASE            MEC_UNIT_TEST_104
-
-
-START_TESTCASE          MEC_UNIT_TEST_105
-//! @SYMTestCaseID      MEC_UNIT_TEST_105
-//! @SYMTestCaseDesc 	Test Panic mecpanic:1 (ENoImplementation) for RMetaExtensionContainerC::FindExtension()
-//! @SYMFssID 			COMMS-INFRAS/Esock/MetaExtensionContainer/UnitTest
-//! @SYMTestActions 	1) FindExtension T1 in constMec
-//! @SYMTestExpectedResults  Panic mecpanic:1
-//! @SYMTestPriority 	Critical
-//! @SYMTestStatus 		Implemented
-RUN_PANIC_STEP_RESULT 	1 mecpanic  60 te_mecunittest MecTestPanic5
-END_TESTCASE            MEC_UNIT_TEST_105
-
-
-START_TESTCASE          MEC_UNIT_TEST_106
-//! @SYMTestCaseID      MEC_UNIT_TEST_106
-//! @SYMTestCaseDesc 	Test Panic mecpanic:1 (ENoImplementation) for RMetaExtensionContainerC::FindExtensionL()
-//! @SYMFssID 			COMMS-INFRAS/Esock/MetaExtensionContainer/UnitTest
-//! @SYMTestActions 	1) FindExtensionL T1 in constMec
-//! @SYMTestExpectedResults  Panic mecpanic:1
-//! @SYMTestPriority 	Critical
-//! @SYMTestStatus 		Implemented
-RUN_PANIC_STEP_RESULT 	1 mecpanic  60 te_mecunittest MecTestPanic6
-END_TESTCASE            MEC_UNIT_TEST_106
 
 
 START_TESTCASE          MEC_UNIT_TEST_107

@@ -2041,7 +2041,7 @@ EXPORT_C TInt CNoBearer::TNoTagOrBearerPresentForAutostart::TransitionTag()
 	{
  	TInt cntrlClients = iContext.Node().CountClients<TDefaultClientMatchPolicy>(
  								/*include*/TClientType(TCFClientType::ECtrl));
- 	if (cntrlClients > 0 &&
+ 	if (cntrlClients == 0 &&
  		iContext.Node().ServiceProvider() &&
  		!(iContext.Node().ServiceProvider()->Flags() & TCFClientType::EStarted))
  		{
