@@ -48,7 +48,7 @@ data=EPOCROOT##epoc32\data\z\TestData\scripts\te_Test_All_Esock_ip6_Connection.s
 data=EPOCROOT##epoc32\data\z\TestData\scripts\te_Test_All_Esock_ip4_NonConnection.script TestData\Scripts\te_Test_All_Esock_ip4_NonConnection.script
 data=EPOCROOT##epoc32\data\z\TestData\scripts\te_Test_All_Esock_ip6_NonConnection.script TestData\Scripts\te_Test_All_Esock_ip6_NonConnection.script
 
-data=EPOCROOT##epoc32\data\z\TestData\configs\te_esock.xml                               TestData\configs\te_esock.xml
+data=EPOCROOT##epoc32\data\z\TestData\configs\te_esock_wlan.xml                          TestData\configs\te_esock.xml
 data=EPOCROOT##epoc32\data\z\TestData\configs\te_esock_ethernet_MOMAP16xx.xml            TestData\configs\te_esock_ethernet.xml
 
 data=EPOCROOT##epoc32\data\z\TestData\configs\test_esock.ini                             TestData\configs\test_esock.ini

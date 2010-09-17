@@ -133,7 +133,7 @@ REM ---------- Comms-Infras ----------
 
 // CommDB Tests
 #if defined(CI_TEST_ROM_1) || defined(CI_TEST_ROM_4)
-#include <tcommdb.iby>
+#include <te_tcommdb.iby>
 #endif
 
 #ifdef CI_TEST_ROM_1
@@ -159,7 +159,8 @@ REM ---------- Comms-Infras ----------
 
 // MBufMgr Tests
 #if defined(CI_TEST_ROM_1) || defined(CI_TEST_ROM_2) || defined(CI_TEST_ROM_4)
-#include <testmbuf.iby>
+REM #include <testmbuf.iby>
+#include <te_testmbuf.iby>
 #endif
 
 #ifdef CI_TEST_ROM_2
@@ -191,7 +192,8 @@ REM ---------- Comms-Infras ----------
 
 // RootServer Tests
 #ifdef CI_TEST_ROM_3
-#include <ts_rootserver.iby>
+//#include <ts_rootserver.iby>
+#include <te_rootserver.iby>
 #endif
 
 //COMMSELEMENTSTESTS

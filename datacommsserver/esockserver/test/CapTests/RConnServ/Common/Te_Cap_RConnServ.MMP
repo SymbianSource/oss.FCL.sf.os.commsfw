@@ -35,6 +35,7 @@ LIBRARY       PARAM_SVR_LIBRARIES
 //For TEF 
 LIBRARY		testexecuteutils.lib 
 LIBRARY		testexecutelogclient.lib 
+LIBRARY		netmeta.lib
 
 MACRO __DATA_CAGING__
 MACRO __SECURE_API__

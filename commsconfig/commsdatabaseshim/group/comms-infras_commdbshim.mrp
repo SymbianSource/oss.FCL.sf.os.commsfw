@@ -10,4 +10,4 @@ ipr D
 ipr T \sf\os\commsfw\commsconfig\commsdatabaseshim\Documentation
 ipr T \sf\os\commsfw\commsconfig\commsdatabaseshim\bwins
 ipr T \sf\os\commsfw\commsconfig\commsdatabaseshim\eabi
-ipr T \sf\os\commsfw\commsconfig\commsdatabaseshim\ts_commdb
+ipr T \sf\os\commsfw\commsconfig\commsdatabaseshim\te_commdb

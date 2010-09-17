@@ -59,27 +59,28 @@ commsbufskern.iby /epoc32/rom/include/commsbufskern.iby
 
 PRJ_TESTEXPORTS
 //MBuf ComponentTest scripts & configs
-../TS_mbufmgr/scriptfiles/mbuftest.script z:/testdata/scripts/mbuftest.script
-../TS_mbufmgr/scriptfiles/MBufTest05-CopyIn.ini z:/testdata/configs/mbuftest05-copyin.ini
-../TS_mbufmgr/scriptfiles/MBufTest05-CopyOut.ini z:/testdata/configs/mbuftest05-copyout.ini
-../TS_mbufmgr/scriptfiles/MBufTest06-1st.ini z:/testdata/configs/mbuftest06-1st.ini
-../TS_mbufmgr/scriptfiles/MBufTest06-2nd.ini z:/testdata/configs/mbuftest06-2nd.ini
-../TS_mbufmgr/scriptfiles/MBufTest06-3rd.ini z:/testdata/configs/mbuftest06-3rd.ini
-../TS_mbufmgr/scriptfiles/MBufTest06-4th.ini z:/testdata/configs/mbuftest06-4th.ini
-../TS_mbufmgr/scriptfiles/MBufTest07-1st.ini z:/testdata/configs/mbuftest07-1st.ini
-../TS_mbufmgr/scriptfiles/MBufTest07-2nd.ini z:/testdata/configs/mbuftest07-2nd.ini
-../TS_mbufmgr/scriptfiles/MBufTest07-3rd.ini z:/testdata/configs/mbuftest07-3rd.ini
-../TS_mbufmgr/scriptfiles/MBufTest08-1st.ini z:/testdata/configs/mbuftest08-1st.ini
-../TS_mbufmgr/scriptfiles/MBufTest08-2nd.ini z:/testdata/configs/mbuftest08-2nd.ini
-../TS_mbufmgr/scriptfiles/MBufTest08-3rd.ini z:/testdata/configs/mbuftest08-3rd.ini
-../TS_mbufmgr/scriptfiles/MBufTest09-1st.ini z:/testdata/configs/mbuftest09-1st.ini
-../TS_mbufmgr/scriptfiles/MBufTest09-2nd.ini z:/testdata/configs/mbuftest09-2nd.ini
-../TS_mbufmgr/scriptfiles/MBufTest09-3rd.ini z:/testdata/configs/mbuftest09-3rd.ini
-../TS_mbufmgr/scriptfiles/MBufTest09-4th.ini z:/testdata/configs/mbuftest09-4th.ini
-../TS_mbufmgr/scriptfiles/MBufTest09-5th.ini z:/testdata/configs/mbuftest09-5th.ini
-../TS_mbufmgr/scriptfiles/MBufTest10-1st.ini z:/testdata/configs/mbuftest10-1st.ini
-../TS_mbufmgr/scriptfiles/MBufTest13-1st.ini z:/testdata/configs/mbuftest13-1st.ini
-testmbuf.iby /epoc32/rom/include/testmbuf.iby
+../TE_mbufmgr/scripts/te_mbuftest.script 		/epoc32/release/winscw/udeb/z/testdata/scripts/te_mbuftest.script
+../TE_mbufmgr/scripts/MBufTest05-CopyIn.ini 	/epoc32/release/winscw/udeb/z/testdata/configs/mbuftest05-copyin.ini
+../TE_mbufmgr/scripts/MBufTest05-CopyOut.ini 	/epoc32/release/winscw/udeb/z/testdata/configs/mbuftest05-copyout.ini
+../TE_mbufmgr/scripts/MBufTest06-1st.ini 		/epoc32/release/winscw/udeb/z/testdata/configs/mbuftest06-1st.ini
+../TE_mbufmgr/scripts/MBufTest06-2nd.ini 		/epoc32/release/winscw/udeb/z/testdata/configs/mbuftest06-2nd.ini
+../TE_mbufmgr/scripts/MBufTest06-3rd.ini 		/epoc32/release/winscw/udeb/z/testdata/configs/mbuftest06-3rd.ini
+../TE_mbufmgr/scripts/MBufTest06-4th.ini 		/epoc32/release/winscw/udeb/z/testdata/configs/mbuftest06-4th.ini
+../TE_mbufmgr/scripts/MBufTest07-1st.ini 		/epoc32/release/winscw/udeb/z/testdata/configs/mbuftest07-1st.ini
+../TE_mbufmgr/scripts/MBufTest07-2nd.ini 		/epoc32/release/winscw/udeb/z/testdata/configs/mbuftest07-2nd.ini
+../TE_mbufmgr/scripts/MBufTest07-3rd.ini 		/epoc32/release/winscw/udeb/z/testdata/configs/mbuftest07-3rd.ini
+../TE_mbufmgr/scripts/MBufTest08-1st.ini 		/epoc32/release/winscw/udeb/z/testdata/configs/mbuftest08-1st.ini
+../TE_mbufmgr/scripts/MBufTest08-2nd.ini 		/epoc32/release/winscw/udeb/z/testdata/configs/mbuftest08-2nd.ini
+../TE_mbufmgr/scripts/MBufTest08-3rd.ini 		/epoc32/release/winscw/udeb/z/testdata/configs/mbuftest08-3rd.ini
+../TE_mbufmgr/scripts/MBufTest09-1st.ini 		/epoc32/release/winscw/udeb/z/testdata/configs/mbuftest09-1st.ini
+../TE_mbufmgr/scripts/MBufTest09-2nd.ini 		/epoc32/release/winscw/udeb/z/testdata/configs/mbuftest09-2nd.ini
+../TE_mbufmgr/scripts/MBufTest09-3rd.ini 		/epoc32/release/winscw/udeb/z/testdata/configs/mbuftest09-3rd.ini
+../TE_mbufmgr/scripts/MBufTest09-4th.ini 		/epoc32/release/winscw/udeb/z/testdata/configs/mbuftest09-4th.ini
+../TE_mbufmgr/scripts/MBufTest09-5th.ini 		/epoc32/release/winscw/udeb/z/testdata/configs/mbuftest09-5th.ini
+../TE_mbufmgr/scripts/MBufTest10-1st.ini 		/epoc32/release/winscw/udeb/z/testdata/configs/mbuftest10-1st.ini
+../TE_mbufmgr/scripts/MBufTest13-1st.ini 		/epoc32/release/winscw/udeb/z/testdata/configs/mbuftest13-1st.ini
+
+../group/te_testmbuf.iby /epoc32/rom/include/te_testmbuf.iby
 
 PRJ_MMPFILES
 commsbufs.mmp
@@ -88,7 +89,7 @@ mbufmgrimpl.mmp
 commsbufskern.mmp
 
 PRJ_TESTMMPFILES
-../TS_mbufmgr/TS_Mbufmgr.mmp
+../TE_mbufmgr/group/TE_Mbufmgr.mmp
 
 #include "../reference/loopback_bearer/group/bld.inf"
 #include "../reference/loopback_bearer/test/bld.inf"

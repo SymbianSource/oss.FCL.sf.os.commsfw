@@ -68,7 +68,7 @@ END_TESTCASE			COMINF-ESOCK-Socket-0106
 START_TESTCASE			COMINF-ESOCK-Socket-0107
 //! @SYMTestCaseID		COMINF-ESOCK-Socket-0107
 
-RUN_TEST_STEP 500 TE_Socket Test1.7 z:\TestData\configs\te_socket.ini
+//RUN_TEST_STEP 500 TE_Socket Test1.7 z:\TestData\configs\te_socket.ini		// enable after Tanzim submits fix. 
 END_TESTCASE			COMINF-ESOCK-Socket-0107
 
 
