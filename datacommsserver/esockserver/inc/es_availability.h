@@ -120,11 +120,11 @@ public:
 	                                 TUint aScoreDropsBelow = 0,
 	                                 TUint aScoreIncreasesByMoreThan = 0,
 	                                 TUint aScoreDecreasesByMoreThan = 0)
-	:	iFlags(aAnyChange? EAnyChange : ENotAnyChange),
-		iScoreExceeds(aScoreExceeds),
+	:	iScoreExceeds(aScoreExceeds),
 		iScoreDropsBelow(aScoreDropsBelow),
 		iScoreIncreasesByMoreThan(aScoreIncreasesByMoreThan),
-		iScoreDecreasesByMoreThan(aScoreDecreasesByMoreThan)
+		iScoreDecreasesByMoreThan(aScoreDecreasesByMoreThan),
+		iFlags(aAnyChange? EAnyChange : ENotAnyChange)
 		{
 		__ASSERT_DEBUG(aScoreExceeds >= TAvailabilityStatus::EMinAvailabilityScore && aScoreExceeds <= TAvailabilityStatus::EMaxAvailabilityScore, User::Panic(KSpecAssert_ESock_Availabili, 2));
 		__ASSERT_DEBUG(aScoreDropsBelow >= TAvailabilityStatus::EMinAvailabilityScore && aScoreDropsBelow <= TAvailabilityStatus::EMaxAvailabilityScore, User::Panic(KSpecAssert_ESock_Availabili, 3));
@@ -139,11 +139,11 @@ public:
 	@see TChangeScopeFlags.
 	*/
 	TAvailabilitySubscriptionOptions(TChangeScopeFlags aFlags)
-	:	iFlags(aFlags),
-		iScoreExceeds(0),
+	:	iScoreExceeds(0),
 		iScoreDropsBelow(0),
 		iScoreIncreasesByMoreThan(0),
-		iScoreDecreasesByMoreThan(0)
+		iScoreDecreasesByMoreThan(0),
+		iFlags(aFlags)
 		{
 		ASSERT(aFlags != ENotAnyChange); //illegal to ask for thersholds without specifying them.
 		}

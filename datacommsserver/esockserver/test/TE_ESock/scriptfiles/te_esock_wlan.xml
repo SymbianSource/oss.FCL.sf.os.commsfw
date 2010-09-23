@@ -734,8 +734,8 @@
 		<IpGateway>0.0.0.0</IpGateway>
 		<IpAddrFromServer>TRUE</IpAddrFromServer>
 		<IpAddr>0.0.0.0</IpAddr>
-		<IpDNSAddrFromServer>FALSE</IpDNSAddrFromServer>
-		<IpNameServer1>10.29.23.7</IpNameServer1>
+		<IpDNSAddrFromServer>TRUE</IpDNSAddrFromServer>
+		<IpNameServer1>0.0.0.0</IpNameServer1>
 		<IpNameServer2>0.0.0.0</IpNameServer2>
 		<Ip6DnsAddrFromServer>TRUE</Ip6DnsAddrFromServer>
 		<Ip6NameServer1>0:0:0:0:0:0:0:0</Ip6NameServer1>
@@ -751,9 +751,9 @@
         <IpGateway>194.72.6.1</IpGateway>
         <IpAddr>192.168.0.100</IpAddr>
         <IpAddrFromServer>TRUE</IpAddrFromServer>
-        <IpDNSAddrFromServer>FALSE</IpDNSAddrFromServer>
-        <IpNameServer1>194.72.6.51</IpNameServer1>
-        <IpNameServer2>194.72.6.52</IpNameServer2>
+        <IpDNSAddrFromServer>TRUE</IpDNSAddrFromServer>
+        <IpNameServer1>0.0.0.0</IpNameServer1>
+        <IpNameServer2>0.0.0.0</IpNameServer2>
     </LANService>
     <LANService operation="add">
         <Name>Ethernet (IPv6 static DNS)</Name>

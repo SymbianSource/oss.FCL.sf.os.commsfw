@@ -575,8 +575,8 @@ newChain gets the other half.
 #endif
     TInt splitBufOffset;
     TInt splitBufRemainder;
-    RMBuf* splitBuf;
-    RMBuf* splitBufPrev;
+    RMBuf* splitBuf = NULL;
+    RMBuf* splitBufPrev = NULL;
     
     if(!Goto(aOffset, splitBuf, splitBufOffset, splitBufRemainder, splitBufPrev))
         {
