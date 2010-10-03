@@ -49,7 +49,7 @@ public:
 	const Messages::TNodeId& Client();
 
 	void SetFlags(TInt aFlags);
-//	TInt Flags();
+	TInt Flags();
 
 	EXPORT_DECLARE_SMELEMENT_HEADER( TStoreControlClient, MeshMachine::TStateTransition<TContext>, NetStateMachine::MStateTransition, TContext )
 		IMPORT_C virtual void DoL();

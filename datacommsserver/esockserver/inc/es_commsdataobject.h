@@ -112,7 +112,14 @@ protected:
 		EOperationSet = 0,
 
 		/** Client requested that the object retreive data from a provider */
-		EOperationGet = 1
+		EOperationGet = 1,
+		
+		/** 
+		Default value for uninitialized requests.
+		This is only used as a sanity checking measure where the implementation of a 
+		CommsDataObject has failed to explicitly specify the client requested operation, i.e. get or set	
+		*/
+		EOperationUninitialized = 0xFFFFFFFF
 		};
 
 	
@@ -160,7 +167,7 @@ protected:
 	@see MAccessPointConfigApi
 	*/
 	XCommsDataObject(TUint aFlags)
-		: iReqItfExtId((TUint)EAccessPointConfigApi), iFlags(aFlags)
+		: iOperationMode(EOperationUninitialized), iReqItfExtId((TUint)EAccessPointConfigApi), iFlags(aFlags)
 		{
 		__ASSERT_DEBUG((aFlags & ~EAllFlags) == 0, User::Panic(KSpecAssert_ESocks_cmsdtbjct, 1));
 		__ASSERT_DEBUG((aFlags & EOperationSupportMask) != 0, User::Panic(KSpecAssert_ESocks_cmsdtbjct, 2));
@@ -178,7 +185,7 @@ protected:
 	@param aReqItfExtId An interface identifier from TSupportedCommsApiExt.
 	*/
 	XCommsDataObject(TUint aFlags, TUint aReqItfExtId)
-		: iReqItfExtId(aReqItfExtId), iFlags(aFlags)
+		: iOperationMode(EOperationUninitialized), iReqItfExtId(aReqItfExtId), iFlags(aFlags)
 		{
 		__ASSERT_DEBUG((aFlags & ~EAllFlags) == 0, User::Panic(KSpecAssert_ESocks_cmsdtbjct, 3));
 		__ASSERT_DEBUG((aFlags & EOperationSupportMask) != 0, User::Panic(KSpecAssert_ESocks_cmsdtbjct, 4));

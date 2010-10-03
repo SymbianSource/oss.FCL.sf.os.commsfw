@@ -54,6 +54,8 @@ SOURCE          mectest009step.cpp
 SOURCE          mectest010step.cpp
 SOURCE          mectest011step.cpp
 SOURCE          mectest012step.cpp
+SOURCE          mectest013step.cpp
+SOURCE          mectest014step.cpp
 
 SOURCE			mectest030step.cpp
 SOURCE          mectest031step.cpp
@@ -71,8 +73,6 @@ SOURCE			mectest055step.cpp
 SOURCE          mectestpanic2step.cpp
 SOURCE          mectestpanic3step.cpp
 SOURCE          mectestpanic4step.cpp
-SOURCE          mectestpanic5step.cpp
-SOURCE			mectestpanic6step.cpp
 SOURCE			mectestpanic7step.cpp
 SOURCE			mectestpanic8step.cpp
 SOURCE			mectestpanic9step.cpp

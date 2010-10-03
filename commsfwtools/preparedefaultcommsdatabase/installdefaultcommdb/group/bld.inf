@@ -13,6 +13,10 @@
 // Description:
 //
 
+PRJ_EXPORTS
+installdefaultcommdb.meta /epoc32/tools/makefile_templates/converged-comms/installdefaultcommdb.meta
+installdefaultcommdb.mk   /epoc32/tools/makefile_templates/converged-comms/installdefaultcommdb.mk
+
 PRJ_PLATFORMS
 
 DEFAULT

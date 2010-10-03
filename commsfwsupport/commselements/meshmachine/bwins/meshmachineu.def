@@ -138,4 +138,5 @@ EXPORTS
 	?SetPostedTo@CNodeActivityBase@MeshMachine@@QAEXABVRNodeInterface@Messages@@@Z @ 137 NONAME ; void MeshMachine::CNodeActivityBase::SetPostedTo(class Messages::RNodeInterface const &)
 	?PostedToNodeId@CNodeActivityBase@MeshMachine@@QBEABVTNodeId@Messages@@XZ @ 138 NONAME ; class Messages::TNodeId const & MeshMachine::CNodeActivityBase::PostedToNodeId(void) const
 	?PostedToPeer@CNodeActivityBase@MeshMachine@@QBEPBVRNodeInterface@Messages@@XZ @ 139 NONAME ; class Messages::RNodeInterface const * MeshMachine::CNodeActivityBase::PostedToPeer(void) const
+	?GetNextActivityCountL@CNodeParallelActivityBase@MeshMachine@@KAIABUTNodeActivity@2@ABVAMMNodeBase@2@@Z @ 140 NONAME ; unsigned int MeshMachine::CNodeParallelActivityBase::GetNextActivityCountL(struct MeshMachine::TNodeActivity const &, class MeshMachine::AMMNodeBase const &)
 

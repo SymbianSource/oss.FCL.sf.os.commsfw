@@ -13,6 +13,11 @@
 // Description:
 //
 
+PRJ_EXPORTS
+createcommdbs.meta        /epoc32/tools/makefile_templates/converged-comms/createcommdbs.meta
+createcommdbs.mk          /epoc32/tools/makefile_templates/converged-comms/createcommdbs.mk
+
+
 PRJ_PLATFORMS
 
 DEFAULT

@@ -23,7 +23,6 @@
 #include <elements/nm_address_internal.h>
 #include "nm_signals.h"
 
-
 #ifdef _DEBUG
 // Panic category for "absolutely impossible!" vanilla ASSERT()-type panics from this module
 // (if it could happen through user error then you should give it an explicit, documented, category + code)
@@ -140,10 +139,9 @@ EXPORT_C void RNodeInterface::Close()
 	iClientType = TClientType::NullType();
 	if(iPreAlloc!=NULL)
 		{
-		delete iPreAlloc->iPreAllocatedActivityChunk;
+		delete iPreAlloc;
+		iPreAlloc = NULL;
 		}
-	delete iPreAlloc;
-	iPreAlloc = NULL;
 	}
 
 EXPORT_C void RNodeInterface::PostMessage(const TRuntimeCtxId& aPostFrom, const TNodeId::TRemainder& aPostTo, const TSignalBase& aMessage) const
@@ -171,11 +169,28 @@ EXPORT_C void RNodeInterface::PreAllocL(TUint aAllocSize)
 	if(iPreAlloc!=NULL)
 		// Memory already allocated for this client
 		{
-		__ASSERT_DEBUG(iPreAlloc->iPreAllocatedActivityChunk != NULL, User::Panic(KSpecAssert_ElemNodeMessIntC, 5));
-		return;
+		// If iPreAlloc is not NULL then it should be usable. Ensure that the memory chunk has been suitable allocated
+		__ASSERT_DEBUG(iPreAlloc->iPreAllocatedActivityChunk != NULL, User::Panic(KSpecAssert_ElemNodeMessIntC, 2));
+		if(iPreAlloc->iPreAllocSize >= aAllocSize)
+			// Memory already preallocated of a sufficient size - this could happen if clients are re-added
+			{
+			return;
+			}
+		else
+			// Memory preallocated is too small. Free up the space and then attempt to reallocate
+			{
+			// Code path should never enter here as PreAllocL should not be called once the iPreAlloc memory space is allocated.
+			// However on the chance of production device entering here attempt to clear the preallocated space and reallocate a more suitable amount.
+            __ASSERT_DEBUG(EFalse, User::Panic(KSpecAssert_ElemNodeMessIntC, 3)); 
+			delete iPreAlloc;
+			iPreAlloc = NULL;
+			}
 		}
-	iPreAlloc = new (ELeave) TPreAllocStore();
-	iPreAlloc->iPreAllocatedActivityChunk = User::AllocL(aAllocSize);
+	TPreAllocStore* preAlloc = new (ELeave) TPreAllocStore();
+	CleanupStack::PushL(preAlloc);
+	preAlloc->iPreAllocatedActivityChunk = User::AllocL(aAllocSize);
+	CleanupStack::Pop(preAlloc);
+	iPreAlloc = preAlloc;
 	iPreAlloc->iPreAllocSize = aAllocSize;
 	}
 
@@ -188,12 +203,15 @@ EXPORT_C TAny* RNodeInterface::ClaimPreallocatedSpace(TUint aSize)
 	if(!(iPreAlloc && aSize <= iPreAlloc->iPreAllocSize))
 		{
 		// By this stage the PreAllocL must have been triggered and memory space must have been allocated.
-		__ASSERT_DEBUG(EFalse, User::Panic(KSpecAssert_ElemNodeMessIntC, 3));
-		delete iPreAlloc->iPreAllocatedActivityChunk;
-		iPreAlloc->iPreAllocatedActivityChunk = User::AllocL(aSize);
+		__ASSERT_DEBUG(EFalse, User::Panic(KSpecAssert_ElemNodeMessIntC, 4));
+		TRAPD(err,PreAllocL(aSize));
+		__ASSERT_ALWAYS(err, User::Panic(KMessagesPanic, EPreAllocationFailedPanic));
 		}
 	TAny* preallocatedSpace = (RNodeInterface*)iPreAlloc->iPreAllocatedActivityChunk;
-	iPreAlloc->iPreAllocatedActivityChunk=NULL;
+	// Release ownership of the memory area
+	iPreAlloc->iPreAllocatedActivityChunk = NULL;
+	delete iPreAlloc;
+	iPreAlloc = NULL;
 	return preallocatedSpace;
 	}
 
@@ -252,7 +270,7 @@ EXPORT_C TInt RRequestOriginator::Open(Messages::RNodeInterface& aNode, const Me
 
 EXPORT_C void RRequestOriginator::Open(RRequestOriginator& aOriginalRequest)
 	{
-	__ASSERT_DEBUG(aOriginalRequest.IsOpen(), User::Panic(KSpecAssert_ElemNodeMessIntC, 4));
+	__ASSERT_DEBUG(aOriginalRequest.IsOpen(), User::Panic(KSpecAssert_ElemNodeMessIntC, 1));
 	iNode = aOriginalRequest.iNode;
 	iRemainder = aOriginalRequest.iRemainder;
 	aOriginalRequest.Close();

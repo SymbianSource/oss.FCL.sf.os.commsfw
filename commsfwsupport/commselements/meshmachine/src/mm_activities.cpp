@@ -38,20 +38,6 @@ using namespace NetStateMachine;
 
 //-=========================================================
 //
-//Panics
-//
-//-=========================================================
-_LIT (KMMActivityPanic,"MMActivityPanic");
-enum
-	{
-	EPanicCorruptedContext = 1,
-	EPanicNoPreallocatedSpace = 2,
-	EPanicOutOfActivities = 3,
-	EPanicOutOfBounds
-	};
-
-//-=========================================================
-//
 //TNodeActivityIter
 //
 //-=========================================================
@@ -556,7 +542,7 @@ public:
     static const TUint32 iFull = ~0;
     static const TInt iCount = (SIZE + iSizeMask) / iSize;
     TBitmap();
-    void SetBit(TUint aBitNum);
+    void SetBitL(TUint aBitNum);
     TInt GetFreeBit() const;
 
 private:
@@ -573,10 +559,10 @@ TBitmap<SIZE>::TBitmap()
 }
 
 template<TInt SIZE>
-void TBitmap<SIZE>::SetBit(TUint aBitNum)
+void TBitmap<SIZE>::SetBitL(TUint aBitNum)
     {
     const TInt index = aBitNum / iSize;
-	__ASSERT_ALWAYS(index < iCount,User::Panic(KMMActivityPanic,EPanicOutOfBounds));
+	User::LeaveIfError(index < iCount ? KErrNone : KErrOverflow);
 
     iBits[index] |= 1 << (aBitNum & iSizeMask);
     }
@@ -612,9 +598,22 @@ TInt TBitmap<SIZE>::GetFreeBit() const
 //
 //-=========================================================
 
+EXPORT_C TUint CNodeParallelActivityBase::GetNextActivityCountL( const TNodeActivity& aActivitySig, const AMMNodeBase& aNode )
+    {
+    return DoGetNextActivityCountL(aActivitySig, aNode);
+    }
+
+EXPORT_C TUint CNodeParallelActivityBase::GetNextActivityCount( const TNodeActivity& aActivitySig, const AMMNodeBase& aNode )
+    {
+    // Version for infallible activities
+	TUint nextActivity(0);
+    TRAPD(err,nextActivity = DoGetNextActivityCountL(aActivitySig, aNode));
+	__ASSERT_ALWAYS(err == KErrNone,User::Panic(KMMActivityPanic,EPanicOutOfActivities));
+	return nextActivity;
+    }
 
 // For custom activities to implement New
-EXPORT_C TUint CNodeParallelActivityBase::GetNextActivityCount( const TNodeActivity& aActivitySig, const AMMNodeBase& aNode )
+TUint CNodeParallelActivityBase::DoGetNextActivityCountL( const TNodeActivity& aActivitySig, const AMMNodeBase& aNode )
 	{
 	TInt c = 1;
 	
@@ -628,12 +627,12 @@ EXPORT_C TUint CNodeParallelActivityBase::GetNextActivityCount( const TNodeActiv
 		if ((id&0xff) == aActivitySig.iId)
 			{
 			TInt8 uniqueid = id >> 8;
-			activityids.SetBit(uniqueid);
+			activityids.SetBitL(uniqueid);
 			}
 		}
 	c = activityids.GetFreeBit();
 	
-	__ASSERT_ALWAYS(c>=0,User::Panic(KMMActivityPanic,EPanicOutOfActivities));
+	User::LeaveIfError( c>=0 ? KErrNone : KErrOverflow);
     return c;
 	}
 
