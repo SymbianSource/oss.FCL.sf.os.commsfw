@@ -694,6 +694,14 @@ EXPORT_C CWorkerSubSession::CWorkerSubSession(CWorkerSession* aSession, CCommonP
 EXPORT_C void CWorkerSubSession::ConstructL()
 	{
 	iSessionProxy = Player().CurrentSessionProxyL();
+	// Try reserving enough space in the transport sender queue so that we don't overflow the queue
+	// when sending messages in bulk, which can happen in cases like closing the session without 
+	// closing individual sub-sessions. Protyping reveals that with a high number of number of 
+	// sub-sessions, a transport queue length twice the number of active sub-session is a safe bet
+	CCommsTransport* transport = iPlayer->WorkerThread().Transport();
+	TInt numSubsession = iSession->SubSessions().ActiveCount() + 1;
+	const TInt numUndeliveredMessae = numSubsession * 2;
+	transport->PreallocateQueueSpaceL(numUndeliveredMessae);
 	}
 
 EXPORT_C CWorkerSubSession::~CWorkerSubSession()

@@ -1,9 +1,0 @@
-component	comms-infras_documentation
-
-source	\sf\os\commsfw\commsfw_info\commsinfrastructuredocs\
-
-notes_source	\component_defs\release.src
-
-
-ipr D 
-

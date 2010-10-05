@@ -20,6 +20,7 @@
 
 #include <integrationtest.iby>
 #include <commsbufs.iby>
+#include <te_mbufgobbler.iby>
 
 file=ABI_DIR\DEBUG_DIR\TS_CTMBUFMGR.DLL						\System\libs\TS_CTMBUFMGR.DLL
 data=EPOCROOT##epoc32\data\z\TestData\scripts\mbuftest.script		\testdata\scripts\mbuftest.script
