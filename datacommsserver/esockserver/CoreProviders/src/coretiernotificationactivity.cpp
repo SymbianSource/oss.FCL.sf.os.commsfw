@@ -178,6 +178,7 @@ EXPORT_C /*static*/ MeshMachine::CNodeActivityBase* CTierNotificationActivity::N
 		CleanupStack::Pop(newCollectorSession);
 		}
 
+
 	// Must run session creation and start loops separately in case the initial data fetch is synchronous.
 	// Reasoning:
 	//  when a full set of data for each collector is received, notification is only allowed if all

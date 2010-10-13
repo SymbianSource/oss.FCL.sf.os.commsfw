@@ -288,7 +288,6 @@ public:
 	IMPORT_C CommsFW::TId LastRequestIdConcerningPeer(TWorkerId aPeerId) const;
 	IMPORT_C void SetDropTransportPending(TWorkerId aPeerId, TBool aDropPending);
 	IMPORT_C TBool IsDropTransportPending(TWorkerId aPeerId) const;
-	IMPORT_C void PreallocateQueueSpaceL(TInt aMinUndeliveredMessages);
 
 	IMPORT_C TWorkerId WorkerId() const;
 	IMPORT_C Messages::MTransportSender& GetSender();

@@ -85,13 +85,10 @@ public:
 	virtual void ProcessMessageL();
 
 	void InitiateDestruction();
-	inline void SetFlowRequestType(TFlowParams::TFlowRequestType aFlowRequestType)
-	    { iFlowRequestType = aFlowRequestType; }
-	
+
 protected:
 	void LockToConnectionInfo();
 	void LockToConnectionInfo(const TDesC8& aConnectionInfo);
-	void UpdateFlowRequestType();
     void SetBlockedReq(const RMessage2& aMsg)
         {
         iBlockedReq = aMsg;
@@ -155,7 +152,7 @@ private:
 
     TPtr8   iPtrQryBuf;     //< Pointer descriptor, associated with ipQryBuf
     TPtr8   iPtrQryResBuf;  //< Pointer descriptor, associated with ipQryRespBuf
-    TFlowParams::TFlowRequestType iFlowRequestType; //< Flow request type used while opening the HR
+
     };
 
 inline void CHostResolver::SetResolver(CHostResolvProvdBase* aResolver)

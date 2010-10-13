@@ -313,7 +313,7 @@ enum TVerdict CSocketTest1_7::InternalDoTestStepL( void )
 	{
 	TVerdict verdict = EPass;
 
-	TInt numExhaustiveSockets = iNormalTest ? KNumExhaustiveSockets : 10;	
+	TInt numExhaustiveSockets = iNormalTest ? KNumExhaustiveSockets : 10;
 	iNormalTest = EFalse; // normal test is only run once, the rest are OOM tests
 
 	Logger().WriteFormat(_L("Test Purpose: Exhaustive Socket Open"));
@@ -370,10 +370,11 @@ enum TVerdict CSocketTest1_7::InternalDoTestStepL( void )
 
 #if defined (_DEBUG_SOCKET_FUNCTIONS)
 
+	numExhaustiveSockets = KNumExhaustiveSocketsWithoutSocketCleanup;
 	Logger().WriteFormat(_L("Attempting to Open %d sockets"), numExhaustiveSockets);
 	TInt sockCount1 = sockNum;
 	ret = KErrNone;
-	sockNum = 0;
+	sockNum = 0;	
 	while (ret==KErrNone && sockNum<numExhaustiveSockets)
 		{
 		ret=socks[sockNum].Open(ss, protoInfo.iAddrFamily,
@@ -384,22 +385,34 @@ enum TVerdict CSocketTest1_7::InternalDoTestStepL( void )
 		{
 		sockNum--;
 		}
-	Logger().WriteFormat(_L("Created %d sockets, expected at least %d sockets"), sockNum, sockCount1);
+		Logger().WriteFormat(_L("Created %d sockets"), sockNum);
 	
+	// Not sure what use it is to test whether we can open at least as many sockets as previously.
+	// We can't assume that once we've freed all the sockets first time around that the ESock heap will
+	// go back exactly to where it was before - this makes assumptions about the ESock algorithms.  Why
+	// wouldn't ESock legitimately cache objects, for example?
+	//
 	//TESTL(sockNum >= sockCount1);
+	//
+
+	//
+	// NOTE:
+	// We do *not* free up the sockets but just close the session.  This is to exercise the subsession
+	// cleanup behaviour in ESock with a large number of sockets.  We test that this cleanup operation
+	// does not overflow the transport queue, as each subsession cleanup results in a message being sent.
 	//
 	//Logger().WriteFormat(_L("Freeing sockets in creation order"));
 	//for (i=0; i<sockNum; i++)
 	//	{
 	//	socks[i].Close();
 	//	}
+	//
 
 #endif	// (_DEBUG) }
 
 	CleanupStack::PopAndDestroy(socks);
 
 	CleanupStack::Pop(&ss);
-	Logger().WriteFormat(_L("Now closing socket server session without closing %d opened sockets"), sockNum);
 	ss.Close();
 	SetTestStepResult(verdict);
 	return verdict;

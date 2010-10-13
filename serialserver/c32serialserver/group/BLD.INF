@@ -35,7 +35,7 @@ PRJ_EXPORTS
 
 c32.iby	       /epoc32/rom/include/c32.iby
 
-../doc_pub/C32API.doc    /epoc32/engdoc/c32/c32api.doc
+../documentation/C32API.doc    /epoc32/engdoc/c32/c32api.doc
 
 
 PRJ_TESTEXPORTS

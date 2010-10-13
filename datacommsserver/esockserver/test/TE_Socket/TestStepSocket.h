@@ -55,6 +55,7 @@ class CTestStepSocket : public CTestStep
 		
 		static const TUint KNumTestSockets;
 		static const TInt KNumExhaustiveSockets;
+		static const TInt KNumExhaustiveSocketsWithoutSocketCleanup;
 		static const TInt KNumStretchOpens;
 		
 	private:

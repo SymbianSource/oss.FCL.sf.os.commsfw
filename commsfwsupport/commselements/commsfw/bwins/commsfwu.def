@@ -26,8 +26,8 @@ EXPORTS
 	?CloseNonGracefully@CCFChannelPairRawBase@CommsFW@@QAEXXZ @ 25 NONAME ; public: void __thiscall CommsFW::CCFChannelPairRawBase::CloseNonGracefully(void)
 	?ConstructL@CCFModuleChannelHandler@CommsFW@@IAEXAAUTMsgQueuesTAG@?$RCFChannelBase@VTCFMessage@CommsFW@@$00@2@0@Z @ 26 NONAME ; protected: void __thiscall CommsFW::CCFModuleChannelHandler::ConstructL(struct CommsFW::RCFChannelBase<class CommsFW::TCFMessage,1>::TMsgQueuesTAG &,struct CommsFW::RCFChannelBase<class CommsFW::TCFMessage,1>::TMsgQueuesTAG &)
 	?Create@RCFChannelRawBase@CommsFW@@QAEHHHPAVRMsgQueueBase@@H@Z @ 27 NONAME ; public: int __thiscall CommsFW::RCFChannelRawBase::Create(int,int,class RMsgQueueBase *,int)
-	?Create@RCFChannelRawBase@CommsFW@@QAEHPBVRMsgQueueBase@@W4TOwnerType@@PAV3@H@Z @ 28 NONAME ; public: int __thiscall CommsFW::RCFChannelRawBase::Create(class RMsgQueueBase const *,enum TOwnerType,class RMsgQueueBase *,int)	
-	?PreallocateQueueSpaceL@CCommsTransport@CommsFW@@QAEXH@Z @ 29 NONAME ; void CommsFW::CCommsTransport::PreallocateQueueSpaceL(int)
+	?Create@RCFChannelRawBase@CommsFW@@QAEHPBVRMsgQueueBase@@W4TOwnerType@@PAV3@H@Z @ 28 NONAME ; public: int __thiscall CommsFW::RCFChannelRawBase::Create(class RMsgQueueBase const *,enum TOwnerType,class RMsgQueueBase *,int)
+	?Create@RCFThread@CommsFW@@QAEHABVTDesC16@@P6AHPAX@ZHHH1@Z @ 29 NONAME ABSENT ; public: int __thiscall CommsFW::RCFThread::Create(class TDesC16 const &,int (__cdecl*)(void *),int,int,int,void *)
 	?Create@RCFThread@CommsFW@@QAEHABVTDesC16@@P6AHPAX@ZHPAVRHeap@@1@Z @ 30 NONAME ABSENT ; public: int __thiscall CommsFW::RCFThread::Create(class TDesC16 const &,int (__cdecl*)(void *),int,class RHeap *,void *)
 	?CreateRecv@CCFChannelPairRawBase@CommsFW@@QAEHH@Z @ 31 NONAME ; public: int __thiscall CommsFW::CCFChannelPairRawBase::CreateRecv(int)
 	?CreateRecv@CCFChannelPairRawBase@CommsFW@@QAEHPBVRMsgQueueBase@@W4TOwnerType@@@Z @ 32 NONAME ; public: int __thiscall CommsFW::CCFChannelPairRawBase::CreateRecv(class RMsgQueueBase const *,enum TOwnerType)
@@ -97,5 +97,6 @@ EXPORTS
 	?SetDropTransportPending@CCommsTransport@CommsFW@@QAEXGH@Z @ 96 NONAME ; void CommsFW::CCommsTransport::SetDropTransportPending(unsigned short, int)
 	?SetLastRequestIdConcerningPeer@CCommsTransport@CommsFW@@QAEXGH@Z @ 97 NONAME ; void CommsFW::CCommsTransport::SetLastRequestIdConcerningPeer(unsigned short, int)
 	?WorkerId@CCommsTransport@CommsFW@@QBEGXZ @ 98 NONAME ; unsigned short CommsFW::CCommsTransport::WorkerId(void) const
-	?GetVarFromIniData@CommsFW@@YAHABVTDesC8@@00AAH@Z @ 99 NONAME ; int CommsFW::GetVarFromIniData(class TDesC8 const &, class TDesC8 const &, class TDesC8 const &, int &)	
+	?GetVarFromIniData@CommsFW@@YAHABVTDesC8@@00AAH@Z @ 99 NONAME ; int CommsFW::GetVarFromIniData(class TDesC8 const &, class TDesC8 const &, class TDesC8 const &, int &)
+
 

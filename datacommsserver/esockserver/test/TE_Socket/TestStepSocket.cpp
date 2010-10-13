@@ -28,6 +28,7 @@
 // static consts
 const TUint CTestStepSocket::KNumTestSockets = 10;
 const TInt CTestStepSocket::KNumExhaustiveSockets = 100;
+const TInt CTestStepSocket::KNumExhaustiveSocketsWithoutSocketCleanup = 40; // Maximum number of sockets open when closing the server session without closing individual sockets
 const TInt CTestStepSocket::KNumStretchOpens = 16;
 
 _LIT(KProtocolName, "Dummy Protocol 1");          // Name of test protocol to use in these tests

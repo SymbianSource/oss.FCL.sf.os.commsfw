@@ -96,8 +96,6 @@ PRJ_TESTMMPFILES
 #include "../reference/loopback_driver/bld.inf"
 #include "../reference/zerocopy_loopback_driver/bld.inf"
 
-#include "../mbufgobblerlayer/group/bld.inf"
-
 #else
 
 #include "../version1/mbufmgr/group/bld.inf"
