@@ -140,6 +140,7 @@ protected:
     void Rejoin(const TCFFlow::TRejoin& aRejoinMessage);
 	void StartFlowL(const Messages::TRuntimeCtxId& aSender);
     void StopFlow(TCFDataClient::TStop& aMessage);
+    void BindTo(const Messages::TRuntimeCtxId& aSender, Messages::TSignatureBase& aMessage);  	
     void Destroy();
 	
 	//Stores the contents of the provision config message.
@@ -208,6 +209,9 @@ private:
 	void NoBearerCompletion();
 	inline void SetFlowParams(const TFlowParams& aFlowParams);
 
+	inline void SetLastError(TInt anError);
+	inline TInt GetLastError() const;
+
 protected:
 	// Flags to set on iStateFlags inherited from CNetworkFlow
 	enum TStateFlag
@@ -251,6 +255,7 @@ private:
 	// Reference to the protocol as managed by the ProtocolManager
 	CProtocolRef* iProtocolReference;
 	TFlowParams iFlowParams;
+	TInt iLastError;
 	};
 
 inline CServProviderBase* CTransportFlowShim::Provider()
@@ -262,6 +267,16 @@ inline void CTransportFlowShim::SetFlowParams(const TFlowParams& aFlowParams)
     {
     iFlowParams = aFlowParams;
     SetFlowParamsInitialised();
+    }
+
+inline void CTransportFlowShim::SetLastError(TInt anError)
+    {
+    iLastError = anError;
+    }
+
+inline TInt CTransportFlowShim::GetLastError() const
+    {
+    return iLastError;
     }
 
 #ifdef SYMBIAN_NETWORKING_UPS

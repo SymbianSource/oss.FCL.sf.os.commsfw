@@ -949,6 +949,7 @@ void CTransportFlowShim::Error(TInt anError, TUint anOperationMask)
 	    		{
 	    		iLowerFlow->Unbind(NULL,NULL);
 	    		iLowerFlow = NULL;
+	    		SetLastError(anError);
 	    		}
 	        iLowerControl = NULL;
 	    	}
@@ -1168,42 +1169,7 @@ void CTransportFlowShim::ReceivedL(const TRuntimeCtxId& aSender, const TNodeId& 
 			break;
 		case TCFDataClient::TBindTo::EId :
 			{
-			TCFDataClient::TBindTo& bindToMsg(static_cast<TCFDataClient::TBindTo&>(aMessage));
-			TRAPD(err,BindToL(bindToMsg));
-			// Ensure that TBindToComplete message gets sent before TIdle so that it gets to the destination
-			// before destroy processing.
-			if(err == KErrNone)
-			    {
-			    RClientInterface::OpenPostMessageClose(Id(), aSender, TCFDataClient::TBindToComplete().CRef());
-			    }
-			else
-			    {
-			    RClientInterface::OpenPostMessageClose(Id(), aSender, TEBase::TError(aMessage.MessageId(), err).CRef());
-			    }
-			
-			
-			ProcessDCIdleState();	// in case we were waiting to send idle
-			//If we have received TDataClientStart before (when we did not yet have a bearer),
-			//we complete the start here as well
-			if (err != KErrNone)
-				{
-				//If we have received TDataClientStart before (when we did not yet have a bearer),
-				//we complete the start here as well
-				if (iStartRequest.IsOpen())
-					{
-					CompleteStart(err);
-					}
-				SetBearerExpected();
-				}
-			else
-		    	{
-				// If we get a TBindTo message then the TNoBearer request has succeeded
-				// and we can inform the client.
-		    	if (iSessionControlNotify)
-		    		{
-		    		iSessionControlNotify->SetLocalNameComplete();
-		    		}
-		        }
+			BindTo(aSender, aMessage);
 		    break;
 			}
 		default:
@@ -1394,7 +1360,6 @@ up and running and that we should bind to a Flow below.
 	    }
 	}
 
-
 void CTransportFlowShim::Rejoin(const TCFFlow::TRejoin& aRejoinMessage)
     {
 	LOG( ESockLog::Printf(_L("CTransportFlowShim %08x:\tRejoin()"), this ));
@@ -1441,9 +1406,22 @@ void CTransportFlowShim::StartFlowL(const TRuntimeCtxId& aSender)
 		return;
 		}
 
-	//We need a bearer
+	// If iLowerFlow was set, the above branch would have returned from this function. As such, iLowerFlow is NULL.
+	if (NoBearerGuard()) 
+	    {
+	    // In normal case we would take the else-branch and send TNoBearer, but it has already been sent! This indicates
+	    // that during the NoBearer handshake the lower flow returned an unexpected error and was unbound. This error
+	    // is not recoverable. Send TError. Valid error value must have been set in Error().
+	    __ASSERT_DEBUG(GetLastError() != KErrNone, User::Panic(KSpecAssert_ESockSSocksspshm, 68)); 
+        iStartRequest.ReplyTo(Id(), TEBase::TError(TCFDataClient::TStart::Id(), GetLastError()).CRef());
+        iStartRequest.Close();
+        SetLastError(KErrNone);  
+	    }
+	else
+	    {
+	    //We need a bearer
 		PostNoBearer(); //Ask for bearer if not requested already
-
+	    }
 	}
 
 void CTransportFlowShim::StopFlow(TCFDataClient::TStop& aMessage)
@@ -1481,6 +1459,49 @@ void CTransportFlowShim::StopFlow(TCFDataClient::TStop& aMessage)
 	ClearStarted();
 	SetStopped();
 	}
+
+
+void CTransportFlowShim::BindTo(const TRuntimeCtxId& aSender, TSignatureBase& aMessage)
+    {
+    TCFDataClient::TBindTo& bindToMsg(static_cast<TCFDataClient::TBindTo&>(aMessage));
+    TRAPD(err,BindToL(bindToMsg));
+    
+    // Ensure that TBindToComplete message gets sent before TIdle so that it gets to the destination
+    // before destroy processing.           
+    if(err == KErrNone)
+        {
+        RClientInterface::OpenPostMessageClose(Id(), aSender, TCFDataClient::TBindToComplete().CRef());
+        }
+    else
+        {
+        RClientInterface::OpenPostMessageClose(Id(), aSender, TEBase::TError(aMessage.MessageId(), err).CRef());
+        }
+    
+    
+    ProcessDCIdleState();   // in case we were waiting to send idle
+    //If we have received TDataClientStart before (when we did not yet have a bearer),
+    //we complete the start here as well
+    if (err != KErrNone)
+        {
+        //If we have received TDataClientStart before (when we did not yet have a bearer),
+        //we complete the start here as well
+        if (iStartRequest.IsOpen())
+            {
+            CompleteStart(err);
+            }
+        SetBearerExpected();
+        }
+    else
+        {
+        // If we get a TBindTo message then the TNoBearer request has succeeded
+        // and we can inform the client.
+        if (iSessionControlNotify)
+            {
+            iSessionControlNotify->SetLocalNameComplete();
+            }
+        }
+    }
+
 
 void CTransportFlowShim::InitDestroy()
 	{

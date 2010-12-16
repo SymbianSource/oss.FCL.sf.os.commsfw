@@ -1385,25 +1385,28 @@ TInt CMDBSessionImpl::MaybeModifyNodeL(TMDBElementId& aElementId)
             TUint32 partialSourceId(storedId);
             TUint32 partialTargetId(aElementId);
             TUint32 targetAttributes = (aElementId ^ storedId) & KCDMaskShowAttributes;
-     
+
+            // Set the KCDUtilityFlag flag in the mask so that the Placeholders for each Node are not moved.
+            // Placeholders never have any Attributes set so they can always be accessed by CommsDat internals,
+            // whatever the capability of the calling client.
             if ( CommsDatSchema::IsTable(aElementId) ) 
                 {
                 // move all records, columns and fields in this table
-                mask = KCDMaskShowRecordType | targetAttributes;
+                mask =  KCDUtilityFlag | KCDMaskShowRecordType | targetAttributes;
                 partialSourceId &= (KCDMaskShowRecordType | KCDMaskShowAttributes);
                 partialTargetId &= (KCDMaskShowRecordType | KCDMaskShowAttributes);
                 }
             else if ( CommsDatSchema::IsRecord(aElementId) )
                 {
                 // move all fields in this record
-                mask = KCDMaskShowRecordType | KCDMaskShowRecordId | targetAttributes;
+                mask = KCDUtilityFlag | KCDMaskShowRecordType | KCDMaskShowRecordId | targetAttributes;
                 partialSourceId &= (KCDMaskShowRecordType | KCDMaskShowRecordId | KCDMaskShowAttributes);
                 partialTargetId &= (KCDMaskShowRecordType | KCDMaskShowRecordId | KCDMaskShowAttributes);
                 }
             else if ( CommsDatSchema::IsColumn(aElementId) )
                 {
                 // move all fields in this column
-                mask = KCDMaskShowRecordType | KCDMaskShowFieldType | targetAttributes;
+                mask = KCDUtilityFlag | KCDMaskShowRecordType | KCDMaskShowFieldType | targetAttributes;
                 partialSourceId &= (KCDMaskShowRecordType | KCDMaskShowFieldType | KCDMaskShowAttributes);
                 partialTargetId &= (KCDMaskShowRecordType | KCDMaskShowFieldType | KCDMaskShowAttributes);
                 }
@@ -1422,7 +1425,7 @@ TInt CMDBSessionImpl::MaybeModifyNodeL(TMDBElementId& aElementId)
  
             if (err != KErrNone)
                 {
-                __FLOG_STATIC5(KLogComponent, KCDErrLog, _L("CMDBSessionImpl::MaybeModifyNodeL() for id %08x, moving to <%08x> with the mask <%08x>.  CRepository::MoveL() returned %d and failed at <%08x>"), partialSourceId, partialTargetId, mask, retval, errorId);   
+                __FLOG_STATIC5(KLogComponent, KCDErrLog, _L("CMDBSessionImpl::MaybeModifyNodeL() for id %08x, moving to <%08x> with the mask <%08x>.  CRepository::MoveL() returned %d and failed at <%08x>"), partialSourceId, partialTargetId, mask, err, errorId);   
                 }
             else
                 {
